@@ -1,71 +1,143 @@
 #include <iostream>
 #include <string>
 
-class Activation {
-private:
-    int count;
-
-public:
-    Activation() {}
-
-    virtual ~Activation() {}
-
-    virtual void Do() {
-        std::cout << "Original!" << '\n';
-    }
-};
-
-class ReLu : public Activation {
+class Layer {
 private:
     /* data */
 
 public:
-    ReLu() {}
+    Layer() {}
 
-    virtual ~ReLu() {}
+    virtual ~Layer() {}
+
+    virtual void Do() {}
+};
+
+// class Activation {
+// private:
+///* data */
+//
+// public:
+// Activation ();
+// virtual ~Activation ();
+//
+// virtual void Do() {}
+// };
+
+class Conv2D : public Layer {
+private:
+    /* data */
+
+public:
+    Conv2D() {
+        std::cout << "Conv2d()" << '\n';
+    }
+
+    virtual ~Conv2D() {}
 
     void Do() {
-        std::cout << "ReLu!" << '\n';
-        //std::cout << this->count << '\n';
-
+        std::cout << "Success Conv!" << '\n';
     }
 };
 
-Activation* SelectActivation(const std::string& type) {
-    if (type == "ReLu") return new ReLu();
-
-    if (type == "origin" || type == "default") return new Activation();
-
-    else return NULL;
-}
-
-class Test {
+class Maxpool : public Layer {
 private:
     /* data */
-    Activation *m_Activation;
 
 public:
-    Test(const std::string& type = "default") {
-        m_Activation = SelectActivation(type);
+    Maxpool() {
+        std::cout << "MaxPool()" << '\n';
     }
 
-    virtual ~Test() {}
+    virtual ~Maxpool() {}
 
     void Do() {
-        m_Activation->Do();
+        std::cout << "Success Max!" << '\n';
+    }
+};
+
+class Factory {
+private:
+    /* data */
+
+public:
+    Factory() {}
+
+    virtual ~Factory() {}
+
+    static Layer* typefactory(const std::string& type) {
+        if ((type == "Conv2D") || (type == "defalt")) return new Conv2D();
+
+        if (type == "Maxpool") return new Maxpool();
+
+        return NULL;
+    }
+};
+
+class NeuralNetwork {
+private:
+    int countofLayer = 0;
+    int m_noLayer;
+    Layer *m_aLayer[];
+
+public:
+    NeuralNetwork(int p_noLayer) : m_noLayer(p_noLayer) {
+        Alloc();
+    }
+
+    virtual ~NeuralNetwork() {}
+
+    bool Alloc() {
+        *m_aLayer = new Layer[m_noLayer];
+
+        return true;
+    }
+
+    bool CreateLayer(Layer *Type) {
+        if (countofLayer >= m_noLayer) {
+            std::cout << "already full" << '\n';
+            return false;
+        }
+        // m_aLayer[countofLayer] = Factory::typefactory(type);
+
+        m_aLayer[countofLayer] = Type;
+
+        countofLayer++;
+
+        return true;
+    }
+
+    bool Propagate() {
+        if (countofLayer < m_noLayer) {
+            std::cout << "some value is empty" << '\n';
+            return false;
+        }
+
+        for (int i = 0; i < m_noLayer; i++) {
+            m_aLayer[i]->Do();
+        }
+        return true;
     }
 };
 
 
 int main(int argc, char const *argv[]) {
+    std::cout << "---------------Start---------------" << '\n';
 
-    Test *test  = new Test("ReLu");
-    Test *test2 = new Test();
+    NeuralNetwork *HGU = new NeuralNetwork(3);
 
-    test2->Do();
-    test->Do();
+    HGU->CreateLayer(new Conv2D());
 
-    std::cout << "Done!" << '\n';
+    HGU->CreateLayer(new Maxpool());
+
+    HGU->CreateLayer(new Maxpool());
+
+    // HGU->CreateLayer("Maxpool") = new Maxpool(stride,input tensor,c);
+
+    HGU->Propagate();
+
+
+    std::cout << "---------------Done---------------" << '\n';
 
     return 0;
 }

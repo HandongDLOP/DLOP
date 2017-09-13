@@ -3,45 +3,44 @@
 
 #include <string>
 #include "Tensor.h"
+#include "Layer.h"
 
-class Activation {
-private:
-    Tensor *m_input;
-    Tensor *m_output;
-    Tensor *m_aWeight;
+// class Activation : public Layer {
+// public:
+// Activation() {}
+//
+// virtual ~Activation() {}
+//
+//// Layer가 가지고 있는 요소들의 주소를 그대로 할당할 수 있도록한다.
+//// 상속을 받아서 사용할까 생각했지만 그렇게 사용하기에는, layer하나에 관여하는 요소가 이 것 하나 뿐이 아니다.
+// int    Alloc();
+// void   Delete();
+//
+// Tensor Activate();
+// Tensor DerActivationFromOutput();
+// };
 
-    // Training 과정을 공부한 후 다시 확인해야 할 부분
-    Tensor *m_aGradient;
-    Tensor *m_aDelta;
-    Tensor *m_aDeltabar;
-
-    Tensor net;  // layer의 output_dim과 같을 것으로 예상
-    // construct 할 때 생성 (초기값 0)
-
+class Relu : public Layer {
 public:
-    Activation() {}
+    Relu() {
+        std::cout << "Relu::Relu() : public Layer" << '\n';
+    }
 
-    virtual ~Activation() {}
+    virtual ~Relu() {
+        std::cout << "Relu::~Relu()" << '\n';
+    }
 };
 
-class Relu : public Activation {
-private:
-    /* data */
-
+class Sigmoid : public Layer {
 public:
-    Relu() {}
+    Sigmoid() {
+        std::cout << "Sigmoid::Sigmoid() : public Layer" << '\n';
+    }
 
-    virtual ~Relu() {}
+    virtual ~Sigmoid() {
+        std::cout << "Sigmoid::~Sigmoid()" << '\n';
+    }
 };
 
-class Linear : public Activation {
-private:
-    /* data */
-
-public:
-    Linear() {}
-
-    virtual ~Linear() {}
-};
 
 #endif  // ACTIVATION_H_

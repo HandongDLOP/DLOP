@@ -1,6 +1,9 @@
 #ifndef Tensor_H_
 #define Tensor_H_
 
+#include <iostream>
+#include <string>
+
 class Tensor {
 private:
     int dimension;
@@ -10,6 +13,8 @@ private:
 public:
     Tensor();
     virtual ~Tensor();
+
+    //Initialization(const std::string &type = "default");
 };
 
 #endif  // Tensor_H_
