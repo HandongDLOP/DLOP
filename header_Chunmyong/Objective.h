@@ -2,44 +2,17 @@
 #define OBJECTIVE_FUNCTION_H_    value
 
 #include "Tensor.h"
-#include "Layer.h"
 
-// class Objective {
-// private:
-///* data */
-//
-// public:
-// Objective() {}
-//
-// virtual ~Objective() {}
-//
-// ComputeDeltaBar(Tensor * pDesiredOutput);
-// };
-
-class MSE : public Layer {
+class Objective {
 private:
-    /* data */
+/* data */
 
 public:
-    MSE(){
-        std::cout << "MSE::MSE() : public Layer" << '\n';
-    }
-    virtual ~MSE(){
-        std::cout << "MSE::~MSE()" << '\n';
-    }
-};
+Objective() {}
 
-class SoftMax : public Layer {
-private:
-    /* data */
+virtual ~Objective() {}
 
-public:
-    SoftMax (){
-        std::cout << "SoftMax::SoftMax() : public Layer" << '\n';
-    }
-    virtual ~SoftMax (){
-        std::cout << "SoftMax::SoftMax() : public Layer" << '\n';
-    }
+void ComputeDeltaBar(Tensor * pDesiredOutput);
 };
 
 #endif  // OBJECTIVE_FUNCTION_H_

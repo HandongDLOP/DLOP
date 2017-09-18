@@ -3,8 +3,8 @@
 
 #include <string>
 #include <iostream>
-#include "Layer.h"
-#include "Activation.h"
+#include "Operator.h"
+#include "Activation_from_Operator.h"
 #include "Objective.h"
 #include "Operator.h"
 

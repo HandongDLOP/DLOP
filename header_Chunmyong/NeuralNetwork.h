@@ -2,26 +2,32 @@
 #define NEURALNETWORK_H_
 
 #include "Tensor.h"
-#include "Layer.h"
+#include "Operator.h"
+#include "Objective.h"
 
 class NeuralNetwork {
-protected:
-    // Layer 개수
-    // 추후에는 noLayer를 정하지 않아도 되는 방법을 알아보고자 합니다.
-    int countofLayer = 0;
-    int m_noLayer;
-    Layer *m_aLayer[];
+private:
+    // Operator 개수
+    // 추후에는 noOperator를 정하지 않아도 되는 방법을 알아보고자 합니다.
+    int m_noOperator = 0;
+    int MaxOperator;
 
-public:
-    // Layer의 개수를 정합니다.
-    NeuralNetwork(int p_noLayer);
-    ~NeuralNetwork();
+    // 그래프 형식으로 바꿔야 합니다.
+    // 그래프가 되기 위해서는 다음 오퍼레이터의 링크를 건네는 Operator가 필요합니다.
+    Operator *m_aOperator[];
 
-    // 각 Layer 객체를 저장할 array를 만듭니다.
+    // 각 Operator 객체를 저장할 array를 만듭니다.
     bool Alloc();
     void Delete();
 
-    bool CreateLayer(Layer * Type);
+public:
+    // Operator의 개수를 정합니다.
+    NeuralNetwork(int p_noOperator);
+    virtual ~NeuralNetwork();
+
+    // Operator 전달하는 형식이 될 수 있게 할 수 있나?
+    bool AddOperator(Operator *Type);
+    bool AddObjective(Objective *Type);
 };
 
 #endif  // NEURALNETWORK_H_
