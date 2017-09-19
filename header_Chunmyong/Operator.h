@@ -1,5 +1,5 @@
-#ifndef Operator_H_
-#define Operator_H_
+#ifndef OPERATOR_H_
+#define OPERATOR_H_
 
 #include <iostream>
 #include <string>
@@ -11,8 +11,9 @@ class Operator {
 
 private:
     // 다차원 인풋과 아웃풋을 표현할 수 있는 어떠한 형태가 필요하다.
-    int m_inputDim;
-    int m_outputDim;
+    // Tensor class의 GetDim을 이용하기로 합니다.
+    Tensor m_InputDim;
+    Tensor m_OutputDim;
 
     Tensor *m_pInput;
     Tensor *m_aOutput;
@@ -23,6 +24,14 @@ private:
     Tensor *m_aDelta;
     Tensor *m_aDeltabar;
 
+    // for Linked List
+    // 만약 BackPropagate가 되는 그래프가 하나 더 만들어지게 되면
+    Operator *NextOperator;
+    Operator *PrevOperator;
+
+    // identifier
+    std::string *identifier;
+
     // 동적 할당 및 제거
     int  Alloc();
     void Delete();
@@ -30,19 +39,57 @@ private:
 public:
     Operator() {
         std::cout << "Operator::Operator()" << '\n';
-        // Alloc();
+        Alloc();
     }
 
     virtual ~Operator() {
         std::cout << "Operator::~Operator()" << '\n';
+        Delete();
     }
 
+    // Setter
+    void SetInputDim();
+    void SetOutputDim();
+
+    // Input의 경우는 클래스 밖에서 접근되기에 setter를 두지 않습니다.
+    void SetOutput();
+    void SetWeight();
+
+    void SetGradient();
+    void SetDelta();
+    void SetDeltabar();
+
+    void SetNextOperator();
+    // ~ Setter
+
+    // Getter
+    void GetInputDim() const;
+    void GetOutputDim() const;
+
+    void GetInput() const;
+    void GetOutput() const;
+    void GetWeight() const;
+
+    void GetGradient() const;
+    void GetDelta() const;
+    void GetDeltabar() const;
+
+    void GetPrevOperator() const;
+    void GetNextOperator() const;
+    // ~ Getter
+
+    // Propagate
+    bool PrePropagate(); // Propagate 진행 방향 및 순서
+    virtual bool Propagate() = 0; // Execution of Propagate on Operator
 
 
-    // Get, Set
-    void Getter() const;
-    void Setter();
+
+    // BackPropagate
+    bool PreBackPropagate(); // BackPropagate 진행 방향 및 순서
+    virtual bool BackPropagate() = 0; // Execution of BackPropagate on Operator
+
+
 
 };
 
-#endif  // Operator_H_
+#endif  // OPERATOR_H_

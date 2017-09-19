@@ -5,16 +5,6 @@
 #include "Tensor.h"
 #include "Operator.h"
 
-// class Operator {
-// protected:
-// Tensor m_input;
-// Tensor m_output;
-//
-// public:
-// Operator();
-// virtual ~Operator();
-// };
-
 class Convolution : public Operator {
 public:
     Convolution() {

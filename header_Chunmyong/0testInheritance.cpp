@@ -13,17 +13,6 @@ public:
     virtual void Do() {}
 };
 
-// class Activation {
-// private:
-///* data */
-//
-// public:
-// Activation ();
-// virtual ~Activation ();
-//
-// virtual void Do() {}
-// };
-
 class Conv2D : public Layer {
 private:
     /* data */
