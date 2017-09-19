@@ -32,7 +32,7 @@ public:
     bool AddObjective(Objective *Type);
 
     // Propagate
-    bool Propagate();
+    bool ForwardPropagate();
 
     // BackPropagate
     bool BackPropagate();

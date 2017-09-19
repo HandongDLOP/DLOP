@@ -1,53 +1,50 @@
 #include "Operator.h"
 
-/*
- *만약 NeuralNetwork가 가진 Operator의 주소가 input Layer일 경우
- */
-bool Operator::PrePropagate() {
-    this->Propagate();
+///*
+// *만약 NeuralNetwork가 가진 Operator의 주소가 input Layer일 경우
+// */
+// bool Operator::PrePropagate() {
+// this->Propagate();
+//
+// if (NextOperator != NULL) NextOperator->PrePropagate();
+//
+// return true;
+// }
+//
+// bool Operator::PreBackPropagate() {
+// if (NextOperator != NULL) NextOperator->PreBackPropagate();
+//
+// this->BackPropagate();
+//
+// return true;
+// }
 
-    if (NextOperator != NULL) NextOperator->PrePropagate();
+
+// 만약 NeuralNetwork가 가진 Operator의 주소가 Output Layer일 경우
+
+bool Operator::ForwardPropagate() {
+    // Postorder
+    if (NextOperator != NULL) NextOperator->ForwardPropagate();
+
+    this->ExcuteForwardPropagate();
 
     return true;
 }
 
-bool Operator::PreBackPropagate() {
-    if (NextOperator != NULL) NextOperator->PreBackPropagate();
+bool Operator::BackPropagate() {
+    // Preorder
+    this->ExcuteBackPropagate();
 
-    this->BackPropagate();
+    if (NextOperator != NULL) NextOperator->BackPropagate();
 
     return true;
 }
 
-/*
- *
- * 만약 NeuralNetwork가 가진 Operator의 주소가 Output Layer일 경우
- *
- * bool Operator::PropagateOrder() {
- *    // Postorder
- *
- *    if (NextOperator != NULL) NextOperator->PropagateOrder();
- *
- *    this->Propagate();
- *
- *    return true;
- * }
- *
- * bool Operator::BackPropagate() {
- *    // Preorder
- *
- *    this->BackPropagate();
- *
- *    if (NextOperator != NULL) NextOperator->BackPropagateOrder();
- *
- *    return true;
- * }
- *
- */
-bool Propagate() {
+bool Operator::ExcuteForwardPropagate() {
+
     return true;
 }
 
-bool BackPropagate() {
+bool Operator::ExcuteBackPropagate() {
     return true;
 }

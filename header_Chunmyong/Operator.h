@@ -79,14 +79,13 @@ public:
     // ~ Getter
 
     // Propagate
-    bool PrePropagate(); // Propagate 진행 방향 및 순서
-    virtual bool Propagate() = 0; // Execution of Propagate on Operator
-
+    bool ForwardPropagate(); // ForwardPropagate 진행 방향 및 순서
+    virtual bool ExcuteForwardPropagate() = 0; // Execution of ForwardPropagate on Operator
 
 
     // BackPropagate
-    bool PreBackPropagate(); // BackPropagate 진행 방향 및 순서
-    virtual bool BackPropagate() = 0; // Execution of BackPropagate on Operator
+    bool BackPropagate(); // BackPropagate 진행 방향 및 순서
+    virtual bool ExcuteBackPropagate() = 0; // Execution of BackPropagate on Operator
 
 
 

@@ -44,7 +44,7 @@ bool NeuralNetwork::AddObjective(Objective *Type) {
     return true;
 }
 
-bool NeuralNetwork::Propagate() {
+bool NeuralNetwork::ForwardPropagate() {
     if (m_aOperator == NULL) {
         std::cout << "There is no linked Operator!" << '\n';
         return false;
@@ -53,7 +53,7 @@ bool NeuralNetwork::Propagate() {
     // 시작하는 주소의 Propagate를 실행
     // 시작하는 주소가 input Layer일 경우 (forward)Propagate는 Preorder의 형식
     // 시작하는 주소가 Ouput Layer일 경우는 Postorder의 형식
-    m_aOperator->PrePropagate();
+    m_aOperator->ForwardPropagate();
 
     return true;
 }
@@ -67,14 +67,14 @@ bool NeuralNetwork::BackPropagate() {
     // 시작하는 주소의 Backropagate를 실행
     // 시작하는 주소가 input Layer일 경우 BackPropagate는 Postorder의 형식
     // 시작하는 주소가 Ouput Layer일 경우는 Preorder의 형식
-    m_aOperator->PreBackPropagate();
+    m_aOperator->BackPropagate();
 
     return true;
 }
 
 bool NeuralNetwork::Training(const int p_maxEpoch) {
     for (int epoch = 0; epoch < p_maxEpoch; epoch++) {
-        Propagate();
+        ForwardPropagate();
         BackPropagate();
         // print some data
     }
@@ -83,6 +83,6 @@ bool NeuralNetwork::Training(const int p_maxEpoch) {
 }
 
 bool NeuralNetwork::Testing(){
-    Propagate();
+    ForwardPropagate();
     return true;
 }
