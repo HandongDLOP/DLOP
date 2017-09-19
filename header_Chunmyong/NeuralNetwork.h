@@ -29,7 +29,6 @@ public:
     // 생각을 좀 더 해보기
     // identifier에 대한 부분을 추가해야함
     bool AddOperator(Operator *Type);
-    bool AddObjective(Objective *Type);
 
     // Propagate
     bool ForwardPropagate();
