@@ -10,7 +10,7 @@ private:
     // Operator 개수
     // 추후에는 noOperator를 정하지 않아도 되는 방법을 알아보고자 합니다.
     int m_noOperator = 0;
-    int maxOperator;
+    int m_maxOperator;
 
     // 그래프 형식으로 바꿔야 합니다.
     // 그래프가 되기 위해서는 다음 오퍼레이터의 링크를 건네는 Operator가 필요합니다.
@@ -25,10 +25,7 @@ public:
     NeuralNetwork(int p_maxOperator);
     virtual ~NeuralNetwork();
 
-    // Operator 전달하는 형식이 될 수 있게 할 수 있나?
-    // 생각을 좀 더 해보기
-    // identifier에 대한 부분을 추가해야함
-    bool AddOperator(Operator *Type);
+    bool PutOperator(Operator *p_op);
 
     // Propagate
     bool ForwardPropagate();

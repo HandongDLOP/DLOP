@@ -15,22 +15,25 @@ private:
     Tensor m_InputDim;
     Tensor m_OutputDim;
 
-    Tensor *m_pInput;
-    Tensor *m_aOutput;
-    Tensor *m_aWeight;
+    Tensor *m_Input;
+    Tensor *m_Output;
+    Tensor *m_Weight;
 
     // Training 과정을 공부한 후 다시 확인해야 할 부분
-    Tensor *m_aGradient;
-    Tensor *m_aDelta;
-    Tensor *m_aDeltabar;
+    Tensor *m_Gradient;
+    Tensor *m_Delta;
+    Tensor *m_Deltabar;
 
     // for Linked List
     // 만약 BackPropagate가 되는 그래프가 하나 더 만들어지게 되면
-    Operator *NextOperator;
-    Operator *PrevOperator;
+    Operator *m_InputOperator;
+    Operator *m_OutputOperator;
+
+    int m_InputDegree = 0;
+    int m_OutputDgree = 0;
 
     // identifier
-    std::string *identifier;
+    std::string m_name;
 
     // 동적 할당 및 제거
     int  Alloc();
@@ -74,8 +77,8 @@ public:
     void GetDelta() const;
     void GetDeltabar() const;
 
-    void GetPrevOperator() const;
-    void GetNextOperator() const;
+    void GetInputOperator() const;
+    void GetOutputOperator() const;
     // ~ Getter
 
     // Propagate

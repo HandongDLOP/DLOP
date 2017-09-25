@@ -19,8 +19,8 @@ void NeuralNetwork::Delete() {
     std::cout << "NeuralNetwork::Delete()" << '\n';
 }
 
-bool NeuralNetwork::AddOperator(Operator *Type) {
-    std::cout << "NeuralNetwork::CreateOperator(Operator * Type)" << '\n';
+bool NeuralNetwork::PutOperator(Operator *p_op) {
+    std::cout << "NeuralNetwork::CreateOperator(Operator * op)" << '\n';
 
     if (m_noOperator >= maxOperator) {
         std::cout << "Error!" << '\n';
@@ -32,17 +32,6 @@ bool NeuralNetwork::AddOperator(Operator *Type) {
     return true;
 }
 
-bool NeuralNetwork::AddObjective(Objective *Type) {
-    std::cout << "NeuralNetwork::CreateOperator(Operator * Type)" << '\n';
-
-    // Objective를 마지막에 쌓아올려야 한다.
-    if (m_noOperator >= maxOperator) {
-        std::cout << "Error!" << '\n';
-        return false;
-    }
-
-    return true;
-}
 
 bool NeuralNetwork::ForwardPropagate() {
     if (m_aOperator == NULL) {
@@ -58,6 +47,7 @@ bool NeuralNetwork::ForwardPropagate() {
     return true;
 }
 
+
 bool NeuralNetwork::BackPropagate() {
     if (m_aOperator == NULL) {
         std::cout << "There is no linked Operator!" << '\n';
@@ -71,6 +61,7 @@ bool NeuralNetwork::BackPropagate() {
 
     return true;
 }
+
 
 bool NeuralNetwork::Training(const int p_maxEpoch) {
     for (int epoch = 0; epoch < p_maxEpoch; epoch++) {
