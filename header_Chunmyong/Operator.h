@@ -62,8 +62,8 @@ public:
         Delete();
     }
 
-    // 추후 Getter와 Setter의 경우는 enum 상수를 이용하여 받는 형식을 차용할 예정입니다.
-    // Setter (파생 클래스에서 사용합니다.)
+    // 추후 Getter 경우는 enum 상수를 이용하여 받는 형식을 차용할 예정입니다.
+    // Setter 
     void SetInputDim();
     void SetOutputDim();
 
