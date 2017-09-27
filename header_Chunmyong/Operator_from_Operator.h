@@ -8,7 +8,7 @@
 
 class Convolution : public Operator {
 public:
-    using Operator::Operator;
+    Convolution(Manna *pInput, MetaParameter *pParam, LayerType LayerType = HIDDEN) : Operator(pInput, pParam, HIDDEN) {}
 
     virtual ~Convolution() {
         std::cout << "Convolution::~Convolution()" << '\n';
