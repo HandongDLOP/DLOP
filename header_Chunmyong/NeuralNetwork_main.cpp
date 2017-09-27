@@ -16,6 +16,7 @@ int main(int argc, char const *argv[]) {
     // or = new Variable();
     // Manna Weight = new Manna();
 
+    // MetaParameter * pConvParam = new ConvParam(filter, stride, padding, Other);
     // HGUNN.PutOperator("Convolution", Manna, ConvParam, LayerType);
 
 
