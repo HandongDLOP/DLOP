@@ -2,7 +2,7 @@
 #define ACTIVATION_FROM_OPERATOR_H_    value
 
 #include <string>
-#include "Tensor.h"
+#include "Manna.h"
 #include "Operator.h"
 
 class Relu : public Operator {

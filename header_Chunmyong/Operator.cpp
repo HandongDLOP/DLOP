@@ -1,33 +1,45 @@
+#include <iostream>
 #include "Operator.h"
 
+// 부모 클래스
+bool Operator::Alloc(Manna *pInput, MetaParameter *pParam) {
 
-// 만약 NeuralNetwork가 가진 Operator의 주소가 Output Layer일 경우
 
+    return true;
+}
+
+void Operator::Delete() {
+    std::cout << "Operator::Delete()" << '\n';
+}
+
+/* BFS로 다시 구현할 필요 있음 */
 bool Operator::ForwardPropagate() {
     // Postorder
     for (int i = 0; i < m_OutputDgree; i++) {
-        if (m_OutputOperator != NULL) m_OutputOperator->ForwardPropagate();
+        if (m_pOutputOperator[i] != NULL) m_pOutputOperator[i]->ForwardPropagate();
     }
 
-    this->ExcuteForwardPropagate();
+    this->ComputeForwardPropagate();
 
     return true;
 }
 
 bool Operator::BackPropagate() {
     // Preorder
-    this->ExcuteBackPropagate();
+    this->ComputeBackPropagate();
 
     for (int i = 0; i < m_InputDegree; i++) {
-        if (m_OutputOperator != NULL) m_OutputOperator->BackPropagate();
+        if (m_pOutputOperator[i] != NULL) m_pOutputOperator[i]->BackPropagate();
     }
     return true;
 }
 
-bool Operator::ExcuteForwardPropagate() {
+bool Operator::ComputeForwardPropagate() {
+    std::cout << "ComputeForwardPropagate" << '\n';
     return true;
 }
 
-bool Operator::ExcuteBackPropagate() {
+bool Operator::ComputeBackPropagate() {
+    std::cout << "ComputeBackPropagate" << '\n';
     return true;
 }

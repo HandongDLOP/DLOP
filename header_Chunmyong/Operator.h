@@ -3,54 +3,67 @@
 
 #include <iostream>
 #include <string>
-#include "Tensor.h"
 
-// Operator 의 연산에서 필요한 요소를 구현합니다.
+#include "Shape.h"
+#include "Manna.h"
+#include "MetaParameter.h"
+
+// enum class를 사용하는 방안도 고려 중에 있음
+typedef enum LayerType {
+    INPUT,
+    HIDDEN,
+    OUTPUT
+} LayerType;
+
 class Operator {
-    // 멤버로 가져야 하는 친구는 노드일 것으로 예상됩니다.
-
 private:
-    // 다차원 인풋과 아웃풋을 표현할 수 있는 어떠한 형태가 필요하다.
-    // Tensor class의 GetDim을 이용하기로 합니다.
-    Tensor m_InputDim;
-    Tensor m_OutputDim;
+    // N-dim 을 나타낼 수 있는 데이터 타입
+    // 이 경우 Placeholder에서 정의하여 검사할 것 : 곧 Operato class에서 삭제 예정
+    // Placeholder 는 queue의 형태가 될 것이라고 생각 됨
+    Shape m_InputDim;
+    Shape m_OutputDim;
 
-    Tensor *m_Input;
-    Tensor *m_Output;
-    Tensor *m_Weight;
+    Manna *m_pInput;
+    Manna *m_aOutput;
+    Manna *m_aWeight;
 
     // Training 과정을 공부한 후 다시 확인해야 할 부분
-    Tensor *m_Gradient;
-    Tensor *m_Delta;
-    Tensor *m_Deltabar;
+    Manna *m_aGradient;
+    Manna *m_aDelta;
+    // Manna *m_Deltabar; // Layer단에서 사용하게 되기에, 항상 필요하지는 않다.
 
     // for Linked List
-    // 만약 BackPropagate가 되는 그래프가 하나 더 만들어지게 되면
-    Operator *m_InputOperator;
-    Operator *m_OutputOperator;
+    // Pointer array를 만들기 위한 공간으로 Alloc할 때 공간을 동적할당한다.
+    Operator **m_aInputOperator;
+    Operator **m_pOutputOperator;
 
-    int m_InputDegree = 0;
     int m_OutputDgree = 0;
+    int m_InputDegree = 0;
 
     // identifier
     std::string m_name;
 
-    // 동적 할당 및 제거
-    int  Alloc();
-    void Delete();
+    // Layer Type : (default) HIDDEN
+    LayerType m_LayerType = HIDDEN;
+
+    // 동적 할당 및 제거 (오퍼레이터마다 다르게 정의될 가능성이 큼, metaParameter가 다르기 때문에 )
+    virtual bool Alloc(Manna *pInput, MetaParameter *pParam);
+    virtual void Delete();
 
 public:
-    Operator() {
-        std::cout << "Operator::Operator()" << '\n';
-        Alloc();
+    Operator(Manna *pInput, MetaParameter *pParam, LayerType LayerType = HIDDEN) {
+        std::cout << "Operator::Operator() 상속자 상속상태" << '\n';
+        Alloc(pInput, pParam);
     }
 
     virtual ~Operator() {
         std::cout << "Operator::~Operator()" << '\n';
+
         Delete();
     }
 
-    // Setter
+    // 추후 Getter와 Setter의 경우는 enum 상수를 이용하여 받는 형식을 차용할 예정입니다.
+    // Setter (파생 클래스에서 사용합니다.)
     void SetInputDim();
     void SetOutputDim();
 
@@ -65,7 +78,7 @@ public:
     void SetNextOperator();
     // ~ Setter
 
-    // Getter
+    // Getter (파생 클래스에서 사용합니다.)
     void GetInputDim() const;
     void GetOutputDim() const;
 
@@ -79,19 +92,27 @@ public:
 
     void GetInputOperator() const;
     void GetOutputOperator() const;
+
+    void GetOutputDgree() const;
+    void GetInputDgree() const;
+
+    void GetName() const;
+
+    void GetLayerType() const;
     // ~ Getter
 
     // Propagate
-    bool ForwardPropagate(); // ForwardPropagate 진행 방향 및 순서
-    virtual bool ExcuteForwardPropagate() = 0; // Execution of ForwardPropagate on Operator
+    bool         ForwardPropagate(); // ForwardPropagate 진행 방향 및 순서
+    virtual bool ComputeForwardPropagate();  // Compute to (추후 interface 형태로 수정 예정)
 
 
     // BackPropagate
-    bool BackPropagate(); // BackPropagate 진행 방향 및 순서
-    virtual bool ExcuteBackPropagate() = 0; // Execution of BackPropagate on Operator
+    bool         BackPropagate(); // BackPropagate 진행 방향 및 순서
+    virtual bool ComputeBackPropagate();  // compute delta and detabar(if we need to) (추후 interface 형태로 수정 예정)
 
 
-
+    // UpdateWeight
+    bool UpdateWeight();
 };
 
 #endif  // OPERATOR_H_

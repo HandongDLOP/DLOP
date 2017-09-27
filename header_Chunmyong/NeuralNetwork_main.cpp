@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Tensor.h"
+#include "Manna.h"
 #include "NeuralNetwork.h"
 #include "Operator.h"
 #include "Activation_from_Operator.h"
@@ -13,9 +13,9 @@ int main(int argc, char const *argv[]) {
 
     NeuralNetwork HGUNN(10);
 
-    // Tensor Weight = new Tensor();
+    // Manna Weight = new Manna();
     // or = new Variable();
-    // Tensor Weight = new Tensor();
+    // Manna Weight = new Manna();
 
     HGUNN.AddOperator(new Convolution(  /*some parameter in here*/));
     // HGUNN.addOperator() = new Convolution(  /*some parameter in here*/)
@@ -24,7 +24,7 @@ int main(int argc, char const *argv[]) {
 
     HGUNN.AddOperator(new MaxPooling());
 
-    // Tensor Reshape Method 구현
+    // Manna Reshape Method 구현
 
     HGUNN.AddObjective(new SoftMax());
 

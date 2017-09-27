@@ -1,33 +1,32 @@
 #include "NeuralNetwork.h"
 
-NeuralNetwork::NeuralNetwork(const int p_maxOperator) : maxOperator(p_maxOperator) {
+NeuralNetwork::NeuralNetwork() {
     std::cout << "NeuralNetwork::NeuralNetwork(int p_noOperator)" << '\n';
     Alloc();
 }
+
 
 NeuralNetwork::~NeuralNetwork() {
     Delete();
     std::cout << "NeuralNetwork::~NeuralNetwork()" << '\n';
 }
 
+
 bool NeuralNetwork::Alloc() {
     std::cout << "NeuralNetwork::Alloc()" << '\n';
     return true;
 }
 
+
 void NeuralNetwork::Delete() {
     std::cout << "NeuralNetwork::Delete()" << '\n';
 }
 
+
 bool NeuralNetwork::PutOperator(Operator *p_op) {
     std::cout << "NeuralNetwork::CreateOperator(Operator * op)" << '\n';
 
-    if (m_noOperator >= maxOperator) {
-        std::cout << "Error!" << '\n';
-        return false;
-    }
-
-    m_noOperator++;
+    // Operator를 어떻게 정의할 것인지에 대해서 생각할 필요가 있음
 
     return true;
 }
