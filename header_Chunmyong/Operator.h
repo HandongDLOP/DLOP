@@ -47,13 +47,12 @@ private:
     LayerType m_LayerType = HIDDEN;
 
     // 동적 할당 및 제거 (오퍼레이터마다 다르게 정의될 가능성이 큼, metaParameter가 다르기 때문에 )
-    virtual bool Alloc(Manna *pInput, MetaParameter *pParam);
-    virtual void Delete();
+
 
 public:
     Operator(Manna *pInput, MetaParameter *pParam, LayerType LayerType = HIDDEN) {
         std::cout << "Operator::Operator() 상속자 상속상태" << '\n';
-        Alloc(pInput, pParam);
+
     }
 
     virtual ~Operator() {
@@ -62,8 +61,11 @@ public:
         Delete();
     }
 
-    
-    // Setter 
+    // 추후 Private으로 옮길 의향 있음
+    virtual bool Alloc(Manna *pInput, MetaParameter *pParam);
+    virtual void Delete();
+
+    // Setter
     void SetInputDim();
     void SetOutputDim();
 
@@ -78,7 +80,7 @@ public:
     void SetNextOperator();
     // ~ Setter
 
-    // 추후 Getter 경우는 enum 상수를 이용하여 받는 형식을 차용할 예정입니다.    
+    // 추후 Getter 경우는 enum 상수를 이용하여 받는 형식을 차용할 예정입니다.
     // Getter (파생 클래스에서 사용합니다.)
     void GetInputDim() const;
     void GetOutputDim() const;

@@ -10,14 +10,14 @@
 int main(int argc, char const *argv[]) {
     std::cout << "---------------Start-----------------" << '\n';
 
-    NeuralNetwork HGUNN();
+    NeuralNetwork HGUNN;
 
     // Manna Weight = new Manna();
     // or = new Variable();
     // Manna Weight = new Manna();
 
-    // MetaParameter * pConvParam = new ConvParam(filter, stride, padding, Other);
-    // HGUNN.PutOperator("Convolution", Manna, ConvParam, LayerType);
+    MetaParameter * pConvParam = new ConvParam();
+    HGUNN.PutOperator("Convolution", pConvParam);
 
 
     // HGUNN.addOperator() = new Convolution(  /*some parameter in here*/)

@@ -1,10 +1,14 @@
 #ifndef NEURALNETWORK_H_
 #define NEURALNETWORK_H_
 
+#include <iostream>
+#include <String>
+
 #include "Shape.h"
 #include "Manna.h"
 #include "Operator.h"
 #include "Objective.h"
+#include "MetaParameter.h"
 
 class NeuralNetwork {
 private:
@@ -24,7 +28,8 @@ public:
     NeuralNetwork();
     virtual ~NeuralNetwork();
 
-    bool PutOperator(Operator *p_op);
+    // 추후 Op 파라미터 enum 형식으로 바꿀 계획에 있음
+    bool PutOperator(std::string Op, MetaParameter *pParam, LayerType = HIDDEN);
 
     // Propagate
     bool ForwardPropagate();

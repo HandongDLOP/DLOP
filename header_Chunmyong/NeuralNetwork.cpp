@@ -5,32 +5,27 @@ NeuralNetwork::NeuralNetwork() {
     Alloc();
 }
 
-
 NeuralNetwork::~NeuralNetwork() {
     Delete();
     std::cout << "NeuralNetwork::~NeuralNetwork()" << '\n';
 }
-
 
 bool NeuralNetwork::Alloc() {
     std::cout << "NeuralNetwork::Alloc()" << '\n';
     return true;
 }
 
-
 void NeuralNetwork::Delete() {
     std::cout << "NeuralNetwork::Delete()" << '\n';
 }
 
-
-bool NeuralNetwork::PutOperator(Operator *p_op) {
-    std::cout << "NeuralNetwork::CreateOperator(Operator * op)" << '\n';
+bool NeuralNetwork::PutOperator(std::string Op, MetaParameter *pParam, LayerType) {
+    std::cout << "NeuralNetwork::CreateOperator(Operator op)" << '\n';
 
     // Operator를 어떻게 정의할 것인지에 대해서 생각할 필요가 있음
 
     return true;
 }
-
 
 bool NeuralNetwork::ForwardPropagate() {
     if (m_aOperator == NULL) {
@@ -46,7 +41,6 @@ bool NeuralNetwork::ForwardPropagate() {
     return true;
 }
 
-
 bool NeuralNetwork::BackPropagate() {
     if (m_aOperator == NULL) {
         std::cout << "There is no linked Operator!" << '\n';
@@ -61,7 +55,6 @@ bool NeuralNetwork::BackPropagate() {
     return true;
 }
 
-
 bool NeuralNetwork::Training(const int p_maxEpoch) {
     for (int epoch = 0; epoch < p_maxEpoch; epoch++) {
         ForwardPropagate();
@@ -72,7 +65,7 @@ bool NeuralNetwork::Training(const int p_maxEpoch) {
     return true;
 }
 
-bool NeuralNetwork::Testing(){
+bool NeuralNetwork::Testing() {
     ForwardPropagate();
     return true;
 }
