@@ -5,15 +5,15 @@
 #include <string>
 
 #include "Shape.h"
-#include "Manna.h"
+#include "Ark.h"
 #include "MetaParameter.h"
 
 // enum class를 사용하는 방안도 고려 중에 있음
-typedef enum LayerType {
+enum LayerType {
     INPUT,
     HIDDEN,
     OUTPUT
-} LayerType;
+};
 
 class Operator {
 private:
@@ -23,14 +23,14 @@ private:
     Shape m_InputDim;
     Shape m_OutputDim;
 
-    Manna *m_pInput;
-    Manna *m_aOutput;
-    Manna *m_aWeight;
+    Ark *m_pInput;
+    Ark *m_aOutput;
+    Ark *m_aWeight;
 
     // Training 과정을 공부한 후 다시 확인해야 할 부분
-    Manna *m_aGradient;
-    Manna *m_aDelta;
-    // Manna *m_Deltabar; // Layer단에서 사용하게 되기에, 항상 필요하지는 않다.
+    Ark *m_aGradient;
+    Ark *m_aDelta;
+    // Ark *m_Deltabar; // Layer단에서 사용하게 되기에, 항상 필요하지는 않다.
 
     // for Linked List
     // Pointer array를 만들기 위한 공간으로 Alloc할 때 공간을 동적할당한다.
@@ -48,11 +48,9 @@ private:
 
     // 동적 할당 및 제거 (오퍼레이터마다 다르게 정의될 가능성이 큼, metaParameter가 다르기 때문에 )
 
-
 public:
-    Operator(Manna *pInput, MetaParameter *pParam, LayerType LayerType = HIDDEN) {
+    Operator(Ark *pInput, MetaParameter *pParam, LayerType LayerType = HIDDEN) {
         std::cout << "Operator::Operator() 상속자 상속상태" << '\n';
-
     }
 
     virtual ~Operator() {
@@ -62,8 +60,9 @@ public:
     }
 
     // 추후 Private으로 옮길 의향 있음
-    virtual bool Alloc(Manna *pInput, MetaParameter *pParam);
+    virtual bool Alloc(Ark *pInput, MetaParameter *pParam);
     virtual void Delete();
+
 
     // Setter
     void SetInputDim();
@@ -80,7 +79,6 @@ public:
     void SetNextOperator();
     // ~ Setter
 
-    // 추후 Getter 경우는 enum 상수를 이용하여 받는 형식을 차용할 예정입니다.
     // Getter (파생 클래스에서 사용합니다.)
     void GetInputDim() const;
     void GetOutputDim() const;

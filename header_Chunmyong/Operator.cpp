@@ -2,7 +2,7 @@
 #include "Operator.h"
 
 // 부모 클래스
-bool Operator::Alloc(Manna *pInput, MetaParameter *pParam) {
+bool Operator::Alloc(Ark *pInput, MetaParameter *pParam) {
 
 
     return true;

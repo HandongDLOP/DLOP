@@ -4,7 +4,7 @@
 #include <String>
 
 #include "Shape.h"
-#include "Manna.h"
+#include "Ark.h"
 
 class MetaParameter {
 public:
@@ -15,7 +15,7 @@ public:
 
 class ConvParam : public MetaParameter {
 private:
-    Manna *filter;
+    Ark *filter;
     Shape *stride;
     void *padding;
     std::string m_name     = NULL;
