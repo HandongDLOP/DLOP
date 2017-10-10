@@ -23,6 +23,7 @@ private:
     Shape m_InputDim;
     Shape m_OutputDim;
 
+    // Constructor에서 받는 input은 Operator이지만, 실제로 사용은 Ark이다.
     Ark *m_pInput;
     Ark *m_aOutput;
     Ark *m_aWeight;
@@ -40,7 +41,7 @@ private:
     int m_OutputDgree = 0;
     int m_InputDegree = 0;
 
-    // identifier
+    // identifier // 이제 Operator를 변수로 접근할 수 있게 되어 필요가 없다.
     std::string m_name;
 
     // Layer Type : (default) HIDDEN
@@ -49,8 +50,19 @@ private:
     // 동적 할당 및 제거 (오퍼레이터마다 다르게 정의될 가능성이 큼, metaParameter가 다르기 때문에 )
 
 public:
-    Operator(Ark *pInput, MetaParameter *pParam, LayerType LayerType = HIDDEN) {
-        std::cout << "Operator::Operator() 상속자 상속상태" << '\n';
+    Operator(Operator *pInput, MetaParameter *pParam, LayerType LayerType = HIDDEN) {
+        std::cout << "Operator::Operator(Operator *, MetaParameter *, LayerType) 상속자 상속상태" << '\n';
+    }
+
+    // do not use MetaParameter
+    Operator(Operator *pInput, LayerType LayerType = HIDDEN) {
+        std::cout << "Operator::Operator(Operator *, LayerType) 상속자 상속상태" << '\n';
+    }
+
+    // pWeigt 부분도 Operator 형식을 사용할 것인지에 대한 논의가 필요하다.
+    // 개인적으로는 input 부분만 Operator인 편이 구현에 있어서는 더 편하다. (직관적)
+    Operator(Operator *pInput, Ark *pWeight, LayerType LayerType = HIDDEN) {
+        std::cout << "Operator::Operator(Operator *, Ark *, LayerType) 상속자 상속상태" << '\n';
     }
 
     virtual ~Operator() {
@@ -60,7 +72,8 @@ public:
     }
 
     // 추후 Private으로 옮길 의향 있음
-    virtual bool Alloc(Ark *pInput, MetaParameter *pParam);
+    virtual bool Alloc(Operator *pInput, MetaParameter *pParam);
+    virtual bool Alloc(Operator *pInput, Ark *pWeight);
     virtual void Delete();
 
 

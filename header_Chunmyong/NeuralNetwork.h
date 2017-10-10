@@ -19,7 +19,6 @@ private:
     // 그래프가 되기 위해서는 다음 오퍼레이터의 링크를 건네는 Operator가 필요합니다.
     Operator *m_aOperator;
 
-    // 각 Operator 객체를 저장할 array를 만듭니다.
     bool Alloc();
     void Delete();
 
