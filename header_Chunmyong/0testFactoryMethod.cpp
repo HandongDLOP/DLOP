@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
-
+#include <array>
+#include <vector>
+#include <map>
 
 // enum 사용법
 enum TYPE { relu, conv, maxpooling };
@@ -13,13 +15,17 @@ public:
 
     virtual ~MetaParameter() {}
 
+    static void Test() {}
+
     virtual bool Alloc() = 0;
 };
 
 class Relu : public MetaParameter {
 private:
 public:
-    Relu() {}
+    Relu() {
+        Alloc();
+    }
     virtual ~Relu() {}
 
     bool Alloc(){
@@ -34,10 +40,14 @@ private:
     MetaParameter *m_Parameter;
 
 public:
-    Operator(TYPE op) {
+    Operator(TYPE op, int a = 0) {
         if (op == relu) {
             m_Parameter = new Relu();
         }
+
+        // for(unsigned int i = 0; i < 4; i++){
+        //     std::cout << int_list[i] << '\n';
+        // }
     }
 
     bool SetMetaPrameter(){
@@ -47,6 +57,7 @@ public:
 
     virtual ~Operator() {}
 };
+
 
 
 int main(int argc, char const *argv[]) {

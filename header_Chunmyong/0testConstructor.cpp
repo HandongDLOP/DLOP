@@ -23,6 +23,12 @@ public:
 
     void SetC(int pC) {}
 
+    void Get() {
+        std::cout << A << '\n';
+        std::cout << B << '\n';
+        std::cout << C << '\n';
+    }
+
     virtual void Print() {
         std::cout << "나중 정의" << '\n';
     }
@@ -37,9 +43,16 @@ public:
 class subClass : public SuperClass {
 private:
     /* data */
+    int D = 4;
 
 public:
-    using SuperClass::SuperClass;
+    subClass(int pA, int pB, int pD, int pC = 0) : SuperClass(pA,  pB, pC) {
+        D = pD;
+        Get();
+        std::cout << D << '\n';
+
+        Test();
+    }
 
     virtual ~subClass(){}
 
@@ -50,7 +63,7 @@ public:
 };
 
 int main(int argc, char const *argv[]) {
-    SuperClass * test = new subClass(1,2);
+    SuperClass * test = new subClass(1,2,3,3);
 
     test->Test();
 
