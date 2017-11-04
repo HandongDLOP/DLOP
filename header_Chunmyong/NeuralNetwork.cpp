@@ -1,7 +1,8 @@
 #include "NeuralNetwork.h"
+#include "Placeholder.h"
 
 NeuralNetwork::NeuralNetwork() {
-    std::cout << "NeuralNetwork::NeuralNetwork(int p_noOperator)" << '\n';
+    std::cout << "NeuralNetwork::NeuralNetwork()" << '\n';
     Alloc();
 }
 
@@ -19,53 +20,55 @@ void NeuralNetwork::Delete() {
     std::cout << "NeuralNetwork::Delete()" << '\n';
 }
 
-bool NeuralNetwork::PutOperator(std::string Op, MetaParameter *pParam, LayerType) {
-    std::cout << "NeuralNetwork::CreateOperator(Operator op)" << '\n';
-
-    // Operator를 어떻게 정의할 것인지에 대해서 생각할 필요가 있음
-
-    return true;
+Operator * NeuralNetwork::Placeholder(std::string name) {
+    return new placeholder(name);
 }
 
-bool NeuralNetwork::ForwardPropagate() {
-    if (m_aOperator == NULL) {
-        std::cout << "There is no linked Operator!" << '\n';
-        return false;
+bool NeuralNetwork::ForwardPropagate(Operator* _pStart, Operator *_pEnd) {
+    if (_pEnd == NULL) {
+        if (_m_aEnd== NULL){
+            std::cout << "There is no linked Operator!" << '\n';
+            return false;
+        }
+        else _pEnd = _m_aEnd;
     }
 
     // 시작하는 주소의 Propagate를 실행
     // 시작하는 주소가 input Layer일 경우 (forward)Propagate는 Preorder의 형식
     // 시작하는 주소가 Ouput Layer일 경우는 Postorder의 형식
-    m_aOperator->ForwardPropagate();
+    _pEnd->ForwardPropagate();
 
     return true;
 }
 
-bool NeuralNetwork::BackPropagate() {
-    if (m_aOperator == NULL) {
-        std::cout << "There is no linked Operator!" << '\n';
-        return false;
+bool NeuralNetwork::BackPropagate(Operator* _pStart, Operator *_pEnd) {
+    if (_pEnd == NULL) {
+        if (_m_aEnd== NULL){
+            std::cout << "There is no linked Operator!" << '\n';
+            return false;
+        }
+        else _pEnd = _m_aEnd;
     }
 
     // 시작하는 주소의 Backropagate를 실행
     // 시작하는 주소가 input Layer일 경우 BackPropagate는 Postorder의 형식
     // 시작하는 주소가 Ouput Layer일 경우는 Preorder의 형식
-    m_aOperator->BackPropagate();
+    _pEnd->BackPropagate();
 
     return true;
 }
 
-bool NeuralNetwork::Training(const int p_maxEpoch) {
-    for (int epoch = 0; epoch < p_maxEpoch; epoch++) {
-        ForwardPropagate();
-        BackPropagate();
-        // print some data
-    }
+bool NeuralNetwork::Training(Operator *_pStart, Operator *_pEnd) {
+    ForwardPropagate(_pStart, _pEnd);
+
+    std::cout << "\n<<<ForwardPropagate -> BackPropagate>>>\n" << '\n';
+
+    BackPropagate(_pStart, _pEnd);
 
     return true;
 }
 
-bool NeuralNetwork::Testing() {
-    ForwardPropagate();
+bool NeuralNetwork::Testing(Operator *_pStart, Operator *_pEnd) {
+    ForwardPropagate(_pStart, _pEnd);
     return true;
 }

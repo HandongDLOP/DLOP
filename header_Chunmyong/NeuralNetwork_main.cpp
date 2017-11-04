@@ -1,6 +1,6 @@
 /*
  * @breif: 학습이 되거나 복잡한 연산은 class 단에서 모두 마무리하고,
- *         main에서 detect하는 모든 Ark변수는 Variable 들이며,
+ *         main에서 detect하는 모든 Tensor변수는 Variable 들이며,
  *         학습의 대상으로, 사용자가 실제로 얻고 싶은 결과들이다.
  *         이 것들을 저장하는 방법들에 대해서 생각할 필요가 있다.
  */
@@ -16,7 +16,9 @@ int main(int argc, char const *argv[]) {
     // /*
     //  * @breif: plaseholder는 Operator를 상속받으며, NeuralNetwork에서만 initialize 한다.
     //  */
-    // Operator *x(input) = HGUNN.Placeholder("float", shape = [mini_batch, 28 * 28]);
+    // Operator *x = new HGUNN.Placeholder("float", shape = [mini_batch, 28 * 28]); // string으로 되어 있는 것들은 모두 enum으로 바꾸자
+    //
+    // Operator *y = new HGUNN.Placeholder("int", shape = [mini_batch, ]);
     //
     // // ===========================<layer : Conv_1>============================
     // // =======================================================================
@@ -34,7 +36,7 @@ int main(int argc, char const *argv[]) {
     //  *         And initialize Operator
     //  *         Personally, We can delete MetaParameter()
     //  */
-    // MetaParameter *pConvParam = new ConvParam(W_conv1, strides = { 1, 1, 1, 1 }, padding = "SAME");
+    // MetaParameter *pConvParam = new ConvParam(W_conv1, strides = { 1, 1, 1, 1 }, padding = "SAME"); // array로 받는 것이 아니라, 순서대로 받도록 하자 (c++11 호환성 문제)
     // Operator *Conv_1          = new Convolution(x, pConvParam);
     // // =======================================================================
     // // =======================<With no MetaParameter()>=======================
@@ -53,8 +55,8 @@ int main(int argc, char const *argv[]) {
     // // ===========================<layer : Conv_2>============================
     // // =======================================================================
     //
-    // Operator *W_conv2 = new Variable(Ark.truncated_normal({ 5, 5, 32, 64 }, stddev = 0.1));
-    // Operator *b_conv2 = new Variable(Ark.constant(0.1, { 64 }));
+    // Operator *W_conv2 = new Variable(Tensor.truncated_normal({ 5, 5, 32, 64 }, stddev = 0.1));
+    // Operator *b_conv2 = new Variable(Tensor.constant(0.1, { 64 }));
     //
     // // =======================<With no MetaParameter()>=======================
     //
@@ -100,7 +102,7 @@ int main(int argc, char const *argv[]) {
     // /*
     //  * @breif: Graph가 올바로 만들어졌는지 체크 및 initialize 작업
     //  */
-    // HGUNN.Create_Graph("initialize")
+    // HGUNN.Create_Graph() // 추가로 옵션이 생기면, 그 때 수정하는 것으로 하자
     //
     // // ========================<layer : Run Graph>============================
     // // =======================================================================

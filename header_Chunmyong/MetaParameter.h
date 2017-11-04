@@ -1,10 +1,10 @@
 #ifndef META_PARAMETER_H_
 #define META_PARAMETER_H_    value
 
-#include <String>
+#include <string>
 
 #include "Shape.h"
-#include "Ark.h"
+#include "Tensor.h"
 
 class MetaParameter {
 public:
@@ -15,7 +15,7 @@ public:
 
 class ConvParam : public MetaParameter {
 private:
-    Ark *filter;
+    Tensor *filter;
     Shape *stride;
     void *padding;
     std::string m_name     = NULL;

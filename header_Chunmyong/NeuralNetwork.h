@@ -2,13 +2,13 @@
 #define NEURALNETWORK_H_
 
 #include <iostream>
-#include <String>
 
 #include "Shape.h"
-#include "Ark.h"
+#include "Tensor.h"
 #include "Operator.h"
 #include "Objective.h"
 #include "MetaParameter.h"
+#include "Placeholder.h"
 
 class NeuralNetwork {
 private:
@@ -17,7 +17,12 @@ private:
 
     // 그래프 형식으로 바꿔야 합니다.
     // 그래프가 되기 위해서는 다음 오퍼레이터의 링크를 건네는 Operator가 필요합니다.
-    Operator *m_aOperator;
+    Operator * _m_aStart = NULL;    // (Default)
+    Operator * _m_aEnd = NULL;      // (Default)
+
+    // Placeholder Manager
+    // Basket이 될 가능성이 있음
+    placeholder ** _Placeholder_manager = NULL;
 
     bool Alloc();
     void Delete();
@@ -27,18 +32,19 @@ public:
     NeuralNetwork();
     virtual ~NeuralNetwork();
 
-    // 추후 Op 파라미터 enum 형식으로 바꿀 계획에 있음
-    bool PutOperator(std::string Op, MetaParameter *pParam, LayerType = HIDDEN);
+    // Placeholder 추가
+    Operator* Placeholder(std::string name);
 
     // Propagate
-    bool ForwardPropagate();
+    // Prameter에 basket이 추가될 수 있음
+    bool ForwardPropagate(Operator *_pStart, Operator *_pEnd);
 
     // BackPropagate
-    bool BackPropagate();
+    bool BackPropagate(Operator *_pStart, Operator *_pEnd);
 
     // For NeuralNetwork Training
-    bool Training(const int p_maxEpoch);
-    bool Testing();
+    bool Training(Operator *_pStart = NULL, Operator *_pEnd = NULL);
+    bool Testing(Operator *_pStart = NULL, Operator *_pEnd = NULL);
 
 };
 

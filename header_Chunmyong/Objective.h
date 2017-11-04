@@ -1,7 +1,7 @@
 #ifndef OBJECTIVE_FUNCTION_H_
 #define OBJECTIVE_FUNCTION_H_    value
 
-#include "Ark.h"
+#include "Tensor.h"
 
 class Objective {
 private:
@@ -12,7 +12,7 @@ Objective() {}
 
 virtual ~Objective() {}
 
-void ComputeDeltaBar(Ark * pDesiredOutput);
+void ComputeDeltaBar(Tensor * pDesiredOutput);
 };
 
 #endif  // OBJECTIVE_FUNCTION_H_
