@@ -33,9 +33,9 @@ public:
         std::cout << "나중 정의" << '\n';
     }
 
-    void Test(){
+    virtual void Test(){
         std::cout << "Test" << '\n';
-        Print();
+        // Print();
     }
 };
 
@@ -55,6 +55,11 @@ public:
     }
 
     virtual ~subClass(){}
+
+    virtual void Test(){
+        std::cout << "subClass::Test" << '\n';
+        // Print();
+    }
 
     virtual void Print(){
         std::cout << "새정의" << '\n';
