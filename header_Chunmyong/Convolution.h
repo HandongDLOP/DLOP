@@ -9,20 +9,21 @@
 
 class Convolution : public Operator {
 public:
-    Convolution(Operator *pInput, std::string name) : Operator(pInput, name) {
-        std::cout << "Convolution::Convolution(pInput)" << '\n';
+    Convolution() : Operator() {
+        std::cout << "Convolution::Convolution()" << '\n';
     }
 
     // Constructor의 작업 순서는 다음과 같다.
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
     // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (Convolution::Alloc())
     Convolution(Operator *pInput, MetaParameter *pParam) : Operator(pInput, pParam) {
+        std::cout << "Convolution::Convolution(Operator *, MetaParameter *)" << '\n';
         // Alloc(pInput, pParam);
     }
 
-    // do not use MetaParameter
-    Convolution(Operator *pInput, Operator *pWeight) : Operator(pInput, pWeight) {
-        // Alloc(pInput, pWeight);
+    Convolution(Operator *pInput, MetaParameter *pParam, std::string pName) : Operator(pInput, pParam, pName) {
+        std::cout << "Convolution::Convolution(Operator *, MetaParameter *, std::string)" << '\n';
+        // Alloc(pInput, pParam);
     }
 
     virtual ~Convolution() {
