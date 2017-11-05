@@ -6,18 +6,22 @@
 #include "Tensor.h"
 #include "Operator.h"
 
-class placeholder : public Operator {
+class Placeholder : public Operator {
 private:
     /* data */
 
 public:
-    placeholder(std::string name) : Operator(name) {
-        std::cout << "placeholder::placeholder()" << '\n';
+    Placeholder() : Operator() {
+        std::cout << "Placeholder::Placeholder()" << '\n';
     }
 
-    virtual ~placeholder() {
-        std::cout << "placeholder::~placeholder()" << '\n';
+    Placeholder(std::string pName) : Operator(pName) {
+        std::cout << "Placeholder::Placeholder(std::string)" << '\n';
+    }
+
+    virtual ~Placeholder() {
+        std::cout << "Placeholder::~Placeholder()" << '\n';
     }
 };
 
-#endif  // PlaceHOLDER_H
+#endif  // PLACEHOLDER_H
