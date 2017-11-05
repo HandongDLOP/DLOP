@@ -8,10 +8,6 @@ bool Operator::Alloc(Operator *pInput, MetaParameter *pParam) {
     return true;
 }
 
-bool Operator::Alloc(Operator *pInput, Operator *pWeight, MetaParameter *pParam) {
-    return true;
-}
-
 void Operator::Delete() {
     std::cout << "Operator::Delete()" << '\n';
 }

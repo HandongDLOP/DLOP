@@ -4,18 +4,16 @@
 #include <iostream>
 #include <string>
 
-#include "Shape.h"
 #include "Tensor.h"
 #include "MetaParameter.h"
-
 
 class Operator {
 private:
     // N-dim 을 나타낼 수 있는 데이터 타입
     // 이 경우 Placeholder에서 정의하여 검사할 것 : 곧 Operato class에서 삭제 예정
     // Placeholder 는 queue의 형태가 될 것이라고 생각 됨
-    Shape m_InputDim;
-    Shape m_OutputDim;
+    TensorShape m_InputDim;
+    TensorShape m_OutputDim;
 
     // Constructor에서 받는 input은 Operator이지만, 실제로 사용은 Tensor이다.
     Tensor *m_pInput;
@@ -47,54 +45,59 @@ private:
     // 동적 할당 및 제거 (오퍼레이터마다 다르게 정의될 가능성이 큼, metaParameter가 다르기 때문에 )
 
 public:
-    Operator(std::string name) {
+    Operator() {
         std::cout << "Operator::Operator() 상속자 상속상태" << '\n';
-
-        m_name = name;
     }
 
-    Operator(Operator *pInput, MetaParameter *pParam) {
-        std::cout << "Operator::Operator(Operator *, MetaParameter *, LayerType) 상속자 상속상태" << '\n';
+    Operator(std::string pName) {
+        std::cout << "Operator::Operator(std::string) 상속자 상속상태" << '\n';
+
+        m_name = pName;
     }
 
-    // do not use MetaParameter
-    Operator(Operator *pInput, std::string name) {
-        std::cout << "Operator::Operator(Operator *, LayerType) 상속자 상속상태" << '\n';
+    Operator(Operator *pInput) {
+        std::cout << "Operator::Operator(Operator *) 상속자 상속상태" << '\n';
+        // Operdtor 연결관계 Alloc
+        _AddInputEdge(pInput);
+        m_aInputOperator[m_InputDegree - 1]->_AddOutputEdge(this);
+    }
 
-        // 양방향 Edge 생성
+    Operator(Operator *pInput, std::string pName) {
+        std::cout << "Operator::Operator(Operator *, std::string) 상속자 상속상태" << '\n';
+        // Operdtor 연결관계 Alloc
         _AddInputEdge(pInput);
         m_aInputOperator[m_InputDegree - 1]->_AddOutputEdge(this);
 
-        m_name = name;
+        m_name = pName;
     }
 
-    // pWeigt 부분도 Operator 형식을 사용할 것인지에 대한 논의가 필요하다.
-    // 개인적으로는 input 부분만 Operator인 편이 구현에 있어서는 더 편하다. (직관적)
-    Operator(Operator *pInput, Operator *pWeight) {
-        std::cout << "Operator::Operator(Operator *, Operator *, LayerType) 상속자 상속상태" << '\n';
+    Operator(Operator *pInput, MetaParameter *pParam) : Operator(pInput) {
+        std::cout << "Operator::Operator(Operator *, MetaParameter *) 상속자 상속상태" << '\n';
+    }
+
+    Operator(Operator *pInput, MetaParameter *pParam, std::string pName) : Operator(pInput, pName) {
+        std::cout << "Operator::Operator(Operator *, MetaParameter *, std::string) 상속자 상속상태" << '\n';
+    }
+
+    Operator(Operator *pInput, Operator *pWeight) : Operator(pInput) {
+        std::cout << "Operator::Operator(Operator *, Operator *) 상속자 상속상태" << '\n';
+    }
+
+    Operator(Operator *pInput, Operator *pWeight, std::string pName) : Operator(pInput, pName) {
+        std::cout << "Operator::Operator(Operator *, Operator *, std::string) 상속자 상속상태" << '\n';
     }
 
     virtual ~Operator() {
         std::cout << "Operator::~Operator()" << '\n';
-
         Delete();
     }
 
     // 추후 Private으로 옮길 의향 있음
     virtual bool Alloc(Operator *pInput, MetaParameter *pParam = NULL);
-    virtual bool Alloc(Operator *pInput, Operator *pWeight, MetaParameter *pParam = NULL);
     virtual void Delete();
 
-    // Graph Edge 추가
-    bool         _AddEdge(Operator *pInput) {
-        _AddInputEdge(pInput);
-        m_aInputOperator[m_InputDegree - 1]->_AddOutputEdge(this);
-
-        return true;
-    }
-
-    bool _AddInputEdge(Operator *pInput);
-    bool _AddOutputEdge(Operator *pOutput);
+    bool         _AddInputEdge(Operator *pInput);
+    bool         _AddOutputEdge(Operator *pOutput);
 
     //// Setter
     // void SetInputDim();

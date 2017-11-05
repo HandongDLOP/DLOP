@@ -1,18 +1,20 @@
 #ifndef OPERATOR_SET_H
 #define OPERATOR_SET_H    value
 
-// for basic Parent Class in DLOP
-#include "Tensor.h"
-#include "NeuralNetwork.h"
-#include "Operator.h"
-#include "Objective.h"
-#include "Optimization.h"
-#include "MetaParameter.h"
+enum DTYPE{
+    INT,
+    FLOAT
+}
 
+// for basic Parent Class in DLOP
+#include "NeuralNetwork.h"
 
 // Child Class of Operator
 #include "Placeholder.h"
 #include "Convolution.h"
+#include "Variable.h"
+#include "Relu.h"
+#include "Maxpooling.h"
 
 // Child Class of Objective
 
