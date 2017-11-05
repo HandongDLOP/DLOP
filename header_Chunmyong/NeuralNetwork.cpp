@@ -71,6 +71,8 @@ bool NeuralNetwork::Training(Operator *_pStart, Operator *_pEnd) {
 
     BackPropagate(_pStart, _pEnd);
 
+    std::cout << '\n';
+
     return true;
 }
 
@@ -78,6 +80,8 @@ bool NeuralNetwork::Testing(Operator *_pStart, Operator *_pEnd) {
     std::cout << "\n<<<ForwardPropagate>>>\n" << '\n';
 
     ForwardPropagate(_pStart, _pEnd);
+
+    std::cout << '\n';
 
     return true;
 }

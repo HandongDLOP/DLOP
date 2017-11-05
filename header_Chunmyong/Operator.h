@@ -12,8 +12,8 @@ private:
     // N-dim 을 나타낼 수 있는 데이터 타입
     // 이 경우 Placeholder에서 정의하여 검사할 것 : 곧 Operato class에서 삭제 예정
     // Placeholder 는 queue의 형태가 될 것이라고 생각 됨
-    TensorShape m_InputDim;
-    TensorShape m_OutputDim;
+    TensorShape *m_InputDim;
+    TensorShape *m_OutputDim;
 
     // Constructor에서 받는 input은 Operator이지만, 실제로 사용은 Tensor이다.
     Tensor *m_pInput;
@@ -55,6 +55,11 @@ public:
         m_name = pName;
     }
 
+    Operator(Tensor *pTensor, std::string pName) : Operator(pName) {
+        std::cout << "Operator::Operator(Tensor *, std::string pName) 상속자 상속상태" << '\n';
+        Alloc(pTensor);
+    }
+
     Operator(Operator *pInput) {
         std::cout << "Operator::Operator(Operator *) 상속자 상속상태" << '\n';
         // Operdtor 연결관계 Alloc
@@ -67,6 +72,8 @@ public:
         // Operdtor 연결관계 Alloc
         _AddInputEdge(pInput);
         m_aInputOperator[m_InputDegree - 1]->_AddOutputEdge(this);
+
+        Alloc(pInput);
 
         m_name = pName;
     }
@@ -93,7 +100,9 @@ public:
     }
 
     // 추후 Private으로 옮길 의향 있음
-    virtual bool Alloc(Operator *pInput, MetaParameter *pParam = NULL);
+    virtual bool Alloc(Tensor *pTensor);
+    virtual bool Alloc(Operator *pInput);
+    virtual bool Alloc(MetaParameter *pParam = NULL);
     virtual void Delete();
 
     bool         _AddInputEdge(Operator *pInput);
@@ -104,7 +113,12 @@ public:
     // void SetOutputDim();
     //
     //// Input의 경우는 클래스 밖에서 접근되기에 setter를 두지 않습니다.
-    // void SetOutput();
+    void SetOutput(Tensor * pTensor){
+        // shllow copy
+        m_aOutput->Setshape(pTensor->Getshape());
+        m_aOutput->SetData(pTensor->GetData());
+        m_aOutput->SetFlatDim(pTensor->GetFlatDim());
+    }
     // void SetWeight();
     //
     // void SetGradient();
@@ -126,10 +140,16 @@ public:
     //
     //// Getter (파생 클래스에서 사용합니다.)
     // void GetInputDim() const;
-    // void GetOutputDim() const;
-    //
-    // void GetInput() const;
-    // void GetOutput() const;
+    TensorShape* GetOutputDim() const{
+        return m_OutputDim;
+    }
+
+    Tensor* GetInput() const{
+        return m_pInput;
+    }
+    Tensor* GetOutput() const{
+        return m_aOutput;
+    }
     // void GetWeight() const;
     //
     // void GetGradient() const;
@@ -155,11 +175,15 @@ public:
         return m_currentInputDegree;
     }
 
-    void GetInputOperator() const {
-        for (int i = 0; i < m_InputDegree; i++) {
-            std::cout << m_aInputOperator[i] << '\n';
-        }
+    std::string GetName(){
+        return m_name;
     }
+
+    // void GetInputOperator() const {
+    //     for (int i = 0; i < m_InputDegree; i++) {
+    //         std::cout << m_aInputOperator[i] << '\n';
+    //     }
+    // }
 
     // void GetLayerType() const;
     //// ~ Getter

@@ -17,6 +17,10 @@ public:
         std::cout << "Variable::Variable(std::string)" << '\n';
     }
 
+    Variable(Tensor * pTensor, std::string pName) : Operator(pTensor, pName) {
+        std::cout << "Variable::Variable(Tensor *, std::string)" << '\n';
+    }
+
     virtual ~Variable() {
         std::cout << "Variable::~Variable()" << '\n';
     }

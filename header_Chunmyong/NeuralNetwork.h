@@ -12,6 +12,7 @@
 #include "Variable.h"
 #include "Relu.h"
 #include "Maxpooling.h"
+#include "Copy.h"
 
 class NeuralNetwork {
 private:

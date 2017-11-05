@@ -4,7 +4,25 @@
 #include "Operator.h"
 
 // 부모 클래스
-bool Operator::Alloc(Operator *pInput, MetaParameter *pParam) {
+bool Operator::Alloc(Tensor *pTensor) {
+    std::cout << "Operator::Alloc(Tensor *)" << '\n';
+    m_aOutput = pTensor;
+    // m_OutputDim = pTensor->Getshape();
+
+    return true;
+}
+
+bool Operator::Alloc(Operator *pInput) {
+    std::cout << "Operator::Alloc(Operator *)" << '\n';
+    m_pInput = pInput->GetOutput();
+    // m_InputDim = pInput->GetOutputDim();
+
+    m_aOutput = new Tensor();
+
+    return true;
+}
+
+bool Operator::Alloc(MetaParameter *pParam) {
     return true;
 }
 
@@ -60,6 +78,10 @@ bool Operator::ForwardPropagate() {
 
     if (this->GetInputDgree() == this->GetCurrentInputDgree()) {
         this->ComputeForwardPropagate();
+
+        for (int i = 0; i < m_OutputDegree; i++) {
+            if (m_aOutputOperator[i] != NULL) m_aOutputOperator[i]->IncreaseCurrentInputDegree();
+        }
     }
 
     return true;
@@ -70,6 +92,10 @@ bool Operator::BackPropagate() {
     this->ComputeBackPropagate();
 
     for (int i = 0; i < m_InputDegree; i++) {
+        if (m_aInputOperator[i] != NULL) m_aInputOperator[i]->IncreaseCurrentOutputDegree();
+    }
+
+    for (int i = 0; i < m_InputDegree; i++) {
         if (m_aInputOperator[i]->GetOutputDgree() == m_aInputOperator[i]->GetCurrentOutputDgree()) {
             m_aInputOperator[i]->BackPropagate();
         }
@@ -78,10 +104,6 @@ bool Operator::BackPropagate() {
 }
 
 bool Operator::ComputeForwardPropagate() {
-    for (int i = 0; i < m_OutputDegree; i++) {
-        if (m_aOutputOperator[i] != NULL) m_aOutputOperator[i]->IncreaseCurrentInputDegree();
-    }
-
     std::cout << m_name << " : ComputeForwardPropagate()" << '\n';
 
     m_currentInputDegree = 0;
@@ -89,10 +111,6 @@ bool Operator::ComputeForwardPropagate() {
 }
 
 bool Operator::ComputeBackPropagate() {
-    for (int i = 0; i < m_InputDegree; i++) {
-        if (m_aInputOperator[i] != NULL) m_aInputOperator[i]->IncreaseCurrentOutputDegree();
-    }
-
     std::cout << m_name << " : ComputeBackPropagate()" << '\n';
 
     m_currentOutputDegree = 0;

@@ -34,6 +34,7 @@ public:
 
         for (auto i = pShape.begin(); i != pShape.end(); i++) {
             m_ashape[j] = *i;
+            j++;
         }
 
         return true;
