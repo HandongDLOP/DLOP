@@ -9,10 +9,6 @@
 
 class Variable : public Operator {
 public:
-    Variable() : Operator() {
-        std::cout << "Variable::Variable()" << '\n';
-    }
-
     Variable(std::string pName) : Operator(pName) {
         std::cout << "Variable::Variable(std::string)" << '\n';
     }
