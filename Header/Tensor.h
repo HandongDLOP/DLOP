@@ -17,7 +17,7 @@ enum INITIAL_MODE {
 
 class Tensor {
 private:
-    TensorShape *m_shape;
+    TensorShape *m_ashape;
     float *m_adata;  // 추후 템플릿으로 수정 예정
     int m_flat_dim = 1;
 
@@ -32,10 +32,10 @@ public:
     virtual ~Tensor() {}
 
     bool Alloc(int pRank, std::initializer_list<int> pShape) {
-        m_shape = new TensorShape(pRank, pShape);
+        m_ashape = new TensorShape(pRank, pShape);
 
-        for (int i = 0; i < m_shape->Getrank(); i++) {
-            m_flat_dim *= m_shape->Getshape()[i];
+        for (int i = 0; i < m_ashape->Getrank(); i++) {
+            m_flat_dim *= m_ashape->Getshape()[i];
         }
 
         return true;
@@ -43,10 +43,10 @@ public:
 
     bool Alloc(int pRank, std::initializer_list<int> pShape, INITIAL_MODE mode) {
         std::cout << "Tensor::Alloc(int, std::initializer_list<int>, INITIAL_MODE)" << '\n';
-        m_shape = new TensorShape(pRank, pShape);
+        m_ashape = new TensorShape(pRank, pShape);
 
-        for (int i = 0; i < m_shape->Getrank(); i++) {
-            m_flat_dim *= m_shape->Getshape()[i];
+        for (int i = 0; i < m_ashape->Getrank(); i++) {
+            m_flat_dim *= m_ashape->Getshape()[i];
         }
 
         if (mode == TRUNCATED_NORMAL) {
@@ -76,7 +76,7 @@ public:
     void        Delete() {}
 
     void Setshape(TensorShape * pshape){
-        m_shape = pshape;
+        m_ashape = pshape;
     }
 
     void SetData(float * pData){
@@ -88,7 +88,7 @@ public:
     }
 
     TensorShape * Getshape() {
-        return m_shape;
+        return m_ashape;
     }
 
     float* GetData() const {

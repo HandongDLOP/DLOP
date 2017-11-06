@@ -7,7 +7,7 @@
 #include <iostream>
 #include <string>
 
-#include "NeuralNetwork.h"
+#include "..//Header//NeuralNetwork.h"
 
 Operator* AddConvolution(Operator *Input, Operator *Weight, std::string pName) {
     MetaParameter *pConvParam = new ConvParam(Weight, 1, 1, 1, 1, SAME);
