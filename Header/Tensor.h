@@ -6,74 +6,43 @@
 #include <array>
 #include "Tensorshape.h"
 
-// 추후 Function pointer로 전환 필요
-enum INITIAL_MODE {
-    ONE,
-    RANDOM,
-    TRUNCATED_NORMAL
-};
-
 // template <class T>
 
 class Tensor {
 private:
-    TensorShape *m_ashape;
-    float *m_adata;  // 추후 템플릿으로 수정 예정
+    TensorShape *m_ashape = NULL;
+    float *m_adata = NULL;  // 추후 템플릿으로 수정 예정
     int m_flat_dim = 1;
 
 public:
     Tensor() {}
 
-    Tensor(int pRank, std::initializer_list<int> pShape, INITIAL_MODE mode) {
-        std::cout << "Tensor(int, std::initializer_list<int>, INITIAL_MODE)" << '\n';
-        Alloc(pRank, pShape, mode);
+    Tensor(int pRank, std::initializer_list<int> pShape) {
+        std::cout << "Tensor::Tensor(int, std::initializer_list<int)" << '\n';
+        Alloc(pRank, pShape);
     }
 
-    virtual ~Tensor() {}
+    virtual ~Tensor() {
+        std::cout << "Tensor::~Tensor()" << '\n';
 
-    bool Alloc(int pRank, std::initializer_list<int> pShape) {
-        m_ashape = new TensorShape(pRank, pShape);
-
-        for (int i = 0; i < m_ashape->Getrank(); i++) {
-            m_flat_dim *= m_ashape->Getshape()[i];
-        }
-
-        return true;
+        // delete를 제대로 하기 위해서는 계속해서 새로운 Tensor를 만들어낼 필요가 있다.
+        // 위의 부분이 구현이 되기 전까지는 이 부분은 잠시 free하지 않도록 한다(Testing 단계)
+        // Delete();
     }
 
-    bool Alloc(int pRank, std::initializer_list<int> pShape, INITIAL_MODE mode) {
-        std::cout << "Tensor::Alloc(int, std::initializer_list<int>, INITIAL_MODE)" << '\n';
-        m_ashape = new TensorShape(pRank, pShape);
+    bool Alloc(int pRank, std::initializer_list<int> pShape);
 
-        for (int i = 0; i < m_ashape->Getrank(); i++) {
-            m_flat_dim *= m_ashape->Getshape()[i];
-        }
+    bool Alloc(int pRank, std::initializer_list<int> pShape, float *pData);
 
-        if (mode == TRUNCATED_NORMAL) {
-            m_adata = Truncated_normal();
-        }
+    // bool Alloc(int pRank, std::initializer_list<int> pShape, INITIAL_MODE mode);
 
-        return true;
-    }
+    bool Delete();
 
-    float* Truncated_normal() {
-        std::cout << "Tensor::Truncated_normal()" << '\n';
+    //===========================================================================================
 
-        std::random_device rd;
-        std::mt19937 gen(rd());
+    static Tensor * Truncated_normal(int pRank, std::initializer_list<int> pShape);
 
-        float *temp = new float[m_flat_dim];
-
-        for (int i = 0; i < m_flat_dim; i++) {
-            std::normal_distribution<float> rand(0, 0.6);
-            temp[i] = rand(gen);
-            // std::cout << temp[i] << ' ';
-        }
-
-        return temp;
-    }
-
-    void        Delete() {}
+    //===========================================================================================
 
     void Setshape(TensorShape * pshape){
         m_ashape = pshape;
@@ -87,6 +56,8 @@ public:
         m_flat_dim = pflat_dim;
     }
 
+    //===========================================================================================
+
     TensorShape * Getshape() {
         return m_ashape;
     }
@@ -99,7 +70,14 @@ public:
         return m_flat_dim;
     }
 
+    //===========================================================================================
+
     void PrintData(){
+        if (m_adata == NULL){
+            std::cout << "data is empty!" << '\n';
+            exit(0);
+        }
+
         for (int i = 0; i < m_flat_dim; i++) {
             std::cout << m_adata[i] << ' ';
         }
