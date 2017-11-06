@@ -1,13 +1,16 @@
-#include <iostream>
-#include <algorithm>
-
 #include "Operator.h"
 
 // 부모 클래스
 bool Operator::Alloc(Tensor *pTensor) {
     std::cout << "Operator::Alloc(Tensor *)" << '\n';
 
-    m_aOutput = pTensor;
+    m_pInputDim  = NULL;
+    m_pOutputDim = NULL;
+    m_pInput     = NULL;
+    m_aOutput    = pTensor;
+    m_aWeight    = NULL;
+    m_aGradient  = NULL;
+    m_aDelta     = NULL;
 
     return true;
 }
@@ -15,12 +18,15 @@ bool Operator::Alloc(Tensor *pTensor) {
 bool Operator::Alloc(Operator *pInput) {
     std::cout << "Operator::Alloc(Operator *)" << '\n';
 
-    // 쌍방향 연결관계 추가
-    _AddInputEdge(pInput);
-    pInput->_AddOutputEdge(this);
+    AddEdgebetweenOperators(pInput);
 
-    m_pInput  = pInput->GetOutput();
-    m_aOutput = new Tensor();
+    m_pInputDim  = NULL;
+    m_pOutputDim = NULL;
+    m_pInput     = pInput->GetOutput();
+    m_aOutput    = new Tensor();
+    m_aWeight    = NULL;
+    m_aGradient  = NULL;
+    m_aDelta     = NULL;
 
     return true;
 }
@@ -36,8 +42,8 @@ void Operator::Delete() {
     delete m_aWeight;
     delete m_aGradient;
     delete m_aDelta;
-    delete [] m_aOutputOperator;
-    delete [] m_aInputOperator;
+    delete[] m_aOutputOperator;
+    delete[] m_aInputOperator;
 }
 
 bool Operator::PropagateDelete() {
@@ -49,7 +55,7 @@ bool Operator::PropagateDelete() {
     return true;
 }
 
-//===========================================================================================
+// ===========================================================================================
 
 // Add Graph Edge
 bool Operator::_AddInputEdge(Operator *pInput) {
@@ -90,7 +96,15 @@ bool Operator::_AddOutputEdge(Operator *pOutput) {
     return true;
 }
 
-//===========================================================================================
+bool Operator::AddEdgebetweenOperators(Operator *pInput) {
+    // 양방향 Edge 생성
+    _AddInputEdge(pInput);
+    pInput->_AddOutputEdge(this);
+
+    return true;
+}
+
+// ===========================================================================================
 
 /* BFS로 다시 구현할 필요 있음 */
 
@@ -102,6 +116,7 @@ bool Operator::ForwardPropagate() {
 
     if (this->GetInputDegree() == this->GetCurrentInputDegree()) {
         this->ComputeForwardPropagate();
+
         // value 조정
         for (int i = 0; i < m_OutputDegree; i++) {
             if (m_aOutputOperator[i] != NULL) m_aOutputOperator[i]->IncreaseCurrentInputDegree();
@@ -115,6 +130,7 @@ bool Operator::ForwardPropagate() {
 bool Operator::BackPropagate() {
     // Preorder
     this->ComputeBackPropagate();
+
     // value 조정
     for (int i = 0; i < m_InputDegree; i++) {
         if (m_aInputOperator[i] != NULL) m_aInputOperator[i]->IncreaseCurrentOutputDegree();
@@ -130,7 +146,7 @@ bool Operator::BackPropagate() {
     return true;
 }
 
-//===========================================================================================
+// ===========================================================================================
 
 bool Operator::ComputeForwardPropagate() {
     std::cout << m_name << " : ComputeForwardPropagate()" << '\n';

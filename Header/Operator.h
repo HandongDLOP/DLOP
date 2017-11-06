@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 #include "Tensor.h"
 #include "MetaParameter.h"
@@ -39,8 +40,10 @@ private:
     // identifier // 이제 Operator를 변수로 접근할 수 있게 되어 필요가 없다.
     std::string m_name = "NO NAME";
 
-
-    // 동적 할당 및 제거 (오퍼레이터마다 다르게 정의될 가능성이 큼, metaParameter가 다르기 때문에 )
+// Private Operator
+private:
+    bool _AddInputEdge(Operator *pInput);
+    bool _AddOutputEdge(Operator *pOutput);
 
 public:
     Operator() {
@@ -78,22 +81,26 @@ public:
 
     // ===========================================================================================
 
-    Operator(Operator *pInput, MetaParameter *pParam) : Operator(pInput) {
+    Operator(Operator *pInput, MetaParameter *pParam) {
         std::cout << "Operator::Operator(Operator *, MetaParameter *) 상속자 상속상태" << '\n';
+        Alloc(pInput);
     }
 
-    Operator(Operator *pInput, MetaParameter *pParam, std::string pName) : Operator(pInput, pName) {
+    Operator(Operator *pInput, MetaParameter *pParam, std::string pName) : Operator(pName) {
         std::cout << "Operator::Operator(Operator *, MetaParameter *, std::string) 상속자 상속상태" << '\n';
+        Alloc(pInput);
     }
 
     // ===========================================================================================
 
-    Operator(Operator *pInput1, Operator *pInput2) : Operator(pInput1) {
+    Operator(Operator *pInput1, Operator *pInput2) {
         std::cout << "Operator::Operator(Operator *, Operator *) 상속자 상속상태" << '\n';
+        Alloc(pInput1);
     }
 
-    Operator(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pInput1, pName) {
+    Operator(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pName) {
         std::cout << "Operator::Operator(Operator *, Operator *, std::string) 상속자 상속상태" << '\n';
+        Alloc(pInput1);
     }
 
     // ===========================================================================================
@@ -117,8 +124,7 @@ public:
 
     // ===========================================================================================
 
-    bool _AddInputEdge(Operator *pInput);
-    bool _AddOutputEdge(Operator *pOutput);
+    bool AddEdgebetweenOperators(Operator *pInput);
 
     // ===========================================================================================
 
@@ -128,10 +134,12 @@ public:
     //
     //// Input의 경우는 클래스 밖에서 접근되기에 setter를 두지 않습니다.
     void SetOutput(Tensor *pTensor) {
-        // shllow copy
+        // shllow copy -> deep copy가 되어야 동적 제거가 가능하다(tensor 상에서)
+        // 복사 생성자를 만들면 간단하게 해결된다.(Operator에서도, Tensor에서도 Tensor shape에서도)
         m_aOutput->Setshape(pTensor->Getshape());
         m_aOutput->SetData(pTensor->GetData());
         m_aOutput->SetFlatDim(pTensor->GetFlatDim());
+
     }
 
     // void SetWeight();

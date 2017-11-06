@@ -37,9 +37,7 @@ Operator * NeuralNetwork::AddPlaceholder() {
 
     Operator *temp = new Placeholder();
 
-    // 쌍방향 연결관계 추가
-    temp->_AddInputEdge(_m_pStart);
-    _m_pStart->_AddOutputEdge(temp);
+    temp->AddEdgebetweenOperators(_m_pStart);
 
     return temp;
 }
@@ -49,9 +47,7 @@ Operator * NeuralNetwork::AddPlaceholder(std::string pName) {
 
     Operator *temp = new Placeholder(pName);
 
-    // 쌍방향 연결관계 추가
-    temp->_AddInputEdge(_m_pStart);
-    _m_pStart->_AddOutputEdge(temp);
+    temp->AddEdgebetweenOperators(_m_pStart);
 
     return temp;
 }
