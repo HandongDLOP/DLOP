@@ -10,6 +10,8 @@ NeuralNetwork::~NeuralNetwork() {
     std::cout << "NeuralNetwork::~NeuralNetwork()" << '\n';
 }
 
+// ===========================================================================================
+
 bool NeuralNetwork::Alloc() {
     std::cout << "NeuralNetwork::Alloc()" << '\n';
     return true;
@@ -17,17 +19,44 @@ bool NeuralNetwork::Alloc() {
 
 void NeuralNetwork::Delete() {
     std::cout << "NeuralNetwork::Delete()" << '\n';
+    PropagateDelete();
+    delete _m_aEnd;
 }
+
+// ===========================================================================================
+
+bool NeuralNetwork::PropagateDelete() {
+    _m_aEnd->PropagateDelete();
+    return true;
+}
+
+// ===========================================================================================
 
 Operator * NeuralNetwork::AddPlaceholder() {
     std::cout << "NeuralNetwork::Placeholder()" << '\n';
-    return new Placeholder();
+
+    Operator *temp = new Placeholder();
+
+    // 쌍방향 연결관계 추가
+    temp->_AddInputEdge(_m_pStart);
+    _m_pStart->_AddOutputEdge(temp);
+
+    return temp;
 }
 
 Operator * NeuralNetwork::AddPlaceholder(std::string pName) {
     std::cout << "NeuralNetwork::Placeholder()" << '\n';
-    return new Placeholder(pName);
+
+    Operator *temp = new Placeholder(pName);
+
+    // 쌍방향 연결관계 추가
+    temp->_AddInputEdge(_m_pStart);
+    _m_pStart->_AddOutputEdge(temp);
+
+    return temp;
 }
+
+// ===========================================================================================
 
 // 주소에 따라 조절되는 알고리즘 추가 필요
 bool NeuralNetwork::ForwardPropagate(Operator *_pStart, Operator *_pEnd) {
@@ -61,6 +90,8 @@ bool NeuralNetwork::BackPropagate(Operator *_pStart, Operator *_pEnd) {
 
     return true;
 }
+
+// ===========================================================================================
 
 bool NeuralNetwork::Training(Operator *_pStart, Operator *_pEnd) {
     std::cout << "\n<<<ForwardPropagate>>>\n" << '\n';

@@ -6,17 +6,20 @@
 // 부모 클래스
 bool Operator::Alloc(Tensor *pTensor) {
     std::cout << "Operator::Alloc(Tensor *)" << '\n';
+
     m_aOutput = pTensor;
-    // m_OutputDim = pTensor->Getshape();
 
     return true;
 }
 
 bool Operator::Alloc(Operator *pInput) {
     std::cout << "Operator::Alloc(Operator *)" << '\n';
-    m_pInput = pInput->GetOutput();
-    // m_InputDim = pInput->GetOutputDim();
 
+    // 쌍방향 연결관계 추가
+    _AddInputEdge(pInput);
+    pInput->_AddOutputEdge(this);
+
+    m_pInput  = pInput->GetOutput();
     m_aOutput = new Tensor();
 
     return true;
@@ -28,7 +31,25 @@ bool Operator::Alloc(MetaParameter *pParam) {
 
 void Operator::Delete() {
     std::cout << "Operator::Delete()" << '\n';
+
+    delete m_aOutput;
+    delete m_aWeight;
+    delete m_aGradient;
+    delete m_aDelta;
+    delete [] m_aOutputOperator;
+    delete [] m_aInputOperator;
 }
+
+bool Operator::PropagateDelete() {
+    // Postorder : like ForwardPropagate
+    for (int i = 0; i < m_InputDegree; i++) {
+        m_aInputOperator[i]->PropagateDelete();
+        delete m_aInputOperator[i];
+    }
+    return true;
+}
+
+//===========================================================================================
 
 // Add Graph Edge
 bool Operator::_AddInputEdge(Operator *pInput) {
@@ -69,19 +90,23 @@ bool Operator::_AddOutputEdge(Operator *pOutput) {
     return true;
 }
 
+//===========================================================================================
+
 /* BFS로 다시 구현할 필요 있음 */
+
 bool Operator::ForwardPropagate() {
     // Postorder
     for (int i = 0; i < m_InputDegree; i++) {
         m_aInputOperator[i]->ForwardPropagate();
     }
 
-    if (this->GetInputDgree() == this->GetCurrentInputDgree()) {
+    if (this->GetInputDegree() == this->GetCurrentInputDegree()) {
         this->ComputeForwardPropagate();
-
+        // value 조정
         for (int i = 0; i < m_OutputDegree; i++) {
             if (m_aOutputOperator[i] != NULL) m_aOutputOperator[i]->IncreaseCurrentInputDegree();
         }
+        m_currentInputDegree = 0;
     }
 
     return true;
@@ -90,29 +115,31 @@ bool Operator::ForwardPropagate() {
 bool Operator::BackPropagate() {
     // Preorder
     this->ComputeBackPropagate();
-
+    // value 조정
     for (int i = 0; i < m_InputDegree; i++) {
         if (m_aInputOperator[i] != NULL) m_aInputOperator[i]->IncreaseCurrentOutputDegree();
     }
+    m_currentOutputDegree = 0;
 
+    // Back propagation을 하다가 base operator가 나오지 않으면, 실행되지 않은 Placeholder가 있지는 않은지 확인해볼 것
     for (int i = 0; i < m_InputDegree; i++) {
-        if (m_aInputOperator[i]->GetOutputDgree() == m_aInputOperator[i]->GetCurrentOutputDgree()) {
+        if (m_aInputOperator[i]->GetOutputDegree() == m_aInputOperator[i]->GetCurrentOutputDegree()) {
             m_aInputOperator[i]->BackPropagate();
         }
     }
     return true;
 }
 
+//===========================================================================================
+
 bool Operator::ComputeForwardPropagate() {
     std::cout << m_name << " : ComputeForwardPropagate()" << '\n';
 
-    m_currentInputDegree = 0;
     return true;
 }
 
 bool Operator::ComputeBackPropagate() {
     std::cout << m_name << " : ComputeBackPropagate()" << '\n';
 
-    m_currentOutputDegree = 0;
     return true;
 }

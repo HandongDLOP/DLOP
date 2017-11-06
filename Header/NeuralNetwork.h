@@ -24,16 +24,23 @@ private:
 
     // 그래프 형식으로 바꿔야 합니다.
     // 그래프가 되기 위해서는 다음 오퍼레이터의 링크를 건네는 Operator가 필요합니다.
-    Operator * _m_aStart = NULL;    // (Default)
-    Operator * _m_aEnd = NULL;      // (Default)
-
-    bool Alloc();
-    void Delete();
+    Operator * _m_pStart = new Operator("Base Operator");    // (Default)
+    Operator * _m_aEnd = _m_pStart;      // (Default)
 
 public:
     // Operator의 개수를 정합니다.
     NeuralNetwork();
     virtual ~NeuralNetwork();
+
+    //===========================================================================================
+
+    // 추후 private로 옮길 의향 있음
+    bool Alloc();
+
+    void Delete();
+    bool PropagateDelete();
+
+    //===========================================================================================
 
     // Placeholder 추가
     Operator* AddPlaceholder();
@@ -47,6 +54,11 @@ public:
     // For NeuralNetwork Training
     bool Training(Operator *_pStart = NULL, Operator *_pEnd = NULL);
     bool Testing(Operator *_pStart = NULL, Operator *_pEnd = NULL);
+
+    // Set _m_aEnd : 추후에는 모델이 만들어질 때 자동으로 alloc되게 변환해야 함
+    void SetEndOperator(Operator * pEnd){
+        _m_aEnd = pEnd;
+    }
 
 };
 
