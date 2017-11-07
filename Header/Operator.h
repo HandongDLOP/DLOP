@@ -11,17 +11,15 @@
 class Operator {
 private:
     // N-dim 을 나타낼 수 있는 데이터 타입
-    // 이 경우 Placeholder에서 정의하여 검사할 것 : 곧 Operato class에서 삭제 예정
-    // Placeholder 는 queue의 형태가 될 것이라고 생각 됨
     TensorShape *m_pInputDim  = NULL;
     TensorShape *m_pOutputDim = NULL;
 
     // Constructor에서 받는 input은 Operator이지만, 실제로 사용은 Tensor이다.
-    Tensor *m_pInput  = NULL;
+    Tensor **m_aInput = NULL;
     Tensor *m_aOutput = NULL;
-    Tensor *m_aWeight = NULL;
 
     // Training 과정을 공부한 후 다시 확인해야 할 부분
+    // Gradient의 경우는 자신의 Output Operator에서 계산해서 이미 넘겨준 상태 (계산 과정 잘 생각해보기)
     Tensor *m_aGradient = NULL;
     Tensor *m_aDelta    = NULL;
     // Tensor *m_Deltabar; // Layer단에서 사용하게 되기에, 항상 필요하지는 않다.
@@ -40,7 +38,8 @@ private:
     // identifier // 이제 Operator를 변수로 접근할 수 있게 되어 필요가 없다.
     std::string m_name = "NO NAME";
 
-// Private Operator
+    // Private Operator
+
 private:
     bool _AddInputEdge(Operator *pInput);
     bool _AddOutputEdge(Operator *pOutput);
@@ -95,12 +94,12 @@ public:
 
     Operator(Operator *pInput1, Operator *pInput2) {
         std::cout << "Operator::Operator(Operator *, Operator *) 상속자 상속상태" << '\n';
-        Alloc(pInput1);
+        Alloc(pInput1, pInput2);
     }
 
     Operator(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pName) {
         std::cout << "Operator::Operator(Operator *, Operator *, std::string) 상속자 상속상태" << '\n';
-        Alloc(pInput1);
+        Alloc(pInput1, pInput2);
     }
 
     // ===========================================================================================
@@ -115,8 +114,9 @@ public:
     // ===========================================================================================
 
     // 추후 Private으로 옮길 의향 있음
-    bool         Alloc(Tensor *pTensor);
-    bool         Alloc(Operator *pInput);
+    virtual bool Alloc(Tensor *pTensor);
+    virtual bool Alloc(Operator *pInput);
+    virtual bool Alloc(Operator *pInput1, Operator *pInput2);
     virtual bool Alloc(MetaParameter *pParam = NULL);
 
     virtual void Delete();
@@ -129,27 +129,77 @@ public:
     // ===========================================================================================
 
     //// Setter
-    // void SetInputDim();
-    // void SetOutputDim();
-    //
-    //// Input의 경우는 클래스 밖에서 접근되기에 setter를 두지 않습니다.
-    void SetOutput(Tensor *pTensor) {
-        // shllow copy -> deep copy가 되어야 동적 제거가 가능하다(tensor 상에서)
-        // 복사 생성자를 만들면 간단하게 해결된다.(Operator에서도, Tensor에서도 Tensor shape에서도)
-        m_aOutput->Setshape(pTensor->Getshape());
-        m_aOutput->SetData(pTensor->GetData());
-        m_aOutput->SetFlatDim(pTensor->GetFlatDim());
-
+    void SetInputDim(TensorShape *pshape) {
+        m_pInputDim = pshape;
     }
 
-    // void SetWeight();
+    void SetOutputDim(TensorShape *pshape) {
+        m_pOutputDim = pshape;
+    }
+
+    void SetInput(Tensor *pTensor, int num){
+        // 속에 존재하는 input단의 모든 요소는 prameteric하다
+        m_aInput[num] = pTensor;
+    }
+
+    void SetOutput(Tensor *pTensor) {
+        m_aOutput = pTensor;
+    }
+
+    void SetOutput(float *pData) {
+        // shape 가 같은지 비교하도록 한다. (flat_dim)
+        m_aOutput->SetData(pData);
+    }
+
+    // void SetOutput(Tensor *pTensor) {
+    //     if(m_aOutput == NULL) m_aOutput = new Tensor();
+    //     // alloc시에 미리 Tensor자체는 만들어 두어야 한다.
+    //     // shape를 비교할 필요가 있다.
+    //     m_aOutput->SetTensor(pTensor);
+    // }
     //
-    // void SetGradient();
-    // void SetDelta();
-    // void SetDeltabar();
+    // void SetOutput(TensorShape *pshape) {
+    //     if(m_aOutput == NULL) m_aOutput = new Tensor();
+    //     m_aOutput->SetTensor(pshape);
+    // }
+
+    // Gradient 부분은 Trainable한 부분에서만 만들기에 NULL로 초기화할 가능성이 생길 것으로 보인다.
+    void SetGradient(Tensor *pTensor) {
+        m_aGradient = pTensor;
+    }
+
+    void SetGradient(float *pData) {
+        m_aGradient->SetData(pData);
+    }
+
+    // void SetGradient(Tensor *pTensor) {
+    //     if(m_aGradient == NULL) m_aGradient = new Tensor();
+    //     m_aGradient->SetTensor(pTensor);
+    // }
     //
-    // void SetNextOperator();
+    // void SetGradient(TensorShape *pshape) {
+    //     if(m_aGradient == NULL) m_aGradient = new Tensor();
+    //     m_aGradient->SetTensor(pshape);
+    // }
+
+    void SetDelta(Tensor *pTensor) {
+        m_aDelta = pTensor;
+    }
+
+    void SetDelta(float *pData) {
+        m_aDelta->SetData(pData);
+    }
+
+    // void SetDelta(Tensor *pTensor) {
+    //     if(m_aDelta == NULL) m_aDelta = new Tensor();
+    //     m_aDelta->SetTensor(pTensor);
+    // }
     //
+    // void SetDelta(TensorShape *pshape) {
+    //     if(m_aDelta == NULL) m_aDelta = new Tensor();
+    //     m_aDelta->SetTensor(pshape);
+    // }
+
     void IncreaseCurrentOutputDegree() {
         m_currentOutputDegree++;
     }
@@ -167,8 +217,8 @@ public:
         return m_pOutputDim;
     }
 
-    Tensor* GetInput() const {
-        return m_pInput;
+    Tensor** GetInput() const {
+        return m_aInput;
     }
 
     Tensor* GetOutput() const {
@@ -177,8 +227,14 @@ public:
 
     // void GetWeight() const;
     //
-    // void GetGradient() const;
-    // void GetDelta() const;
+    Tensor* GetGradient() const {
+        return m_aGradient;
+    }
+
+    Tensor* GetDelta() const {
+        return m_aDelta;
+    }
+
     // void GetDeltabar() const;
     //
     Operator** GetInputOperator() const {

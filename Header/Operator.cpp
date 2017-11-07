@@ -4,29 +4,30 @@
 bool Operator::Alloc(Tensor *pTensor) {
     std::cout << "Operator::Alloc(Tensor *)" << '\n';
 
-    m_pInputDim  = NULL;
-    m_pOutputDim = NULL;
-    m_pInput     = NULL;
-    m_aOutput    = pTensor;
-    m_aWeight    = NULL;
-    m_aGradient  = NULL;
-    m_aDelta     = NULL;
-
     return true;
 }
 
 bool Operator::Alloc(Operator *pInput) {
     std::cout << "Operator::Alloc(Operator *)" << '\n';
 
+    // 추후 자동 계산이 가능하게 구현 예정
+    m_aInput     = new Tensor *[1];
+
+    // Shape도 받을 수 있도록 코드 수정 alloc도 마찬가지
     AddEdgebetweenOperators(pInput);
 
-    m_pInputDim  = NULL;
-    m_pOutputDim = NULL;
-    m_pInput     = pInput->GetOutput();
-    m_aOutput    = new Tensor();
-    m_aWeight    = NULL;
-    m_aGradient  = NULL;
-    m_aDelta     = NULL;
+    return true;
+}
+
+bool Operator::Alloc(Operator *pInput1, Operator *pInput2) {
+    std::cout << "Operator::Alloc(Operator *, Operator *)" << '\n';
+
+    // 추후 자동 계산이 가능하게 구현 예정
+    m_aInput     = new Tensor *[2];
+
+    // Shape도 받을 수 있도록 코드 수정 alloc도 마찬가지
+    AddEdgebetweenOperators(pInput1);
+    AddEdgebetweenOperators(pInput2);
 
     return true;
 }
@@ -38,10 +39,10 @@ bool Operator::Alloc(MetaParameter *pParam) {
 void Operator::Delete() {
     std::cout << "Operator::Delete()" << '\n';
 
+    delete[] m_aInput;
     delete m_aOutput;
-    delete m_aWeight;
     delete m_aGradient;
-    delete m_aDelta;
+    // delete m_aDelta;
     delete[] m_aOutputOperator;
     delete[] m_aInputOperator;
 }
@@ -100,6 +101,8 @@ bool Operator::AddEdgebetweenOperators(Operator *pInput) {
     // 양방향 Edge 생성
     _AddInputEdge(pInput);
     pInput->_AddOutputEdge(this);
+
+    SetInput(pInput->GetOutput(), m_InputDegree-1);
 
     return true;
 }

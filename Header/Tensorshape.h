@@ -7,56 +7,63 @@
 class TensorShape {
 private:
     // 확인하기
-    int m_rank;
-    int *m_ashape = new int[5];
+    int m_rank  = 0;
+    int *m_aDim = new int[5];
 
 public:
     TensorShape() {}
 
-    // 추후 형태 바꿀 예정 (파라미터를 printf 처럼 받을 수 있게)
-    TensorShape(int pRank, std::initializer_list<int> pShape) {
-        Alloc(pRank, pShape);
+    TensorShape(TensorShape *pshape) {
+        std::cout << "TensorShape::TensorShape(TensorShape *)" << '\n';
+        int *temp_dim = pshape->Getdim();
+
+        Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
+    }
+
+    TensorShape(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4) {
+        std::cout << "TensorShape::TensorShape(int, int, int, int, int)" << '\n';
+        Alloc(pDim0, pDim1, pDim2, pDim3, pDim4);
     }
 
     virtual ~TensorShape() {}
 
-    bool Alloc(int pRank, std::initializer_list<int> pShape) {
+    bool Alloc(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4) {
+        m_aDim = new int[5];
 
-        if((unsigned int)pRank != pShape.size()){
-            std::cout << "there is size abort!" << '\n';
-            exit(0);
+        m_aDim[0] = pDim0;
+        m_aDim[1] = pDim1;
+        m_aDim[2] = pDim2;
+        m_aDim[3] = pDim3;
+        m_aDim[4] = pDim4;
+
+        for (m_rank = 0; m_rank < 5; m_rank++) {
+            if (m_aDim[m_rank] != 0) {
+                continue;
+            } else {
+                for (int j = m_rank + 1; j < 5; j++) {
+                    if (m_aDim[j] != 0) {
+                        std::cout << "invalid shape!" << '\n';
+                        exit(0);
+                    }
+                }
+            }
+            break;
         }
-
-        m_rank  = pRank;
-
-        List_to_Shape(pShape);
 
         return true;
     }
 
-    // 추후 파라미터 변화에 대해 유연하게 반응하기 위해서
-    void List_to_Shape(std::initializer_list<int> pShape){
-        int j = 0;
-
-        for (auto i = pShape.begin(); i != pShape.end(); i++) {
-            m_ashape[j] = *i;
-            j++;
-        }
-    }
-
-    int Getrank(){
+    int Getrank() {
         return m_rank;
     }
 
-    int *Getshape(){
-        return m_ashape;
+    int* Getdim() {
+        return m_aDim;
     }
 
-    bool Delete(){
-
+    bool Delete() {
         return true;
     }
-
 };
 
 #endif  // TENSORSHAPE_H_

@@ -16,12 +16,49 @@ private:
     int m_flat_dim        = 1;
 
 public:
-    Tensor() {}
+    Tensor() {std::cout << "Tensor::Tensor()" << '\n';}
 
-    // 추후 list 관련 부분은 rank 5를 최대로 하는 것으로 바뀔 것이다
-    Tensor(int pRank, std::initializer_list<int> pShape) {
-        std::cout << "Tensor::Tensor(int, std::initializer_list<int)" << '\n';
-        Alloc(pRank, pShape);
+    Tensor(TensorShape *pshape) {
+        std::cout << "Tensor::Tensor(TensorSahpe *)" << '\n';
+        m_ashape = new TensorShape(pshape);
+
+        int *temp_dim = m_ashape->Getdim();
+
+        Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
+    }
+
+    Tensor(TensorShape *pshape, float *pData) {
+        std::cout << "Tensor::Tensor(TensorSahpe *)" << '\n';
+        m_ashape = new TensorShape(pshape);
+
+        int *temp_dim = m_ashape->Getdim();
+
+        Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
+
+        SetData(pData);
+    }
+
+    Tensor(Tensor *pTensor) {
+        std::cout << "Tensor::Tensor(Tensor *)" << '\n';
+
+        int *temp_dim = pTensor->Getshape()->Getdim();
+
+        Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
+
+        for(int i = 0; i < m_flat_dim; i++){
+            m_adata[i] = pTensor->GetData()[i];
+        }
+    }
+
+    Tensor(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4) {
+        std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
+        Alloc(pDim0, pDim1, pDim2, pDim3, pDim4);
+    }
+
+    Tensor(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4, float *pData) {
+        std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
+        Alloc(pDim0, pDim1, pDim2, pDim3, pDim4);
+        SetData(pData);
     }
 
     virtual ~Tensor() {
@@ -32,29 +69,53 @@ public:
         // Delete();
     }
 
-    bool Alloc(int pRank, std::initializer_list<int> pShape);
+    bool Alloc(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4);
 
-    bool Alloc(int pRank, std::initializer_list<int> pShape, float *pData);
-
-    // bool Alloc(int pRank, std::initializer_list<int> pShape, INITIAL_MODE mode);
+    // bool Alloc(int pRank, std::initializer_list<int> pDim, INITIAL_MODE mode);
 
     bool Delete();
 
     // ===========================================================================================
 
-    static Tensor* Truncated_normal(int pRank, std::initializer_list<int> pShape);
+    static Tensor* Truncated_normal(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4, float mean, float stddev);
 
-    static Tensor* Zero(int pRank, std::initializer_list<int> pShape);
 
-    static Tensor* Constant(int pRank, std::initializer_list<int> pShape, float constant);
+    static Tensor* Zeros(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4);
+
+
+    static Tensor* Constants(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4, float constant);
+
 
     // ===========================================================================================
 
-    void Setshape(TensorShape *pshape) {
+    void Reshape(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4) {
+        TensorShape *temp = new TensorShape(pDim0, pDim1, pDim2, pDim3, pDim4);
+
+        int temp_flat_dim = 1;
+
+        for (int i = 0; i < temp->Getrank(); i++) {
+            temp_flat_dim *= temp->Getdim()[i];
+        }
+
+        if (temp_flat_dim != m_flat_dim) {
+            std::cout << "invalid shape transformation" << '\n';
+            delete temp;
+            exit(0);
+        }
+
+        if(m_ashape != NULL) delete m_ashape;
+
+        m_ashape = temp;
+    }
+
+    void Reshape(TensorShape *pshape) {
+        if(m_ashape != NULL) delete m_ashape;
         m_ashape = pshape;
     }
 
     void SetData(float *pData) {
+        // pData 의 크기와 dimension 크기가 일치하는지 확인
+        if(m_adata != NULL) delete m_adata;
         m_adata = pData;
     }
 
@@ -62,18 +123,55 @@ public:
         m_flat_dim = pflat_dim;
     }
 
+    void SetTensor(Tensor * pTensor){
+        int *temp_dim = pTensor->Getshape()->Getdim();
+
+        Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
+
+        if(m_adata != NULL) delete m_adata;
+        m_adata = new float[m_flat_dim];
+
+        for(int i = 0; i < m_flat_dim; i++){
+            m_adata[i] = pTensor->GetData()[i];
+        }
+    }
+
+    void SetTensor(TensorShape * pshape){
+        int *temp_dim = pshape->Getdim();
+
+        Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
+
+        if(m_adata != NULL) delete m_adata;
+        m_adata = new float[m_flat_dim];
+    }
+
     // ===========================================================================================
 
-    TensorShape* Getshape() {
+    TensorShape* Getshape() const{
         return m_ashape;
     }
 
-    float* GetData() const {
+    int Getrank() const{
+        return m_ashape->Getrank();
+    }
+
+    int* Getdim() const{
+        return m_ashape->Getdim();
+    }
+
+    float* GetData() const{
         return m_adata;
     }
 
-    int GetFlatDim() {
+    int GetFlatDim() const{
         return m_flat_dim;
+    }
+
+    // ===========================================================================================
+
+
+    void Flat(){
+        Reshape(m_flat_dim, 0, 0, 0, 0);
     }
 
     // ===========================================================================================

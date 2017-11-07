@@ -1,23 +1,14 @@
 #include "Tensor.h"
 
-bool Tensor::Alloc(int pRank, std::initializer_list<int> pShape) {
-    m_ashape = new TensorShape(pRank, pShape);
+
+bool Tensor::Alloc(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4) {
+    m_ashape = new TensorShape(pDim0, pDim1, pDim2, pDim3, pDim4);
 
     for (int i = 0; i < m_ashape->Getrank(); i++) {
-        m_flat_dim *= m_ashape->Getshape()[i];
+        m_flat_dim *= m_ashape->Getdim()[i];
     }
 
-    return true;
-}
-
-bool Tensor::Alloc(int pRank, std::initializer_list<int> pShape, float *pData){
-    m_ashape = new TensorShape(pRank, pShape);
-
-    m_adata = pData;
-
-    for (int i = 0; i < m_ashape->Getrank(); i++) {
-        m_flat_dim *= m_ashape->Getshape()[i];
-    }
+    m_adata = new float[m_flat_dim];
 
     return true;
 }
@@ -29,21 +20,21 @@ bool Tensor::Delete() {
     return true;
 }
 
-//===========================================================================================
+// ===========================================================================================
 
-Tensor * Tensor::Truncated_normal(int pRank, std::initializer_list<int> pShape){
+Tensor * Tensor::Truncated_normal(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4, float mean, float stddev) {
     std::cout << "Tensor::Truncated_normal()" << '\n';
 
     // 추후 교수님이 주신 코드를 참고해서 바꿀 것
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    Tensor * temp_Tensor = new Tensor(pRank, pShape);
-    int flat_dim = temp_Tensor->GetFlatDim();
-    float *temp_data = new float[flat_dim];
+    Tensor *temp_Tensor = new Tensor(pDim0, pDim1, pDim2, pDim3, pDim4);
+    int     flat_dim    = temp_Tensor->GetFlatDim();
+    float  *temp_data   = new float[flat_dim];
 
     for (int i = 0; i < flat_dim; i++) {
-        std::normal_distribution<float> rand(0, 0.6);
+        std::normal_distribution<float> rand(mean, stddev);
         temp_data[i] = rand(gen);
     }
 
@@ -52,24 +43,20 @@ Tensor * Tensor::Truncated_normal(int pRank, std::initializer_list<int> pShape){
     return temp_Tensor;
 }
 
-Tensor * Tensor::Zero(int pRank, std::initializer_list<int> pShape){
+Tensor * Tensor::Zeros(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4) {
     std::cout << "Tensor::Zero()" << '\n';
 
-    Tensor * temp_Tensor = new Tensor(pRank, pShape);
-    int flat_dim = temp_Tensor->GetFlatDim();
-    float *temp_data = new float[flat_dim];
-
-    temp_Tensor->SetData(temp_data);
+    Tensor *temp_Tensor = new Tensor(pDim0, pDim1, pDim2, pDim3, pDim4);
 
     return temp_Tensor;
 }
 
-Tensor * Tensor::Constant(int pRank, std::initializer_list<int> pShape, float constant){
+Tensor * Tensor::Constants(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4, float constant) {
     std::cout << "Tensor::Constant()" << '\n';
 
-    Tensor * temp_Tensor = new Tensor(pRank, pShape);
-    int flat_dim = temp_Tensor->GetFlatDim();
-    float *temp_data = new float[flat_dim];
+    Tensor *temp_Tensor = new Tensor(pDim0, pDim1, pDim2, pDim3, pDim4);
+    int     flat_dim    = temp_Tensor->GetFlatDim();
+    float  *temp_data   = new float[flat_dim];
 
     for (int i = 0; i < flat_dim; i++) {
         temp_data[i] = constant;
@@ -78,10 +65,9 @@ Tensor * Tensor::Constant(int pRank, std::initializer_list<int> pShape, float co
     temp_Tensor->SetData(temp_data);
 
     return temp_Tensor;
-
 }
 
-void Tensor::PrintData(){
+void Tensor::PrintData() {
     if (m_adata == NULL) {
         std::cout << "data is empty!" << '\n';
         exit(0);
@@ -97,9 +83,11 @@ void Tensor::PrintData(){
      *
      * 알고리즘 아이디어 1_2 :
      * 위에서 구한 rankmulN이 0인 경우를 체크해서 사용
+     *
+     * 추후에는 reculsion으로 바꿀 예정
      */
 
-    int *rank = m_ashape->Getshape();
+    int *rank = m_ashape->Getdim();
 
     if (rank[0] != 0) {
         std::cout << "[ ";
@@ -141,7 +129,7 @@ void Tensor::PrintData(){
         }
 
         std::cout << "]";
-    } else std::cout << m_adata[0] << '\n';
+    } else std::cout << m_adata[0] << " ";
 
     std::cout << '\n';
 }
