@@ -10,13 +10,15 @@
 
 class Tensor {
 private:
+    // 현재는 scala 값은 따로 존재하지 않고 rnak0 dimension 1로 취급한다.
     TensorShape *m_ashape = NULL;
-    float *m_adata = NULL;  // 추후 템플릿으로 수정 예정
-    int m_flat_dim = 1;
+    float *m_adata        = NULL; // 추후 템플릿으로 수정 예정
+    int m_flat_dim        = 1;
 
 public:
     Tensor() {}
 
+    // 추후 list 관련 부분은 rank 5를 최대로 하는 것으로 바뀔 것이다
     Tensor(int pRank, std::initializer_list<int> pShape) {
         std::cout << "Tensor::Tensor(int, std::initializer_list<int)" << '\n';
         Alloc(pRank, pShape);
@@ -38,27 +40,31 @@ public:
 
     bool Delete();
 
-    //===========================================================================================
+    // ===========================================================================================
 
-    static Tensor * Truncated_normal(int pRank, std::initializer_list<int> pShape);
+    static Tensor* Truncated_normal(int pRank, std::initializer_list<int> pShape);
 
-    //===========================================================================================
+    static Tensor* Zero(int pRank, std::initializer_list<int> pShape);
 
-    void Setshape(TensorShape * pshape){
+    static Tensor* Constant(int pRank, std::initializer_list<int> pShape, float constant);
+
+    // ===========================================================================================
+
+    void Setshape(TensorShape *pshape) {
         m_ashape = pshape;
     }
 
-    void SetData(float * pData){
+    void SetData(float *pData) {
         m_adata = pData;
     }
 
-    void SetFlatDim(int pflat_dim){
+    void SetFlatDim(int pflat_dim) {
         m_flat_dim = pflat_dim;
     }
 
-    //===========================================================================================
+    // ===========================================================================================
 
-    TensorShape * Getshape() {
+    TensorShape* Getshape() {
         return m_ashape;
     }
 
@@ -66,23 +72,13 @@ public:
         return m_adata;
     }
 
-    int GetFlatDim(){
+    int GetFlatDim() {
         return m_flat_dim;
     }
 
-    //===========================================================================================
+    // ===========================================================================================
 
-    void PrintData(){
-        if (m_adata == NULL){
-            std::cout << "data is empty!" << '\n';
-            exit(0);
-        }
-
-        for (int i = 0; i < m_flat_dim; i++) {
-            std::cout << m_adata[i] << ' ';
-        }
-        std::cout << '\n';
-    }
+    void PrintData();
 
     // Initialization(const std::string &type = "default");
 };

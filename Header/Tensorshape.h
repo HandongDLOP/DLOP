@@ -8,7 +8,7 @@ class TensorShape {
 private:
     // 확인하기
     int m_rank;
-    int *m_ashape;
+    int *m_ashape = new int[5];
 
 public:
     TensorShape() {}
@@ -28,16 +28,20 @@ public:
         }
 
         m_rank  = pRank;
-        m_ashape = new int[pRank];
 
+        List_to_Shape(pShape);
+
+        return true;
+    }
+
+    // 추후 파라미터 변화에 대해 유연하게 반응하기 위해서
+    void List_to_Shape(std::initializer_list<int> pShape){
         int j = 0;
 
         for (auto i = pShape.begin(); i != pShape.end(); i++) {
             m_ashape[j] = *i;
             j++;
         }
-
-        return true;
     }
 
     int Getrank(){
@@ -45,16 +49,13 @@ public:
     }
 
     int *Getshape(){
-        int * temp = new int[m_rank];
-
-        // deep copy
-        for (int i = 0; i < m_rank; i++){
-            temp[i] = m_ashape[i];
-        }
-
-        return temp;
+        return m_ashape;
     }
 
+    bool Delete(){
+
+        return true;
+    }
 
 };
 
