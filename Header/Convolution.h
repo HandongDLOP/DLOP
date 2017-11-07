@@ -25,6 +25,25 @@ public:
     virtual ~Convolution() {
         std::cout << "Convolution::~Convolution()" << '\n';
     }
+
+    virtual bool Alloc(Operator *pInput, MetaParameter *pParam) {
+
+        return true;
+    }
+
+    virtual bool ComputeForwardPropagate() {
+        std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
+
+
+        return true;
+    }
+
+    virtual bool ComputeBackPropagate() {
+        std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
+
+        return true;
+    }
+
 };
 
 #endif  // CONVOLUTION_H_
