@@ -68,6 +68,18 @@ public:
 
     // ===========================================================================================
 
+    Operator(TensorShape *pshape) {
+        std::cout << "Operator::Operator(TensorShape *) 상속자 상속상태" << '\n';
+        Alloc(pshape);
+    }
+
+    Operator(TensorShape *pshape, std::string pName) : Operator(pName) {
+        std::cout << "Operator::Operator(TensorShape *, std::string) 상속자 상속상태" << '\n';
+        Alloc(pshape);
+    }
+
+    // ===========================================================================================
+
     Operator(Operator *pInput) {
         std::cout << "Operator::Operator(Operator *) 상속자 상속상태" << '\n';
         Alloc(pInput);
@@ -115,6 +127,7 @@ public:
 
     // 추후 Private으로 옮길 의향 있음
     virtual bool Alloc(Tensor *pTensor);
+    virtual bool Alloc(TensorShape *pshape);
     virtual bool Alloc(Operator *pInput);
     virtual bool Alloc(Operator *pInput1, Operator *pInput2);
     virtual bool Alloc(MetaParameter *pParam = NULL);
@@ -137,7 +150,7 @@ public:
         m_pOutputDim = pshape;
     }
 
-    void SetInput(Tensor *pTensor, int num){
+    void SetInput(Tensor *pTensor, int num) {
         // 속에 존재하는 input단의 모든 요소는 prameteric하다
         m_aInput[num] = pTensor;
     }
@@ -152,15 +165,15 @@ public:
     }
 
     // void SetOutput(Tensor *pTensor) {
-    //     if(m_aOutput == NULL) m_aOutput = new Tensor();
-    //     // alloc시에 미리 Tensor자체는 만들어 두어야 한다.
-    //     // shape를 비교할 필요가 있다.
-    //     m_aOutput->SetTensor(pTensor);
+    // if(m_aOutput == NULL) m_aOutput = new Tensor();
+    //// alloc시에 미리 Tensor자체는 만들어 두어야 한다.
+    //// shape를 비교할 필요가 있다.
+    // m_aOutput->SetTensor(pTensor);
     // }
     //
     // void SetOutput(TensorShape *pshape) {
-    //     if(m_aOutput == NULL) m_aOutput = new Tensor();
-    //     m_aOutput->SetTensor(pshape);
+    // if(m_aOutput == NULL) m_aOutput = new Tensor();
+    // m_aOutput->SetTensor(pshape);
     // }
 
     // Gradient 부분은 Trainable한 부분에서만 만들기에 NULL로 초기화할 가능성이 생길 것으로 보인다.
@@ -173,13 +186,13 @@ public:
     }
 
     // void SetGradient(Tensor *pTensor) {
-    //     if(m_aGradient == NULL) m_aGradient = new Tensor();
-    //     m_aGradient->SetTensor(pTensor);
+    // if(m_aGradient == NULL) m_aGradient = new Tensor();
+    // m_aGradient->SetTensor(pTensor);
     // }
     //
     // void SetGradient(TensorShape *pshape) {
-    //     if(m_aGradient == NULL) m_aGradient = new Tensor();
-    //     m_aGradient->SetTensor(pshape);
+    // if(m_aGradient == NULL) m_aGradient = new Tensor();
+    // m_aGradient->SetTensor(pshape);
     // }
 
     void SetDelta(Tensor *pTensor) {
@@ -191,13 +204,13 @@ public:
     }
 
     // void SetDelta(Tensor *pTensor) {
-    //     if(m_aDelta == NULL) m_aDelta = new Tensor();
-    //     m_aDelta->SetTensor(pTensor);
+    // if(m_aDelta == NULL) m_aDelta = new Tensor();
+    // m_aDelta->SetTensor(pTensor);
     // }
     //
     // void SetDelta(TensorShape *pshape) {
-    //     if(m_aDelta == NULL) m_aDelta = new Tensor();
-    //     m_aDelta->SetTensor(pshape);
+    // if(m_aDelta == NULL) m_aDelta = new Tensor();
+    // m_aDelta->SetTensor(pshape);
     // }
 
     void IncreaseCurrentOutputDegree() {

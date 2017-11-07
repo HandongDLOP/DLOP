@@ -32,20 +32,20 @@ bool NeuralNetwork::PropagateDelete() {
 
 // ===========================================================================================
 
-Operator * NeuralNetwork::AddPlaceholder() {
-    std::cout << "NeuralNetwork::Placeholder()" << '\n';
+Operator * NeuralNetwork::AddPlaceholder(TensorShape *pshape) {
+    std::cout << "NeuralNetwork::Placeholder(TensorShape *)" << '\n';
 
-    Operator *temp = new Placeholder();
+    Operator *temp = new Placeholder(pshape);
 
     temp->AddEdgebetweenOperators(_m_pStart);
 
     return temp;
 }
 
-Operator * NeuralNetwork::AddPlaceholder(std::string pName) {
-    std::cout << "NeuralNetwork::Placeholder()" << '\n';
+Operator * NeuralNetwork::AddPlaceholder(TensorShape *pshape, std::string pName) {
+    std::cout << "NeuralNetwork::Placeholder(TensorShape *, std::string )" << '\n';
 
-    Operator *temp = new Placeholder(pName);
+    Operator *temp = new Placeholder(pshape, pName);
 
     temp->AddEdgebetweenOperators(_m_pStart);
 

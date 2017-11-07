@@ -7,6 +7,15 @@ bool Operator::Alloc(Tensor *pTensor) {
     return true;
 }
 
+bool Operator::Alloc(TensorShape *pshape) {
+    std::cout << "Operator::Alloc(Tensor *)" << '\n';
+
+    // for base operator
+    m_aInput     = new Tensor *[1];
+
+    return true;
+}
+
 bool Operator::Alloc(Operator *pInput) {
     std::cout << "Operator::Alloc(Operator *)" << '\n';
 

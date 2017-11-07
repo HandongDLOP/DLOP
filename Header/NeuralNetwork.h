@@ -12,7 +12,9 @@
 #include "Variable.h"
 #include "Relu.h"
 #include "Maxpooling.h"
+#include "Add.h"
 #include "Copy.h"
+
 
 class NeuralNetwork {
 private:
@@ -43,8 +45,8 @@ public:
     //===========================================================================================
 
     // Placeholder 추가
-    Operator* AddPlaceholder();
-    Operator* AddPlaceholder(std::string pName);
+    Operator* AddPlaceholder(TensorShape *pshape);
+    Operator* AddPlaceholder(TensorShape *pshape, std::string pName);
 
     // Propagate
     // Prameter에 basket이 추가될 수 있음
