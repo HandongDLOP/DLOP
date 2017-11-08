@@ -30,8 +30,6 @@ public:
         std::cout << "Add::Alloc(Operator *, Operator *)" << '\n';
         // if pInput1 and pInput2의 shape가 다르면 abort
 
-        std::cout << GetInput()[0]->Getshape() << '\n';
-
         Tensor *temp_output = new Tensor(GetInput()[0]->Getshape());
 
         SetOutput(temp_output);
@@ -61,14 +59,15 @@ public:
             exit(0);
         }
 
+        int size = GetInput()[0]->GetFlatDim();
+
         float *data0 = GetInput()[0]->GetData();
 
         float *data1 = GetInput()[1]->GetData();
 
+        float *result = new float[size];
 
-        float *result = new float[GetInput()[0]->GetFlatDim()];
-
-        for (int i = 0; i < GetInput()[0]->GetFlatDim(); i++) {
+        for (int i = 0; i < size; i++) {
             result[i] = data0[i] + data1[i];
         }
 
@@ -79,6 +78,34 @@ public:
 
     virtual bool ComputeBackPropagate() {
         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
+
+        int size = GetInput()[0]->GetFlatDim();
+
+        // Test code
+        // Tensor * temp = Tensor::Constants(5, 1, 0, 0, 0, 1.0);
+        //
+        // temp->PrintData();
+        //
+        // float *delta = temp->GetData();
+
+        float *delta = GetDelta()->GetData();
+
+        float *_delta0 = new float[size];
+        float *_delta1 = new float[size];
+
+        // 위에서 내려온 delta를 그대로 흘린다.
+        for(int i = 0; i < size; i++){
+            _delta0[i] = _delta1[i] = delta[i];
+        }
+
+        GetInputOperator()[0]->SetDelta(_delta0);
+
+        GetInputOperator()[0]->GetDelta()->PrintData();
+
+        GetInputOperator()[1]->SetDelta(_delta1);
+
+        GetInputOperator()[1]->GetDelta()->PrintData();
+
 
         return true;
     }
