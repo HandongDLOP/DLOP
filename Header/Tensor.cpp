@@ -84,7 +84,7 @@ void Tensor::PrintData() {
      * 알고리즘 아이디어 1_2 :
      * 위에서 구한 rankmulN이 0인 경우를 체크해서 사용
      *
-     * 추후에는 reculsion으로 바꿀 예정
+     * 추후에는 recursion으로 바꿀 예정
      */
 
     int *rank = m_ashape->Getdim();

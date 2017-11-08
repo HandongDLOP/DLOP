@@ -11,7 +11,7 @@
 class Operator {
 private:
     // N-dim 을 나타낼 수 있는 데이터 타입
-    TensorShape *m_pInputDim  = NULL;
+    TensorShape **m_pInputDim  = NULL;
     TensorShape *m_pOutputDim = NULL;
 
     // Constructor에서 받는 input은 Operator이지만, 실제로 사용은 Tensor이다.
@@ -142,8 +142,8 @@ public:
     // ===========================================================================================
 
     //// Setter
-    void SetInputDim(TensorShape *pshape) {
-        m_pInputDim = pshape;
+    void SetInputDim(TensorShape *pshape, int num) {
+        m_pInputDim[num] = pshape;
     }
 
     void SetOutputDim(TensorShape *pshape) {
@@ -225,7 +225,9 @@ public:
 
     //
     //// Getter (파생 클래스에서 사용합니다.)
-    // void GetInputDim() const;
+    TensorShape** GetInputDim() const{
+        return m_pInputDim;
+    }
     TensorShape* GetOutputDim() const {
         return m_pOutputDim;
     }

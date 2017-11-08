@@ -11,7 +11,7 @@ bool Operator::Alloc(TensorShape *pshape) {
     std::cout << "Operator::Alloc(Tensor *)" << '\n';
 
     // for base operator
-    m_aInput     = new Tensor *[1];
+    m_aInput = new Tensor *[1];
 
     return true;
 }
@@ -19,8 +19,10 @@ bool Operator::Alloc(TensorShape *pshape) {
 bool Operator::Alloc(Operator *pInput) {
     std::cout << "Operator::Alloc(Operator *)" << '\n';
 
+    m_pInputDim = new TensorShape *[1];
+
     // 추후 자동 계산이 가능하게 구현 예정
-    m_aInput     = new Tensor *[1];
+    m_aInput = new Tensor *[1];
 
     // Shape도 받을 수 있도록 코드 수정 alloc도 마찬가지
     AddEdgebetweenOperators(pInput);
@@ -31,8 +33,10 @@ bool Operator::Alloc(Operator *pInput) {
 bool Operator::Alloc(Operator *pInput1, Operator *pInput2) {
     std::cout << "Operator::Alloc(Operator *, Operator *)" << '\n';
 
+    m_pInputDim = new TensorShape *[2];
+
     // 추후 자동 계산이 가능하게 구현 예정
-    m_aInput     = new Tensor *[2];
+    m_aInput = new Tensor *[2];
 
     // Shape도 받을 수 있도록 코드 수정 alloc도 마찬가지
     AddEdgebetweenOperators(pInput1);
@@ -51,7 +55,7 @@ void Operator::Delete() {
     delete[] m_aInput;
     delete m_aOutput;
     delete m_aGradient;
-    // delete m_aDelta;
+    delete m_aDelta;
     delete[] m_aOutputOperator;
     delete[] m_aInputOperator;
 }
@@ -111,7 +115,7 @@ bool Operator::AddEdgebetweenOperators(Operator *pInput) {
     _AddInputEdge(pInput);
     pInput->_AddOutputEdge(this);
 
-    SetInput(pInput->GetOutput(), m_InputDegree-1);
+    SetInput(pInput->GetOutput(), m_InputDegree - 1);
 
     return true;
 }
