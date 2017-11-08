@@ -10,7 +10,7 @@
 class Variable : public Operator {
 public:
     Variable(std::string pName) : Operator(pName) {
-    std::cout << "Variable::Variable(std::string)" << '\n';
+        std::cout << "Variable::Variable(std::string)" << '\n';
     }
 
     Variable(Tensor *pTensor, std::string pName) : Operator(pTensor, pName) {
@@ -28,9 +28,13 @@ public:
 
         SetOutput(pTensor);
 
-        Tensor * temp_Gradient = new Tensor(pTensor);
+        Tensor *temp_Gradient = new Tensor(pTensor->Getshape());
 
         SetGradient(temp_Gradient);
+
+        Tensor *temp_delta = new Tensor(pTensor->Getshape());
+
+        SetDelta(temp_delta);
 
         return true;
     }
@@ -43,6 +47,23 @@ public:
 
     virtual bool ComputeBackPropagate() {
         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
+
+        int size = GetOutput()->GetFlatDim();
+
+        float *delta = GetDelta()->GetData();
+
+        float *grad = GetGradient()->GetData();
+
+        float *_grad = new float (size);
+
+        // 이전에 구해져 있던 gradient와 합치기
+        for (int i = 0; i < size; i++) {
+            _grad[i] = delta[i] + grad[i];
+        }
+
+        SetGradient(_grad);
+
+        GetGradient()->PrintData();
 
         return true;
     }
