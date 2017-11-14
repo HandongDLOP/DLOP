@@ -19,14 +19,21 @@ bool NeuralNetwork::Alloc() {
 
 void NeuralNetwork::Delete() {
     std::cout << "NeuralNetwork::Delete()" << '\n';
-    PropagateDelete();
-    delete _m_aEnd;
+    DeleteOperator();
 }
 
 // ===========================================================================================
 
-bool NeuralNetwork::PropagateDelete() {
-    _m_aEnd->PropagateDelete();
+bool NeuralNetwork::AllocOptimizer(Optimizer_name pOptimizer_name){
+    _m_aEnd->AllocOptimizer(pOptimizer_name);
+    // 마지막 Operator는 거의 100% Optimizer가 필요 없다.
+    // _m_aEnd->SetOptimizer(pOptimizer);
+    return true;
+}
+
+bool NeuralNetwork::DeleteOperator() {
+    _m_aEnd->DeleteInputOperator();
+    delete _m_aEnd;
     return true;
 }
 

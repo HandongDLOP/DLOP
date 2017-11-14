@@ -5,13 +5,14 @@
 #include <string>
 #include <algorithm>
 
-#include "Tensor.h"
+// #include "Tensor.h"
 #include "MetaParameter.h"
+#include "Factory.h"
 
 class Operator {
 private:
     // N-dim 을 나타낼 수 있는 데이터 타입
-    TensorShape **m_pInputDim  = NULL;
+    TensorShape **m_pInputDim = NULL;
     TensorShape *m_pOutputDim = NULL;
 
     // Constructor에서 받는 input은 Operator이지만, 실제로 사용은 Tensor이다.
@@ -34,6 +35,9 @@ private:
 
     int m_currentOutputDegree = 0;
     int m_currentInputDegree  = 0;
+
+    // for Optimizer
+    Optimizer *m_aOptimizer = NULL;
 
     // identifier // 이제 Operator를 변수로 접근할 수 있게 되어 필요가 없다.
     std::string m_name = "NO NAME";
@@ -131,9 +135,10 @@ public:
     virtual bool Alloc(Operator *pInput);
     virtual bool Alloc(Operator *pInput1, Operator *pInput2);
     virtual bool Alloc(MetaParameter *pParam = NULL);
+    bool         AllocOptimizer(Optimizer_name pOptimizer_name);
 
     virtual void Delete();
-    bool         PropagateDelete();
+    bool         DeleteInputOperator();
 
     // ===========================================================================================
 
@@ -213,6 +218,10 @@ public:
     // m_aDelta->SetTensor(pshape);
     // }
 
+    void SetOptimizer(Optimizer *pOptimizer) {
+        m_aOptimizer = pOptimizer;
+    }
+
     void IncreaseCurrentOutputDegree() {
         m_currentOutputDegree++;
     }
@@ -225,9 +234,10 @@ public:
 
     //
     //// Getter (파생 클래스에서 사용합니다.)
-    TensorShape** GetInputDim() const{
+    TensorShape** GetInputDim() const {
         return m_pInputDim;
     }
+
     TensorShape* GetOutputDim() const {
         return m_pOutputDim;
     }
@@ -274,6 +284,10 @@ public:
 
     int GetCurrentInputDegree() const {
         return m_currentInputDegree;
+    }
+
+    Optimizer * GetOptimizer() {
+        return m_aOptimizer;
     }
 
     std::string GetName() {

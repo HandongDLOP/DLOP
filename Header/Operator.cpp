@@ -49,6 +49,17 @@ bool Operator::Alloc(MetaParameter *pParam) {
     return true;
 }
 
+bool Operator::AllocOptimizer(Optimizer_name pOptimizer_name) {
+    for (int i = 0; i < m_InputDegree; i++) {
+        m_aInputOperator[i]->AllocOptimizer(pOptimizer_name);
+
+        Optimizer *pOptimizer = Factory::OptimizerFactory(pOptimizer_name);
+        m_aInputOperator[i]->SetOptimizer(pOptimizer);
+    }
+
+    return true;
+}
+
 void Operator::Delete() {
     std::cout << "Operator::Delete()" << '\n';
 
@@ -58,12 +69,13 @@ void Operator::Delete() {
     delete m_aDelta;
     delete[] m_aOutputOperator;
     delete[] m_aInputOperator;
+    delete m_aOptimizer;
 }
 
-bool Operator::PropagateDelete() {
+bool Operator::DeleteInputOperator() {
     // Postorder : like ForwardPropagate
     for (int i = 0; i < m_InputDegree; i++) {
-        m_aInputOperator[i]->PropagateDelete();
+        m_aInputOperator[i]->DeleteInputOperator();
         delete m_aInputOperator[i];
     }
     return true;
