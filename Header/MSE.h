@@ -85,14 +85,14 @@ public:
             exit(0);
         }
 
-        int output    = m_pInputDim0->Getdim()[0];
-        int batch    = m_pInputDim0->Getdim()[1];
+        int output = m_pInputDim0->Getdim()[0] * m_pInputDim0->Getdim()[1]  /* * m_pInputDim0->Getdim()[2] == ch*/;
+        // int batch  = m_pInputDim0->Getdim()[3];
 
         float *data0  = GetInput()[0]->GetData();
         float *data1  = GetInput()[1]->GetData();
-        float *result = new float[output * batch];
+        float *result = new float[output];
 
-        for(int i = 0; i < output; i++){
+        for (int i = 0; i < output; i++) {
             result[i] = (data0[i] - data1[i]) / output;
         }
 
