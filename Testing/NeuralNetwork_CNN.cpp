@@ -1,5 +1,5 @@
 /*
- * @breif: 학습이 되거나 복잡한 연산은 class 단에서 모두 마무리하고,
+ * @brief: 학습이 되거나 복잡한 연산은 class 단에서 모두 마무리하고,
  *         main에서 detect하는 모든 Tensor변수는 Variable 들이며,
  *         학습의 대상으로, 사용자가 실제로 얻고 싶은 결과들이다.
  *         이 것들을 저장하는 방법들에 대해서 생각할 필요가 있다.
@@ -27,37 +27,39 @@ int main(int argc, char const *argv[]) {
     NeuralNetwork HGUNN;
 
     /*
-     * @breif: plaseholder는 Operator를 상속받으며, NeuralNetwork에서만 initialize 한다.
+     * @brief: plaseholder는 Operator를 상속받으며, NeuralNetwork에서만 initialize 한다.
      */
-    Operator *x = HGUNN.AddPlaceholder("x"  /*"float", TensorShape = [mini_batch, 28 * 28]*/);  // string으로 되어 있는 것들은 모두 enum으로 바꾸자
-    Operator *y = HGUNN.AddPlaceholder("y"  /*"int", TensorShape = [mini_batch, ]*/);
+    Operator *x = HGUNN.AddPlaceholder(new TensorShape(1,0,0,0,0), "x"  /*"float", TensorShape = [mini_batch, 28 * 28]*/);  // string으로 되어 있는 것들은 모두 enum으로 바꾸자
+    // Operator *y = HGUNN.AddPlaceholder("y"  /*"int", TensorShape = [mini_batch, ]*/);
 
     // ===========================<layer : Conv_1>============================
     // =======================================================================
 
     /*
-     * @breif: Static Method를 사용한다. (객체 없이 Method를 사용하는 것이 가능하다)
+     * @brief: Static Method를 사용한다. (객체 없이 Method를 사용하는 것이 가능하다)
      */
+
     Operator *W_conv1 = new Variable("W_conv1"  /*truncated_normal({ 5, 5, 1, 32 }, stddev = 0.1)*/);
     Operator *b_conv1 = new Variable("b_conv1"  /*constant(0.1, { 32 })*/);
 
     //// =======================<With no MetaParameter()>=======================
     //
     ///*
-    // * @breif: initialize Operator, and it can be work
+    // * @brief: initialize Operator, and it can be work
     // */
     // Operator *Conv_1 = new Convolution(x, W_conv1, , strides = { 1, 1, 1, 1 }, padding = "SAME");
     //// =======================================================================
     // ========================<With MetaParameter()>=========================
 
     /*
-     * @breif: MetaParameter initialize with its Usage
+     * @brief: MetaParameter initialize with its Usage
      *         And initialize Operator
      *         Personally, We can delete MetaParameter()
      */
     Operator *Conv_1 = AddConvolution(x, W_conv1, "Conv_1");  // 함수 정의
     // =======================================================================
-    Operator *Relu_1 = new Relu(Conv_1, b_conv1, "Relu_1");
+    Operator *Add_1  = new Add(Conv_1, b_conv1);
+    Operator *Relu_1 = new Relu(Add_1, "Relu_1");
     Operator *Pool_1 = AddMaxpooling(Relu_1, "Pool_1");
 
 
@@ -68,8 +70,11 @@ int main(int argc, char const *argv[]) {
     Operator *b_conv2 = new Variable("b_conv2"  /*Tensor.constant(0.1, { 64 })*/);
 
     Operator *Conv_2 = AddConvolution(Pool_1, W_conv2, "Conv_2");
-    Operator *Relu_2 = new Relu(Conv_2, b_conv2, "Relu_2");
+    Operator *Add_2  = new Add(Conv_2, b_conv2);
+    Operator *Relu_2 = new Relu(Add_2, "Relu_2");
     Operator *Pool_2 = AddMaxpooling(Relu_2, "Pool_2");
+
+    HGUNN.SetEndOperator(Pool_2);
 
     HGUNN.Training(Conv_1, Pool_2);
 
@@ -96,13 +101,13 @@ int main(int argc, char const *argv[]) {
     //// =======================================================================
     //
     ///*
-    // * @breif: 이 부분에서 나오는 accuracy는 Training할 때나, Testing때 출력할 수 있다.
+    // * @brief: 이 부분에서 나오는 accuracy는 Training할 때나, Testing때 출력할 수 있다.
     // *         (사실 뭐든 출력할 수 있다) // 아마 이 것도 operator일 가능성이 높다.
     // */
     // accuracy = NULL;
     //
     ///*
-    // * @breif: Graph가 올바로 만들어졌는지 체크 및 initialize 작업
+    // * @brief: Graph가 올바로 만들어졌는지 체크 및 initialize 작업
     // */
     // HGUNN.Create_Graph() // 추가로 옵션이 생기면, 그 때 수정하는 것으로 하자
     //
@@ -110,31 +115,31 @@ int main(int argc, char const *argv[]) {
     //// =======================================================================
     //
     ///*
-    // * @breif: We can explicit the start Operator variable
+    // * @brief: We can explicit the start Operator variable
     // */
     //
     ///*
-    // * @breif: EPOCH = 10
+    // * @brief: EPOCH = 10
     // */
     // for (int i = 0; i < EPOCH; i++) {
     ///*
-    // * @breif: BATCH = 100
+    // * @brief: BATCH = 100
     // */
     // for (int j = 0; j < BATCH; j++) {
     ///*
-    // * @breif: mini_batch = 100
+    // * @brief: mini_batch = 100
     // */
     // batch = train.next_batch(100);
     //
     ///*
-    // * @breif: parm_1은 method의 행동을 결정한다.(Overridding)
+    // * @brief: parm_1은 method의 행동을 결정한다.(Overridding)
     // */
     // HGUNN.Training(train_step, basket(x = batch[0], y_ = batch[1]));
     // }
     // batch = train_data.next_batch(100);
     //
     ///*
-    // * @breif: parm_1은 출력하고 싶은 정보이다.(Overridding)
+    // * @brief: parm_1은 출력하고 싶은 정보이다.(Overridding)
     // *         여러개를 출력하게 하는 것도 가능하다.
     // */
     // std::cout << HGUNN.Testing(accuracy, basket(x = batch[0], y_ = batch[1])) << '\n';
