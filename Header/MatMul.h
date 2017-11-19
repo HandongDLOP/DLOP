@@ -65,6 +65,7 @@ public:
         TensorShape *m_pInputDim1 = GetInputDim()[1];
 
         if (m_pInputDim0->Getdim()[1] != m_pInputDim1->Getdim()[0]) {
+            std::cout << m_pInputDim0->Getdim()[1] << ", " << m_pInputDim1->Getdim()[0] << '\n';
             std::cout << "data has invalid dimension" << '\n';
             exit(0);
         }

@@ -59,7 +59,7 @@ public:
 
         float *grad = GetGradient()->GetData();
 
-        float *_grad = new float (size);
+        float *_grad = new float[size];
 
         // 이전에 구해져 있던 gradient와 합치기
         for (int i = 0; i < size; i++) {
