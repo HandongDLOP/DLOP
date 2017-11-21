@@ -30,7 +30,7 @@ int main(int argc, char const *argv[]) {
 
     Operator *add_1 = new Add(mat_1, b1);
 
-    Operator *relu_1 = new Relu(add_1, "relu_1");
+    Operator *sig_1 = new Sigmoid(add_1, "sig_1");
 
     // ======================= layer 2=======================
     Tensor   *_w2 = Tensor::Truncated_normal(2, 2, 0, 0, 0, 0.0, 0.6);
@@ -39,13 +39,13 @@ int main(int argc, char const *argv[]) {
     Tensor   *_b2 = Tensor::Constants(1, 2, 0, 0, 0, 1.0);
     Operator *b2  = new Variable(_b2, "b2", 1); // 오류 발생 원인 찾기
 
-    Operator *mat_2 = new MatMul(relu_1, w2);
+    Operator *mat_2 = new MatMul(sig_1, w2);
 
     Operator *add_2 = new Add(mat_2, b2);
 
-    Operator *relu_2 = new Relu(add_2, "relu_2");
+    Operator *sig_2 = new Sigmoid(add_2, "sig_2");
 
-    Operator *err = new MSE(relu_2, ans, "MSE");
+    Operator *err = new MSE(sig_2, ans, "MSE");
 
     // ======================= Create Graph =======================
 
