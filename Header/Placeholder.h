@@ -25,6 +25,11 @@ public:
         Alloc(pshape);
     }
 
+    Placeholder(Tensor *pTensor, std::string pName) : Operator(pTensor, pName) {
+        std::cout << "Placeholder::Placeholder(Tensor *, std::string)" << '\n';
+        Alloc(pTensor);
+    }
+
     virtual ~Placeholder() {
         std::cout << "Placeholder::~Placeholder()" << '\n';
     }
@@ -32,7 +37,18 @@ public:
     virtual bool Alloc(TensorShape *pshape) {
         Tensor *temp_output = new Tensor(pshape);
 
+        SetOutputDim(pshape);
+
         SetOutput(temp_output);
+
+        return true;
+    }
+
+    virtual bool Alloc(Tensor *pTensor) {
+
+        SetOutputDim(pTensor->Getshape());
+
+        SetOutput(pTensor);
 
         return true;
     }

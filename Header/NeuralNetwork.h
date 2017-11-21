@@ -48,8 +48,9 @@ public:
     // ===========================================================================================
 
     // Placeholder 추가 // 추후 이렇게 하지 않아도 연결할 수 있는 방법 찾기
-    Operator* AddPlaceholder(TensorShape *pshape);
-    Operator* AddPlaceholder(TensorShape *pshape, std::string pName);
+    // Operator* AddPlaceholder(TensorShape *pshape);
+    // Operator* AddPlaceholder(TensorShape *pshape, std::string pName);
+    Operator* AddPlaceholder(Tensor *pTensor, std::string pName);
 
     // Propagate
     // Prameter에 basket이 추가될 수 있음
@@ -61,9 +62,16 @@ public:
     bool Testing(Operator *_pStart = NULL, Operator *_pEnd = NULL);
 
     // Set _m_aEnd : 추후에는 모델이 만들어질 때 자동으로 alloc되게 변환해야 함  // 임시 함수
+
+    // ===========================================================================================
+    bool CreateGraph(Optimizer_name pOptimizer_name, Operator *pEnd);
+    bool CreateGraph(Optimizer_name pOptimizer_name);
+
     void SetEndOperator(Operator *pEnd) {
         _m_aEnd = pEnd;
     }
+    bool SetEndOperator();
+
 };
 
 #endif  // NEURALNETWORK_H_

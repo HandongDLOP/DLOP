@@ -11,6 +11,7 @@
 
 class Operator {
 private:
+
     // N-dim 을 나타낼 수 있는 데이터 타입
     TensorShape **m_pInputDim = NULL;
     TensorShape *m_pOutputDim = NULL;
@@ -23,6 +24,7 @@ private:
     // Gradient의 경우는 자신의 Output Operator에서 계산해서 이미 넘겨준 상태 (계산 과정 잘 생각해보기)
     Tensor *m_aGradient = NULL;
     Tensor *m_aDelta    = NULL;
+
     // Tensor *m_Deltabar; // Layer단에서 사용하게 되기에, 항상 필요하지는 않다.
 
     // for Linked List
@@ -45,10 +47,12 @@ private:
     // Private Operator
 
 private:
+
     bool _AddInputEdge(Operator *pInput);
     bool _AddOutputEdge(Operator *pOutput);
 
 public:
+
     Operator() {
         std::cout << "Operator::Operator() 상속자 상속상태" << '\n';
     }
@@ -122,8 +126,10 @@ public:
 
     virtual ~Operator() {
         std::cout << "Operator::~Operator()" << '\n';
+
         // parent class Delete
         Delete();
+
         // 자식 클래스에서는 새롭게 만들어지는 MetaParameter에 관한 delete를 만들어주어야 한다
     }
 
@@ -133,7 +139,8 @@ public:
     virtual bool Alloc(Tensor *pTensor);
     virtual bool Alloc(TensorShape *pshape);
     virtual bool Alloc(Operator *pInput);
-    virtual bool Alloc(Operator *pInput1, Operator *pInput2);
+    virtual bool Alloc(Operator *pInput1,
+                       Operator *pInput2);
     virtual bool Alloc(MetaParameter *pParam = NULL);
     bool         AllocOptimizer(Optimizer_name pOptimizer_name);
 
@@ -286,7 +293,7 @@ public:
         return m_currentInputDegree;
     }
 
-    Optimizer * GetOptimizer() {
+    Optimizer* GetOptimizer() {
         return m_aOptimizer;
     }
 
@@ -297,17 +304,20 @@ public:
     // ===========================================================================================
 
     // Propagate
-    bool         ForwardPropagate(); // ForwardPropagate 진행 방향 및 순서
-    virtual bool ComputeForwardPropagate();  // Compute to (추후 interface 형태로 수정 예정)
-
+    bool         ForwardPropagate();        // ForwardPropagate 진행 방향 및 순서
+    virtual bool ComputeForwardPropagate(); // Compute to (추후 interface 형태로 수정 예정)
 
     // BackPropagate
-    bool         BackPropagate(); // BackPropagate 진행 방향 및 순서
-    virtual bool ComputeBackPropagate();  // compute delta and detabar(if we need to) (추후 interface 형태로 수정 예정)
+    bool         BackPropagate();           // BackPropagate 진행 방향 및 순서
+    virtual bool ComputeBackPropagate();    // compute delta and detabar(if we need to) (추후 interface 형태로 수정 예정)
 
+
+    // ===========================================================================================
+
+    Operator * CheckEndOperator();
 
     //// UpdateWeight
     // bool UpdateWeight();
 };
 
-#endif  // OPERATOR_H_
+#endif // OPERATOR_H_

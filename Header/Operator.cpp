@@ -4,11 +4,15 @@
 bool Operator::Alloc(Tensor *pTensor) {
     std::cout << "Operator::Alloc(Tensor *)" << '\n';
 
+    m_pInputDim = new TensorShape *[1];
+    m_aInput    = new Tensor *[1]; // 이것도 자동화 시킬 필요 있음
     return true;
 }
 
 bool Operator::Alloc(TensorShape *pshape) {
     std::cout << "Operator::Alloc(Tensor *)" << '\n';
+
+    m_pInputDim = new TensorShape *[1];
 
     // for base operator
     m_aInput = new Tensor *[1];
@@ -75,9 +79,18 @@ void Operator::Delete() {
 bool Operator::DeleteInputOperator() {
     // Postorder : like ForwardPropagate
     for (int i = 0; i < m_InputDegree; i++) {
-        m_aInputOperator[i]->DeleteInputOperator();
-        delete m_aInputOperator[i];
+        m_aInputOperator[i]->IncreaseCurrentOutputDegree();
+
+        if (m_aInputOperator[i]->GetCurrentOutputDegree() == 1) {
+            m_aInputOperator[i]->DeleteInputOperator();
+        }
+
+        if (m_aInputOperator[i]->GetOutputDegree() == m_aInputOperator[i]->GetCurrentOutputDegree()) {
+            // std::cout << '\n' << m_aInputOperator[i]->GetName() << '\n' << std::endl;
+            delete m_aInputOperator[i];
+        }
     }
+
     return true;
 }
 
@@ -136,20 +149,40 @@ bool Operator::AddEdgebetweenOperators(Operator *pInput) {
 
 /* BFS로 다시 구현할 필요 있음 */
 
+// bool Operator::ForwardPropagate(){
+//     // Preorder
+//     this->ComputeForwardPropagate();
+//
+//     // value 조정
+//     for (int i = 0; i < m_OutputDegree; i++) {
+//         if (m_aOutputOperator[i] != NULL) m_aOutputOperator[i]->IncreaseCurrentInputDegree();
+//     }
+//     m_currentInputDegree = 0;
+//
+//     for (int i = 0; i < m_OutputDegree; i++) {
+//         if (m_aOutputOperator[i]->GetInputDegree() == m_aOutputOperator[i]->GetCurrentInputDegree()) {
+//             m_aOutputOperator[i]->ForwardPropagate();
+//         }
+//     }
+//     return true;
+// }
+
 bool Operator::ForwardPropagate() {
     // Postorder
-    for (int i = 0; i < m_InputDegree; i++) {
-        m_aInputOperator[i]->ForwardPropagate();
+
+    // BFS로 얼른 바꾸자.... 현재 좋은 생각이 떠오르지 않음...
+    // ForwardPropagate가 중복으로 실행되는 것만 막은 상황
+    if ((m_currentOutputDegree == 0) || (m_currentOutputDegree == 1)) {
+        for (int i = 0; i < m_InputDegree; i++) {
+            m_aInputOperator[i]->IncreaseCurrentOutputDegree();
+            m_aInputOperator[i]->ForwardPropagate();
+        }
+
+        this->ComputeForwardPropagate();
     }
 
-    if (this->GetInputDegree() == this->GetCurrentInputDegree()) {
-        this->ComputeForwardPropagate();
-
-        // value 조정
-        for (int i = 0; i < m_OutputDegree; i++) {
-            if (m_aOutputOperator[i] != NULL) m_aOutputOperator[i]->IncreaseCurrentInputDegree();
-        }
-        m_currentInputDegree = 0;
+    if (m_OutputDegree == m_currentOutputDegree) {
+        m_currentOutputDegree = 0;
     }
 
     return true;
@@ -186,4 +219,15 @@ bool Operator::ComputeBackPropagate() {
     std::cout << m_name << " : ComputeBackPropagate()" << '\n';
 
     return true;
+}
+
+// ===========================================================================================
+
+Operator * Operator::CheckEndOperator() {
+    if (m_OutputDegree == 0) {
+        return this;
+    } else {
+        // 추후에는 모든 Operator의 Output을 확인하도록 한다.
+        return m_aOutputOperator[0]->CheckEndOperator();
+    }
 }

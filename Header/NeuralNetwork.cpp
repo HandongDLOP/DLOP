@@ -24,8 +24,9 @@ void NeuralNetwork::Delete() {
 
 // ===========================================================================================
 
-bool NeuralNetwork::AllocOptimizer(Optimizer_name pOptimizer_name){
+bool NeuralNetwork::AllocOptimizer(Optimizer_name pOptimizer_name) {
     _m_aEnd->AllocOptimizer(pOptimizer_name);
+
     // 마지막 Operator는 거의 100% Optimizer가 필요 없다.
     // _m_aEnd->SetOptimizer(pOptimizer);
     return true;
@@ -39,20 +40,31 @@ bool NeuralNetwork::DeleteOperator() {
 
 // ===========================================================================================
 
-Operator * NeuralNetwork::AddPlaceholder(TensorShape *pshape) {
-    std::cout << "NeuralNetwork::Placeholder(TensorShape *)" << '\n';
+// Operator * NeuralNetwork::AddPlaceholder(TensorShape *pshape) {
+//     std::cout << "NeuralNetwork::Placeholder(TensorShape *)" << '\n';
+//
+//     Operator *temp = new Placeholder(pshape);
+//
+//     temp->AddEdgebetweenOperators(_m_pStart);
+//
+//     return temp;
+// }
+//
+// Operator * NeuralNetwork::AddPlaceholder(TensorShape *pshape, std::string pName) {
+//     std::cout << "NeuralNetwork::Placeholder(TensorShape *, std::string )" << '\n';
+//
+//     Operator *temp = new Placeholder(pshape, pName);
+//
+//     temp->AddEdgebetweenOperators(_m_pStart);
+//
+//     return temp;
+// }
 
-    Operator *temp = new Placeholder(pshape);
+Operator * NeuralNetwork::AddPlaceholder(Tensor *pTensor, std::string pName) {
+    std::cout << "NeuralNetwork::Placeholder(Tensor *, std::string )" << '\n';
 
-    temp->AddEdgebetweenOperators(_m_pStart);
-
-    return temp;
-}
-
-Operator * NeuralNetwork::AddPlaceholder(TensorShape *pshape, std::string pName) {
-    std::cout << "NeuralNetwork::Placeholder(TensorShape *, std::string )" << '\n';
-
-    Operator *temp = new Placeholder(pshape, pName);
+    // placeholder의 경우 trainable하지 않다.
+    Operator *temp = new Variable(pTensor, pName, 0);
 
     temp->AddEdgebetweenOperators(_m_pStart);
 
@@ -116,6 +128,36 @@ bool NeuralNetwork::Testing(Operator *_pStart, Operator *_pEnd) {
     ForwardPropagate(_pStart, _pEnd);
 
     std::cout << '\n';
+
+    return true;
+}
+
+// ===========================================================================================
+
+bool NeuralNetwork::CreateGraph(Optimizer_name pOptimizer_name, Operator *pEnd) {
+    SetEndOperator(pEnd);
+    AllocOptimizer(pOptimizer_name);
+
+    return true;
+}
+
+bool NeuralNetwork::CreateGraph(Optimizer_name pOptimizer_name) {
+    SetEndOperator();
+    AllocOptimizer(pOptimizer_name);
+
+    return true;
+}
+
+// bool NeuralNetwork::CreateGraph(){
+//     // 추후에 만들 Optimizer는 그 자체가 Trainable Operator주소를 가질 수 있도록 만들 것이다.
+//     // factory method 삭제예정
+// }
+
+bool NeuralNetwork::SetEndOperator() {
+    _m_aEnd = _m_pStart->CheckEndOperator();
+
+    // std::cout << _m_aEnd->GetName() << '\n';
+    // std::cout << temp->GetName() << '\n';
 
     return true;
 }
