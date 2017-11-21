@@ -1,5 +1,5 @@
-#ifndef RELU_H_
-#define RELU_H_    value
+#ifndef SIGMOID_H_
+#define SIGMOID_H_    value
 
 #include <iostream>
 #include <string>
@@ -7,30 +7,26 @@
 #include "Tensor.h"
 #include "Operator.h"
 
-class Relu : public Operator {
+class Sigmoid : public Operator {
 public:
     // Constructor의 작업 순서는 다음과 같다.
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
-    // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (Relu::Alloc())
-    Relu(Operator *pInput, std::string pName) : Operator(pInput, pName) {
-        std::cout << "/* Relu::Relu(Operator *) */" << '\n';
+    // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (Sigmoid::Alloc())
+    Sigmoid(Operator *pInput, std::string pName) : Operator(pInput, pName) {
+        std::cout << "/* Sigmoid::Sigmoid(Operator *) */" << '\n';
         Alloc(pInput);
     }
 
-    virtual ~Relu() {
-        std::cout << "Relu::~Relu()" << '\n';
+    virtual ~Sigmoid() {
+        std::cout << "Sigmoid::~Sigmoid()" << '\n';
     }
 
     virtual bool Alloc(Operator *pInput) {
-        std::cout << "Relu::Alloc(Operator *, Operator *)" << '\n';
+        std::cout << "Sigmoid::Alloc(Operator *, Operator *)" << '\n';
 
         Tensor *temp_output = new Tensor(GetInput()[0]->Getshape());
 
         SetOutput(temp_output);
-
-        // Tensor *temp_Gradient = new Tensor(GetInput()[0]->Getshape());
-        //
-        // SetGradient(temp_Gradient);
 
         Tensor *temp_delta = new Tensor(GetInput()[0]->Getshape());
 
@@ -49,7 +45,7 @@ public:
         float *result = new float[GetInput()[0]->GetFlatDim()];
 
         for (int i = 0; i < size; i++) {
-            result[i] = Max(data[i], 0.0);
+            result[i] = sigmoid(data[i]);
         }
 
         SetOutput(result);
@@ -74,11 +70,7 @@ public:
         float *_delta = new float[size];
 
         for (int i = 0; i < size; i++) {
-            if (output[i] > 0.0) {
-                _delta[i] = delta[i];
-            } else {
-                _delta[i] = 0;
-            }
+                _delta[i] = delta[i] * output[i] * (1 - output[i]);
         }
 
         GetInputOperator()[0]->SetDelta(_delta);
@@ -88,14 +80,10 @@ public:
         return true;
     }
 
-    // for relu
-    float Max(float data1, float data2) {
-        float temp = 0.0;
-
-        if (data1 >= data2) temp = data1;
-        else temp = data2;
-        return temp;
+    // for Sigmoid
+    float sigmoid(float data) {
+        return 1.F / (1.F + (float)exp(-data));
     }
 };
 
-#endif  // RELU_H_
+#endif  // SIGMOID_H_

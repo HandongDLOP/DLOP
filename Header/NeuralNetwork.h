@@ -10,6 +10,7 @@
 #include "Convolution.h"
 #include "Variable.h"
 #include "Relu.h"
+#include "Sigmoid.h"
 #include "Maxpooling.h"
 #include "Add.h"
 #include "Copy.h"
