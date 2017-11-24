@@ -148,6 +148,10 @@ public:
 
     //// Setter
     // Gradient 부분은 Trainable한 부분에서만 만들기에 NULL로 초기화할 가능성이 생길 것으로 보인다.
+    void SetOutput(Tensor *pTensor) {
+        m_aOutput = pTensor;
+    }
+
     void SetGradient(Tensor *pTensor) {
         m_aGradient = pTensor;
     }
@@ -185,6 +189,10 @@ public:
 
     // void GetWeight() const;
     //
+    Tensor* GetOutput() {
+        return m_aOutput;
+    }
+
     Tensor* GetGradient() const {
         return m_aGradient;
     }
