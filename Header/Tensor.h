@@ -119,14 +119,14 @@ public:
     void SetData(float *pData) {
         // pData 의 크기와 dimension 크기가 일치하는지 확인
 
-        for (int i = 0; i < m_flat_dim; i++) {
-            m_adata[i] = pData[i];
-        }
+        // for (int i = 0; i < m_flat_dim; i++) {
+        //     m_adata[i] = pData[i];
+        // }
 
         // delete pData;
 
-        // if(m_adata != NULL) delete m_adata;
-        // m_adata = pData;
+        if(m_adata != NULL) delete m_adata;
+        m_adata = pData;
     }
 
     void SetFlatDim(int pflat_dim) {
