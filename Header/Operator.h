@@ -12,12 +12,6 @@
 class Operator {
 private:
 
-    // N-dim 을 나타낼 수 있는 데이터 타입
-    TensorShape **m_pInputDim = NULL;
-    TensorShape *m_pOutputDim = NULL;
-
-    // Constructor에서 받는 input은 Operator이지만, 실제로 사용은 Tensor이다.
-    Tensor **m_aInput = NULL;
     Tensor *m_aOutput = NULL;
 
     // Training 과정을 공부한 후 다시 확인해야 할 부분
@@ -25,12 +19,10 @@ private:
     Tensor *m_aGradient = NULL;
     Tensor *m_aDelta    = NULL;
 
-    // Tensor *m_Deltabar; // Layer단에서 사용하게 되기에, 항상 필요하지는 않다.
-
     // for Linked List
     // Pointer array를 만들기 위한 공간으로 Alloc할 때 공간을 동적할당한다.
-    Operator **m_aOutputOperator = NULL;
-    Operator **m_aInputOperator  = NULL;
+    Operator **m_apOutputOperator = NULL;
+    Operator **m_apInputOperator  = NULL;
 
     int m_OutputDegree = 0;
     int m_InputDegree  = 0;
@@ -39,9 +31,10 @@ private:
     int m_currentInputDegree  = 0;
 
     // for Optimizer
+    // 추후 삭제 예정
     Optimizer *m_aOptimizer = NULL;
 
-    // identifier // 이제 Operator를 변수로 접근할 수 있게 되어 필요가 없다.
+    // identifier
     std::string m_name = "NO NAME";
 
     // Private Operator
@@ -154,19 +147,7 @@ public:
     // ===========================================================================================
 
     //// Setter
-    void SetInputDim(TensorShape *pshape, int num) {
-        m_pInputDim[num] = pshape;
-    }
-
-    void SetOutputDim(TensorShape *pshape) {
-        m_pOutputDim = pshape;
-    }
-
-    void SetInput(Tensor *pTensor, int num) {
-        // 속에 존재하는 input단의 모든 요소는 prameteric하다
-        m_aInput[num] = pTensor;
-    }
-
+    // Gradient 부분은 Trainable한 부분에서만 만들기에 NULL로 초기화할 가능성이 생길 것으로 보인다.
     void SetOutput(Tensor *pTensor) {
         m_aOutput = pTensor;
     }
@@ -176,19 +157,6 @@ public:
         m_aOutput->SetData(pData);
     }
 
-    // void SetOutput(Tensor *pTensor) {
-    // if(m_aOutput == NULL) m_aOutput = new Tensor();
-    //// alloc시에 미리 Tensor자체는 만들어 두어야 한다.
-    //// shape를 비교할 필요가 있다.
-    // m_aOutput->SetTensor(pTensor);
-    // }
-    //
-    // void SetOutput(TensorShape *pshape) {
-    // if(m_aOutput == NULL) m_aOutput = new Tensor();
-    // m_aOutput->SetTensor(pshape);
-    // }
-
-    // Gradient 부분은 Trainable한 부분에서만 만들기에 NULL로 초기화할 가능성이 생길 것으로 보인다.
     void SetGradient(Tensor *pTensor) {
         m_aGradient = pTensor;
     }
@@ -196,16 +164,6 @@ public:
     void SetGradient(float *pData) {
         m_aGradient->SetData(pData);
     }
-
-    // void SetGradient(Tensor *pTensor) {
-    // if(m_aGradient == NULL) m_aGradient = new Tensor();
-    // m_aGradient->SetTensor(pTensor);
-    // }
-    //
-    // void SetGradient(TensorShape *pshape) {
-    // if(m_aGradient == NULL) m_aGradient = new Tensor();
-    // m_aGradient->SetTensor(pshape);
-    // }
 
     void SetDelta(Tensor *pTensor) {
         m_aDelta = pTensor;
@@ -215,19 +173,11 @@ public:
         m_aDelta->SetData(pData);
     }
 
-    // void SetDelta(Tensor *pTensor) {
-    // if(m_aDelta == NULL) m_aDelta = new Tensor();
-    // m_aDelta->SetTensor(pTensor);
-    // }
-    //
-    // void SetDelta(TensorShape *pshape) {
-    // if(m_aDelta == NULL) m_aDelta = new Tensor();
-    // m_aDelta->SetTensor(pshape);
-    // }
-
     void SetOptimizer(Optimizer *pOptimizer) {
         m_aOptimizer = pOptimizer;
     }
+
+    // ===========================================================================================
 
     void IncreaseCurrentOutputDegree() {
         m_currentOutputDegree++;
@@ -241,24 +191,13 @@ public:
 
     //
     //// Getter (파생 클래스에서 사용합니다.)
-    TensorShape** GetInputDim() const {
-        return m_pInputDim;
-    }
-
-    TensorShape* GetOutputDim() const {
-        return m_pOutputDim;
-    }
-
-    Tensor** GetInput() const {
-        return m_aInput;
-    }
-
-    Tensor* GetOutput() const {
-        return m_aOutput;
-    }
 
     // void GetWeight() const;
     //
+    Tensor* GetOutput() {
+        return m_aOutput;
+    }
+
     Tensor* GetGradient() const {
         return m_aGradient;
     }
@@ -270,11 +209,11 @@ public:
     // void GetDeltabar() const;
     //
     Operator** GetInputOperator() const {
-        return m_aInputOperator;
+        return m_apInputOperator;
     }
 
     Operator** GetOutputOperator() const {
-        return m_aOutputOperator;
+        return m_apOutputOperator;
     }
 
     int GetOutputDegree() const {
@@ -314,7 +253,7 @@ public:
 
     // ===========================================================================================
 
-    Operator * CheckEndOperator();
+    Operator* CheckEndOperator();
 
     //// UpdateWeight
     // bool UpdateWeight();
