@@ -24,17 +24,17 @@ public:
     virtual bool Alloc(Operator *pInput) {
         std::cout << "Relu::Alloc(Operator *, Operator *)" << '\n';
 
-        Tensor *temp_output = new Tensor(GetInput()[0]->Getshape());
+        // Tensor *temp_output = new Tensor(GetInput()[0]->Getshape());
 
-        SetOutput(temp_output);
+        SetOutput(new Tensor(GetInputOperator()[0]->GetOutput()->Getshape()));
 
         // Tensor *temp_Gradient = new Tensor(GetInput()[0]->Getshape());
         //
         // SetGradient(temp_Gradient);
 
-        Tensor *temp_delta = new Tensor(GetInput()[0]->Getshape());
+        // Tensor *tempdelta_for_input = new Tensor(GetInput()[0]->Getshape());
 
-        SetDelta(temp_delta);
+        SetDelta(new Tensor(GetInputOperator()[0]->GetOutput()->Getshape()));
 
         return true;
     }
@@ -42,9 +42,9 @@ public:
     virtual bool ComputeForwardPropagate() {
         std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        int size = GetInput()[0]->GetFlatDim();
+        int size = GetInputOperator()[0]->GetOutput()->GetFlatDim();
 
-        float *data = GetInput()[0]->GetData();
+        float *data = GetInputOperator()[0]->GetOutput()->GetData();
 
         float *result = new float[GetInput()[0]->GetFlatDim()];
 
@@ -64,24 +64,17 @@ public:
 
         float *output = GetOutput()->GetData();
 
-        //// Test code
-        // Tensor * temp = Tensor::Constants(6, 1, 0, 0, 0, 1.0);
-        //
-        // float *delta = temp->GetData();
-
         float *delta = GetDelta()->GetData();
 
-        float *_delta = new float[size];
+        float *delta_for_input = GetInputOperator()[0]->GetDelta()->GetData();
 
         for (int i = 0; i < size; i++) {
             if (output[i] > 0.0) {
-                _delta[i] = delta[i];
+                delta_for_input[i] = delta[i];
             } else {
-                _delta[i] = 0;
+                delta_for_input[i] = 0;
             }
         }
-
-        GetInputOperator()[0]->SetDelta(_delta);
 
         GetInputOperator()[0]->GetDelta()->PrintData();
 

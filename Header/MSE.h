@@ -30,30 +30,13 @@ public:
         std::cout << "MSE::Alloc(Operator *, Operator *)" << '\n';
         // if pInput1 and pInput2의 shape가 다르면 abort
 
-        // Input dim 저장
-        SetInputDim(pInput1->GetOutput()->Getshape(), 0);
-        SetInputDim(pInput2->GetOutput()->Getshape(), 1);
+        TensorShape *InputDim0 = pInput1->GetOutput()->Getshape();
+        TensorShape *InputDim1 = pInput2->GetOutput()->Getshape();
 
-        TensorShape *m_pInputDim0 = GetInputDim()[0];
-        TensorShape *m_pInputDim1 = GetInputDim()[1];
-
-        // 결과물 shape (m by n @ n by k => m by k)
-        TensorShape *temp_shape = new TensorShape(m_pInputDim0->Getdim()[0], m_pInputDim1->Getdim()[1], 0, 0, 0);
-
-        Tensor *temp_output = new Tensor(temp_shape);
-
-        SetOutput(temp_output);
-
-        SetOutputDim(GetOutput()->Getshape());
-
-        // Gradient는 Trainable한 요소에서만 필요하다.
-
-        // delta는 무조건 Output dim을 따르며, 무조건 위 Operator에서 계산되어 내려오게 된다.
-        Tensor *temp_delta = new Tensor(temp_shape);
-
-        SetDelta(temp_delta);
-
-        delete temp_shape;
+        if (InputDim0->Getdim()[0] != InputDim1->Getdim()[0]) {
+            std::cout << "data has invalid dimension" << '\n';
+            exit(0);
+        }
 
         return true;
     }
@@ -61,15 +44,7 @@ public:
     virtual bool ComputeForwardPropagate() {
         std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        TensorShape *m_pInputDim0 = GetInputDim()[0];
-        TensorShape *m_pInputDim1 = GetInputDim()[1];
-
-        if (m_pInputDim0->Getdim()[0] != m_pInputDim1->Getdim()[0]) {
-            std::cout << "data has invalid dimension" << '\n';
-            exit(0);
-        }
-
-        GetInput()[0]->PrintData();
+        GetInputOperator()[0]->GetOutput()->PrintData();
 
         return true;
     }
@@ -77,19 +52,13 @@ public:
     virtual bool ComputeBackPropagate() {
         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        TensorShape *m_pInputDim0 = GetInputDim()[0];
-        TensorShape *m_pInputDim1 = GetInputDim()[1];
+        TensorShape *InputDim0 = GetInputOperator()[0]->GetOutput()->Getshape(); // 하나만 확인해도 된다.
 
-        if (m_pInputDim0->Getdim()[0] != m_pInputDim1->Getdim()[0]) {
-            std::cout << "data has invalid dimension" << '\n';
-            exit(0);
-        }
+        int output = InputDim0->Getdim()[0] * InputDim0->Getdim()[1]  /* * InputDim0->Getdim()[2] == ch*/;
+        // int batch  = InputDim0->Getdim()[3];
 
-        int output = m_pInputDim0->Getdim()[0] * m_pInputDim0->Getdim()[1]  /* * m_pInputDim0->Getdim()[2] == ch*/;
-        // int batch  = m_pInputDim0->Getdim()[3];
-
-        float *data0  = GetInput()[0]->GetData();
-        float *data1  = GetInput()[1]->GetData();
+        float *data0  = GetInputOperator()[0]->GetOutput()->GetData();
+        float *data1  = GetInputOperator()[1]->GetOutput()->GetData();
         float *result = new float[output];
 
         for (int i = 0; i < output; i++) {

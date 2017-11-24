@@ -24,11 +24,11 @@ public:
     virtual bool Alloc(Operator *pInput) {
         std::cout << "Sigmoid::Alloc(Operator *, Operator *)" << '\n';
 
-        Tensor *temp_output = new Tensor(GetInput()[0]->Getshape());
+        Tensor *temp_output = new Tensor(GetInputOperator()[0]->GetOutput()->Getshape());
 
         SetOutput(temp_output);
 
-        Tensor *temp_delta = new Tensor(GetInput()[0]->Getshape());
+        Tensor *temp_delta = new Tensor(GetInputOperator()[0]->GetOutput()->Getshape());
 
         SetDelta(temp_delta);
 
@@ -38,17 +38,17 @@ public:
     virtual bool ComputeForwardPropagate() {
         std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        int size = GetInput()[0]->GetFlatDim();
+        int size = GetInputOperator()[0]->GetOutput()->GetFlatDim();
 
-        float *data = GetInput()[0]->GetData();
+        float *data = GetInputOperator()[0]->GetOutput()->GetData();
 
-        float *result = new float[GetInput()[0]->GetFlatDim()];
+        float *result = GetOutput()->GetData();
 
         for (int i = 0; i < size; i++) {
             result[i] = sigmoid(data[i]);
         }
 
-        SetOutput(result);
+        // SetOutput(result);
 
         return true;
     }
@@ -60,20 +60,15 @@ public:
 
         float *output = GetOutput()->GetData();
 
-        //// Test code
-        // Tensor * temp = Tensor::Constants(6, 1, 0, 0, 0, 1.0);
-        //
-        // float *delta = temp->GetData();
-
         float *delta = GetDelta()->GetData();
 
-        float *_delta = new float[size];
+        float *delta_for_next = new float[size];
 
         for (int i = 0; i < size; i++) {
-                _delta[i] = delta[i] * output[i] * (1 - output[i]);
+                delta_for_next[i] = delta[i] * output[i] * (1 - output[i]);
         }
 
-        GetInputOperator()[0]->SetDelta(_delta);
+        GetInputOperator()[0]->SetDelta(delta_for_next);
 
         GetInputOperator()[0]->GetDelta()->PrintData();
 
