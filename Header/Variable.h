@@ -27,7 +27,7 @@ public:
     }
 
     virtual bool Alloc(Tensor *pTensor, int pisTrainable) {
-        SetOutputDim(pTensor->Getshape());
+        // SetOutputDim(pTensor->Getshape());
 
         SetOutput(pTensor);
 
@@ -59,14 +59,10 @@ public:
 
         float *grad = GetGradient()->GetData();
 
-        float *_grad = new float[size];
-
         // 이전에 구해져 있던 gradient와 합치기
         for (int i = 0; i < size; i++) {
-            _grad[i] = delta[i] + grad[i];
+            grad[i] += delta[i];
         }
-
-        SetGradient(_grad);
 
         GetOutput()->PrintData();
 
@@ -74,9 +70,7 @@ public:
 
             GetGradient()->PrintData();
 
-            Optimizer *optimizer = GetOptimizer();
-
-            optimizer->UpdateWeight(GetOutput(), GetGradient());
+            GetOptimizer()->UpdateWeight(GetOutput(), GetGradient());
 
             GetOutput()->PrintData();
 

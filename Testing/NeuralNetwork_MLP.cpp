@@ -14,7 +14,7 @@ int main(int argc, char const *argv[]) {
     Operator *x1  = HGUNN.AddPlaceholder(_x1, "x1");
 
     // create label data
-    Tensor   *_ans = Tensor::Constants(1, 1, 0, 0, 0, 0.0);
+    Tensor   *_ans = Tensor::Constants(1, 2, 0, 0, 0, 0.0);
     Operator *ans  = HGUNN.AddPlaceholder(_ans, "answer");
     // ans->GetOutput()->GetData()[0] = 0;
     // ans->GetOutput()->GetData()[1] = 1;
@@ -30,14 +30,14 @@ int main(int argc, char const *argv[]) {
 
     Operator *add_1 = new Add(mat_1, b1);
 
-    // Operator *act_1 = new Relu(add_1, "relu_1");
-    Operator *act_1 = new Sigmoid(add_1, "sig_1");
+    Operator *act_1 = new Relu(add_1, "relu_1");
+    // Operator *act_1 = new Sigmoid(add_1, "sig_1");
 
     // ======================= layer 2=======================
-    Tensor   *_w2 = Tensor::Truncated_normal(4, 1, 0, 0, 0, 0.0, 0.6);
+    Tensor   *_w2 = Tensor::Truncated_normal(4, 2, 0, 0, 0, 0.0, 0.6);
     Operator *w2  = new Variable(_w2, "w2", 1);
 
-    Tensor   *_b2 = Tensor::Constants(1, 1, 0, 0, 0, 1.0);
+    Tensor   *_b2 = Tensor::Constants(1, 2, 0, 0, 0, 1.0);
     Operator *b2  = new Variable(_b2, "b2", 1); // 오류 발생 원인 찾기
 
     Operator *mat_2 = new MatMul(act_1, w2);
@@ -67,32 +67,32 @@ int main(int argc, char const *argv[]) {
             x1->GetOutput()->GetData()[0] = 0;
             x1->GetOutput()->GetData()[1] = 0;
 
-            ans->GetOutput()->GetData()[0] = 0;
-            // ans->GetOutput()->GetData()[1] = 0;
+            ans->GetOutput()->GetData()[0] = 1;
+            ans->GetOutput()->GetData()[1] = 0;
         }
 
         if (i % 4 == 1) {
             x1->GetOutput()->GetData()[0] = 1;
             x1->GetOutput()->GetData()[1] = 0;
 
-            ans->GetOutput()->GetData()[0] = 1;
-            // ans->GetOutput()->GetData()[1] = 1;
+            ans->GetOutput()->GetData()[0] = 0;
+            ans->GetOutput()->GetData()[1] = 1;
         }
 
         if (i % 4 == 2) {
             x1->GetOutput()->GetData()[0] = 0;
             x1->GetOutput()->GetData()[1] = 1;
 
-            ans->GetOutput()->GetData()[0] = 1;
-            // ans->GetOutput()->GetData()[1] = 1;
+            ans->GetOutput()->GetData()[0] = 0;
+            ans->GetOutput()->GetData()[1] = 1;
         }
 
         if (i % 4 == 3) {
             x1->GetOutput()->GetData()[0] = 1;
             x1->GetOutput()->GetData()[1] = 1;
 
-            ans->GetOutput()->GetData()[0] = 0;
-            // ans->GetOutput()->GetData()[1] = 0;
+            ans->GetOutput()->GetData()[0] = 1;
+            ans->GetOutput()->GetData()[1] = 0;
         }
 
         HGUNN.Training();

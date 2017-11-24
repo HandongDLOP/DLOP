@@ -30,17 +30,11 @@ public:
         std::cout << "Add::Alloc(Operator *, Operator *)" << '\n';
         // if pInput1 and pInput2의 shape가 다르면 abort
 
-        Tensor *temp_output = new Tensor(GetInput()[0]->Getshape());
+        Tensor *temp_output = new Tensor(GetInputOperator()[0]->GetOutput()->Getshape());
 
         SetOutput(temp_output);
 
-
-        Tensor *temp_Gradient = new Tensor(GetInput()[0]->Getshape());
-
-        SetGradient(temp_Gradient);
-
-
-        Tensor *temp_delta = new Tensor(GetInput()[0]->Getshape());
+        Tensor *temp_delta = new Tensor(GetInputOperator()[0]->GetOutput()->Getshape());
 
         SetDelta(temp_delta);
 
@@ -54,24 +48,24 @@ public:
         // Operator Alloc 마저 구현
         // 텐서 클론 구현
         // 텐서 더하기 구현
-        if (GetInput()[0]->GetFlatDim() != GetInput()[1]->GetFlatDim()) {
+        if (GetInputOperator()[0]->GetOutput()->GetFlatDim() != GetInputOperator()[1]->GetOutput()->GetFlatDim()) {
             std::cout << "data has different flat dimension" << '\n';
             exit(0);
         }
 
-        int size = GetInput()[0]->GetFlatDim();
+        int size = GetInputOperator()[0]->GetOutput()->GetFlatDim();
 
-        float *data0 = GetInput()[0]->GetData();
+        float *data0 = GetInputOperator()[0]->GetOutput()->GetData();
 
-        float *data1 = GetInput()[1]->GetData();
+        float *data1 = GetInputOperator()[1]->GetOutput()->GetData();
 
-        float *result = new float[size];
+        float *result = GetOutput()->GetData();
 
         for (int i = 0; i < size; i++) {
             result[i] = data0[i] + data1[i];
         }
 
-        SetOutput(result);
+        // SetOutput(result);
 
         return true;
     }
@@ -79,14 +73,7 @@ public:
     virtual bool ComputeBackPropagate() {
         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int size = GetInput()[0]->GetFlatDim();
-
-        // Test code
-        // Tensor * temp = Tensor::Constants(5, 1, 0, 0, 0, 1.0);
-        //
-        // temp->PrintData();
-        //
-        // float *delta = temp->GetData();
+        int size = GetOutput()->GetFlatDim();
 
         float *delta = GetDelta()->GetData();
 
