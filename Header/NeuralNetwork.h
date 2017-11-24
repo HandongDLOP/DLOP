@@ -13,7 +13,6 @@
 #include "Sigmoid.h"
 #include "Maxpooling.h"
 #include "Add.h"
-#include "Copy.h"
 #include "MatMul.h"
 
 #include "MSE.h"
