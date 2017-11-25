@@ -69,12 +69,12 @@ public:
         // float *output_data     = new float[row * col];
         float temp = 0.0;
 
-        for (int row0 = 0; row0 < row; row0++) {
-            for (int col1 = 0; col1 < col; col1++) {
+        for (int cur_row = 0; cur_row < row; cur_row++) {
+            for (int cur_col = 0; cur_col < col; cur_col++) {
                 for (int hid = 0; hid < hidden; hid++) {
-                    temp += input_data[hidden * row0 + hid] * Weight[col * hid + col1];
+                    temp += input_data[hidden * cur_row + hid] * Weight[col * hid + cur_col];
                 }
-                output_data[col * row0 + col1] = temp;
+                output_data[col * cur_row + cur_col] = temp;
                 temp                      = 0;
             }
         }
