@@ -30,8 +30,8 @@ public:
         std::cout << "MSE::Alloc(Operator *, Operator *)" << '\n';
         // if pInput1 and pInput2의 shape가 다르면 abort
 
-        TensorShape *InputDim0 = pInput1->GetOutput()->Getshape();
-        TensorShape *InputDim1 = pInput2->GetOutput()->Getshape();
+        TensorShape *InputDim0 = pInput1->GetOutput()->GetShape();
+        TensorShape *InputDim1 = pInput2->GetOutput()->GetShape();
 
         if (InputDim0->Getdim()[0] != InputDim1->Getdim()[0]) {
             std::cout << "data has invalid dimension" << '\n';
@@ -52,7 +52,7 @@ public:
     virtual bool ComputeBackPropagate() {
         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        TensorShape *InputDim0 = GetInputOperator()[0]->GetOutput()->Getshape(); // 하나만 확인해도 된다.
+        TensorShape *InputDim0 = GetInputOperator()[0]->GetOutput()->GetShape(); // 하나만 확인해도 된다.
 
         int output = InputDim0->Getdim()[0] * InputDim0->Getdim()[1]  /* * InputDim0->Getdim()[2] == ch*/;
         // int batch  = InputDim0->Getdim()[3];

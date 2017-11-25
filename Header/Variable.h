@@ -27,15 +27,15 @@ public:
     }
 
     virtual bool Alloc(Tensor *pTensor, int pisTrainable) {
-        // SetOutputDim(pTensor->Getshape());
+        // SetOutputDim(pTensor->GetShape());
 
         SetOutput(pTensor);
 
-        Tensor *temp_Gradient = new Tensor(pTensor->Getshape());
+        Tensor *temp_Gradient = new Tensor(pTensor->GetShape());
 
         SetGradient(temp_Gradient);
 
-        Tensor *temp_delta = new Tensor(pTensor->Getshape());
+        Tensor *temp_delta = new Tensor(pTensor->GetShape());
 
         SetDelta(temp_delta);
 

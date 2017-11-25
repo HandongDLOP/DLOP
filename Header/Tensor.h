@@ -29,29 +29,6 @@ public:
         Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
     }
 
-    Tensor(TensorShape *pshape, float *pData) {
-        std::cout << "Tensor::Tensor(TensorSahpe *)" << '\n';
-        m_ashape = new TensorShape(pshape);
-
-        int *temp_dim = m_ashape->Getdim();
-
-        Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
-
-        SetData(pData);
-    }
-
-    Tensor(Tensor *pTensor) {
-        std::cout << "Tensor::Tensor(Tensor *)" << '\n';
-
-        int *temp_dim = pTensor->Getshape()->Getdim();
-
-        Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
-
-        for (int i = 0; i < m_flat_dim; i++) {
-            m_adata[i] = pTensor->GetData()[i];
-        }
-    }
-
     Tensor(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4) {
         std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
         Alloc(pDim0, pDim1, pDim2, pDim3, pDim4);
@@ -134,7 +111,7 @@ public:
     }
 
     void SetTensor(Tensor *pTensor) {
-        int *temp_dim = pTensor->Getshape()->Getdim();
+        int *temp_dim = pTensor->GetShape()->Getdim();
 
         Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
 
@@ -157,7 +134,7 @@ public:
 
     // ===========================================================================================
 
-    TensorShape* Getshape() const {
+    TensorShape* GetShape() const {
         return m_ashape;
     }
 

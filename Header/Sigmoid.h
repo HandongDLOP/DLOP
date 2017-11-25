@@ -24,11 +24,11 @@ public:
     virtual bool Alloc(Operator *pInput) {
         std::cout << "Sigmoid::Alloc(Operator *, Operator *)" << '\n';
 
-        Tensor *temp_output = new Tensor(GetInputOperator()[0]->GetOutput()->Getshape());
+        Tensor *temp_output = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
 
         SetOutput(temp_output);
 
-        Tensor *temp_delta = new Tensor(GetInputOperator()[0]->GetOutput()->Getshape());
+        Tensor *temp_delta = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
 
         SetDelta(temp_delta);
 

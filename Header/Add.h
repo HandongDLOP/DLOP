@@ -30,11 +30,11 @@ public:
         std::cout << "Add::Alloc(Operator *, Operator *)" << '\n';
         // if pInput1 and pInput2의 shape가 다르면 abort
 
-        Tensor *temp_output = new Tensor(GetInputOperator()[0]->GetOutput()->Getshape());
+        Tensor *temp_output = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
 
         SetOutput(temp_output);
 
-        Tensor *temp_delta = new Tensor(GetInputOperator()[0]->GetOutput()->Getshape());
+        Tensor *temp_delta = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
 
         SetDelta(temp_delta);
 

@@ -24,17 +24,17 @@ public:
     virtual bool Alloc(Operator *pInput) {
         std::cout << "Relu::Alloc(Operator *, Operator *)" << '\n';
 
-        // Tensor *temp_output = new Tensor(GetInput()[0]->Getshape());
+        // Tensor *temp_output = new Tensor(GetInput()[0]->GetShape());
 
-        SetOutput(new Tensor(GetInputOperator()[0]->GetOutput()->Getshape()));
+        SetOutput(new Tensor(GetInputOperator()[0]->GetOutput()->GetShape()));
 
-        // Tensor *temp_Gradient = new Tensor(GetInput()[0]->Getshape());
+        // Tensor *temp_Gradient = new Tensor(GetInput()[0]->GetShape());
         //
         // SetGradient(temp_Gradient);
 
-        // Tensor *tempdelta_for_input = new Tensor(GetInput()[0]->Getshape());
+        // Tensor *tempdelta_for_input = new Tensor(GetInput()[0]->GetShape());
 
-        SetDelta(new Tensor(GetInputOperator()[0]->GetOutput()->Getshape()));
+        SetDelta(new Tensor(GetInputOperator()[0]->GetOutput()->GetShape()));
 
         return true;
     }

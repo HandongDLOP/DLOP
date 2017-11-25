@@ -30,8 +30,8 @@ public:
     virtual bool Alloc(Operator *pInput1, Operator *pInput2) {
         std::cout << "MatMul::Alloc(Operator *, Operator *)" << '\n';
 
-        TensorShape *InputDim0 = pInput1->GetOutput()->Getshape();
-        TensorShape *InputDim1 = pInput2->GetOutput()->Getshape();
+        TensorShape *InputDim0 = pInput1->GetOutput()->GetShape();
+        TensorShape *InputDim1 = pInput2->GetOutput()->GetShape();
 
         // if pInput1 and pInput2의 shape가 다르면 abort
         if (InputDim0->Getdim()[1] != InputDim1->Getdim()[0]) {
@@ -55,8 +55,8 @@ public:
     virtual bool ComputeForwardPropagate() {
         std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        TensorShape *InputDim0 = GetInputOperator()[0]->GetOutput()->Getshape();
-        TensorShape *InputDim1 = GetInputOperator()[1]->GetOutput()->Getshape();
+        TensorShape *InputDim0 = GetInputOperator()[0]->GetOutput()->GetShape();
+        TensorShape *InputDim1 = GetInputOperator()[1]->GetOutput()->GetShape();
 
         int row    = InputDim0->Getdim()[0];
         int hidden = InputDim0->Getdim()[1];
@@ -87,7 +87,7 @@ public:
     virtual bool ComputeBackPropagate() {
         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int output_col = GetOutput()->Getshape()->Getdim()[1];
+        int output_col = GetOutput()->GetShape()->Getdim()[1];
 
         int size_input  = GetInputOperator()[0]->GetOutput()->GetFlatDim();
         int size_Weight = GetInputOperator()[1]->GetOutput()->GetFlatDim();
