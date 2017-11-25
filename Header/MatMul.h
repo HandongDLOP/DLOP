@@ -102,8 +102,8 @@ public:
 
         GetDelta()->PrintData();
 
-        float *_delta_input  = new float[size_input];  // for weight
-        float *_delta_Weight = new float[size_Weight]; // for input
+        float *_delta_input  = GetInputOperator()[0]->GetDelta()->GetData();  // for weight
+        float *_delta_Weight = GetInputOperator()[1]->GetDelta()->GetData(); // for input
 
         // 초기화 (나중에 코드 전체에 초기화 코드를 둘 것)
         for (int i = 0; i < size_input; i++) {
@@ -117,16 +117,9 @@ public:
         for (int i = 0; i < size_Weight; i++) {
             _delta_input[i / output_col] += delta[i % output_col] * Weight[i];
             _delta_Weight[i]              = delta[i % output_col] * input_data[i / output_col];
-
-            // _delta_input[i]           = delta[i / hidden] * Weight[i % hidden];
-            // _delta_Weight[i % hidden] += delta[i / hidden] * input_data[i];
         }
 
-        GetInputOperator()[0]->SetDelta(_delta_input);
-
         GetInputOperator()[0]->GetDelta()->PrintData();
-
-        GetInputOperator()[1]->SetDelta(_delta_Weight);
 
         GetInputOperator()[1]->GetDelta()->PrintData();
 

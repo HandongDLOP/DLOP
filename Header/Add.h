@@ -77,19 +77,15 @@ public:
 
         float *delta = GetDelta()->GetData();
 
-        float *_delta0 = new float[size];
-        float *_delta1 = new float[size];
+        float *_delta0 = GetInputOperator()[0]->GetDelta()->GetData();
+        float *_delta1 = GetInputOperator()[1]->GetDelta()->GetData();
 
         // 위에서 내려온 delta를 그대로 흘린다.
         for(int i = 0; i < size; i++){
             _delta0[i] = _delta1[i] = delta[i];
         }
 
-        GetInputOperator()[0]->SetDelta(_delta0);
-
         GetInputOperator()[0]->GetDelta()->PrintData();
-
-        GetInputOperator()[1]->SetDelta(_delta1);
 
         GetInputOperator()[1]->GetDelta()->PrintData();
 

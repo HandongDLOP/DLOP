@@ -59,13 +59,11 @@ public:
 
         float *data0  = GetInputOperator()[0]->GetOutput()->GetData();
         float *data1  = GetInputOperator()[1]->GetOutput()->GetData();
-        float *result = new float[output];
+        float *result = GetInputOperator()[0]->GetDelta()->GetData();
 
         for (int i = 0; i < output; i++) {
             result[i] = (data0[i] - data1[i]) / output;
         }
-
-        GetInputOperator()[0]->SetDelta(result);
 
         GetInputOperator()[0]->GetDelta()->PrintData();
 
