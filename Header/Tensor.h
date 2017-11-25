@@ -24,7 +24,7 @@ public:
         std::cout << "Tensor::Tensor(TensorSahpe *)" << '\n';
         m_ashape = new TensorShape(pshape);
 
-        int *temp_dim = m_ashape->Getdim();
+        int *temp_dim = m_ashape->GetDim();
 
         Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
     }
@@ -73,7 +73,7 @@ public:
         int temp_flat_dim = 1;
 
         for (int i = 0; i < temp->GetRank(); i++) {
-            temp_flat_dim *= temp->Getdim()[i];
+            temp_flat_dim *= temp->GetDim()[i];
         }
 
         if (temp_flat_dim != m_flat_dim) {
@@ -111,7 +111,7 @@ public:
     }
 
     void SetTensor(Tensor *pTensor) {
-        int *temp_dim = pTensor->GetShape()->Getdim();
+        int *temp_dim = pTensor->GetShape()->GetDim();
 
         Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
 
@@ -124,7 +124,7 @@ public:
     }
 
     void SetTensor(TensorShape *pshape) {
-        int *temp_dim = pshape->Getdim();
+        int *temp_dim = pshape->GetDim();
 
         Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
 
@@ -142,8 +142,8 @@ public:
         return m_ashape->GetRank();
     }
 
-    int* Getdim() const {
-        return m_ashape->Getdim();
+    int* GetDim() const {
+        return m_ashape->GetDim();
     }
 
     float* GetData() const {

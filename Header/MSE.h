@@ -33,7 +33,7 @@ public:
         TensorShape *InputDim0 = pInput1->GetOutput()->GetShape();
         TensorShape *InputDim1 = pInput2->GetOutput()->GetShape();
 
-        if (InputDim0->Getdim()[0] != InputDim1->Getdim()[0]) {
+        if (InputDim0->GetDim()[0] != InputDim1->GetDim()[0]) {
             std::cout << "data has invalid dimension" << '\n';
             exit(0);
         }
@@ -54,8 +54,8 @@ public:
 
         TensorShape *InputDim0 = GetInputOperator()[0]->GetOutput()->GetShape(); // 하나만 확인해도 된다.
 
-        int output = InputDim0->Getdim()[0] * InputDim0->Getdim()[1]  /* * InputDim0->Getdim()[2] == ch*/;
-        // int batch  = InputDim0->Getdim()[3];
+        int output = InputDim0->GetDim()[0] * InputDim0->GetDim()[1]  /* * InputDim0->GetDim()[2] == ch*/;
+        // int batch  = InputDim0->GetDim()[3];
 
         float *data0  = GetInputOperator()[0]->GetOutput()->GetData();
         float *data1  = GetInputOperator()[1]->GetOutput()->GetData();

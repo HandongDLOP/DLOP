@@ -5,7 +5,7 @@ bool Tensor::Alloc(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4) {
     m_ashape = new TensorShape(pDim0, pDim1, pDim2, pDim3, pDim4);
 
     for (int i = 0; i < m_ashape->GetRank(); i++) {
-        m_flat_dim *= m_ashape->Getdim()[i];
+        m_flat_dim *= m_ashape->GetDim()[i];
     }
 
     m_adata = new float[m_flat_dim];
@@ -87,7 +87,7 @@ void Tensor::PrintData() {
      * 추후에는 recursion으로 바꿀 예정
      */
 
-    int *rank = m_ashape->Getdim();
+    int *rank = m_ashape->GetDim();
 
     if (rank[0] != 0) {
         std::cout << "[ ";

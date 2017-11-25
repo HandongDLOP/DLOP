@@ -15,7 +15,7 @@ public:
 
     TensorShape(TensorShape *pshape) {
         std::cout << "TensorShape::TensorShape(TensorShape *)" << '\n';
-        int *temp_dim = pshape->Getdim();
+        int *temp_dim = pshape->GetDim();
 
         Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
     }
@@ -57,7 +57,7 @@ public:
         return m_rank;
     }
 
-    int* Getdim() {
+    int* GetDim() {
         return m_aDim;
     }
 

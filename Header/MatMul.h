@@ -34,14 +34,14 @@ public:
         TensorShape *InputDim1 = pInput2->GetOutput()->GetShape();
 
         // if pInput1 and pInput2의 shape가 다르면 abort
-        if (InputDim0->Getdim()[1] != InputDim1->Getdim()[0]) {
-            std::cout << InputDim0->Getdim()[1] << ", " << InputDim1->Getdim()[0] << '\n';
+        if (InputDim0->GetDim()[1] != InputDim1->GetDim()[0]) {
+            std::cout << InputDim0->GetDim()[1] << ", " << InputDim1->GetDim()[0] << '\n';
             std::cout << "data has invalid dimension" << '\n';
             exit(0);
         }
 
-        int output_row = InputDim0->Getdim()[0];
-        int output_col = InputDim1->Getdim()[1];
+        int output_row = InputDim0->GetDim()[0];
+        int output_col = InputDim1->GetDim()[1];
 
         // 결과물 shape (m by n @ n by k => m by k)
         TensorShape temp_shape(output_row, output_col, 0, 0, 0);
@@ -58,9 +58,9 @@ public:
         TensorShape *InputDim0 = GetInputOperator()[0]->GetOutput()->GetShape();
         TensorShape *InputDim1 = GetInputOperator()[1]->GetOutput()->GetShape();
 
-        int row    = InputDim0->Getdim()[0];
-        int hidden = InputDim0->Getdim()[1];
-        int col    = InputDim1->Getdim()[1];
+        int row    = InputDim0->GetDim()[0];
+        int hidden = InputDim0->GetDim()[1];
+        int col    = InputDim1->GetDim()[1];
 
         float *input_data = GetInputOperator()[0]->GetOutput()->GetData();
         float *Weight     = GetInputOperator()[1]->GetOutput()->GetData();
@@ -87,7 +87,7 @@ public:
     virtual bool ComputeBackPropagate() {
         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int output_col = GetOutput()->GetShape()->Getdim()[1];
+        int output_col = GetOutput()->GetShape()->GetDim()[1];
 
         int size_input  = GetInputOperator()[0]->GetOutput()->GetFlatDim();
         int size_Weight = GetInputOperator()[1]->GetOutput()->GetFlatDim();
