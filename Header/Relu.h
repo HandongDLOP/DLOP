@@ -46,13 +46,11 @@ public:
 
         float *data = GetInputOperator()[0]->GetOutput()->GetData();
 
-        float *result = new float[GetInputOperator()[0]->GetOutput()->GetFlatDim()];
+        float *result = GetOutput()->GetData();
 
         for (int i = 0; i < size; i++) {
             result[i] = Max(data[i], 0.0);
         }
-
-        SetOutput(result);
 
         return true;
     }

@@ -62,13 +62,13 @@ public:
 
         float *delta = GetDelta()->GetData();
 
-        float *delta_for_next = new float[size];
+        float *delta_for_next = GetInputOperator()[0]->GetDelta()->GetData();
 
         for (int i = 0; i < size; i++) {
                 delta_for_next[i] = delta[i] * output[i] * (1 - output[i]);
         }
 
-        GetInputOperator()[0]->SetDelta(delta_for_next);
+        // GetInputOperator()[0]->SetDelta(delta_for_next);
 
         GetInputOperator()[0]->GetDelta()->PrintData();
 
