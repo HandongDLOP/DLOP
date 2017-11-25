@@ -160,19 +160,6 @@ public:
         m_aDelta = pTensor;
     }
 
-    // void SetOutput(float *pData) {
-    //     // shape 가 같은지 비교하도록 한다. (flat_dim)
-    //     m_aOutput->SetData(pData);
-    // }
-    //
-    // void SetGradient(float *pData) {
-    //     m_aGradient->SetData(pData);
-    // }
-    //
-    // void SetDelta(float *pData) {
-    //     m_aDelta->SetData(pData);
-    // }
-
     void SetOptimizer(Optimizer *pOptimizer) {
         m_aOptimizer = pOptimizer;
     }
