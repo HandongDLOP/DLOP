@@ -53,7 +53,7 @@ public:
         return true;
     }
 
-    int Getrank() {
+    int GetRank() {
         return m_rank;
     }
 

@@ -72,7 +72,7 @@ public:
 
         int temp_flat_dim = 1;
 
-        for (int i = 0; i < temp->Getrank(); i++) {
+        for (int i = 0; i < temp->GetRank(); i++) {
             temp_flat_dim *= temp->Getdim()[i];
         }
 
@@ -138,8 +138,8 @@ public:
         return m_ashape;
     }
 
-    int Getrank() const {
-        return m_ashape->Getrank();
+    int GetRank() const {
+        return m_ashape->GetRank();
     }
 
     int* Getdim() const {

@@ -4,7 +4,7 @@
 bool Tensor::Alloc(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4) {
     m_ashape = new TensorShape(pDim0, pDim1, pDim2, pDim3, pDim4);
 
-    for (int i = 0; i < m_ashape->Getrank(); i++) {
+    for (int i = 0; i < m_ashape->GetRank(); i++) {
         m_flat_dim *= m_ashape->Getdim()[i];
     }
 
