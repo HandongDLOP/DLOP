@@ -7,12 +7,6 @@ bool Operator::Alloc(Tensor *pTensor) {
     return true;
 }
 
-bool Operator::Alloc(TensorShape *pshape) {
-    std::cout << "Operator::Alloc(Tensor *)" << '\n';
-
-    return true;
-}
-
 bool Operator::Alloc(Operator *pInput) {
     std::cout << "Operator::Alloc(Operator *)" << '\n';
 
@@ -22,12 +16,12 @@ bool Operator::Alloc(Operator *pInput) {
     return true;
 }
 
-bool Operator::Alloc(Operator *pInput1, Operator *pInput2) {
+bool Operator::Alloc(Operator *pInput0, Operator *pInput1) {
     std::cout << "Operator::Alloc(Operator *, Operator *)" << '\n';
 
     // Shape도 받을 수 있도록 코드 수정 alloc도 마찬가지
+    AddEdgebetweenOperators(pInput0);
     AddEdgebetweenOperators(pInput1);
-    AddEdgebetweenOperators(pInput2);
 
     return true;
 }

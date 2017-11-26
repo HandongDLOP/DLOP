@@ -4,14 +4,13 @@
 #include <iostream>
 #include <string>
 
-// #include "Objective.h"
 
-// #include "Placeholder.h"
-#include "Convolution.h"
+#include "Placeholder.h"
 #include "Variable.h"
+
 #include "Relu.h"
 #include "Sigmoid.h"
-#include "Maxpooling.h"
+
 #include "Add.h"
 #include "MatMul.h"
 

@@ -24,7 +24,7 @@ public:
 class ConvParam : public MetaParameter {
 private:
     Operator *filter = NULL;
-    TensorShape *stride = NULL;
+    int *stride = NULL;
     PADDING value;
     // std::string m_name     = NULL;
     void *data_format      = NULL;
@@ -44,7 +44,7 @@ public:
 class MaxpoolParam : public MetaParameter {
 private:
     Tensor *ksize = NULL;
-    TensorShape *stride = NULL;
+    int *stride = NULL;
     PADDING value;
     // std::string m_name     = NULL;
     void *data_format      = NULL;

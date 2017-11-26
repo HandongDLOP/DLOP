@@ -9,45 +9,67 @@
 
 class MatMul : public Operator {
 public:
-
-    // Constructor의 작업 순서는 다음과 같다.
-    // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
-    // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (MatMul::Alloc())
-    MatMul(Operator *pInput1, Operator *pInput2) : Operator(pInput1, pInput2) {
+    MatMul(Operator *pInput0, Operator *pInput1) : Operator(pInput0, pInput1) {
         std::cout << "MatMul::MatMul(Operator *, MetaParameter *)" << '\n';
-        Alloc(pInput1, pInput2);
+        Alloc(pInput0, pInput1);
     }
 
-    MatMul(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pInput1, pInput2, pName) {
+    MatMul(Operator *pInput0, Operator *pInput1, std::string pName) : Operator(pInput0, pInput1, pName) {
         std::cout << "MatMul::MatMul(Operator *, MetaParameter *, std::string)" << '\n';
-        Alloc(pInput1, pInput2);
+        Alloc(pInput0, pInput1);
     }
 
     virtual ~MatMul() {
         std::cout << "MatMul::~MatMul()" << '\n';
     }
 
-    virtual bool Alloc(Operator *pInput1, Operator *pInput2) {
+    virtual bool Alloc(Operator *pInput0, Operator *pInput1) {
         std::cout << "MatMul::Alloc(Operator *, Operator *)" << '\n';
 
-        TensorShape *InputDim0 = pInput1->GetOutput()->GetShape();
-        TensorShape *InputDim1 = pInput2->GetOutput()->GetShape();
+        int *shape_Input0 = pInput0->GetOutput()->GetShape();
+        int *shape_Input1 = pInput1->GetOutput()->GetShape();
 
-        // if pInput1 and pInput2의 shape가 다르면 abort
-        if (InputDim0->GetDim()[1] != InputDim1->GetDim()[0]) {
-            std::cout << InputDim0->GetDim()[1] << ", " << InputDim1->GetDim()[0] << '\n';
-            std::cout << "data has invalid dimension" << '\n';
+        if (shape_Input0[4] != shape_Input1[3]) {
+            std::cout << "data has different hidden dimension" << '\n';
             exit(0);
         }
 
-        int output_row = InputDim0->GetDim()[0];
-        int output_col = InputDim1->GetDim()[1];
+        // factory method 작업
+
+        // if (shape_Input0[1] != shape_Input1[1]) {
+        // if ((shape_Input0[1] == 1) || (shape_Input1[1] == 1)) {
+        // if (shape_Input0[1] < shape_Input1[1]) {
+        // GetInputOperator()[0] = pInput1;
+        // GetInputOperator()[1] = pInput0;
+        // }
+        // } else {
+        // std::cout << "data has unvalid batch dimension" << '\n';
+        // exit(0);
+        // }
+        // }
+
+        // if(shape_Input0[1] > shape_Input1[1] && shape_Input0[0] > shape_Input1[0]){
+        // int time = pInput0->GetOutput()->GetBatch();
+        // int batch = pInput0->GetOutput()->GetBatch();
+        // } else if(shape_Input0[1] < shape_Input1[1] && shape_Input0[0] < shape_Input1[0]){
+        // int time = pInput1->GetOutput()->GetBatch();
+        // int batch = pInput1->GetOutput()->GetBatch();
+        // } else {
+        // std::cout << "invalid dimension" << '\n';
+        // exit(0);
+        // }
+
+        // w * x 의 형태에서만 진행
+        int time    = pInput1->GetOutput()->GetBatch();
+        int batch   = pInput1->GetOutput()->GetBatch();
+        int channel = pInput1->GetOutput()->GetChannel();
+        int row     = pInput0->GetOutput()->GetRow();
+        int col     = pInput1->GetOutput()->GetCol();
 
         // 결과물 shape (m by n @ n by k => m by k)
-        TensorShape temp_shape(output_row, output_col, 0, 0, 0);
-        SetOutput(new Tensor(&temp_shape));
+        SetOutput(new Tensor(time, batch, channel, row, col));
         // Gradient는 Trainable한 요소에서만 필요하다.
-        SetDelta(new Tensor(&temp_shape));
+        SetDelta(new Tensor(time, batch, channel, row, col));
 
         return true;
     }
@@ -55,27 +77,33 @@ public:
     virtual bool ComputeForwardPropagate() {
         std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        TensorShape *InputDim0 = GetInputOperator()[0]->GetOutput()->GetShape();
-        TensorShape *InputDim1 = GetInputOperator()[1]->GetOutput()->GetShape();
+        int Time    = GetOutput()->GetTime();
+        int Batch   = GetOutput()->GetBatch();
+        int Channel = GetOutput()->GetChannel();
+        int Row     = GetOutput()->GetRow();
+        int Col     = GetOutput()->GetCol();
+        int Hidden  = GetInputOperator()[0]->GetOutput()->GetCol();
 
-        int row    = InputDim0->GetDim()[0];
-        int hidden = InputDim0->GetDim()[1];
-        int col    = InputDim1->GetDim()[1];
+        double *****input0 = GetInputOperator()[0]->GetOutput()->GetData();  // weight
+        double *****input1 = GetInputOperator()[1]->GetOutput()->GetData();  // input
+        double *****output = GetOutput()->GetData();
 
-        float *input_data = GetInputOperator()[0]->GetOutput()->GetData();
-        float *Weight     = GetInputOperator()[1]->GetOutput()->GetData();
-        float *output_data     = GetOutput()->GetData();
+        // double *****output_data     = new float[row * col];
+        double temp = 0.0;
 
-        // float *output_data     = new float[row * col];
-        float temp = 0.0;
-
-        for (int cur_row = 0; cur_row < row; cur_row++) {
-            for (int cur_col = 0; cur_col < col; cur_col++) {
-                for (int hid = 0; hid < hidden; hid++) {
-                    temp += input_data[hidden * cur_row + hid] * Weight[col * hid + cur_col];
+        for (int ti = 0; ti < Time; ti++) {
+            for (int ba = 0; ba < Batch; ba++) {
+                for (int ch = 0; ch < Channel; ch++) {
+                    for (int ro = 0; ro < Row; ro++) {
+                        for (int co = 0; co < Col; co++) {
+                            for (int hid = 0; hid < Hidden; hid++) {
+                                temp += input0[0][0][ch][ro][hid] * input1[ti][ba][ch][hid][co];
+                            }
+                            output[ti][ba][ch][ro][co] = temp;
+                            temp                       = 0.0;
+                        }
+                    }
                 }
-                output_data[col * cur_row + cur_col] = temp;
-                temp                      = 0;
             }
         }
 
@@ -87,44 +115,57 @@ public:
     virtual bool ComputeBackPropagate() {
         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int output_col = GetOutput()->GetShape()->GetDim()[1];
+        int Time    = GetOutput()->GetTime();
+        int Batch   = GetOutput()->GetBatch();
+        int Channel = GetOutput()->GetChannel();
+        int Row     = GetOutput()->GetRow();
+        int Col     = GetOutput()->GetCol();
+        int Hidden  = GetInputOperator()[0]->GetOutput()->GetCol();
 
-        int size_input  = GetInputOperator()[0]->GetOutput()->GetFlatDim();
-        int size_Weight = GetInputOperator()[1]->GetOutput()->GetFlatDim();
-
-        float *input_data = GetInputOperator()[0]->GetOutput()->GetData(); // input_data
-        float *Weight     = GetInputOperator()[1]->GetOutput()->GetData(); // Weight
+        double *****input0 = GetInputOperator()[0]->GetOutput()->GetData();  // weight
+        double *****input1 = GetInputOperator()[1]->GetOutput()->GetData();  // input
 
         GetInputOperator()[0]->GetOutput()->PrintData();
         GetInputOperator()[1]->GetOutput()->PrintData();
 
-        float *delta = GetDelta()->GetData();
+        double *****delta = GetDelta()->GetData();
 
         GetDelta()->PrintData();
 
-        float *_delta_input  = GetInputOperator()[0]->GetDelta()->GetData();  // for weight
-        float *_delta_Weight = GetInputOperator()[1]->GetDelta()->GetData(); // for input
+        // // 각자 Operator에서 해주어야 한다.
+        // GetInputOperator()[0]->GetDelta()->Reset();
+        // GetInputOperator()[0]->GetDelta()->Reset();
+        double *****delta_input0 = GetInputOperator()[0]->GetDelta()->GetData();  // weight
+        double *****delta_input1 = GetInputOperator()[1]->GetDelta()->GetData();  // input
 
-        // 초기화 (나중에 코드 전체에 초기화 코드를 둘 것)
-        for (int i = 0; i < size_input; i++) {
-            _delta_input[i] = 0;
+        for (int ti = 0; ti < Time; ti++) {
+            for (int ba = 0; ba < Batch; ba++) {
+                for (int ch = 0; ch < Channel; ch++) {
+                    for (int ro = 0; ro < Row; ro++) {
+                        for (int co = 0; co < Col; co++) {
+                            for (int hid = 0; hid < Hidden; hid++) {
+                                delta_input0[0][0][ch][ro][hid]   += input1[ti][ba][ch][hid][co] * delta[ti][ba][ch][ro][co];
+                                delta_input1[ti][ba][ch][hid][co] += input0[0][0][ch][ro][hid] * delta[ti][ba][ch][ro][co];
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        for (int i = 0; i < size_Weight; i++) {
-            _delta_Weight[i] = 0;
-        }
 
-        for (int i = 0; i < size_Weight; i++) {
-            _delta_input[i / output_col] += delta[i % output_col] * Weight[i];
-            _delta_Weight[i]              = delta[i % output_col] * input_data[i / output_col];
-        }
+        // for (int i = 0; i < size_Weight; i++) {
+        // _delta_input[i / output_col] += delta[i % output_col] * Weight[i];
+        // _delta_Weight[i]              = delta[i % output_col] * input_data[i / output_col];
+        // }
 
         GetInputOperator()[0]->GetDelta()->PrintData();
 
         GetInputOperator()[1]->GetDelta()->PrintData();
 
+        GetDelta()->Reset();
         return true;
     }
 };
 
-#endif // MATMUL_H_
+#endif  // MATMUL_H_

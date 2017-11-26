@@ -8,7 +8,7 @@ private:
     /* data */
     // momentum이나 이런 애들은 따로 변수를 가지고 있어야 한다.
 
-    float m_learning_rate = 0.0;
+    float m_LearningRate = 0.0;
 
 public:
     Optimizer() {
@@ -21,8 +21,12 @@ public:
 
     virtual bool UpdateWeight(Tensor *Trainable, Tensor *Gradient) = 0;
 
+    void SetLearningRate(float pLearningRate){
+        m_LearningRate = pLearningRate;
+    }
+
     float GetLearningRate(){
-        return m_learning_rate;
+        return m_LearningRate;
     }
 };
 

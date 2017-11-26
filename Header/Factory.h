@@ -23,7 +23,7 @@ public:
         std::cout << "Factory::OptimizerFactory(Optimizer_name)" << '\n';
 
         if(pOptimizer_name == STOCHASTIC_GRADIENT_DESCENT){
-            return new StochasticGradientDescent();
+            return new StochasticGradientDescent(0.6);
         }
 
         return NULL;

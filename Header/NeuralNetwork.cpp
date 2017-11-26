@@ -64,7 +64,7 @@ Operator * NeuralNetwork::AddPlaceholder(Tensor *pTensor, std::string pName) {
     std::cout << "NeuralNetwork::Placeholder(Tensor *, std::string )" << '\n';
 
     // placeholder의 경우 trainable하지 않다.
-    Operator *temp = new Variable(pTensor, pName, 0);
+    Operator *temp = new Placeholder(pTensor, pName);
 
     temp->AddEdgebetweenOperators(_m_pStart);
 
