@@ -22,9 +22,8 @@ public:
 
     Tensor(TensorShape *pshape) {
         std::cout << "Tensor::Tensor(TensorSahpe *)" << '\n';
-        m_ashape = new TensorShape(pshape);
 
-        int *temp_dim = m_ashape->GetDim();
+        int *temp_dim = pshape->GetDim();
 
         Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
     }
@@ -32,12 +31,6 @@ public:
     Tensor(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4) {
         std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
         Alloc(pDim0, pDim1, pDim2, pDim3, pDim4);
-    }
-
-    Tensor(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4, float *pData) {
-        std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
-        Alloc(pDim0, pDim1, pDim2, pDim3, pDim4);
-        SetData(pData);
     }
 
     virtual ~Tensor() {
@@ -67,31 +60,6 @@ public:
 
     // ===========================================================================================
 
-    void Reshape(int pDim0, int pDim1, int pDim2, int pDim3, int pDim4) {
-        TensorShape *temp = new TensorShape(pDim0, pDim1, pDim2, pDim3, pDim4);
-
-        int temp_flat_dim = 1;
-
-        for (int i = 0; i < temp->GetRank(); i++) {
-            temp_flat_dim *= temp->GetDim()[i];
-        }
-
-        if (temp_flat_dim != m_flat_dim) {
-            std::cout << "invalid shape transformation" << '\n';
-            delete temp;
-            exit(0);
-        }
-
-        if (m_ashape != NULL) delete m_ashape;
-
-        m_ashape = temp;
-    }
-
-    void Reshape(TensorShape *pshape) {
-        // 추후 주소를 절대 바꾸지 않도록 바꾸어야 한다.
-        if (m_ashape != NULL) delete m_ashape;
-        m_ashape = pshape;
-    }
 
     void SetData(float *pData) {
         // pData 의 크기와 dimension 크기가 일치하는지 확인
@@ -138,10 +106,6 @@ public:
         return m_ashape;
     }
 
-    int GetRank() const {
-        return m_ashape->GetRank();
-    }
-
     int* GetDim() const {
         return m_ashape->GetDim();
     }
@@ -155,11 +119,6 @@ public:
     }
 
     // ===========================================================================================
-
-
-    void Flat() {
-        Reshape(m_flat_dim, 0, 0, 0, 0);
-    }
 
     // ===========================================================================================
 
