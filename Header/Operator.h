@@ -7,11 +7,10 @@
 
 // #include "Tensor.h"
 #include "MetaParameter.h"
-#include "Factory.h"
+#include "StochasticGradientDescent.h"
 
 class Operator {
 private:
-
     Tensor *m_aOutput = NULL;
 
     // Training 과정을 공부한 후 다시 확인해야 할 부분
@@ -32,7 +31,7 @@ private:
 
     // for Optimizer
     // 추후 삭제 예정
-    Optimizer *m_aOptimizer = NULL;
+    // Optimizer *m_aOptimizer = NULL;
 
     // identifier
     std::string m_name = "NO NAME";
@@ -42,12 +41,10 @@ private:
     int m_Trainable = 0;
 
 private:
-
     bool _AddInputEdge(Operator *pInput);
     bool _AddOutputEdge(Operator *pOutput);
 
 public:
-
     Operator() {
         std::cout << "Operator::Operator() 상속자 상속상태" << '\n';
     }
@@ -124,7 +121,8 @@ public:
     virtual bool Alloc(Operator *pInput0,
                        Operator *pInput1);
     virtual bool Alloc(MetaParameter *pParam = NULL);
-    bool         AllocOptimizer(Optimizer_name pOptimizer_name);
+    // bool         AllocOptimizer(Optimizer_name pOptimizer_name);
+    bool         AllocOptimizer(Optimizer *pOptimizer);
 
     virtual void Delete();
     bool         DeleteInputOperator();
@@ -149,11 +147,11 @@ public:
         m_aDelta = pTensor;
     }
 
-    void SetOptimizer(Optimizer *pOptimizer) {
-        m_aOptimizer = pOptimizer;
-    }
+    // void SetOptimizer(Optimizer *pOptimizer) {
+    //     m_aOptimizer = pOptimizer;
+    // }
 
-    void SetTrainable(int pTrainable){
+    void SetTrainable(int pTrainable) {
         m_Trainable = pTrainable;
     }
 
@@ -212,15 +210,15 @@ public:
         return m_currentInputDegree;
     }
 
-    Optimizer* GetOptimizer() {
-        return m_aOptimizer;
-    }
+    // Optimizer* GetOptimizer() {
+    //     return m_aOptimizer;
+    // }
 
     std::string GetName() {
         return m_name;
     }
 
-    int GetTrainable(){
+    int GetTrainable() {
         return m_Trainable;
     }
 
@@ -228,11 +226,11 @@ public:
 
     // Propagate
     bool         ForwardPropagate();        // ForwardPropagate 진행 방향 및 순서
-    virtual bool ComputeForwardPropagate(); // Compute to (추후 interface 형태로 수정 예정)
+    virtual bool ComputeForwardPropagate();  // Compute to (추후 interface 형태로 수정 예정)
 
     // BackPropagate
-    bool         BackPropagate();           // BackPropagate 진행 방향 및 순서
-    virtual bool ComputeBackPropagate();    // compute delta and detabar(if we need to) (추후 interface 형태로 수정 예정)
+    bool         BackPropagate(); // BackPropagate 진행 방향 및 순서
+    virtual bool ComputeBackPropagate();  // compute delta and detabar(if we need to) (추후 interface 형태로 수정 예정)
 
 
     // ===========================================================================================
@@ -243,4 +241,4 @@ public:
     // bool UpdateWeight();
 };
 
-#endif // OPERATOR_H_
+#endif  // OPERATOR_H_

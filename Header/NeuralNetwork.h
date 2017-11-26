@@ -30,6 +30,8 @@ private:
     Operator *_m_pStart = new Operator("Base Operator");  // (Default)
     Operator *_m_aEnd   = _m_pStart;     // (Default)
 
+    Optimizer *_m_aOptimizer = NULL;
+
 public:
     // Operator의 개수를 정합니다.
     NeuralNetwork();
@@ -39,7 +41,7 @@ public:
 
     // 추후 private로 옮길 의향 있음
     bool Alloc();
-    bool AllocOptimizer(Optimizer_name pOptimizer_name);
+    bool AllocOptimizer(Optimizer *pOptimizer);
 
     void Delete();
     bool DeleteOperator();
@@ -62,15 +64,21 @@ public:
 
     // Set _m_aEnd : 추후에는 모델이 만들어질 때 자동으로 alloc되게 변환해야 함  // 임시 함수
 
-    // ===========================================================================================
-    bool CreateGraph(Optimizer_name pOptimizer_name, Operator *pEnd);
-    bool CreateGraph(Optimizer_name pOptimizer_name);
-
     void SetEndOperator(Operator *pEnd) {
         _m_aEnd = pEnd;
     }
     bool SetEndOperator();
 
+    void SetOptimizer(Optimizer *pOptimizer) {
+        _m_aOptimizer = pOptimizer;
+    }
+
+    // ===========================================================================================
+    bool CreateGraph(Optimizer *pOptimizer, Operator *pEnd);
+
+    void UpdateWeight(){
+        _m_aOptimizer->UpdateWeight();
+    }
 };
 
 #endif  // NEURALNETWORK_H_
