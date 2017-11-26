@@ -43,6 +43,7 @@ public:
         int *shape         = GetInputOperator()[0]->GetOutput()->GetShape();
         double *****input0 = GetInputOperator()[0]->GetOutput()->GetData();
         double *****input1 = GetInputOperator()[1]->GetOutput()->GetData();
+        GetOutput()->Reset();
         double *****output = GetOutput()->GetData();
         int num_of_output  = shape[2] * shape[3] * shape[4];
 
@@ -63,6 +64,7 @@ public:
         GetInputOperator()[0]->GetOutput()->PrintData();
         GetInputOperator()[1]->GetOutput()->PrintData();
         GetOutput()->PrintData();
+
         return true;
     }
 

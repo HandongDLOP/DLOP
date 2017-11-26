@@ -65,9 +65,9 @@ public:
         // }
 
         // w * x 의 형태에서만 진행
-        int Time    = pInput1->GetOutput()->GetTime();
-        int Batch   = pInput1->GetOutput()->GetBatch();
-        int Channel = pInput1->GetOutput()->GetChannel();
+        int Time    = pInput0->GetOutput()->GetTime();
+        int Batch   = pInput0->GetOutput()->GetBatch();
+        int Channel = pInput0->GetOutput()->GetChannel();
         int Row     = pInput0->GetOutput()->GetRow();
         int Col     = pInput1->GetOutput()->GetCol();
 
@@ -106,7 +106,7 @@ public:
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
                             for (int hid = 0; hid < Hidden; hid++) {
-                                temp += input0[0][0][ch][ro][hid] * input1[ti][ba][ch][hid][co];
+                                temp += input0[ti][ba][ch][ro][hid] * input1[0][0][ch][hid][co];
                             }
                             output[ti][ba][ch][ro][co] = temp;
                             temp                       = 0.0;
@@ -141,7 +141,7 @@ public:
 
         GetDelta()->PrintData();
 
-        // // 각자 Operator에서 해주어야 한다.
+        //// 각자 Operator에서 해주어야 한다.
         // GetInputOperator()[0]->GetDelta()->Reset();
         // GetInputOperator()[0]->GetDelta()->Reset();
         double *****delta_input0 = GetInputOperator()[0]->GetDelta()->GetData();  // weight
@@ -153,8 +153,8 @@ public:
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
                             for (int hid = 0; hid < Hidden; hid++) {
-                                delta_input0[0][0][ch][ro][hid]   += input1[ti][ba][ch][hid][co] * delta[ti][ba][ch][ro][co];
-                                delta_input1[ti][ba][ch][hid][co] += input0[0][0][ch][ro][hid] * delta[ti][ba][ch][ro][co];
+                                delta_input0[ti][ba][ch][ro][hid] += input1[0][0][ch][hid][co] * delta[ti][ba][ch][ro][co];
+                                delta_input1[0][0][ch][hid][co]   += input0[ti][ba][ch][ro][hid] * delta[ti][ba][ch][ro][co];
                             }
                         }
                     }

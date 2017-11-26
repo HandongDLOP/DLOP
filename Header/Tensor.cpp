@@ -56,8 +56,6 @@ bool Tensor::Alloc(int pTime, int pBatch, int pChannel, int pRow, int pCol) {
 bool Tensor::Delete() {
     std::cout << "Tensor::Delete()" << '\n';
 
-    delete[] m_aShape;
-
     // =============================================================
 
     for (int ti = 0; ti < GetTime(); ti++) {
@@ -76,6 +74,8 @@ bool Tensor::Delete() {
     delete[] m_aData;
 
     // =============================================================
+
+    delete[] m_aShape;
 
     return true;
 }

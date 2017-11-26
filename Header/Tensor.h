@@ -47,7 +47,7 @@ public:
 
         // delete를 제대로 하기 위해서는 계속해서 새로운 Tensor를 만들어낼 필요가 있다.
         // 추후 Delete를 고려해서 리펙토링 할 것
-        // Delete();
+        Delete();
     }
 
     bool Alloc();
