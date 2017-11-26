@@ -12,7 +12,7 @@
 #include "Sigmoid.h"
 
 #include "Add.h"
-#include "MatMul_.h"
+#include "MatMulXW.h"
 
 #include "MSE.h"
 

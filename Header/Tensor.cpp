@@ -99,11 +99,15 @@ void Tensor::Reset() {
 Tensor * Tensor::Truncated_normal(int pTime, int pBatch, int pChannel, int pRow, int pCol, double mean, double stddev) {
     std::cout << "Tensor::Truncated_normal()" << '\n';
 
-    // 추후 교수님이 주신 코드를 참고해서 바꿀 것
-    double   stdev = (double)sqrt(2.F / (pRow + pCol + pChannel));
-    unsigned seed  = (unsigned)std::chrono::system_clock::now().time_since_epoch().count();
-    std::default_random_engine generator(seed);
-    std::normal_distribution<double> dist(0.F, stdev);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<double> rand(mean, stddev);
+
+    // // 추후 교수님이 주신 코드를 참고해서 바꿀 것
+    // double   stdev = (double)sqrt(2.F / (pRow + pCol + pChannel));
+    // unsigned seed  = (unsigned)std::chrono::system_clock::now().time_since_epoch().count();
+    // std::default_random_engine generator(seed);
+    // std::normal_distribution<double> dist(0.F, stdev);
 
     Tensor *temp_Tensor   = new Tensor(pTime, pBatch, pChannel, pRow, pCol);
     double *****temp_data = temp_Tensor->GetData();
@@ -113,7 +117,8 @@ Tensor * Tensor::Truncated_normal(int pTime, int pBatch, int pChannel, int pRow,
             for (int ch = 0; ch < pChannel; ch++) {
                 for (int ro = 0; ro < pRow; ro++) {
                     for (int co = 0; co < pCol; co++) {
-                        temp_data[ti][ba][ch][ro][co] = (double)dist(generator);
+                        // temp_data[ti][ba][ch][ro][co] = (double)dist(generator);
+                        temp_data[ti][ba][ch][ro][co] = rand(gen);
                     }
                 }
             }
