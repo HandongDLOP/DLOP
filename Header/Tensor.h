@@ -78,28 +78,6 @@ public:
         m_flat_dim = pflat_dim;
     }
 
-    void SetTensor(Tensor *pTensor) {
-        int *temp_dim = pTensor->GetShape()->GetDim();
-
-        Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
-
-        if (m_adata != NULL) delete m_adata;
-        m_adata = new float[m_flat_dim];
-
-        for (int i = 0; i < m_flat_dim; i++) {
-            m_adata[i] = pTensor->GetData()[i];
-        }
-    }
-
-    void SetTensor(TensorShape *pshape) {
-        int *temp_dim = pshape->GetDim();
-
-        Alloc(temp_dim[0], temp_dim[1], temp_dim[2], temp_dim[3], temp_dim[4]);
-
-        if (m_adata != NULL) delete m_adata;
-        m_adata = new float[m_flat_dim];
-    }
-
     // ===========================================================================================
 
     TensorShape* GetShape() const {
