@@ -64,9 +64,11 @@ int main(int argc, char const *argv[]) {
 
     Operator *err = new MSE(act_2, ans, "MSE");
 
+    Optimizer *optimizer = new StochasticGradientDescent(0.6);
+
     // ======================= Create Graph =======================
 
-    HGUNN.CreateGraph(STOCHASTIC_GRADIENT_DESCENT, err);
+    HGUNN.CreateGraph(optimizer, err);
 
     // ======================= Training =======================
 
@@ -80,6 +82,7 @@ int main(int argc, char const *argv[]) {
 
 
         HGUNN.Training();
+        HGUNN.UpdateWeight();
     }
 
     // ======================= Testing =======================

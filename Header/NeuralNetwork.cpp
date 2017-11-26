@@ -24,8 +24,9 @@ void NeuralNetwork::Delete() {
 
 // ===========================================================================================
 
-bool NeuralNetwork::AllocOptimizer(Optimizer_name pOptimizer_name) {
-    _m_aEnd->AllocOptimizer(pOptimizer_name);
+
+bool NeuralNetwork::AllocOptimizer(Optimizer * pOptimizer) {
+    _m_aEnd->AllocOptimizer(pOptimizer);
 
     // 마지막 Operator는 거의 100% Optimizer가 필요 없다.
     // _m_aEnd->SetOptimizer(pOptimizer);
@@ -35,6 +36,7 @@ bool NeuralNetwork::AllocOptimizer(Optimizer_name pOptimizer_name) {
 bool NeuralNetwork::DeleteOperator() {
     _m_aEnd->DeleteInputOperator();
     delete _m_aEnd;
+    delete _m_aOptimizer;
     return true;
 }
 
@@ -134,16 +136,10 @@ bool NeuralNetwork::Testing(Operator *_pStart, Operator *_pEnd) {
 
 // ===========================================================================================
 
-bool NeuralNetwork::CreateGraph(Optimizer_name pOptimizer_name, Operator *pEnd) {
+bool NeuralNetwork::CreateGraph(Optimizer* pOptimizer, Operator *pEnd){
     SetEndOperator(pEnd);
-    AllocOptimizer(pOptimizer_name);
-
-    return true;
-}
-
-bool NeuralNetwork::CreateGraph(Optimizer_name pOptimizer_name) {
-    SetEndOperator();
-    AllocOptimizer(pOptimizer_name);
+    SetOptimizer(pOptimizer);
+    AllocOptimizer(pOptimizer);
 
     return true;
 }

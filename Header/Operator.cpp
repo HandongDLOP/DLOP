@@ -30,12 +30,24 @@ bool Operator::Alloc(MetaParameter *pParam) {
     return true;
 }
 
-bool Operator::AllocOptimizer(Optimizer_name pOptimizer_name) {
-    for (int i = 0; i < m_InputDegree; i++) {
-        m_apInputOperator[i]->AllocOptimizer(pOptimizer_name);
+// bool Operator::AllocOptimizer(Optimizer_name pOptimizer_name) {
+//     for (int i = 0; i < m_InputDegree; i++) {
+//         m_apInputOperator[i]->AllocOptimizer(pOptimizer_name);
+//
+//         Optimizer *pOptimizer = Factory::OptimizerFactory(pOptimizer_name);
+//         m_apInputOperator[i]->SetOptimizer(pOptimizer);
+//     }
+//
+//     return true;
+// }
 
-        Optimizer *pOptimizer = Factory::OptimizerFactory(pOptimizer_name);
-        m_apInputOperator[i]->SetOptimizer(pOptimizer);
+bool Operator::AllocOptimizer(Optimizer *pOptimizer) {
+    for (int i = 0; i < m_InputDegree; i++) {
+        m_apInputOperator[i]->AllocOptimizer(pOptimizer);
+
+        if (m_apInputOperator[i]->GetTrainable() == 1) {
+            pOptimizer->AddTrainableData(m_apInputOperator[i]->GetOutput(), m_apInputOperator[i]->GetGradient());
+        }
     }
 
     return true;
@@ -49,7 +61,7 @@ void Operator::Delete() {
     delete m_aDelta;
     delete[] m_apOutputOperator;
     delete[] m_apInputOperator;
-    delete m_aOptimizer;
+    // delete m_aOptimizer;
 }
 
 bool Operator::DeleteInputOperator() {
@@ -124,21 +136,21 @@ bool Operator::AddEdgebetweenOperators(Operator *pInput) {
 /* BFS로 다시 구현할 필요 있음 */
 
 // bool Operator::ForwardPropagate(){
-//     // Preorder
-//     this->ComputeForwardPropagate();
+//// Preorder
+// this->ComputeForwardPropagate();
 //
-//     // value 조정
-//     for (int i = 0; i < m_OutputDegree; i++) {
-//         if (m_apOutputOperator[i] != NULL) m_apOutputOperator[i]->IncreaseCurrentInputDegree();
-//     }
-//     m_currentInputDegree = 0;
+//// value 조정
+// for (int i = 0; i < m_OutputDegree; i++) {
+// if (m_apOutputOperator[i] != NULL) m_apOutputOperator[i]->IncreaseCurrentInputDegree();
+// }
+// m_currentInputDegree = 0;
 //
-//     for (int i = 0; i < m_OutputDegree; i++) {
-//         if (m_apOutputOperator[i]->GetInputDegree() == m_apOutputOperator[i]->GetCurrentInputDegree()) {
-//             m_apOutputOperator[i]->ForwardPropagate();
-//         }
-//     }
-//     return true;
+// for (int i = 0; i < m_OutputDegree; i++) {
+// if (m_apOutputOperator[i]->GetInputDegree() == m_apOutputOperator[i]->GetCurrentInputDegree()) {
+// m_apOutputOperator[i]->ForwardPropagate();
+// }
+// }
+// return true;
 // }
 
 bool Operator::ForwardPropagate() {
