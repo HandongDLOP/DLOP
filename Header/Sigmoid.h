@@ -24,13 +24,10 @@ public:
     virtual bool Alloc(Operator *pInput) {
         std::cout << "Sigmoid::Alloc(Operator *, Operator *)" << '\n';
 
-        Tensor *temp_output = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
-
-        SetOutput(temp_output);
-
-        Tensor *temp_delta = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
-
-        SetDelta(temp_delta);
+        Tensor *output = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
+        SetOutput(output);
+        Tensor *delta = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
+        SetDelta(delta);
 
         return true;
     }
@@ -38,17 +35,22 @@ public:
     virtual bool ComputeForwardPropagate() {
         std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        int size = GetInputOperator()[0]->GetOutput()->GetFlatDim();
+        int *shape         = GetInputOperator()[0]->GetOutput()->GetShape();
+        double *****input  = GetInputOperator()[0]->GetOutput()->GetData();
+        double *****output = GetOutput()->GetData();
 
-        float *data = GetInputOperator()[0]->GetOutput()->GetData();
-
-        float *result = GetOutput()->GetData();
-
-        for (int i = 0; i < size; i++) {
-            result[i] = sigmoid(data[i]);
+        for (int ti = 0; ti < shape[0]; ti++) {
+            for (int ba = 0; ba < shape[1]; ba++) {
+                for (int ch = 0; ch < shape[2]; ch++) {
+                    for (int ro = 0; ro < shape[3]; ro++) {
+                        for (int co = 0; co < shape[4]; co++) {
+                            output[ti][ba][ch][ro][co] = sigmoid(input[ti][ba][ch][ro][co]);
+                        }
+                    }
+                }
+            }
         }
 
-        // SetOutput(result);
 
         return true;
     }
@@ -56,28 +58,35 @@ public:
     virtual bool ComputeBackPropagate() {
         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int size = GetOutput()->GetFlatDim();
+        int *shape              = GetOutput()->GetShape();
+        double *****output      = GetOutput()->GetData();
+        double *****delta       = GetDelta()->GetData();
+        double *****delta_input = GetInputOperator()[0]->GetDelta()->GetData();
 
-        float *output = GetOutput()->GetData();
-
-        float *delta = GetDelta()->GetData();
-
-        float *delta_for_next = GetInputOperator()[0]->GetDelta()->GetData();
-
-        for (int i = 0; i < size; i++) {
-                delta_for_next[i] = delta[i] * output[i] * (1 - output[i]);
+        for (int ti = 0; ti < shape[0]; ti++) {
+            for (int ba = 0; ba < shape[1]; ba++) {
+                for (int ch = 0; ch < shape[2]; ch++) {
+                    for (int ro = 0; ro < shape[3]; ro++) {
+                        for (int co = 0; co < shape[4]; co++) {
+                            delta_input[ti][ba][ch][ro][co] = delta[ti][ba][ch][ro][co]
+                                                              * output[ti][ba][ch][ro][co]
+                                                              * (1 - output[ti][ba][ch][ro][co]);
+                        }
+                    }
+                }
+            }
         }
 
-        // GetInputOperator()[0]->SetDelta(delta_for_next);
-
         GetInputOperator()[0]->GetDelta()->PrintData();
+
+        GetDelta()->Reset();
 
         return true;
     }
 
     // for Sigmoid
-    float sigmoid(float data) {
-        return 1.F / (1.F + (float)exp(-data));
+    double sigmoid(double data) {
+        return 1.F / (1.F + (double)exp(-data));
     }
 };
 

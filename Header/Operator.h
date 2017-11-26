@@ -39,6 +39,8 @@ private:
 
     // Private Operator
 
+    int m_Trainable = 0;
+
 private:
 
     bool _AddInputEdge(Operator *pInput);
@@ -69,18 +71,6 @@ public:
 
     // ===========================================================================================
 
-    Operator(TensorShape *pshape) {
-        std::cout << "Operator::Operator(TensorShape *) 상속자 상속상태" << '\n';
-        Alloc(pshape);
-    }
-
-    Operator(TensorShape *pshape, std::string pName) : Operator(pName) {
-        std::cout << "Operator::Operator(TensorShape *, std::string) 상속자 상속상태" << '\n';
-        Alloc(pshape);
-    }
-
-    // ===========================================================================================
-
     Operator(Operator *pInput) {
         std::cout << "Operator::Operator(Operator *) 상속자 상속상태" << '\n';
         Alloc(pInput);
@@ -105,14 +95,14 @@ public:
 
     // ===========================================================================================
 
-    Operator(Operator *pInput1, Operator *pInput2) {
+    Operator(Operator *pInput0, Operator *pInput1) {
         std::cout << "Operator::Operator(Operator *, Operator *) 상속자 상속상태" << '\n';
-        Alloc(pInput1, pInput2);
+        Alloc(pInput0, pInput1);
     }
 
-    Operator(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pName) {
+    Operator(Operator *pInput0, Operator *pInput1, std::string pName) : Operator(pName) {
         std::cout << "Operator::Operator(Operator *, Operator *, std::string) 상속자 상속상태" << '\n';
-        Alloc(pInput1, pInput2);
+        Alloc(pInput0, pInput1);
     }
 
     // ===========================================================================================
@@ -130,10 +120,9 @@ public:
 
     // 추후 Private으로 옮길 의향 있음
     virtual bool Alloc(Tensor *pTensor);
-    virtual bool Alloc(TensorShape *pshape);
     virtual bool Alloc(Operator *pInput);
-    virtual bool Alloc(Operator *pInput1,
-                       Operator *pInput2);
+    virtual bool Alloc(Operator *pInput0,
+                       Operator *pInput1);
     virtual bool Alloc(MetaParameter *pParam = NULL);
     bool         AllocOptimizer(Optimizer_name pOptimizer_name);
 
@@ -162,6 +151,10 @@ public:
 
     void SetOptimizer(Optimizer *pOptimizer) {
         m_aOptimizer = pOptimizer;
+    }
+
+    void SetTrainable(int pTrainable){
+        m_Trainable = pTrainable;
     }
 
     // ===========================================================================================
@@ -225,6 +218,10 @@ public:
 
     std::string GetName() {
         return m_name;
+    }
+
+    int GetTrainable(){
+        return m_Trainable;
     }
 
     // ===========================================================================================

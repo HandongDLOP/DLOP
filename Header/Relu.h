@@ -24,17 +24,10 @@ public:
     virtual bool Alloc(Operator *pInput) {
         std::cout << "Relu::Alloc(Operator *, Operator *)" << '\n';
 
-        // Tensor *temp_output = new Tensor(GetInput()[0]->GetShape());
-
-        SetOutput(new Tensor(GetInputOperator()[0]->GetOutput()->GetShape()));
-
-        // Tensor *temp_Gradient = new Tensor(GetInput()[0]->GetShape());
-        //
-        // SetGradient(temp_Gradient);
-
-        // Tensor *tempdelta_for_input = new Tensor(GetInput()[0]->GetShape());
-
-        SetDelta(new Tensor(GetInputOperator()[0]->GetOutput()->GetShape()));
+        Tensor *output = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
+        SetOutput(output);
+        Tensor *delta = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
+        SetDelta(delta);
 
         return true;
     }
@@ -42,14 +35,20 @@ public:
     virtual bool ComputeForwardPropagate() {
         std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        int size = GetInputOperator()[0]->GetOutput()->GetFlatDim();
+        int *shape         = GetInputOperator()[0]->GetOutput()->GetShape();
+        double *****input  = GetInputOperator()[0]->GetOutput()->GetData();
+        double *****output = GetOutput()->GetData();
 
-        float *data = GetInputOperator()[0]->GetOutput()->GetData();
-
-        float *result = GetOutput()->GetData();
-
-        for (int i = 0; i < size; i++) {
-            result[i] = Max(data[i], 0.0);
+        for (int ti = 0; ti < shape[0]; ti++) {
+            for (int ba = 0; ba < shape[1]; ba++) {
+                for (int ch = 0; ch < shape[2]; ch++) {
+                    for (int ro = 0; ro < shape[3]; ro++) {
+                        for (int co = 0; co < shape[4]; co++) {
+                            output[ti][ba][ch][ro][co] = Max(input[ti][ba][ch][ro][co], 0.0);
+                        }
+                    }
+                }
+            }
         }
 
         return true;
@@ -58,34 +57,38 @@ public:
     virtual bool ComputeBackPropagate() {
         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int size = GetOutput()->GetFlatDim();
+        int *shape              = GetOutput()->GetShape();
+        double *****output      = GetOutput()->GetData();
+        double *****delta       = GetDelta()->GetData();
+        double *****delta_input = GetInputOperator()[0]->GetDelta()->GetData();
 
-        float *output = GetOutput()->GetData();
-
-        float *delta = GetDelta()->GetData();
-
-        float *delta_for_input = GetInputOperator()[0]->GetDelta()->GetData();
-
-        for (int i = 0; i < size; i++) {
-            if (output[i] > 0.0) {
-                delta_for_input[i] = delta[i];
-            } else {
-                delta_for_input[i] = 0;
+        for (int ti = 0; ti < shape[0]; ti++) {
+            for (int ba = 0; ba < shape[1]; ba++) {
+                for (int ch = 0; ch < shape[2]; ch++) {
+                    for (int ro = 0; ro < shape[3]; ro++) {
+                        for (int co = 0; co < shape[4]; co++) {
+                            if (output[ti][ba][ch][ro][co] > 0.0) {
+                                delta_input[ti][ba][ch][ro][co] = delta[ti][ba][ch][ro][co];
+                            } else {
+                                delta_input[ti][ba][ch][ro][co] = 0;
+                            }
+                        }
+                    }
+                }
             }
         }
 
         GetInputOperator()[0]->GetDelta()->PrintData();
 
+        GetDelta()->Reset();
+
         return true;
     }
 
     // for relu
-    float Max(float data1, float data2) {
-        float temp = 0.0;
-
-        if (data1 >= data2) temp = data1;
-        else temp = data2;
-        return temp;
+    double Max(double data1, double data2) {
+        if (data1 >= data2) return data1;
+        else return data2;
     }
 };
 

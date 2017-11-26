@@ -10,21 +10,21 @@ int main(int argc, char const *argv[]) {
 	NeuralNetwork HGUNN;
 
     // create input data
-    Tensor   *_x1 = Tensor::Constants(1, BATCH, 1, 2, 1, 1.0);
+    Tensor   *_x1 = Tensor::Constants(1, BATCH, 1, 1, 2, 1.0);
     Operator *x1  = HGUNN.AddPlaceholder(_x1, "x1");
 
     // create label data
-    Tensor   *_ans = Tensor::Constants(1, BATCH, 1, 2, 1, 1.0);
+    Tensor   *_ans = Tensor::Constants(1, BATCH, 1, 1, 2, 1.0);
     Operator *ans  = HGUNN.AddPlaceholder(_ans, "answer");
 
     // ======================= layer 1=======================
     Tensor   *_w1 = Tensor::Constants(1, 1, 1, 2, 2, 2.0);
     Operator *w1  = new Variable(_w1, "w1", 1);
 
-    Tensor   *_b1 = Tensor::Constants(1, 1, 1, 2, 1, 1.0);
+    Tensor   *_b1 = Tensor::Constants(1, 1, 1, 1, 2, 1.0);
     Operator *b1  = new Variable(_b1, "b1", 1); // 오류 발생 원인 찾기
 
-    Operator *mat_1 = new MatMul(w1, x1, "mat_1");
+    Operator *mat_1 = new MatMul(x1, w1, "mat_1");
 
     Operator *add_1 = new Add(mat_1, b1, "add_1");
 

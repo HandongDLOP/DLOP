@@ -30,13 +30,9 @@ public:
         std::cout << "MSE::Alloc(Operator *, Operator *)" << '\n';
         // if pInput1 and pInput2의 shape가 다르면 abort
 
-        TensorShape *InputDim0 = pInput1->GetOutput()->GetShape();
-        TensorShape *InputDim1 = pInput2->GetOutput()->GetShape();
-
-        if (InputDim0->GetDim()[0] != InputDim1->GetDim()[0]) {
-            std::cout << "data has invalid dimension" << '\n';
-            exit(0);
-        }
+        int *shape     = GetInputOperator()[0]->GetOutput()->GetShape();
+        Tensor *output = new Tensor(shape[0], shape[1], 1, 1, 1);
+        SetOutput(output);
 
         return true;
     }
@@ -44,7 +40,30 @@ public:
     virtual bool ComputeForwardPropagate() {
         std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
+        int *shape         = GetInputOperator()[0]->GetOutput()->GetShape();
+        double *****input0 = GetInputOperator()[0]->GetOutput()->GetData();
+        double *****input1 = GetInputOperator()[1]->GetOutput()->GetData();
+        GetOutput()->Reset();
+        double *****output = GetOutput()->GetData();
+        int num_of_output  = shape[2] * shape[3] * shape[4];
+
+        for (int ti = 0; ti < shape[0]; ti++) {
+            for (int ba = 0; ba < shape[1]; ba++) {
+                for (int ch = 0; ch < shape[2]; ch++) {
+                    for (int ro = 0; ro < shape[3]; ro++) {
+                        for (int co = 0; co < shape[4]; co++) {
+                            output[ti][ba][0][0][0] += Error(input0[ti][ba][ch][ro][co],
+                                                             input1[ti][ba][ch][ro][co],
+                                                             num_of_output);
+                        }
+                    }
+                }
+            }
+        }
+
         GetInputOperator()[0]->GetOutput()->PrintData();
+        GetInputOperator()[1]->GetOutput()->PrintData();
+        GetOutput()->PrintData();
 
         return true;
     }
@@ -52,22 +71,31 @@ public:
     virtual bool ComputeBackPropagate() {
         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        TensorShape *InputDim0 = GetInputOperator()[0]->GetOutput()->GetShape(); // 하나만 확인해도 된다.
+        int *shape               = GetInputOperator()[0]->GetOutput()->GetShape();
+        int  num_of_output       = shape[2] * shape[3] * shape[4];  /* * InputDim0->GetDim()[2] == ch*/;
+        double *****input0       = GetInputOperator()[0]->GetOutput()->GetData();
+        double *****input1       = GetInputOperator()[1]->GetOutput()->GetData();
+        double *****delta_Input0 = GetInputOperator()[0]->GetDelta()->GetData();
 
-        int output = InputDim0->GetDim()[0] * InputDim0->GetDim()[1]  /* * InputDim0->GetDim()[2] == ch*/;
-        // int batch  = InputDim0->GetDim()[3];
-
-        float *data0  = GetInputOperator()[0]->GetOutput()->GetData();
-        float *data1  = GetInputOperator()[1]->GetOutput()->GetData();
-        float *result = GetInputOperator()[0]->GetDelta()->GetData();
-
-        for (int i = 0; i < output; i++) {
-            result[i] = (data0[i] - data1[i]) / output;
+        for (int ti = 0; ti < shape[0]; ti++) {
+            for (int ba = 0; ba < shape[1]; ba++) {
+                for (int ch = 0; ch < shape[2]; ch++) {
+                    for (int ro = 0; ro < shape[3]; ro++) {
+                        for (int co = 0; co < shape[4]; co++) {
+                            delta_Input0[ti][ba][ch][ro][co] = (input0[ti][ba][ch][ro][co] - input1[ti][ba][ch][ro][co]) / num_of_output;
+                        }
+                    }
+                }
+            }
         }
 
         GetInputOperator()[0]->GetDelta()->PrintData();
 
         return true;
+    }
+
+    double Error(double input0, double input1, int num_of_output) {
+        return (input0 - input1) * (input0 - input1) / num_of_output * 2;
     }
 };
 

@@ -2,44 +2,44 @@
 #define VARIABLE_H_    value
 
 #include <iostream>
-#include <string>
 
 #include "Tensor.h"
 #include "Operator.h"
 
 class Variable : public Operator {
 private:
-    int m_isTrainable = 0;
-
 public:
     Variable(std::string pName) : Operator(pName) {
         std::cout << "Variable::Variable(std::string)" << '\n';
     }
 
-    Variable(Tensor *pTensor, std::string pName, int pisTrainable = 0) : Operator(pTensor, pName) {
+    Variable(Tensor *pTensor, std::string pName, int pTrainable = 0) : Operator(pTensor, pName) {
         std::cout << "Variable::Variable(Tensor *, std::string)" << '\n';
 
-        Alloc(pTensor, pisTrainable);
+        Alloc(pTensor, pTrainable);
     }
 
     virtual ~Variable() {
         std::cout << "Variable::~Variable()" << '\n';
     }
 
-    virtual bool Alloc(Tensor *pTensor, int pisTrainable) {
-        // SetOutputDim(pTensor->GetShape());
+    virtual bool Alloc(Tensor *pTensor, int pTrainable) {
+        if (pTensor->GetShape()[0] != 1) {
+            std::cout << "data has unvalid time dimension" << '\n';
+            exit(0);
+        }
 
         SetOutput(pTensor);
 
-        Tensor *temp_Gradient = new Tensor(pTensor->GetShape());
+        Tensor *gradient = new Tensor(pTensor->GetShape());
 
-        SetGradient(temp_Gradient);
+        SetGradient(gradient);
 
-        Tensor *temp_delta = new Tensor(pTensor->GetShape());
+        Tensor *delta = new Tensor(pTensor->GetShape());
 
-        SetDelta(temp_delta);
+        SetDelta(delta);
 
-        m_isTrainable = pisTrainable;
+        SetTrainable(pTrainable);
 
         return true;
     }
@@ -53,30 +53,31 @@ public:
     virtual bool ComputeBackPropagate() {
         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int size = GetOutput()->GetFlatDim();
-
-        float *delta = GetDelta()->GetData();
-
-        float *grad = GetGradient()->GetData();
+        int *shape        = GetOutput()->GetShape();
+        double *****delta = GetDelta()->GetData();
+        double *****grad  = GetGradient()->GetData();
 
         // 이전에 구해져 있던 gradient와 합치기
-        for (int i = 0; i < size; i++) {
-            grad[i] += delta[i];
+        for (int ti = 0; ti < shape[0]; ti++) {
+            for (int ba = 0; ba < shape[1]; ba++) {
+                for (int ch = 0; ch < shape[2]; ch++) {
+                    for (int ro = 0; ro < shape[3]; ro++) {
+                        for (int co = 0; co < shape[4]; co++) {
+                            grad[ti][ba][ch][ro][co] += delta[ti][ba][ch][ro][co];
+                        }
+                    }
+                }
+            }
         }
 
+        // Training
         GetOutput()->PrintData();
+        GetGradient()->PrintData();
+        GetOptimizer()->UpdateWeight(GetOutput(), GetGradient());
+        GetOutput()->PrintData();
+        GetGradient()->PrintData();
 
-        if (m_isTrainable == 1) {
-
-            GetGradient()->PrintData();
-
-            GetOptimizer()->UpdateWeight(GetOutput(), GetGradient());
-
-            GetOutput()->PrintData();
-
-            GetGradient()->PrintData();
-        }
-
+        GetDelta()->Reset();
         return true;
     }
 };
