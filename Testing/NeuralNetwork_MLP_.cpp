@@ -95,8 +95,15 @@ int main(int argc, char const *argv[]) {
 
     Optimizer *optimizer = new StochasticGradientDescent(err, 0.6, MINIMIZE);
 
-    // ======================= Create Graph =======================
+    Operator *err1 = new MSE(err, ans, "MSE_1");
 
+    Operator *err2 = new MSE(err, ans, "MSE_2");
+
+    // Output이 두개가 되면, Propagate만 잘 시키면 된다. 따로따로, 시작점을 다르게 잡고.
+
+    // ======================= Create Graph =======================
+    HGUNN.SetEndOperator(err1);
+    HGUNN.SetEndOperator(err2);
     HGUNN.CreateGraph(optimizer);
 
     // ======================= Training =======================
@@ -125,7 +132,6 @@ int main(int argc, char const *argv[]) {
 
         HGUNN.Testing();
     }
-
 
     std::cout << "---------------End-----------------" << '\n';
     return 0;

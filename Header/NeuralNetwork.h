@@ -18,7 +18,7 @@
 
 
 enum RUNNINGOPTION{
-    TRINING,
+    TRAINING,
     TESTING
 };
 
@@ -33,7 +33,7 @@ private:
     // 그래프 형식으로 바꿔야 합니다.
     // 그래프가 되기 위해서는 다음 오퍼레이터의 링크를 건네는 Operator가 필요합니다.
     Operator *m_pStart = new Operator("Base Operator");  // (Default)
-    Operator *m_aEnd   = m_pStart;     // (Default)
+    Operator *m_aEnd   = new Operator("Final Operator");     // (Default)
 
     Optimizer *m_aOptimizer = NULL;
 
@@ -68,11 +68,15 @@ public:
     bool Testing(Operator *pStart = NULL, Operator *pEnd = NULL);
 
 
-    // 나중에 사용자가 사용할 일이 없는 Method는 Private으로 올리도록 한다.
-    bool SetEndOperator() {
-        // End Operator는 자동으로 찾는다.
-        m_aEnd = m_pStart->CheckEndOperator();
-        return true;
+    // // 나중에 사용자가 사용할 일이 없는 Method는 Private으로 올리도록 한다.
+    // bool SetEndOperator() {
+    //     // End Operator는 자동으로 찾는다.
+    //     m_aEnd = m_pStart->CheckEndOperator();
+    //     return true;
+    // }
+
+    void SetEndOperator(Operator *pEnd) {
+        m_aEnd->AddEdgebetweenOperators(pEnd);
     }
 
     void SetOptimizer(Optimizer *pOptimizer) {

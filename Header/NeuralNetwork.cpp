@@ -14,53 +14,35 @@ NeuralNetwork::~NeuralNetwork() {
 
 bool NeuralNetwork::Alloc() {
     std::cout << "NeuralNetwork::Alloc()" << '\n';
+    m_aEnd->AddEdgebetweenOperators(m_pStart);
     return true;
 }
 
 void NeuralNetwork::Delete() {
     std::cout << "NeuralNetwork::Delete()" << '\n';
     DeleteOperator();
+    delete m_aEnd;
+    delete m_aOptimizer;
+
 }
 
 // ===========================================================================================
 
 
 bool NeuralNetwork::AllocOptimizer(Optimizer * pOptimizer) {
-    m_aEnd->AllocOptimizer(pOptimizer);
+    pOptimizer->GetObjectOperator()->AllocOptimizer(pOptimizer);
 
-    // 마지막 Operator는 거의 100% Optimizer가 필요 없다.
+    // Object Operator는 거의 100% Optimizer가 필요 없다.
     // m_aEnd->SetOptimizer(pOptimizer);
     return true;
 }
 
 bool NeuralNetwork::DeleteOperator() {
     m_aEnd->DeleteInputOperator();
-    delete m_aEnd;
-    delete m_aOptimizer;
     return true;
 }
 
 // ===========================================================================================
-
-// Operator * NeuralNetwork::AddPlaceholder(TensorShape *pshape) {
-//     std::cout << "NeuralNetwork::Placeholder(TensorShape *)" << '\n';
-//
-//     Operator *temp = new Placeholder(pshape);
-//
-//     temp->AddEdgebetweenOperators(m_pStart);
-//
-//     return temp;
-// }
-//
-// Operator * NeuralNetwork::AddPlaceholder(TensorShape *pshape, std::string pName) {
-//     std::cout << "NeuralNetwork::Placeholder(TensorShape *, std::string )" << '\n';
-//
-//     Operator *temp = new Placeholder(pshape, pName);
-//
-//     temp->AddEdgebetweenOperators(m_pStart);
-//
-//     return temp;
-// }
 
 Operator * NeuralNetwork::AddPlaceholder(Tensor *pTensor, std::string pName) {
     std::cout << "NeuralNetwork::Placeholder(Tensor *, std::string )" << '\n';
@@ -76,6 +58,7 @@ Operator * NeuralNetwork::AddPlaceholder(Tensor *pTensor, std::string pName) {
 // ===========================================================================================
 
 // 주소에 따라 조절되는 알고리즘 추가 필요
+// forwardPropagate Algorithm 수정 필요
 bool NeuralNetwork::ForwardPropagate(Operator *pStart, Operator *pEnd) {
     if (pEnd == NULL) {
         if (m_aEnd == NULL) {
@@ -132,7 +115,10 @@ bool NeuralNetwork::Testing(Operator *pStart, Operator *pEnd) {
 // ===========================================================================================
 
 bool NeuralNetwork::CreateGraph(Optimizer* pOptimizer){
-    SetEndOperator();
+
+    // Final Operator
+
+    // SetEndOperator();
 
     // =====================================
 
