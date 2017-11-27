@@ -11,7 +11,7 @@
 #include "Relu.h"
 #include "Sigmoid.h"
 
-#include "Add.h"
+#include "AddXB.h"
 #include "MatMulXW.h"
 
 #include "MSE.h"

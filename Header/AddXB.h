@@ -50,17 +50,18 @@ public:
 
         // factory method 작업
 
-        // if (shape_Input0[1] != shape_Input1[1]) {
-        // if ((shape_Input0[1] == 1) || (shape_Input1[1] == 1)) {
-        // if (shape_Input0[1] < shape_Input1[1]) {
-        // GetInputOperator()[0] = pInput1;
-        // GetInputOperator()[1] = pInput0;
-        // }
-        // } else {
-        // std::cout << "data has unvalid batch dimension" << '\n';
-        // exit(0);
-        // }
-        // }
+        if (shape_Input0[1] != shape_Input1[1]) {
+            if ((shape_Input0[1] == 1) || (shape_Input1[1] == 1)) {
+                if (shape_Input0[1] < shape_Input1[1]) {
+                    GetInputOperator()[0] = pInput1;
+                    GetInputOperator()[1] = pInput0;
+                }
+            } else {
+                std::cout << "data has unvalid batch dimension" << '\n';
+                exit(0);
+            }
+        }
+
 
         // if (shape_Input0[0] != shape_Input1[0]) {
         // if ((shape_Input0[0] == 1) || (shape_Input1[0] == 1)) {

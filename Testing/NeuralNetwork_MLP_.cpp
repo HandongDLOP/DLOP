@@ -57,7 +57,7 @@ int main(int argc, char const *argv[]) {
 
     Operator *mat_2 = new MatMul(act_1, w2, "mat_2");
 
-    Operator *add_2 = new Add(mat_2, b2, "add_2");
+    Operator *add_2 = new Add(b2, mat_2, "add_2");
 
     // Operator *act_2 = new Relu(add_2, "relu_2");
     Operator *act_2 = new Sigmoid(add_2, "sig_2");
@@ -79,8 +79,6 @@ int main(int argc, char const *argv[]) {
 
     for (int i = 0; i < atoi(argv[1]); i++) {
         std::cout << "epoch : " << i << '\n';
-
-
         HGUNN.Training();
         HGUNN.UpdateWeight();
     }
@@ -89,8 +87,6 @@ int main(int argc, char const *argv[]) {
 
     for (int i = 0; i < 1; i++) {
         std::cout << "input : " << i << '\n';
-
-
         HGUNN.Testing();
     }
 
