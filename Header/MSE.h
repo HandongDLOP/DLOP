@@ -31,7 +31,7 @@ public:
         // if pInput1 and pInput2의 shape가 다르면 abort
 
         int *shape     = GetInputOperator()[0]->GetOutput()->GetShape();
-        Tensor *output = new Tensor(shape[0], shape[1], 1, 1, 1);
+        Tensor *output = new Tensor(shape);
         SetOutput(output);
 
         return true;
@@ -52,7 +52,7 @@ public:
                 for (int ch = 0; ch < shape[2]; ch++) {
                     for (int ro = 0; ro < shape[3]; ro++) {
                         for (int co = 0; co < shape[4]; co++) {
-                            output[ti][ba][0][0][0] += Error(input0[ti][ba][ch][ro][co],
+                            output[ti][ba][ch][ro][co] += Error(input0[ti][ba][ch][ro][co],
                                                              input1[ti][ba][ch][ro][co],
                                                              num_of_output);
                         }

@@ -17,6 +17,11 @@
 #include "MSE.h"
 
 
+enum RUNNINGOPTION{
+    TRINING,
+    TESTING
+};
+
 class NeuralNetwork {
 private:
     // Operator 개수
@@ -61,8 +66,6 @@ public:
     // For NeuralNetwork Training
     bool Training(Operator *pStart = NULL, Operator *pEnd = NULL);
     bool Testing(Operator *pStart = NULL, Operator *pEnd = NULL);
-
-    // Set m_aEnd : 추후에는 모델이 만들어질 때 자동으로 alloc되게 변환해야 함  // 임시 함수
 
 
     // 나중에 사용자가 사용할 일이 없는 Method는 Private으로 올리도록 한다.
