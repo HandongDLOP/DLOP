@@ -96,10 +96,6 @@ public:
         double *****input1 = GetInputOperator()[1]->GetOutput()->GetData();
         double *****output = GetOutput()->GetData();
 
-        std::cout << "Add input 1 , 2" << '\n';
-        GetInputOperator()[0]->GetOutput()->PrintData();
-        GetInputOperator()[1]->GetOutput()->PrintData();
-
         // factory method
 
         // if ((shape_Input0[0] == shape_Input1[0]) && (shape_Input0[1] == shape_Input1[1])) {
@@ -127,8 +123,6 @@ public:
             }
         }
         // }
-        std::cout << "Add output" << '\n';
-        GetOutput()->PrintData();
 
         return true;
     }
