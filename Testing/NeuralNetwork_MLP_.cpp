@@ -93,7 +93,7 @@ int main(int argc, char const *argv[]) {
 
     Operator *err = new MSE(act_2, ans, "MSE");
 
-    Optimizer *optimizer = new StochasticGradientDescent(0.6);
+    Optimizer *optimizer = new StochasticGradientDescent(err, 0.6, MINIMIZE);
 
     // ======================= Create Graph =======================
 

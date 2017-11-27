@@ -5,6 +5,13 @@
 
 #include "Tensor.h"
 
+class Operator;
+
+enum OptimizeDirection {
+    MAXIMIZE,
+    MINIMIZE
+};
+
 struct TrainableData {
     Tensor *Data     = NULL;
     Tensor *Gradient = NULL;
@@ -15,15 +22,19 @@ private:
     /* data */
     // momentum이나 이런 애들은 따로 변수를 가지고 있어야 한다.
 
+    Operator *ObjectOperator = NULL;
+
+    float m_LearningRate    = 0.f;
+    int m_OptimizeDirection = 1;  // 1 or -1
+
     TrainableData **m_aTrainableData = NULL;
     int m_TrainableDataDegree        = 0;
-    float m_LearningRate             = 0.0;
 
 public:
-    Optimizer(float pLearningRate) {
-        std::cout << "Optimizer::Optimizer()" << '\n';
+    Optimizer(Operator *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+        std::cout << "Optimizer::Optimizer(Operator *, float, OptimizeDirection)" << '\n';
 
-        Alloc(pLearningRate);
+        Alloc(pObjectOperator, pLearningRate, pOptimizeDirection);
     }
 
     virtual ~Optimizer() {
@@ -32,8 +43,10 @@ public:
         Delete();
     }
 
-    bool Alloc(float pLearningRate) {
+    bool Alloc(Operator *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+        ObjectOperator = pObjectOperator;
         m_LearningRate = pLearningRate;
+        SetOptimizeDirection(pOptimizeDirection);
 
         return true;
     }
@@ -86,8 +99,17 @@ public:
         m_LearningRate = pLearningRate;
     }
 
+    void SetOptimizeDirection(OptimizeDirection pOptimizeDirection) {
+        if (pOptimizeDirection == MAXIMIZE) m_OptimizeDirection = 1;
+        else if (pOptimizeDirection == MINIMIZE) m_OptimizeDirection = -1;
+    }
+
     float GetLearningRate() {
         return m_LearningRate;
+    }
+
+    int GetOptimizeDirection(){
+        return m_OptimizeDirection;
     }
 };
 
