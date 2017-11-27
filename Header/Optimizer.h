@@ -22,7 +22,7 @@ private:
     /* data */
     // momentum이나 이런 애들은 따로 변수를 가지고 있어야 한다.
 
-    Operator *ObjectOperator = NULL;
+    Operator *m_pObjectOperator = NULL;
 
     float m_LearningRate    = 0.f;
     int m_OptimizeDirection = 1;  // 1 or -1
@@ -44,8 +44,8 @@ public:
     }
 
     bool Alloc(Operator *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
-        ObjectOperator = pObjectOperator;
-        m_LearningRate = pLearningRate;
+        SetObjectOperator(pObjectOperator);
+        SetLearningRate(pLearningRate);
         SetOptimizeDirection(pOptimizeDirection);
 
         return true;
@@ -83,19 +83,23 @@ public:
         return true;
     }
 
-    bool UpdateWeight() {
+    bool UpdateVariable() {
         for (int i = 0; i < m_TrainableDataDegree; i++) {
-            // UpdateWeight(m_aTrainableData[i]->Data, m_aTrainableData[i]->Gradient);
-            UpdateWeight(m_aTrainableData[i]);
+            // UpdateVariable(m_aTrainableData[i]->Data, m_aTrainableData[i]->Gradient);
+            UpdateVariable(m_aTrainableData[i]);
         }
         return true;
     }
 
-    // virtual bool UpdateWeight(Tensor *Trainable, Tensor *Gradient) = 0;
-    virtual bool UpdateWeight(TrainableData *pTrainableData) = 0;
+    // virtual bool UpdateVariable(Tensor *Trainable, Tensor *Gradient) = 0;
+    virtual bool UpdateVariable(TrainableData *pTrainableData) = 0;
 
 
-    void         SetLearningRate(float pLearningRate) {
+    void         SetObjectOperator(Operator *pObjectOperator) {
+        m_pObjectOperator = pObjectOperator;
+    }
+
+    void SetLearningRate(float pLearningRate) {
         m_LearningRate = pLearningRate;
     }
 
@@ -104,11 +108,15 @@ public:
         else if (pOptimizeDirection == MINIMIZE) m_OptimizeDirection = -1;
     }
 
+    Operator* GetObjectOperator() {
+        return m_pObjectOperator;
+    }
+
     float GetLearningRate() {
         return m_LearningRate;
     }
 
-    int GetOptimizeDirection(){
+    int GetOptimizeDirection() {
         return m_OptimizeDirection;
     }
 };

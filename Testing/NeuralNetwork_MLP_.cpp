@@ -97,10 +97,9 @@ int main(int argc, char const *argv[]) {
 
     // ======================= Create Graph =======================
 
-    HGUNN.CreateGraph(optimizer, err);
+    HGUNN.CreateGraph(optimizer);
 
     // ======================= Training =======================
-
 
     if (argc != 2) {
         std::cout << "There is no count of training" << '\n';
@@ -108,12 +107,13 @@ int main(int argc, char const *argv[]) {
     }
 
     for (int i = 0; i < atoi(argv[1]); i++) {
+        // for (int i = 0; i < 1; i++) {
         std::cout << "epoch : " << i << '\n';
         x1->FeedOutput(CreateInput());
         ans->FeedOutput(CreateLabel());
 
         HGUNN.Training();
-        HGUNN.UpdateWeight();
+        HGUNN.UpdateVariable();
     }
 
     // ======================= Testing =======================

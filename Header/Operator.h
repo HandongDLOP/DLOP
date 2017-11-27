@@ -32,8 +32,8 @@ private:
     // identifier
     std::string m_name = "NO NAME";
 
-    // Private Operator
     int m_Trainable = 0;
+    // Private Operator
 
 private:
     bool _AddInputEdge(Operator *pInput);
@@ -235,9 +235,6 @@ public:
     // ===========================================================================================
 
     Operator* CheckEndOperator();
-
-    //// UpdateWeight
-    // bool UpdateWeight();
 };
 
 #endif  // OPERATOR_H_
