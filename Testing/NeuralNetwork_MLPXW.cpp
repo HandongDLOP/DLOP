@@ -99,7 +99,6 @@ int main(int argc, char const *argv[]) {
     //
     // Operator *err2 = new MSE(err, ans, "MSE_2");
 
-
     // ======================= Create Graph =======================
     HGUNN.SetEndOperator(err);
     // HGUNN.SetEndOperator(err1);
