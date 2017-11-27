@@ -134,12 +134,12 @@ public:
         double *****input0 = GetInputOperator()[0]->GetOutput()->GetData();  // weight
         double *****input1 = GetInputOperator()[1]->GetOutput()->GetData();  // input
 
-        GetInputOperator()[0]->GetOutput()->PrintData();
-        GetInputOperator()[1]->GetOutput()->PrintData();
+        // GetInputOperator()[0]->GetOutput()->PrintData();
+        // GetInputOperator()[1]->GetOutput()->PrintData();
 
         double *****delta = GetDelta()->GetData();
 
-        GetDelta()->PrintData();
+        // GetDelta()->PrintData();
 
         //// 각자 Operator에서 해주어야 한다.
         // GetInputOperator()[0]->GetDelta()->Reset();
@@ -161,18 +161,17 @@ public:
                 }
             }
         }
-
-
         // for (int i = 0; i < size_Weight; i++) {
         // _delta_input[i / output_col] += delta[i % output_col] * Weight[i];
         // _delta_Weight[i]              = delta[i % output_col] * input_data[i / output_col];
         // }
 
-        GetInputOperator()[0]->GetDelta()->PrintData();
+        // GetInputOperator()[0]->GetDelta()->PrintData();
 
-        GetInputOperator()[1]->GetDelta()->PrintData();
+        // GetInputOperator()[1]->GetDelta()->PrintData();
 
         GetDelta()->Reset();
+
         return true;
     }
 };

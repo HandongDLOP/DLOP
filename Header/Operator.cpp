@@ -31,14 +31,14 @@ bool Operator::Alloc(MetaParameter *pParam) {
 }
 
 // bool Operator::AllocOptimizer(Optimizer_name pOptimizer_name) {
-//     for (int i = 0; i < m_InputDegree; i++) {
-//         m_apInputOperator[i]->AllocOptimizer(pOptimizer_name);
+// for (int i = 0; i < m_InputDegree; i++) {
+// m_apInputOperator[i]->AllocOptimizer(pOptimizer_name);
 //
-//         Optimizer *pOptimizer = Factory::OptimizerFactory(pOptimizer_name);
-//         m_apInputOperator[i]->SetOptimizer(pOptimizer);
-//     }
+// Optimizer *pOptimizer = Factory::OptimizerFactory(pOptimizer_name);
+// m_apInputOperator[i]->SetOptimizer(pOptimizer);
+// }
 //
-//     return true;
+// return true;
 // }
 
 bool Operator::AllocOptimizer(Optimizer *pOptimizer) {
@@ -154,28 +154,34 @@ bool Operator::AddEdgebetweenOperators(Operator *pInput) {
 // }
 
 bool Operator::ForwardPropagate() {
-    // Postorder
-
-    // BFS로 얼른 바꾸자.... 현재 좋은 생각이 떠오르지 않음...
-    // ForwardPropagate가 중복으로 실행되는 것만 막은 상황
-    if ((m_currentOutputDegree == 0) || (m_currentOutputDegree == 1)) {
-        for (int i = 0; i < m_InputDegree; i++) {
-            m_apInputOperator[i]->IncreaseCurrentOutputDegree();
-            m_apInputOperator[i]->ForwardPropagate();
-        }
-
+    // 알고리즘 잘 이해하기
+    // BFS로 나중에는 바꿀 것
+    if (m_InputDegree == m_currentInputDegree) {
         this->ComputeForwardPropagate();
-    }
 
-    if (m_OutputDegree == m_currentOutputDegree) {
-        m_currentOutputDegree = 0;
+        for (int o = 0; o < m_OutputDegree; o++) {
+            m_apOutputOperator[o]->IncreaseCurrentInputDegree();
+        }
+        m_currentInputDegree = 0;
+    } else {
+        for (int i = 0; i < m_InputDegree; i++) {
+            m_apInputOperator[i]->ForwardPropagate();
+
+            if (m_InputDegree == m_currentInputDegree) {
+                this->ComputeForwardPropagate();
+
+                for (int o = 0; o < m_OutputDegree; o++) {
+                    m_apOutputOperator[o]->IncreaseCurrentInputDegree();
+                }
+                m_currentInputDegree = 0;
+            }
+        }
     }
 
     return true;
 }
 
 bool Operator::BackPropagate() {
-    // Preorder
     this->ComputeBackPropagate();
 
     // value 조정

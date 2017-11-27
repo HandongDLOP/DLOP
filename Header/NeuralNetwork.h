@@ -17,6 +17,11 @@
 #include "MSE.h"
 
 
+enum RUNNINGOPTION{
+    TRAINING,
+    TESTING
+};
+
 class NeuralNetwork {
 private:
     // Operator 개수
@@ -27,10 +32,10 @@ private:
 
     // 그래프 형식으로 바꿔야 합니다.
     // 그래프가 되기 위해서는 다음 오퍼레이터의 링크를 건네는 Operator가 필요합니다.
-    Operator *_m_pStart = new Operator("Base Operator");  // (Default)
-    Operator *_m_aEnd   = _m_pStart;     // (Default)
+    Operator *m_pStart = new Operator("Base Operator");  // (Default)
+    Operator *m_aEnd   = new Operator("Final Operator");     // (Default)
 
-    Optimizer *_m_aOptimizer = NULL;
+    Optimizer *m_aOptimizer = NULL;
 
 public:
     // Operator의 개수를 정합니다.
@@ -55,29 +60,36 @@ public:
 
     // Propagate
     // Prameter에 basket이 추가될 수 있음
-    bool ForwardPropagate(Operator *_pStart, Operator *_pEnd);
-    bool BackPropagate(Operator *_pStart, Operator *_pEnd);
+    bool ForwardPropagate(Operator *pStart, Operator *pEnd);
+    bool BackPropagate(Operator *pStart, Operator *pEnd);
 
     // For NeuralNetwork Training
-    bool Training(Operator *_pStart = NULL, Operator *_pEnd = NULL);
-    bool Testing(Operator *_pStart = NULL, Operator *_pEnd = NULL);
+    bool Training(Operator *pStart = NULL, Operator *pEnd = NULL);
+    bool Testing(Operator *pStart = NULL, Operator *pEnd = NULL);
 
-    // Set _m_aEnd : 추후에는 모델이 만들어질 때 자동으로 alloc되게 변환해야 함  // 임시 함수
+
+    // // 나중에 사용자가 사용할 일이 없는 Method는 Private으로 올리도록 한다.
+    // bool SetEndOperator() {
+    //     // End Operator는 자동으로 찾는다.
+    //     m_aEnd = m_pStart->CheckEndOperator();
+    //     return true;
+    // }
 
     void SetEndOperator(Operator *pEnd) {
-        _m_aEnd = pEnd;
+        m_aEnd->AddEdgebetweenOperators(pEnd);
     }
-    bool SetEndOperator();
 
     void SetOptimizer(Optimizer *pOptimizer) {
-        _m_aOptimizer = pOptimizer;
+        m_aOptimizer = pOptimizer;
     }
 
     // ===========================================================================================
-    bool CreateGraph(Optimizer *pOptimizer, Operator *pEnd);
+    bool CreateGraph(Optimizer *pOptimizer);
 
-    void UpdateWeight(){
-        _m_aOptimizer->UpdateWeight();
+    // ===========================================================================================
+
+    void UpdateVariable(){
+        m_aOptimizer->UpdateVariable();
     }
 };
 

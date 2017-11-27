@@ -5,6 +5,13 @@
 
 #include "Tensor.h"
 
+class Operator;
+
+enum OptimizeDirection {
+    MAXIMIZE,
+    MINIMIZE
+};
+
 struct TrainableData {
     Tensor *Data     = NULL;
     Tensor *Gradient = NULL;
@@ -15,15 +22,19 @@ private:
     /* data */
     // momentum이나 이런 애들은 따로 변수를 가지고 있어야 한다.
 
+    Operator *m_pObjectOperator = NULL;
+
+    float m_LearningRate    = 0.f;
+    int m_OptimizeDirection = 1;  // 1 or -1
+
     TrainableData **m_aTrainableData = NULL;
     int m_TrainableDataDegree        = 0;
-    float m_LearningRate             = 0.0;
 
 public:
-    Optimizer(float pLearningRate) {
-        std::cout << "Optimizer::Optimizer()" << '\n';
+    Optimizer(Operator *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+        std::cout << "Optimizer::Optimizer(Operator *, float, OptimizeDirection)" << '\n';
 
-        Alloc(pLearningRate);
+        Alloc(pObjectOperator, pLearningRate, pOptimizeDirection);
     }
 
     virtual ~Optimizer() {
@@ -32,8 +43,10 @@ public:
         Delete();
     }
 
-    bool Alloc(float pLearningRate) {
-        m_LearningRate = pLearningRate;
+    bool Alloc(Operator *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+        SetObjectOperator(pObjectOperator);
+        SetLearningRate(pLearningRate);
+        SetOptimizeDirection(pOptimizeDirection);
 
         return true;
     }
@@ -70,24 +83,41 @@ public:
         return true;
     }
 
-    bool UpdateWeight() {
+    bool UpdateVariable() {
         for (int i = 0; i < m_TrainableDataDegree; i++) {
-            // UpdateWeight(m_aTrainableData[i]->Data, m_aTrainableData[i]->Gradient);
-            UpdateWeight(m_aTrainableData[i]);
+            // UpdateVariable(m_aTrainableData[i]->Data, m_aTrainableData[i]->Gradient);
+            UpdateVariable(m_aTrainableData[i]);
         }
         return true;
     }
 
-    // virtual bool UpdateWeight(Tensor *Trainable, Tensor *Gradient) = 0;
-    virtual bool UpdateWeight(TrainableData *pTrainableData) = 0;
+    // virtual bool UpdateVariable(Tensor *Trainable, Tensor *Gradient) = 0;
+    virtual bool UpdateVariable(TrainableData *pTrainableData) = 0;
 
 
-    void         SetLearningRate(float pLearningRate) {
+    void         SetObjectOperator(Operator *pObjectOperator) {
+        m_pObjectOperator = pObjectOperator;
+    }
+
+    void SetLearningRate(float pLearningRate) {
         m_LearningRate = pLearningRate;
+    }
+
+    void SetOptimizeDirection(OptimizeDirection pOptimizeDirection) {
+        if (pOptimizeDirection == MAXIMIZE) m_OptimizeDirection = 1;
+        else if (pOptimizeDirection == MINIMIZE) m_OptimizeDirection = -1;
+    }
+
+    Operator* GetObjectOperator() {
+        return m_pObjectOperator;
     }
 
     float GetLearningRate() {
         return m_LearningRate;
+    }
+
+    int GetOptimizeDirection() {
+        return m_OptimizeDirection;
     }
 };
 

@@ -93,14 +93,19 @@ int main(int argc, char const *argv[]) {
 
     Operator *err = new MSE(act_2, ans, "MSE");
 
-    Optimizer *optimizer = new StochasticGradientDescent(0.6);
+    Optimizer *optimizer = new StochasticGradientDescent(err, 0.6, MINIMIZE);
+
+    // Operator *err1 = new MSE(err, ans, "MSE_1");
+    //
+    // Operator *err2 = new MSE(err, ans, "MSE_2");
 
     // ======================= Create Graph =======================
-
-    HGUNN.CreateGraph(optimizer, err);
+    HGUNN.SetEndOperator(err);
+    // HGUNN.SetEndOperator(err1);
+    // HGUNN.SetEndOperator(err2);
+    HGUNN.CreateGraph(optimizer);
 
     // ======================= Training =======================
-
 
     if (argc != 2) {
         std::cout << "There is no count of training" << '\n';
@@ -108,12 +113,13 @@ int main(int argc, char const *argv[]) {
     }
 
     for (int i = 0; i < atoi(argv[1]); i++) {
+        // for (int i = 0; i < 1; i++) {
         std::cout << "epoch : " << i << '\n';
         x1->FeedOutput(CreateInput());
         ans->FeedOutput(CreateLabel());
 
         HGUNN.Training();
-        HGUNN.UpdateWeight();
+        HGUNN.UpdateVariable();
     }
 
     // ======================= Testing =======================
@@ -125,7 +131,6 @@ int main(int argc, char const *argv[]) {
 
         HGUNN.Testing();
     }
-
 
     std::cout << "---------------End-----------------" << '\n';
     return 0;
