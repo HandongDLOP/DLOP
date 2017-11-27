@@ -32,21 +32,27 @@ public:
     Tensor(int *pShape, int pRank = 5) {
         std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
         // 확장성을 위한 코드
-        try{
-            if(pRank == 5) Alloc(pShape[0], pShape[1], pShape[2], pShape[3], pShape[4]);
+        try {
+            if (pRank == 5) Alloc(pShape[0], pShape[1], pShape[2], pShape[3], pShape[4]);
             // else if(pRank > 5) Alloc(pShape, pRank);
             else Alloc();
-		} catch(...){
-			printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
-			exit(0);
-		}
+        } catch (...) {
+            printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
+            exit(0);
+        }
+    }
+
+    Tensor(double *****pData, int *pShape, int pRank = 5) {
+        std::cout << "Tensor::Tensor(double*****, int *, int)" << '\n';
+        m_Rank   = pRank;
+        m_aShape = pShape;
+        m_aData  = pData;
     }
 
     virtual ~Tensor() {
         std::cout << "Tensor::~Tensor()" << '\n';
 
         // delete를 제대로 하기 위해서는 계속해서 새로운 Tensor를 만들어낼 필요가 있다.
-        // 추후 Delete를 고려해서 리펙토링 할 것
         Delete();
     }
 

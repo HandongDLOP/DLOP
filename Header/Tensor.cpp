@@ -56,13 +56,18 @@ bool Tensor::Alloc(int pTime, int pBatch, int pChannel, int pRow, int pCol) {
 bool Tensor::Delete() {
     std::cout << "Tensor::Delete()" << '\n';
 
+    int Time    = GetTime();
+    int Batch   = GetBatch();
+    int Channel = GetChannel();
+    int Row     = GetRow();
+    // int Col     = m_aShape[4];
+
     // =============================================================
 
-    for (int ti = 0; ti < GetTime(); ti++) {
-        for (int ba = 0; ba < GetBatch(); ba++) {
-            for (int ch = 0; ch < GetChannel(); ch++) {
-                for (int ro = 0; ro < GetRow(); ro++) {
-                    // col 부분은 보지 않아도 됨.
+    for (int ti = 0; ti < Time ; ti++) {
+        for (int ba = 0; ba < Batch; ba++) {
+            for (int ch = 0; ch < Channel; ch++) {
+                for (int ro = 0; ro < Row; ro++) {
                     delete[] m_aData[ti][ba][ch][ro];
                 }
                 delete[] m_aData[ti][ba][ch];

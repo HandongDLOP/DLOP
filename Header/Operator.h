@@ -29,15 +29,10 @@ private:
     int m_currentOutputDegree = 0;
     int m_currentInputDegree  = 0;
 
-    // for Optimizer
-    // 추후 삭제 예정
-    // Optimizer *m_aOptimizer = NULL;
-
     // identifier
     std::string m_name = "NO NAME";
 
     // Private Operator
-
     int m_Trainable = 0;
 
 private:
@@ -118,13 +113,13 @@ public:
     // 추후 Private으로 옮길 의향 있음
     virtual bool Alloc(Tensor *pTensor);
     virtual bool Alloc(Operator *pInput);
-    virtual bool Alloc(Operator *pInput0,
-                       Operator *pInput1);
+    virtual bool Alloc(Operator *pInput0, Operator *pInput1);
     virtual bool Alloc(MetaParameter *pParam = NULL);
-    // bool         AllocOptimizer(Optimizer_name pOptimizer_name);
+
     bool         AllocOptimizer(Optimizer *pOptimizer);
 
     virtual void Delete();
+
     bool         DeleteInputOperator();
 
     // ===========================================================================================
@@ -139,6 +134,22 @@ public:
         m_aOutput = pTensor;
     }
 
+    void FeedOutput(Tensor *pTensor) {
+        // std::cout << GetName() << " FeedOutput" << '\n';
+        // std::cout << "m_aOutput " << m_aOutput << '\n';
+        // std::cout << "pTensor " << pTensor << '\n';
+        //
+        // pTensor->PrintData();
+        // pTensor->PrintShape();
+
+        delete m_aOutput;
+        m_aOutput = NULL;
+        m_aOutput = pTensor;
+        //
+        // std::cout << "m_aOutput " << m_aOutput << '\n';
+        // std::cout << "pTensor " << pTensor << '\n';
+    }
+
     void SetGradient(Tensor *pTensor) {
         m_aGradient = pTensor;
     }
@@ -146,10 +157,6 @@ public:
     void SetDelta(Tensor *pTensor) {
         m_aDelta = pTensor;
     }
-
-    // void SetOptimizer(Optimizer *pOptimizer) {
-    //     m_aOptimizer = pOptimizer;
-    // }
 
     void SetTrainable(int pTrainable) {
         m_Trainable = pTrainable;
@@ -170,9 +177,7 @@ public:
     //
     //// Getter (파생 클래스에서 사용합니다.)
 
-    // void GetWeight() const;
-    //
-    Tensor* GetOutput() {
+    Tensor* GetOutput() const {
         return m_aOutput;
     }
 
@@ -184,8 +189,6 @@ public:
         return m_aDelta;
     }
 
-    // void GetDeltabar() const;
-    //
     Operator** GetInputOperator() const {
         return m_apInputOperator;
     }
@@ -209,10 +212,6 @@ public:
     int GetCurrentInputDegree() const {
         return m_currentInputDegree;
     }
-
-    // Optimizer* GetOptimizer() {
-    //     return m_aOptimizer;
-    // }
 
     std::string GetName() {
         return m_name;

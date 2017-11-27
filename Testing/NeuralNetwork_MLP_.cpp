@@ -5,34 +5,63 @@
 
 #define BATCH    4
 
+// 데이터 전처리
+Tensor* CreateInput() {
+    std::cout << "CreatrInput()" << '\n';
+    double *****data_input = NULL;
+    int *shape_input       = new int[5] { 1, BATCH, 1, 1, 2 };
+    int  rank_input        = 5;
+
+    data_input    = new double ****[1];
+    data_input[0] = new double ***[BATCH];
+
+    for (int i = 0; i < BATCH; i++) {
+        data_input[0][i]    = new double **[1];
+        data_input[0][i][0] = new double *[1];
+
+        if (i == 0) data_input[0][i][0][0] = new double[2] { 0, 0 };
+        else if (i == 1) data_input[0][i][0][0] = new double[2] { 1, 0 };
+        else if (i == 2) data_input[0][i][0][0] = new double[2] { 0, 1 };
+        else if (i == 3) data_input[0][i][0][0] = new double[2] { 1, 1 };
+    }
+
+    return new Tensor(data_input, shape_input, rank_input);
+}
+
+Tensor* CreateLabel() {
+    std::cout << "CreatrLabel()" << '\n';
+    double *****data_label = NULL;
+    int *shape_label       = new int[5] { 1, BATCH, 1, 1, 2 };
+    int  rank_label        = 5;
+
+    data_label    = new double ****[1];
+    data_label[0] = new double ***[BATCH];
+
+    for (int i = 0; i < BATCH; i++) {
+        data_label[0][i]    = new double **[1];
+        data_label[0][i][0] = new double *[1];
+
+        if (i == 0) data_label[0][i][0][0] = new double[2] { 1, 0 };
+        else if (i == 1) data_label[0][i][0][0] = new double[2] { 0, 1 };
+        else if (i == 2) data_label[0][i][0][0] = new double[2] { 0, 1 };
+        else if (i == 3) data_label[0][i][0][0] = new double[2] { 1, 0 };
+    }
+
+    return new Tensor(data_label, shape_label, rank_label);
+}
+
 int main(int argc, char const *argv[]) {
     std::cout << "---------------Start-----------------" << '\n';
 
     NeuralNetwork HGUNN;
 
-    // create input data
+    // create input data placeholder
     Tensor   *_x1 = Tensor::Constants(1, BATCH, 1, 1, 2, 1.0);
     Operator *x1  = HGUNN.AddPlaceholder(_x1, "x1");
-    x1->GetOutput()->GetData()[0][0][0][0][0] = 0;
-    x1->GetOutput()->GetData()[0][0][0][0][1] = 0;
-    x1->GetOutput()->GetData()[0][1][0][0][0] = 1;
-    x1->GetOutput()->GetData()[0][1][0][0][1] = 0;
-    x1->GetOutput()->GetData()[0][2][0][0][0] = 0;
-    x1->GetOutput()->GetData()[0][2][0][0][1] = 1;
-    x1->GetOutput()->GetData()[0][3][0][0][0] = 1;
-    x1->GetOutput()->GetData()[0][3][0][0][1] = 1;
 
-    // create label data
+    // create label ata placeholder
     Tensor   *_ans = Tensor::Constants(1, BATCH, 1, 1, 2, 1.0);
     Operator *ans  = HGUNN.AddPlaceholder(_ans, "answer");
-    ans->GetOutput()->GetData()[0][0][0][0][0] = 1;
-    ans->GetOutput()->GetData()[0][0][0][0][1] = 0;
-    ans->GetOutput()->GetData()[0][1][0][0][0] = 0;
-    ans->GetOutput()->GetData()[0][1][0][0][1] = 1;
-    ans->GetOutput()->GetData()[0][2][0][0][0] = 0;
-    ans->GetOutput()->GetData()[0][2][0][0][1] = 1;
-    ans->GetOutput()->GetData()[0][3][0][0][0] = 1;
-    ans->GetOutput()->GetData()[0][3][0][0][1] = 0;
 
     // ======================= layer 1=======================
     Tensor   *_w1 = Tensor::Truncated_normal(1, 1, 1, 2, 4, 0.0, 0.6);
@@ -72,6 +101,7 @@ int main(int argc, char const *argv[]) {
 
     // ======================= Training =======================
 
+
     if (argc != 2) {
         std::cout << "There is no count of training" << '\n';
         return 0;
@@ -79,6 +109,9 @@ int main(int argc, char const *argv[]) {
 
     for (int i = 0; i < atoi(argv[1]); i++) {
         std::cout << "epoch : " << i << '\n';
+        x1->FeedOutput(CreateInput());
+        ans->FeedOutput(CreateLabel());
+
         HGUNN.Training();
         HGUNN.UpdateWeight();
     }
@@ -87,6 +120,9 @@ int main(int argc, char const *argv[]) {
 
     for (int i = 0; i < 1; i++) {
         std::cout << "input : " << i << '\n';
+        x1->FeedOutput(CreateInput());
+        ans->FeedOutput(CreateLabel());
+
         HGUNN.Testing();
     }
 
