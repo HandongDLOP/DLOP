@@ -167,9 +167,9 @@ public:
         }
         // }
 
-        GetInputOperator()[0]->GetDelta()->PrintData();
+        // GetInputOperator()[0]->GetDelta()->PrintData();
 
-        GetInputOperator()[1]->GetDelta()->PrintData();
+        // GetInputOperator()[1]->GetDelta()->PrintData();
 
         GetDelta()->Reset();
         return true;

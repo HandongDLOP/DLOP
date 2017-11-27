@@ -89,7 +89,7 @@ public:
             }
         }
 
-        GetInputOperator()[0]->GetDelta()->PrintData();
+        // GetInputOperator()[0]->GetDelta()->PrintData();
 
         return true;
     }

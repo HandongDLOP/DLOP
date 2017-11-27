@@ -77,7 +77,7 @@ public:
             }
         }
 
-        GetInputOperator()[0]->GetDelta()->PrintData();
+        // GetInputOperator()[0]->GetDelta()->PrintData();
 
         GetDelta()->Reset();
 
