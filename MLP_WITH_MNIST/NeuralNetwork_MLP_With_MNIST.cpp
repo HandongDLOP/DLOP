@@ -4,8 +4,42 @@
 #include "..//Header//NeuralNetwork.h"
 #include "MNIST_Reader.h"
 
-#define BATCH    10
+#define BATCH    100
 
+int Argmax(double *data, int Dimension) {
+    int index  = 0;
+    double max = data[0];
+
+    for (int dim = 1; dim < Dimension; dim++) {
+        if (data[dim] > max) {
+            max   = data[dim];
+            index = dim;
+        }
+    }
+
+    return index;
+}
+
+double Accuracy(Operator *pred, Operator *ans) {
+    double *****pred_data = pred->GetOutput()->GetData();
+    double *****ans_data  = ans->GetOutput()->GetData();
+
+    double accuracy = 0.0;
+
+    int pred_index = 0;
+    int ans_index  = 0;
+
+    for (int ba = 0; ba < BATCH; ba++) {
+        pred_index = Argmax(pred_data[0][ba][0][0], 10);
+        ans_index  = Argmax(ans_data[0][ba][0][0], 10);
+
+        // std::cout << pred_index << " " << ans_index << '\n';
+
+        if (pred_index == ans_index) accuracy += 1.0 / BATCH;
+    }
+
+    return accuracy;
+}
 
 int main(int argc, char const *argv[]) {
     std::cout << "---------------Start-----------------" << '\n';
@@ -50,7 +84,7 @@ int main(int argc, char const *argv[]) {
 
     Operator *err = new MSE(act_2, ans, "MSE");
 
-    Optimizer *optimizer = new StochasticGradientDescent(err, 1.5, MINIMIZE);
+    Optimizer *optimizer = new StochasticGradientDescent(err, 0.6, MINIMIZE);
 
     // ======================= Create Graph =======================
     HGUNN.SetEndOperator(err);
@@ -73,6 +107,9 @@ int main(int argc, char const *argv[]) {
 
         HGUNN.Training();
         HGUNN.UpdateVariable();
+
+        if ((i % 10) == 0) std::cout << "Accuracy is : " << Accuracy(act_2, ans) << '\n';
+
     }
 
     // ======================= Testing =======================
@@ -85,8 +122,9 @@ int main(int argc, char const *argv[]) {
 
         HGUNN.Testing();
 
-        act_2->GetOutput()->PrintData();
-        ans->GetOutput()->PrintData();
+        // act_2->GetOutput()->PrintData();
+        // ans->GetOutput()->PrintData();
+        std::cout << "Accuracy is : " << Accuracy(act_2, ans) << '\n';
     }
 
     delete dataset;

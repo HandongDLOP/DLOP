@@ -3,7 +3,7 @@
 
 #include "..//Header//NeuralNetwork.h"
 
-#define BATCH    4
+#define BATCH    100
 
 // 데이터 전처리
 Tensor* CreateInput() {
@@ -19,10 +19,10 @@ Tensor* CreateInput() {
         data_input[0][i]    = new double **[1];
         data_input[0][i][0] = new double *[1];
 
-        if (i == 0) data_input[0][i][0][0] = new double[2] { 0, 0 };
-        else if (i == 1) data_input[0][i][0][0] = new double[2] { 1, 0 };
-        else if (i == 2) data_input[0][i][0][0] = new double[2] { 0, 1 };
-        else if (i == 3) data_input[0][i][0][0] = new double[2] { 1, 1 };
+        if (i % 4 == 0) data_input[0][i][0][0] = new double[2] { 0, 0 };
+        else if (i % 4 == 1) data_input[0][i][0][0] = new double[2] { 1, 0 };
+        else if (i % 4 == 2) data_input[0][i][0][0] = new double[2] { 0, 1 };
+        else if (i % 4 == 3) data_input[0][i][0][0] = new double[2] { 1, 1 };
     }
 
     return new Tensor(data_input, shape_input, rank_input);
@@ -41,13 +41,49 @@ Tensor* CreateLabel() {
         data_label[0][i]    = new double **[1];
         data_label[0][i][0] = new double *[1];
 
-        if (i == 0) data_label[0][i][0][0] = new double[2] { 1, 0 };
-        else if (i == 1) data_label[0][i][0][0] = new double[2] { 0, 1 };
-        else if (i == 2) data_label[0][i][0][0] = new double[2] { 0, 1 };
-        else if (i == 3) data_label[0][i][0][0] = new double[2] { 1, 0 };
+        if (i % 4 == 0) data_label[0][i][0][0] = new double[2] { 1, 0 };
+        else if (i % 4 == 1) data_label[0][i][0][0] = new double[2] { 0, 1 };
+        else if (i % 4 == 2) data_label[0][i][0][0] = new double[2] { 0, 1 };
+        else if (i % 4 == 3) data_label[0][i][0][0] = new double[2] { 1, 0 };
     }
 
     return new Tensor(data_label, shape_label, rank_label);
+}
+
+int Argmax(double *data, int Dimension) {
+    int index  = 0;
+    double max = data[0];
+
+    for (int dim = 1; dim < Dimension; dim++) {
+        if (data[dim] > max) {
+            max   = data[dim];
+            index = dim;
+        }
+        // std::cout << data[dim] << '\n';
+    }
+
+    return index;
+}
+
+double Accuracy(Operator *pred, Operator *ans) {
+    double *****pred_data = pred->GetOutput()->GetData();
+    double *****ans_data  = ans->GetOutput()->GetData();
+
+    double accuracy = 0.0;
+
+    int pred_index = 0;
+    int ans_index  = 0;
+
+    for (int ba = 0; ba < BATCH; ba++) {
+        pred_index = Argmax(pred_data[0][ba][0][0], 2);
+        ans_index  = Argmax(ans_data[0][ba][0][0], 2);
+
+        // std::cout << pred_index << " " << ans_index << '\n';
+
+        if (pred_index == ans_index) accuracy += 1.0 / BATCH;
+    }
+
+    return accuracy;
 }
 
 int main(int argc, char const *argv[]) {
@@ -124,15 +160,17 @@ int main(int argc, char const *argv[]) {
 
     // ======================= Testing =======================
 
-    for (int i = 0; i < 1; i++) {
-        std::cout << "input : " << i << '\n';
+    for (int i = 0; i < 5; i++) {
+        std::cout << "\ninput : " << i << '\n';
         x1->FeedOutput(CreateInput());
         ans->FeedOutput(CreateLabel());
 
         HGUNN.Testing();
 
-        act_2->GetOutput()->PrintData();
-        ans->GetOutput()->PrintData();
+        // act_2->GetOutput()->PrintData();
+        // ans->GetOutput()->PrintData();
+
+        std::cout << "Accuracy is : " << Accuracy(act_2, ans) << '\n';
     }
 
     std::cout << "---------------End-----------------" << '\n';
