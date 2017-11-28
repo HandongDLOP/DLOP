@@ -4,7 +4,7 @@
 #include "..//Header//NeuralNetwork.h"
 #include "MNIST_Reader.h"
 
-#define BATCH    100
+#define BATCH    10
 
 
 int main(int argc, char const *argv[]) {
@@ -66,7 +66,7 @@ int main(int argc, char const *argv[]) {
     DataSet *dataset = CreateDataSet();
 
     for (int i = 0; i < atoi(argv[1]); i++) {
-        // std::cout << "\n\nepoch : " << i << '\n';
+        if ((i % 10) == 0) std::cout << "epoch : " << i << '\n';
         dataset->CreateDataPair(TRAIN, BATCH);
         x1->FeedOutput(dataset->GetFeedImage(TRAIN));
         ans->FeedOutput(dataset->GetFeedLabel(TRAIN));
@@ -77,7 +77,7 @@ int main(int argc, char const *argv[]) {
 
     // ======================= Testing =======================
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 1; i++) {
         std::cout << "\n\ninput : " << i << '\n';
         dataset->CreateDataPair(TEST, BATCH);
         x1->FeedOutput(dataset->GetFeedImage(TEST));
@@ -88,6 +88,8 @@ int main(int argc, char const *argv[]) {
         act_2->GetOutput()->PrintData();
         ans->GetOutput()->PrintData();
     }
+
+    delete dataset;
 
     std::cout << "---------------End-----------------" << '\n';
     return 0;

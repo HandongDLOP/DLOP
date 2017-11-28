@@ -7,7 +7,7 @@
 
 // 데이터 전처리
 Tensor* CreateInput() {
-    std::cout << "CreatrInput()" << '\n';
+    // std::cout << "CreatrInput()" << '\n';
     double *****data_input = NULL;
     int *shape_input       = new int[5] { 1, BATCH, 1, 1, 2 };
     int  rank_input        = 5;
@@ -29,7 +29,7 @@ Tensor* CreateInput() {
 }
 
 Tensor* CreateLabel() {
-    std::cout << "CreatrLabel()" << '\n';
+    // std::cout << "CreatrLabel()" << '\n';
     double *****data_label = NULL;
     int *shape_label       = new int[5] { 1, BATCH, 1, 1, 2 };
     int  rank_label        = 5;
@@ -114,7 +114,7 @@ int main(int argc, char const *argv[]) {
 
     for (int i = 0; i < atoi(argv[1]); i++) {
         // for (int i = 0; i < 1; i++) {
-        std::cout << "epoch : " << i << '\n';
+        if ((i % 100) == 0) std::cout << "epoch : " << i << '\n';
         x1->FeedOutput(CreateInput());
         ans->FeedOutput(CreateLabel());
 
@@ -130,6 +130,9 @@ int main(int argc, char const *argv[]) {
         ans->FeedOutput(CreateLabel());
 
         HGUNN.Testing();
+
+        act_2->GetOutput()->PrintData();
+        ans->GetOutput()->PrintData();
     }
 
     std::cout << "---------------End-----------------" << '\n';

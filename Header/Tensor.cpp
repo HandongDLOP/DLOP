@@ -195,7 +195,7 @@ void Tensor::PrintData() {
                 }
                 std::cout << " ]";
             }
-            std::cout << " ]";
+            std::cout << " ]\n";
         }
         std::cout << " ]";
     }
