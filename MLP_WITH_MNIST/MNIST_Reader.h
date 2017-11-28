@@ -65,7 +65,7 @@ public:
         delete Train_label;
     }
 
-    void CreateDataPair(OPTION pOption, int batch_size, int epoch) {
+    void CreateDataPair(OPTION pOption, int batch_size, int epoch = -1) {
         int number_of_data    = 0;
         int random            = 0;
         double **origin_image = NULL;
@@ -100,43 +100,67 @@ public:
         int  label_rank  = 5;
         // double **origin_label = ReshapeData(label_option);
 
-        // 무작위 선택
-        srand(time(NULL) * epoch * epoch);
+        if (epoch <= 0) {
+            // 무작위 선택
+            srand(time(NULL) * epoch * epoch);
 
-        for (int ba = 0; ba < batch_size; ba++) {
+            for (int ba = 0; ba < batch_size; ba++) {
+                random = rand() % number_of_data;
 
-            random = rand() % number_of_data;
+                image_data[0][ba]    = new double **[1];
+                image_data[0][ba][0] = new double *[1];
+                // image_data[0][ba][0][0] = origin_image[random];
+                image_data[0][ba][0][0] = new double[DIMENSION_OF_MNIST_IMAGE];
 
-            image_data[0][ba]    = new double **[1];
-            image_data[0][ba][0] = new double *[1];
-            // image_data[0][ba][0][0] = origin_image[random];
-            image_data[0][ba][0][0] = new double[DIMENSION_OF_MNIST_IMAGE];
+                for (int dim = 0; dim < DIMENSION_OF_MNIST_IMAGE; dim++) {
+                    image_data[0][ba][0][0][dim] = origin_image[random][dim];
+                }
 
-            for (int dim = 0; dim < DIMENSION_OF_MNIST_IMAGE; dim++) {
-                image_data[0][ba][0][0][dim] = origin_image[random][dim];
+                label_data[0][ba]       = new double **[1];
+                label_data[0][ba][0]    = new double *[1];
+                label_data[0][ba][0][0] = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                // std::cout << (int)origin_label[random][0] << '\n';
+                label_data[0][ba][0][0][(int)origin_label[random][0]] = 1.0;
+
+                // std::cout << random << ' ';
             }
+            // std::cout << '\n';
+        } else {
+            for (int ba = 0; ba < batch_size; ba++) {
+                image_data[0][ba]    = new double **[1];
+                image_data[0][ba][0] = new double *[1];
+                // image_data[0][ba][0][0] = origin_image[random];
+                image_data[0][ba][0][0] = new double[DIMENSION_OF_MNIST_IMAGE];
 
-            label_data[0][ba]       = new double **[1];
-            label_data[0][ba][0]    = new double *[1];
-            label_data[0][ba][0][0] = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            // std::cout << (int)origin_label[random][0] << '\n';
-            label_data[0][ba][0][0][(int)origin_label[random][0]] = 1.0;
+                for (int dim = 0; dim < DIMENSION_OF_MNIST_IMAGE; dim++) {
+                    image_data[0][ba][0][0][dim] = origin_image[epoch * batch_size + ba][dim];
+                }
 
-            // std::cout << random << ' ';
+                label_data[0][ba]       = new double **[1];
+                label_data[0][ba][0]    = new double *[1];
+                label_data[0][ba][0][0] = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                // std::cout << (int)origin_label[random][0] << '\n';
+                label_data[0][ba][0][0][(int)origin_label[epoch * batch_size + ba][0]] = 1.0;
+
+                // std::cout << random << ' ';
+            }
         }
-        // std::cout << '\n';
 
         Tensor *image_Tensor = new Tensor(image_data, image_shape, image_rank);
         Tensor *label_Tensor = new Tensor(label_data, label_shape, label_rank);
 
         if (pOption == TEST) {
-            // delete Test_image_feed;
-            // delete Test_label_feed;
+            if (Test_image_feed != NULL) delete Test_image_feed;
+
+            if (Test_label_feed != NULL) delete Test_label_feed;
+
             Test_image_feed = image_Tensor;
             Test_label_feed = label_Tensor;
         } else if (pOption == TRAIN) {
-            // delete Train_image_feed;
-            // delete Train_label_feed;
+            if (Train_image_feed != NULL) delete Train_image_feed;
+
+            if (Train_label_feed != NULL) delete Train_label_feed;
+
             Train_image_feed = image_Tensor;
             Train_label_feed = label_Tensor;
         } else {

@@ -142,8 +142,8 @@ public:
         // pTensor->PrintData();
         // pTensor->PrintShape();
 
-        delete m_aOutput;
-        m_aOutput = NULL;
+        // delete m_aOutput;
+        // m_aOutput = NULL;
         m_aOutput = pTensor;
         //
         // std::cout << "m_aOutput " << m_aOutput << '\n';
