@@ -43,14 +43,14 @@ public:
     }
 
     Tensor(double *****pData, int *pShape, int pRank = 5) {
-        std::cout << "Tensor::Tensor(double*****, int *, int)" << '\n';
+        // std::cout << "Tensor::Tensor(double*****, int *, int)" << '\n';
         m_Rank   = pRank;
         m_aShape = pShape;
         m_aData  = pData;
     }
 
     virtual ~Tensor() {
-        std::cout << "Tensor::~Tensor()" << '\n';
+        // std::cout << "Tensor::~Tensor()" << '\n';
 
         // delete를 제대로 하기 위해서는 계속해서 새로운 Tensor를 만들어낼 필요가 있다.
         Delete();

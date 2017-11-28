@@ -54,7 +54,7 @@ bool Tensor::Alloc(int pTime, int pBatch, int pChannel, int pRow, int pCol) {
 }
 
 bool Tensor::Delete() {
-    std::cout << "Tensor::Delete()" << '\n';
+    // std::cout << "Tensor::Delete()" << '\n';
 
     int Time    = GetTime();
     int Batch   = GetBatch();

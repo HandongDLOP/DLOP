@@ -80,7 +80,7 @@ public:
     }
 
     virtual bool ComputeForwardPropagate() {
-        std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
+        // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int Time    = GetOutput()->GetTime();
         int Batch   = GetOutput()->GetBatch();
@@ -122,7 +122,7 @@ public:
     }
 
     virtual bool ComputeBackPropagate() {
-        std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
+        // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int Time    = GetOutput()->GetTime();
         int Batch   = GetOutput()->GetBatch();

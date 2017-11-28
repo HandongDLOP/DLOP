@@ -17,7 +17,7 @@ public:
     }
 
     virtual bool UpdateVariable(TrainableData *pTrainableData) {
-        std::cout << "StochasticGradientDescent::UpdateVariable(TrainableData *)" << '\n';
+        // std::cout << "StochasticGradientDescent::UpdateVariable(TrainableData *)" << '\n';
 
         int *shape = pTrainableData->Data->GetShape();
 

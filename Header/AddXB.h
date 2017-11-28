@@ -88,7 +88,7 @@ public:
     }
 
     virtual bool ComputeForwardPropagate() {
-        std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
+        // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int *shape_Input0 = GetInputOperator()[0]->GetOutput()->GetShape();
         // int *shape_Input1       = GetInputOperator()[1]->GetOutput()->GetShape();
@@ -128,7 +128,7 @@ public:
     }
 
     virtual bool ComputeBackPropagate() {
-        std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
+        // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape = GetOutput()->GetShape();
         // int *shape_Input1   = GetInputOperator()[1]->GetOutput()->GetShape();

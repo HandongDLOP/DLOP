@@ -202,13 +202,13 @@ bool Operator::BackPropagate() {
 // ===========================================================================================
 
 bool Operator::ComputeForwardPropagate() {
-    std::cout << m_name << " : ComputeForwardPropagate()" << '\n';
+    // std::cout << m_name << " : ComputeForwardPropagate()" << '\n';
 
     return true;
 }
 
 bool Operator::ComputeBackPropagate() {
-    std::cout << m_name << " : ComputeBackPropagate()" << '\n';
+    // std::cout << m_name << " : ComputeBackPropagate()" << '\n';
 
     return true;
 }

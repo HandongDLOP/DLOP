@@ -89,21 +89,19 @@ bool NeuralNetwork::BackPropagate(Operator *pStart, Operator *pEnd) {
 // ===========================================================================================
 
 bool NeuralNetwork::Training(Operator *pStart, Operator *pEnd) {
-    std::cout << "\n<<<ForwardPropagate>>>\n" << '\n';
+    // std::cout << "\n<<<ForwardPropagate>>>\n" << '\n';
 
     ForwardPropagate(pStart, pEnd);
 
-    std::cout << "\n<<<BackPropagate>>>\n" << '\n';
+    // std::cout << "\n<<<BackPropagate>>>\n" << '\n';
 
     BackPropagate(pStart, pEnd);
-
-    std::cout << '\n';
 
     return true;
 }
 
 bool NeuralNetwork::Testing(Operator *pStart, Operator *pEnd) {
-    std::cout << "\n<<<ForwardPropagate>>>\n" << '\n';
+    std::cout << "\n<<<Testing>>>\n" << '\n';
 
     ForwardPropagate(pStart, pEnd);
 

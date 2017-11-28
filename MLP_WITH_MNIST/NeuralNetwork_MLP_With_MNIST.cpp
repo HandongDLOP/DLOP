@@ -4,7 +4,7 @@
 #include "..//Header//NeuralNetwork.h"
 #include "MNIST_Reader.h"
 
-#define BATCH    1
+#define BATCH    100
 
 
 int main(int argc, char const *argv[]) {

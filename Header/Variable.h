@@ -45,13 +45,13 @@ public:
     }
 
     virtual bool ComputeForwardPropagate() {
-        std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
+        // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         return true;
     }
 
     virtual bool ComputeBackPropagate() {
-        std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
+        // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape        = GetOutput()->GetShape();
         double *****delta = GetDelta()->GetData();
