@@ -63,17 +63,17 @@ public:
         int Col     = shape[4];
 
         double sum[Time][Batch] = { 0.0 };
-        double max              = 0.0;
+        double max[Time][Batch] = { 0.0 };
         int    num_of_output    = Channel * Row * Col;
 
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {
-                max = Max(input_data[ti][ba], Channel, Row, Col);
+                max[ti][ba] = Max(input_data[ti][ba], Channel, Row, Col);
 
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            sum[ti][ba] += exp(input_data[ti][ba][ch][ro][co] - max);
+                            sum[ti][ba] += exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]);
                         }
                     }
                 }
@@ -85,7 +85,7 @@ public:
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            softmax_result[ti][ba][ch][ro][co] = exp(input_data[ti][ba][ch][ro][co]) / sum[ti][ba];
+                            softmax_result[ti][ba][ch][ro][co] = exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) / sum[ti][ba];
                         }
                     }
                 }

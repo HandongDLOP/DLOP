@@ -4,7 +4,7 @@
 #include "..//Header//NeuralNetwork.h"
 #include "MNIST_Reader.h"
 
-#define BATCH    1
+#define BATCH    50
 
 int Argmax(double *data, int Dimension) {
     int index  = 0;
@@ -20,9 +20,9 @@ int Argmax(double *data, int Dimension) {
     return index;
 }
 
-double Accuracy(Operator *pred, Operator *ans) {
-    double *****pred_data = pred->GetOutput()->GetData();
-    double *****ans_data  = ans->GetOutput()->GetData();
+double Accuracy(Tensor *pred, Tensor *ans) {
+    double *****pred_data = pred->GetData();
+    double *****ans_data  = ans->GetData();
 
     double accuracy = 0.0;
 
@@ -55,11 +55,11 @@ int main(int argc, char const *argv[]) {
     Operator *ans  = HGUNN.AddPlaceholder(_ans, "answer");
 
     // ======================= layer 1=======================
-    Tensor   *_w1 = Tensor::Truncated_normal(1, 1, 1, 784, 10, 0.0, 0.6);
+    Tensor   *_w1 = Tensor::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6);
     // Tensor   *_w1 = Tensor::Zeros(1, 1, 1, 784, 10);
     Operator *w1  = new Variable(_w1, "w1", 1);
 
-    Tensor   *_b1 = Tensor::Constants(1, 1, 1, 1, 10, 1.0);
+    Tensor   *_b1 = Tensor::Constants(1, 1, 1, 1, 15, 1.0);
     // Tensor   *_b1 = Tensor::Zeros(1, 1, 1, 1, 10);
     Operator *b1  = new Variable(_b1, "b1", 1);
 
@@ -70,9 +70,26 @@ int main(int argc, char const *argv[]) {
     // Operator *act_1 = new Relu(add_1, "relu_1");
     Operator *act_1 = new Sigmoid(add_1, "sig_1");
 
-    Operator *err = new MSE(act_1, ans, "MSE");
+    // ======================= layer 2=======================
 
-    Optimizer *optimizer = new StochasticGradientDescent(err, 1.5, MINIMIZE);
+    Tensor   *_w2 = Tensor::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6);
+    Operator *w2  = new Variable(_w2, "w2", 1);
+
+    Tensor   *_b2 = Tensor::Constants(1, 1, 1, 1, 10, 1.0);
+    Operator *b2  = new Variable(_b2, "b2", 1); // 오류 발생 원인 찾기
+
+    Operator *mat_2 = new MatMul(act_1, w2, "mat_2");
+
+    Operator *add_2 = new Add(b2, mat_2, "add_2");
+
+    // Operator *act_2 = new Relu(add_2, "relu_2");
+    // Operator *act_2 = new Sigmoid(add_2, "sig_2");
+    //
+    // Operator *err = new MSE(act_2, ans, "MSE");
+
+    Softmax_Cross_Entropy * err = new Softmax_Cross_Entropy(add_2, ans, "MSE");
+
+    Optimizer *optimizer = new StochasticGradientDescent(err, 1e-4, MINIMIZE);
 
     // ======================= Create Graph =======================
     HGUNN.SetEndOperator(err);
@@ -88,8 +105,9 @@ int main(int argc, char const *argv[]) {
     DataSet *dataset = CreateDataSet();
 
     for (int i = 0; i < atoi(argv[1]); i++) {
-        if ((i % 10) == 0) std::cout << "epoch : " << i << '\n';
-        dataset->CreateDataPair(TRAIN, BATCH, i);
+        if ((i % 100) == 0) std::cout << "epoch : " << i << '\n';
+
+        dataset->CreateDataPair(TRAIN, BATCH, i, 0);
         x1->FeedOutput(dataset->GetFeedImage(TRAIN));
         ans->FeedOutput(dataset->GetFeedLabel(TRAIN));
 
@@ -101,14 +119,14 @@ int main(int argc, char const *argv[]) {
         // std::cout << "ans" << '\n';
         // ans->GetOutput()->PrintData();
 
-        if ((i % 10) == 0) std::cout << "Accuracy is : " << Accuracy(act_1, ans) << '\n';
+        if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(err->GetSoftmaxResult(), ans->GetOutput()) << '\n';
     }
 
     // ======================= Testing =======================
 
     for (int i = 0; i < 2; i++) {
         std::cout << "\n\ninput : " << i << '\n';
-        dataset->CreateDataPair(TEST, BATCH, i);
+        dataset->CreateDataPair(TEST, BATCH, i, 0);
         x1->FeedOutput(dataset->GetFeedImage(TEST));
         ans->FeedOutput(dataset->GetFeedLabel(TEST));
 
@@ -119,7 +137,7 @@ int main(int argc, char const *argv[]) {
         // std::cout << "ans" << '\n';
         // ans->GetOutput()->PrintData();
 
-        std::cout << "Accuracy is : " << Accuracy(act_1, ans) << '\n';
+        std::cout << "Accuracy is : " << Accuracy(err->GetSoftmaxResult(), ans->GetOutput()) << '\n';
     }
 
     delete dataset;

@@ -63,9 +63,14 @@ public:
         }
         delete Train_image;
         delete Train_label;
+
+        delete Test_image_feed;
+        delete Test_label_feed;
+        delete Train_image_feed;
+        delete Train_label_feed;
     }
 
-    void CreateDataPair(OPTION pOption, int batch_size, int epoch = -1) {
+    void CreateDataPair(OPTION pOption, int batch_size, int epoch, int israndom = 0) {
         int number_of_data    = 0;
         int random            = 0;
         double **origin_image = NULL;
@@ -100,7 +105,7 @@ public:
         int  label_rank  = 5;
         // double **origin_label = ReshapeData(label_option);
 
-        if (epoch <= 0) {
+        if (israndom == 1) {
             // 무작위 선택
             srand(time(NULL) * epoch * epoch);
 
@@ -125,7 +130,9 @@ public:
                 // std::cout << random << ' ';
             }
             // std::cout << '\n';
-        } else {
+        } else if (israndom == 0) {
+            int next_batch = epoch * batch_size % 60000;
+
             for (int ba = 0; ba < batch_size; ba++) {
                 image_data[0][ba]    = new double **[1];
                 image_data[0][ba][0] = new double *[1];
@@ -133,14 +140,14 @@ public:
                 image_data[0][ba][0][0] = new double[DIMENSION_OF_MNIST_IMAGE];
 
                 for (int dim = 0; dim < DIMENSION_OF_MNIST_IMAGE; dim++) {
-                    image_data[0][ba][0][0][dim] = origin_image[epoch * batch_size + ba][dim];
+                    image_data[0][ba][0][0][dim] = origin_image[next_batch + ba][dim];
                 }
 
                 label_data[0][ba]       = new double **[1];
                 label_data[0][ba][0]    = new double *[1];
                 label_data[0][ba][0][0] = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
                 // std::cout << (int)origin_label[random][0] << '\n';
-                label_data[0][ba][0][0][(int)origin_label[epoch * batch_size + ba][0]] = 1.0;
+                label_data[0][ba][0][0][(int)origin_label[next_batch + ba][0]] = 1.0;
 
                 // std::cout << random << ' ';
             }

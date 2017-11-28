@@ -135,7 +135,7 @@ public:
     }
 
     void FeedOutput(Tensor *pTensor) {
-        // std::cout << GetName() << " FeedOutput" << '\n';
+
         // std::cout << "m_aOutput " << m_aOutput << '\n';
         // std::cout << "pTensor " << pTensor << '\n';
         //
@@ -145,6 +145,8 @@ public:
         // delete m_aOutput;
         // m_aOutput = NULL;
         m_aOutput = pTensor;
+
+
         //
         // std::cout << "m_aOutput " << m_aOutput << '\n';
         // std::cout << "pTensor " << pTensor << '\n';

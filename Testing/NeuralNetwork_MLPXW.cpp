@@ -65,9 +65,9 @@ int Argmax(double *data, int Dimension) {
     return index;
 }
 
-double Accuracy(Operator *pred, Operator *ans) {
-    double *****pred_data = pred->GetOutput()->GetData();
-    double *****ans_data  = ans->GetOutput()->GetData();
+double Accuracy(Tensor *pred, Tensor *ans) {
+    double *****pred_data = pred->GetData();
+    double *****ans_data  = ans->GetData();
 
     double accuracy = 0.0;
 
@@ -170,7 +170,7 @@ int main(int argc, char const *argv[]) {
         // act_2->GetOutput()->PrintData();
         // ans->GetOutput()->PrintData();
 
-        std::cout << "Accuracy is : " << Accuracy(act_2, ans) << '\n';
+        std::cout << "Accuracy is : " << Accuracy(act_2->GetOutput(), ans->GetOutput()) << '\n';
     }
 
     std::cout << "---------------End-----------------" << '\n';
