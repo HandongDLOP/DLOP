@@ -61,9 +61,9 @@ public:
             }
         }
 
-        GetInputOperator()[0]->GetOutput()->PrintData();
-        GetInputOperator()[1]->GetOutput()->PrintData();
-        GetOutput()->PrintData();
+        // GetInputOperator()[0]->GetOutput()->PrintData();
+        // GetInputOperator()[1]->GetOutput()->PrintData();
+        // GetOutput()->PrintData();
 
         return true;
     }
