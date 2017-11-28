@@ -111,23 +111,24 @@ int main(int argc, char const *argv[]) {
     Operator *add_1 = new Add(mat_1, b1, "add_1");
 
     // Operator *act_1 = new Relu(add_1, "relu_1");
-    Operator *act_1 = new Sigmoid(add_1, "sig_1");
+    // Operator *act_1 = new Sigmoid(add_1, "sig_1");
+    Operator *act_1 = new Softmax(add_1, "softmax_1");
 
     // ======================= layer 2=======================
-    Tensor   *_w2 = Tensor::Truncated_normal(1, 1, 1, 4, 2, 0.0, 0.6);
-    Operator *w2  = new Variable(_w2, "w2", 1);
-
-    Tensor   *_b2 = Tensor::Constants(1, 1, 1, 1, 2, 1.0);
-    Operator *b2  = new Variable(_b2, "b2", 1); // 오류 발생 원인 찾기
-
-    Operator *mat_2 = new MatMul(act_1, w2, "mat_2");
-
-    Operator *add_2 = new Add(b2, mat_2, "add_2");
-
-    // Operator *act_2 = new Relu(add_2, "relu_2");
-    Operator *act_2 = new Sigmoid(add_2, "sig_2");
-
-    Operator *err = new MSE(act_2, ans, "MSE");
+    // Tensor   *_w2 = Tensor::Truncated_normal(1, 1, 1, 4, 2, 0.0, 0.6);
+    // Operator *w2  = new Variable(_w2, "w2", 1);
+    //
+    // Tensor   *_b2 = Tensor::Constants(1, 1, 1, 1, 2, 1.0);
+    // Operator *b2  = new Variable(_b2, "b2", 1); // 오류 발생 원인 찾기
+    //
+    // Operator *mat_2 = new MatMul(act_1, w2, "mat_2");
+    //
+    // Operator *add_2 = new Add(b2, mat_2, "add_2");
+    //
+    // // Operator *act_2 = new Relu(add_2, "relu_2");
+    // Operator *act_2 = new Sigmoid(add_2, "sig_2");
+    //
+    Operator *err = new MSE(act_1, ans, "MSE");
 
     Optimizer *optimizer = new StochasticGradientDescent(err, 0.6, MINIMIZE);
 
@@ -154,6 +155,10 @@ int main(int argc, char const *argv[]) {
         x1->FeedOutput(CreateInput());
         ans->FeedOutput(CreateLabel());
 
+        // HGUNN.Testing();
+
+        act_1->GetOutput()->PrintData();
+
         HGUNN.Training();
         HGUNN.UpdateVariable();
     }
@@ -170,7 +175,7 @@ int main(int argc, char const *argv[]) {
         // act_2->GetOutput()->PrintData();
         // ans->GetOutput()->PrintData();
 
-        std::cout << "Accuracy is : " << Accuracy(act_2, ans) << '\n';
+        // std::cout << "Accuracy is : " << Accuracy(act_2, ans) << '\n';
     }
 
     std::cout << "---------------End-----------------" << '\n';

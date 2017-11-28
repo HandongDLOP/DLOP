@@ -10,6 +10,7 @@
 
 #include "Relu.h"
 #include "Sigmoid.h"
+#include "Softmax.h"
 
 #include "AddXB.h"
 #include "MatMulXW.h"
