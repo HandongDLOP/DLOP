@@ -16,6 +16,7 @@
 #include "MatMulXW.h"
 
 #include "MSE.h"
+#include "Softmax_Cross_Entropy.h"
 
 
 enum RUNNINGOPTION{

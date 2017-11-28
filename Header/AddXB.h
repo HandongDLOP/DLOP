@@ -117,12 +117,15 @@ public:
                     for (int ro = 0; ro < shape_Input0[3]; ro++) {
                         for (int co = 0; co < shape_Input0[4]; co++) {
                             output[ti][ba][ch][ro][co] = input0[ti][ba][ch][ro][co] + input1[0][0][ch][ro][co];
+                            // std::cout << input0[ti][ba][ch][ro][co] << " + " << input1[0][0][ch][ro][co] << " = " << output[ti][ba][ch][ro][co] << '\n';
                         }
                     }
                 }
             }
         }
         // }
+
+        // GetOutput()->PrintData();
 
         return true;
     }

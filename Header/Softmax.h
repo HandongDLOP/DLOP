@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <math.h>
 
 #include "Tensor.h"
 #include "Operator.h"
@@ -45,14 +46,17 @@ public:
         int Row     = shape[3];
         int Col     = shape[4];
 
-        double sum[Time][Batch] = {0.0};
+        double sum[Time][Batch] = { 0.0 };
+        double max              = 0.0;
 
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {
+                max = Max(input[ti][ba], Channel, Row, Col);
+
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            sum[ti][ba] += input[ti][ba][ch][ro][co];
+                            sum[ti][ba] += exp(input[ti][ba][ch][ro][co] - max);
                         }
                     }
                 }
@@ -64,7 +68,7 @@ public:
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            output[ti][ba][ch][ro][co] = input[ti][ba][ch][ro][co] / sum[ti][ba];
+                            output[ti][ba][ch][ro][co] = exp(input[ti][ba][ch][ro][co]) / sum[ti][ba];
                         }
                     }
                 }
@@ -101,6 +105,20 @@ public:
         GetDelta()->Reset();
 
         return true;
+    }
+
+    double Max(double ***data, int Channel, int Row, int Col) {
+        double max = data[0][0][0];
+
+        for (int ch = 0; ch < Channel; ch++) {
+            for (int ro = 0; ro < Row; ro++) {
+                for (int co = 0; co < Col; co++) {
+                    if (data[ch][ro][co] > max) max = data[ch][ro][co];
+                }
+            }
+        }
+
+        return max;
     }
 
 };
