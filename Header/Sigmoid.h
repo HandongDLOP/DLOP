@@ -13,7 +13,7 @@ public:
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
     // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (Sigmoid::Alloc())
     Sigmoid(Operator *pInput, std::string pName) : Operator(pInput, pName) {
-        std::cout << "/* Sigmoid::Sigmoid(Operator *) */" << '\n';
+        std::cout << "Sigmoid::Sigmoid(Operator *)" << '\n';
         Alloc(pInput);
     }
 
