@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <stdlib.h>
 #include <time.h>
 
 #include "..//Header//NeuralNetwork.h"
@@ -64,7 +65,7 @@ public:
         delete Train_label;
     }
 
-    void CreateDataPair(OPTION pOption, int batch_size) {
+    void CreateDataPair(OPTION pOption, int batch_size, int epoch) {
         int number_of_data    = 0;
         int random            = 0;
         double **origin_image = NULL;
@@ -100,9 +101,10 @@ public:
         // double **origin_label = ReshapeData(label_option);
 
         // 무작위 선택
-        srand(time(NULL));
+        srand(time(NULL) * epoch * epoch);
 
         for (int ba = 0; ba < batch_size; ba++) {
+
             random = rand() % number_of_data;
 
             image_data[0][ba]    = new double **[1];
@@ -119,15 +121,22 @@ public:
             label_data[0][ba][0][0] = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             // std::cout << (int)origin_label[random][0] << '\n';
             label_data[0][ba][0][0][(int)origin_label[random][0]] = 1.0;
+
+            // std::cout << random << ' ';
         }
+        // std::cout << '\n';
 
         Tensor *image_Tensor = new Tensor(image_data, image_shape, image_rank);
         Tensor *label_Tensor = new Tensor(label_data, label_shape, label_rank);
 
         if (pOption == TEST) {
+            // delete Test_image_feed;
+            // delete Test_label_feed;
             Test_image_feed = image_Tensor;
             Test_label_feed = label_Tensor;
         } else if (pOption == TRAIN) {
+            // delete Train_image_feed;
+            // delete Train_label_feed;
             Train_image_feed = image_Tensor;
             Train_label_feed = label_Tensor;
         } else {
@@ -274,114 +283,13 @@ double** ReshapeData(OPTION pOption) {
 DataSet* CreateDataSet() {
     DataSet *dataset = new DataSet();
 
-    // double **Test_image = new double *[NUMBER_OF_TEST_DATA];
-    // IMAGE_Reader(TEST_IMAGE_FILE, Test_image);
-
     dataset->SetTestImage(ReshapeData(TESTIMAGE));
-
-    // double **Test_label = new double *[NUMBER_OF_TEST_DATA];
-    // LABEL_Reader(TEST_LABEL_FILE, Test_label);
 
     dataset->SetTestLabel(ReshapeData(TESTLABEL));
 
-    // double **Train_image = new double *[NUMBER_OF_TRAIN_DATA];
-    // IMAGE_Reader(TRAIN_IMAGE_FILE, Train_image);
-
     dataset->SetTrainImage(ReshapeData(TRAINIMAGE));
-    //
-    // double **Train_label = new double *[NUMBER_OF_TRAIN_DATA];
-    // LABEL_Reader(TRAIN_LABEL_FILE, Train_label);
 
     dataset->SetTrainLabel(ReshapeData(TRAINLABEL));
 
     return dataset;
 }
-
-// Tensor** CreateDataPair(OPTION pOption, int batch_size, double **origin_image, double **origin_label) {
-//     // OPTION image_option   = DEFAULT;
-//     // OPTION label_option   = DEFAULT;
-//     int number_of_data = 0;
-//     int random         = 0;
-//
-//     if (pOption == TEST) {
-//         // image_option   = TESTIMAGE;
-//         // label_option   = TESTLABEL;
-//         number_of_data = NUMBER_OF_TEST_DATA;
-//     } else if (pOption == TRAIN) {
-//         // image_option   = TRAINIMAGE;
-//         // label_option   = TRAINLABEL;
-//         number_of_data = NUMBER_OF_TRAIN_DATA;
-//     } else {
-//         std::cout << "invalid OPTION!" << '\n';
-//         exit(0);
-//     }
-//
-//     // create input image data
-//     double *****image_data = new double ****[1];
-//     image_data[0] = new double ***[batch_size];
-//
-//     int *image_shape = new int[5] { 1, batch_size, 1, 1, DIMENSION_OF_MNIST_IMAGE };
-//     int  image_rank  = 5;
-//     // double **origin_image = ReshapeData(image_option);
-//
-//     // create input label data
-//     double *****label_data = new double ****[1];
-//     label_data[0] = new double ***[batch_size];
-//
-//     int *label_shape = new int[5] { 1, batch_size, 1, 1, 10 };
-//     int  label_rank  = 5;
-//     // double **origin_label = ReshapeData(label_option);
-//
-//     // 무작위 선택
-//     srand(time(NULL));
-//
-//     for (int ba = 0; ba < batch_size; ba++) {
-//         random = rand() % number_of_data;
-//
-//         image_data[0][ba]    = new double **[1];
-//         image_data[0][ba][0] = new double *[1];
-//         // image_data[0][ba][0][0] = origin_image[random];
-//         image_data[0][ba][0][0] = new double[DIMENSION_OF_MNIST_IMAGE];
-//
-//         for (int dim = 0; dim < DIMENSION_OF_MNIST_IMAGE; dim++) {
-//             image_data[0][ba][0][0][dim] = origin_image[random][dim];
-//         }
-//
-//         label_data[0][ba]       = new double **[1];
-//         label_data[0][ba][0]    = new double *[1];
-//         label_data[0][ba][0][0] = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-//         // std::cout << (int)origin_label[random][0] << '\n';
-//         label_data[0][ba][0][0][(int)origin_label[random][0]] = 1.0;
-//     }
-//
-//     // for (int num = 0; num < number_of_data; num++) {
-//     // delete[] origin_image[num];
-//     // delete[] origin_label[num];
-//     // }
-//     // delete origin_image;
-//     // delete origin_label;
-//
-//     Tensor *image_Tensor = new Tensor(image_data, image_shape, image_rank);
-//     Tensor *label_Tensor = new Tensor(label_data, label_shape, label_rank);
-//
-//     Tensor **data_pair = new Tensor *[2];
-//     data_pair[0] = image_Tensor;
-//     data_pair[1] = label_Tensor;
-//
-//     return data_pair;
-// }
-
-// int main() {
-// DataSet *dataset = CreateDataSet();
-//
-// Tensor **data_pair = CreateDataPair(TEST, 20, dataset->Test_image, dataset->Test_label);
-//
-//// Tensor **data_pair = CreateDataPair(TEST, 20);
-//
-//// data_pair[0]->PrintShape();
-//// data_pair[0]->PrintData();
-//// data_pair[1]->PrintShape();
-//// data_pair[1]->PrintData();
-//
-// return 0;
-// }
