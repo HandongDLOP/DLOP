@@ -77,24 +77,24 @@ public:
     virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int *shape              = GetOutput()->GetShape();
-        double *****output      = GetOutput()->GetData();
-        double *****delta       = GetDelta()->GetData();
-        double *****delta_input = GetInputOperator()[0]->GetDelta()->GetData();
-
-        for (int ti = 0; ti < shape[0]; ti++) {
-            for (int ba = 0; ba < shape[1]; ba++) {
-                for (int ch = 0; ch < shape[2]; ch++) {
-                    for (int ro = 0; ro < shape[3]; ro++) {
-                        for (int co = 0; co < shape[4]; co++) {
-                            delta_input[ti][ba][ch][ro][co] = delta[ti][ba][ch][ro][co]
-                                                              * output[ti][ba][ch][ro][co]
-                                                              * (1 - output[ti][ba][ch][ro][co]);
-                        }
-                    }
-                }
-            }
-        }
+        // int *shape              = GetOutput()->GetShape();
+        // double *****output      = GetOutput()->GetData();
+        // double *****delta       = GetDelta()->GetData();
+        // double *****delta_input = GetInputOperator()[0]->GetDelta()->GetData();
+        //
+        // for (int ti = 0; ti < shape[0]; ti++) {
+        //     for (int ba = 0; ba < shape[1]; ba++) {
+        //         for (int ch = 0; ch < shape[2]; ch++) {
+        //             for (int ro = 0; ro < shape[3]; ro++) {
+        //                 for (int co = 0; co < shape[4]; co++) {
+        //                     delta_input[ti][ba][ch][ro][co] = delta[ti][ba][ch][ro][co]
+        //                                                       * output[ti][ba][ch][ro][co]
+        //                                                       * (1 - output[ti][ba][ch][ro][co]);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         // GetInputOperator()[0]->GetDelta()->PrintData();
 
@@ -103,10 +103,6 @@ public:
         return true;
     }
 
-    // for Softmax
-    double softmax(double data) {
-        return 1.F / (1.F + (double)exp(-data));
-    }
 };
 
 #endif  // SOFTMAX_H_
