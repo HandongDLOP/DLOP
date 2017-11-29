@@ -2,16 +2,18 @@
 #define SOFTMAX_CROSS_ENTROPY_H_    value
 
 #include <iostream>
-#include <string>
+// #include <string>
 #include <math.h>
 
-#include "Tensor.h"
+// #include "Tensor.h"
 #include "Operator.h"
 
 class Softmax_Cross_Entropy : public Operator {
 private:
     Tensor *m_aSoftmax_Result = NULL;
-    double m_epsilon = 0.0; // for backprop
+    double m_epsilon          = 0.0; // for backprop
+    double m_min_error        = 1e-40;
+    double m_max_error        = 1e+40;
 
 public:
     // Constructor의 작업 순서는 다음과 같다.
@@ -38,7 +40,7 @@ public:
         delete m_aSoftmax_Result;
     }
 
-    virtual bool Alloc(Operator *pInput1, Operator *pInput2, int epsilon = 1e-2) {
+    virtual bool Alloc(Operator *pInput1, Operator *pInput2, int epsilon = 1e-8) {
         std::cout << "Softmax_Cross_Entropy::Alloc(Operator *, Operator *, int)" << '\n';
         // if pInput1 and pInput2의 shape가 다르면 abort
 
@@ -81,7 +83,7 @@ public:
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            sum[ti][ba] += exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]);
+                            sum[ti][ba] += exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon;
                         }
                     }
                 }
@@ -93,12 +95,14 @@ public:
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            softmax_result[ti][ba][ch][ro][co] = exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) / sum[ti][ba];
+                            softmax_result[ti][ba][ch][ro][co] = (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) ) / sum[ti][ba];
                         }
                     }
                 }
             }
         }
+
+        // GetSoftmaxResult()->PrintData();
 
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {
@@ -145,7 +149,7 @@ public:
                         for (int co = 0; co < Col; co++) {
                             if (label_data[ti][ba][ch][ro][co] == 1) {
                                 delta_input_data[ti][ba][ch][ro][co] = softmax_cross_entropy_derivative(softmax_result[ti][ba], ch, ro, co, shape);
-                                std::cout << "target_prediction : " << softmax_result[ti][ba][ch][ro][co] << '\n';
+                                // std::cout << "target_prediction : " << softmax_result[ti][ba][ch][ro][co] << '\n';
                             }
                         }
                     }
@@ -183,7 +187,17 @@ public:
         // std::cout << "num_of_output : " << num_of_output <<  '\n';
         // std::cout << "-label *log(prediction) / num_of_output : " << -label *log(prediction) / num_of_output <<  '\n';
 
-        return -label *log(prediction) / num_of_output;
+        double error_ = -label *log(prediction + m_epsilon) / num_of_output;
+
+        if (std::isnan(error_) || (error_ < m_max_error)) {
+            error_ = m_min_error;
+        }
+
+        if (std::isinf(error_) || (error_ > m_max_error)) {
+            error_ = m_max_error;
+        }
+
+        return error_;
     }
 
     double softmax_cross_entropy_derivative(double ***prediction, int ans_ch, int ans_ro, int ans_co, int *shape) {
@@ -194,34 +208,48 @@ public:
         // epsilon 값을 어디에 적용해야 할 것인지 의문점이 있다.
 
         double target_prediction = prediction[ans_ch][ans_ro][ans_co];
-        int num_of_output     = Channel * Row * Col;
+        // int    num_of_output     = Channel * Row * Col;
 
-        std::cout << "target_prediction : " << target_prediction << '\n';
-        std::cout << "answer point" << ans_ch << ", " << ans_ro << ", " << ans_co << '\n';
+        // std::cout << "target_prediction : " << target_prediction << '\n';
+        // std::cout << "answer point" << ans_ch << ", " << ans_ro << ", " << ans_co << '\n';
 
-        double delta = 0.0;
+        double delta_ = 0.0;
 
         for (int ch = 0; ch < Channel; ch++) {
             for (int ro = 0; ro < Row; ro++) {
                 for (int co = 0; co < Col; co++) {
                     if ((ch == ans_ch) && (ro == ans_ro) && (co == ans_co)) {
-                        delta += target_prediction * (1 - target_prediction);
-                        std::cout << "delta_ += target_prediction * (1 - target_prediction) : " << delta <<","<< target_prediction<<"," << (1 - target_prediction)<< '\n';
+                        delta_ += target_prediction * (1 - target_prediction);
+                        // std::cout << "delta_ += target_prediction * (1 - target_prediction) : " << delta_ <<","<< target_prediction<<"," << (1 - target_prediction)<< '\n';
                     } else {
-                        delta += prediction[ch][ro][co] *(-target_prediction);
-                        std::cout << "delta += prediction[ch][ro][co] *(-target_prediction) : " << delta <<","<< prediction[ch][ro][co]<<"," << (-target_prediction)<< '\n';
+                        // delta_ += prediction[ch][ro][co] * (-target_prediction);
+                        // std::cout << "delta += prediction[ch][ro][co] *(-target_prediction) : " << delta_ <<","<< prediction[ch][ro][co]<<"," << (-target_prediction)<< '\n';
                     }
                 }
             }
         }
 
-        std::cout << "delta_ : " << delta << '\n';
+        // std::cout << "delta_ : " << delta << '\n';
 
-        delta = delta / ((target_prediction + m_epsilon) * num_of_output) ;
+        // delta = delta / ((target_prediction + m_epsilon) * num_of_output);
+        // delta = delta / (target_prediction + m_epsilon);
 
-        std::cout << "delta : " << delta << '\n';
+        // std::cout << "delta : " << delta << '\n';
 
-        return delta;
+        // how can programming in C++98
+        if (std::isnan(delta_) || (delta_ < m_max_error)) {
+            delta_ = m_min_error;
+        }
+
+        if (std::isinf(delta_) || (delta_ > m_max_error)) {
+            delta_ = m_max_error;
+        }
+
+        // if(delta == *nan || delta == *-nan){
+        // delta = m_epsilon;
+        // }
+
+        return delta_;
     }
 
     Tensor* GetSoftmaxResult() {

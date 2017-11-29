@@ -125,11 +125,11 @@ int main(int argc, char const *argv[]) {
     Operator *add_2 = new Add(b2, mat_2, "add_2");
 
     // Operator *act_2 = new Relu(add_2, "relu_2");
-    // Operator *act_2 = new Sigmoid(add_2, "sig_2");
-    //
-    // Operator *err = new MSE(act_2, ans, "MSE");
+    Operator *act_2 = new Sigmoid(add_2, "sig_2");
 
-    Softmax_Cross_Entropy * err = new Softmax_Cross_Entropy(add_2, ans, "SCE");
+    Operator *err = new MSE(act_2, ans, "MSE");
+
+    // Softmax_Cross_Entropy * err = new Softmax_Cross_Entropy(add_2, ans, "SCE");
 
     Optimizer *optimizer = new StochasticGradientDescent(err, 0.6, MINIMIZE);
 
@@ -160,20 +160,20 @@ int main(int argc, char const *argv[]) {
 
         HGUNN.Training();
 
-        HGUNN.PrintData(ans);
-        HGUNN.PrintData(err);
-        std::cout << "softmax_result" << '\n';
-        err->GetSoftmaxResult()->PrintData();
-        
-        HGUNN.PrintData(add_2);
+        // HGUNN.PrintData(ans);
+        // HGUNN.PrintData(err);
+        // std::cout << "softmax_result" << '\n';
+        // err->GetSoftmaxResult()->PrintData();
+
+        // HGUNN.PrintData(add_2);
 
 
         HGUNN.UpdateVariable();
 
         // HGUNN.PrintData();
 
-        if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(err->GetSoftmaxResult(), ans->GetOutput()) << '\n';
-        // std::cout << "Accuracy is : " << Accuracy(act_2->GetOutput(), ans->GetOutput()) << '\n';
+        if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(act_2->GetOutput(), ans->GetOutput()) << '\n';
+        // std::cout << "Accuracy is : " << Accuracy(err->GetSoftmaxResult(), ans->GetOutput()) << '\n';
     }
 
     // ======================= Testing =======================
@@ -188,8 +188,8 @@ int main(int argc, char const *argv[]) {
         // act_2->GetOutput()->PrintData();
         // ans->GetOutput()->PrintData();
 
-        if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(err->GetSoftmaxResult(), ans->GetOutput()) << '\n';
-        // std::cout << "Accuracy is : " << Accuracy(act_2->GetOutput(), ans->GetOutput()) << '\n';
+        std::cout << "Accuracy is : " << Accuracy(act_2->GetOutput(), ans->GetOutput()) << '\n';
+        // if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(err->GetSoftmaxResult(), ans->GetOutput()) << '\n';
     }
 
     std::cout << "---------------End-----------------" << '\n';

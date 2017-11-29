@@ -4,7 +4,7 @@
 #include "..//Header//NeuralNetwork.h"
 #include "MNIST_Reader.h"
 
-#define BATCH    50
+#define BATCH    100
 
 int Argmax(double *data, int Dimension) {
     int index  = 0;
@@ -61,11 +61,11 @@ int main(int argc, char const *argv[]) {
 
     // ======================= layer 1=======================
     Tensor *_w1 = Tensor::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6);
-    // Tensor   *_w1 = Tensor::Zeros(1, 1, 1, 784, 15);
+    // Tensor   *_w1 = Tensor::Zeros(1, 1, 1, 784, 10);
     Operator *w1 = new Variable(_w1, "w1", 1);
 
     Tensor *_b1 = Tensor::Constants(1, 1, 1, 1, 15, 1.0);
-    // Tensor   *_b1 = Tensor::Zeros(1, 1, 1, 1, 15);
+    // Tensor   *_b1 = Tensor::Zeros(1, 1, 1, 1, 10);
     Operator *b1 = new Variable(_b1, "b1", 1);
 
     Operator *mat_1 = new MatMul(x1, w1, "mat_1");
@@ -74,9 +74,9 @@ int main(int argc, char const *argv[]) {
 
     // Operator *act_1 = new Relu(add_1, "relu_1");
     Operator *act_1 = new Sigmoid(add_1, "sig_1");
-
-    // ======================= layer 2=======================
-
+    //
+    // // ======================= layer 2=======================
+    //
     Tensor *_w2 = Tensor::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6);
     // Tensor   *_w2 = Tensor::Zeros(1, 1, 1, 15, 10);
     Operator *w2 = new Variable(_w2, "w2", 1);
@@ -91,10 +91,10 @@ int main(int argc, char const *argv[]) {
 
     // Operator *act_2 = new Relu(add_2, "relu_2");
     Operator *act_2 = new Sigmoid(add_2, "sig_2");
-
-    Operator *err = new MSE(act_2, ans, "MSE");
-
-    // Softmax_Cross_Entropy * err = new Softmax_Cross_Entropy(add_2, ans, "MSE");
+    //
+    // Operator *err = new MSE(act_2, ans, "MSE");
+    // Softmax_Cross_Entropy * err = new Softmax_Cross_Entropy(add_2, ans, 1e-20, "SCE");
+    Cross_Entropy * err = new Cross_Entropy(act_2, ans, 1e-20, "CE");
 
     Optimizer *optimizer = new StochasticGradientDescent(err, 0.5, MINIMIZE);
 
@@ -121,19 +121,19 @@ int main(int argc, char const *argv[]) {
         HGUNN.Training();
         HGUNN.UpdateVariable();
 
-        // HGUNN.PrintData();
-
-        // HGUNN.PrintData(act_2);
+        // HGUNN.PrintData(1);
+        // HGUNN.PrintData(x1, 1);
+        // HGUNN.PrintData(add_1);
         // HGUNN.PrintData(ans);
 
-        // if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(err->GetSoftmaxResult(), ans->GetOutput()) << '\n';
         if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(act_2->GetOutput(), ans->GetOutput()) << '\n';
+        // if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(err->GetSoftmaxResult(), ans->GetOutput()) << '\n';
     }
 
     // ======================= Testing =======================
 
-    for (int i = 0; i < 2; i++) {
-        std::cout << "\n\ninput : " << i << '\n';
+    for (int i = 0; i < 100; i++) {
+        std::cout << "\ninput : " << i << '\n';
         dataset->CreateTestDataPair(BATCH);
         x1->FeedOutput(dataset->GetTestFeedImage());
         ans->FeedOutput(dataset->GetTestFeedLabel());
@@ -145,8 +145,8 @@ int main(int argc, char const *argv[]) {
         // std::cout << "ans" << '\n';
         // ans->GetOutput()->PrintData();
 
-        // std::cout << "Accuracy is : " << Accuracy(err->GetSoftmaxResult(), ans->GetOutput()) << '\n';
         std::cout << "Accuracy is : " << Accuracy(act_2->GetOutput(), ans->GetOutput()) << '\n';
+        // std::cout << "Accuracy is : " << Accuracy(err->GetSoftmaxResult(), ans->GetOutput()) << '\n';
     }
 
     delete dataset;

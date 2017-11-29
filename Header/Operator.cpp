@@ -56,9 +56,12 @@ bool Operator::AllocOptimizer(Optimizer *pOptimizer) {
 void Operator::Delete() {
     std::cout << "Operator::Delete()" << '\n';
 
-    delete m_aOutput;
-    delete m_aGradient;
-    delete m_aDelta;
+    if (m_aOutput != NULL) delete m_aOutput;
+
+    if (m_aGradient != NULL) delete m_aGradient;
+
+    if (m_aDelta != NULL) delete m_aDelta;
+
     delete[] m_apOutputOperator;
     delete[] m_apInputOperator;
     // delete m_aOptimizer;

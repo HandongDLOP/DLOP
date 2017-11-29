@@ -16,6 +16,7 @@
 #include "MatMulXW.h"
 
 #include "MSE.h"
+#include "Cross_Entropy.h"
 #include "Softmax_Cross_Entropy.h"
 
 

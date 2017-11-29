@@ -7,7 +7,7 @@
 #include <ctime>
 #include <cstdlib>
 
-#include "..//Header//NeuralNetwork.h"
+#include "..//Header//Tensor.h"
 
 #define DIMENSION_OF_MNIST_IMAGE    784
 
@@ -103,13 +103,25 @@ public:
         delete Train_image;
         delete Train_label;
 
-        if (Test_image_feed != NULL) delete Test_image_feed;
-
-        if (Test_label_feed != NULL) delete Test_label_feed;
-
-        if (Train_image_feed != NULL) delete Train_image_feed;
-
-        if (Train_label_feed != NULL) delete Train_label_feed;
+        // if (Test_image_feed != NULL) {
+        //     delete Test_image_feed;
+        //     Test_image_feed = NULL;
+        // }
+        //
+        // if (Test_label_feed != NULL) {
+        //     delete Test_label_feed;
+        //     Test_label_feed = NULL;
+        // }
+        //
+        // if (Train_image_feed != NULL) {
+        //     delete Train_image_feed;
+        //     Train_image_feed = NULL;
+        // }
+        //
+        // if (Train_label_feed != NULL) {
+        //     delete Train_label_feed;
+        //     Train_label_feed = NULL;
+        // }
     }
 
     void CreateTestDataPair(int batch_size) {
@@ -320,7 +332,7 @@ void IMAGE_Reader(string DATAPATH, double **arr) {
             for (int d = 0; d < dim_of_image; ++d) {
                 unsigned char temp = 0;
                 fin.read((char *)&temp, sizeof(temp));
-                arr[i][d] = (double)temp;
+                arr[i][d] = (double)temp / 255.0;
                 // cout << arr[i][d] << ' ';
             }
             // cout << "\n\n";

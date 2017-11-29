@@ -1,11 +1,11 @@
 #ifndef OPERATOR_H_
 #define OPERATOR_H_
 
-#include <stdio.h>
+// #include <stdio.h>
 
-#include <iostream>
-#include <string>
-#include <algorithm>
+// #include <iostream>
+// #include <string>
+// #include <algorithm>
 
 // #include "Tensor.h"
 #include "MetaParameter.h"
@@ -232,21 +232,21 @@ public:
         std::cout << this->GetName() << ": Shape of Output" << '\n';
         this->GetOutput()->PrintShape();
         std::cout << this->GetName() << ": Value of Output" << '\n';
-        this->GetOutput()->PrintData();
+        this->GetOutput()->PrintData(forceprint);
     }
 
     void PrintDelta(int forceprint = 0) {
         std::cout << this->GetName() << ": Shape of Delta" << '\n';
         this->GetDelta()->PrintShape();
         std::cout << this->GetName() << ": Value of Delta" << '\n';
-        this->GetDelta()->PrintData();
+        this->GetDelta()->PrintData(forceprint);
     }
 
     void PrintGradient(int forceprint = 0) {
         std::cout << this->GetName() << ": Shape of Gradient" << '\n';
         this->GetGradient()->PrintShape();
         std::cout << this->GetName() << ": Value of Gradient" << '\n';
-        this->GetGradient()->PrintData();
+        this->GetGradient()->PrintData(forceprint);
     }
 
     // ===========================================================================================

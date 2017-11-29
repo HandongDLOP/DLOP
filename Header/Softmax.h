@@ -1,11 +1,11 @@
 #ifndef SOFTMAX_H_
 #define SOFTMAX_H_    value
 
-#include <iostream>
-#include <string>
+// #include <iostream>
+// #include <string>
 #include <math.h>
 
-#include "Tensor.h"
+// #include "Tensor.h"
 #include "Operator.h"
 
 class Softmax : public Operator {
