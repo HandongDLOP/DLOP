@@ -27,6 +27,8 @@ private:
     float m_LearningRate    = 0.f;
     int m_OptimizeDirection = 1;  // 1 or -1
 
+    int m_Batch = 0;
+
     TrainableData **m_aTrainableData = NULL;
     int m_TrainableDataDegree        = 0;
 
@@ -103,6 +105,10 @@ public:
         m_LearningRate = pLearningRate;
     }
 
+    void SetBatch(int pBatch){
+        m_Batch = pBatch;
+    }
+
     void SetOptimizeDirection(OptimizeDirection pOptimizeDirection) {
         if (pOptimizeDirection == MAXIMIZE) m_OptimizeDirection = 1;
         else if (pOptimizeDirection == MINIMIZE) m_OptimizeDirection = -1;
@@ -114,6 +120,10 @@ public:
 
     float GetLearningRate() {
         return m_LearningRate;
+    }
+
+    int GetBatch(){
+        return m_Batch;
     }
 
     int GetOptimizeDirection() {

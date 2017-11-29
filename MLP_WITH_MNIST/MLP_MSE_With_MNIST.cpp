@@ -60,11 +60,11 @@ int main(int argc, char const *argv[]) {
     Operator *ans  = HGUNN.AddPlaceholder(_ans, "answer");
 
     // ======================= layer 1=======================
-    Tensor *_w1 = Tensor::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6);
+    Tensor *_w1 = Tensor::Truncated_normal(1, 1, 1, 784, 10, 0.0, 0.6);
     // Tensor   *_w1 = Tensor::Zeros(1, 1, 1, 784, 10);
     Operator *w1 = new Variable(_w1, "w1", 1);
 
-    Tensor *_b1 = Tensor::Constants(1, 1, 1, 1, 15, 1.0);
+    Tensor *_b1 = Tensor::Constants(1, 1, 1, 1, 10, 1.0);
     // Tensor   *_b1 = Tensor::Zeros(1, 1, 1, 1, 10);
     Operator *b1 = new Variable(_b1, "b1", 1);
 
@@ -77,22 +77,22 @@ int main(int argc, char const *argv[]) {
     //
     // // ======================= layer 2=======================
     //
-    Tensor *_w2 = Tensor::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6);
-    // Tensor   *_w2 = Tensor::Zeros(1, 1, 1, 15, 10);
-    Operator *w2 = new Variable(_w2, "w2", 1);
+    // Tensor *_w2 = Tensor::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6);
+    // // Tensor   *_w2 = Tensor::Zeros(1, 1, 1, 15, 10);
+    // Operator *w2 = new Variable(_w2, "w2", 1);
+    //
+    // Tensor *_b2 = Tensor::Constants(1, 1, 1, 1, 10, 1.0);
+    // // Tensor   *_b2 = Tensor::Zeros(1, 1, 1, 1, 10);
+    // Operator *b2 = new Variable(_b2, "b2", 1);
+    //
+    // Operator *mat_2 = new MatMul(act_1, w2, "mat_2");
+    //
+    // Operator *add_2 = new Add(b2, mat_2, "add_2");
+    //
+    // // Operator *act_2 = new Relu(add_2, "relu_2");
+    // Operator *act_2 = new Sigmoid(add_2, "sig_2");
 
-    Tensor *_b2 = Tensor::Constants(1, 1, 1, 1, 10, 1.0);
-    // Tensor   *_b2 = Tensor::Zeros(1, 1, 1, 1, 10);
-    Operator *b2 = new Variable(_b2, "b2", 1);
-
-    Operator *mat_2 = new MatMul(act_1, w2, "mat_2");
-
-    Operator *add_2 = new Add(b2, mat_2, "add_2");
-
-    // Operator *act_2 = new Relu(add_2, "relu_2");
-    Operator *act_2 = new Sigmoid(add_2, "sig_2");
-
-    Operator *err = new MSE(act_2, ans, "MSE");
+    Operator *err = new MSE(act_1, ans, "MSE");
 
     Optimizer *optimizer = new StochasticGradientDescent(err, 0.5, MINIMIZE);
 
@@ -111,7 +111,7 @@ int main(int argc, char const *argv[]) {
 
     std::cout << "======================= Training =======================" << '\n';
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 4000; i++) {
         if ((i % 100) == 0) std::cout << "epoch : " << i << '\n';
 
         dataset->CreateTrainDataPair(BATCH);
@@ -121,7 +121,7 @@ int main(int argc, char const *argv[]) {
         HGUNN.Training();
         HGUNN.UpdateVariable();
 
-        if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(act_2->GetOutput(), ans->GetOutput()) << '\n';
+        if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(act_1->GetOutput(), ans->GetOutput()) << '\n';
     }
 
     // ======================= Testing =======================
@@ -141,7 +141,7 @@ int main(int argc, char const *argv[]) {
 
         // if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(act_2->GetOutput(), ans->GetOutput()) << '\n';
 
-        test_accuracy += Accuracy(act_2->GetOutput(), ans->GetOutput());
+        test_accuracy += Accuracy(act_1->GetOutput(), ans->GetOutput());
     }
 
     std::cout << "Test Accuracy is : " << test_accuracy / loops << '\n';

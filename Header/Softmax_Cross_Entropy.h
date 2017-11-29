@@ -19,17 +19,17 @@ public:
     // Constructor의 작업 순서는 다음과 같다.
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
     // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (Softmax_Cross_Entropy::Alloc())
-    Softmax_Cross_Entropy(Operator *pInput1, Operator *pInput2, int epsilon = 1e-4) : Operator(pInput1, pInput2) {
+    Softmax_Cross_Entropy(Operator *pInput1, Operator *pInput2, double epsilon = 1e-20) : Operator(pInput1, pInput2) {
         std::cout << "Softmax_Cross_Entropy::Softmax_Cross_Entropy(Operator *, Operator *, int)" << '\n';
         Alloc(pInput1, pInput2, epsilon);
     }
 
     Softmax_Cross_Entropy(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pInput1, pInput2, pName) {
         std::cout << "Softmax_Cross_Entropy::Softmax_Cross_Entropy(Operator *, Operator *, std::string)" << '\n';
-        Alloc(pInput1, pInput2, 1e-4);
+        Alloc(pInput1, pInput2, 1e-20);
     }
 
-    Softmax_Cross_Entropy(Operator *pInput1, Operator *pInput2, int epsilon, std::string pName) : Operator(pInput1, pInput2, pName) {
+    Softmax_Cross_Entropy(Operator *pInput1, Operator *pInput2, double epsilon, std::string pName) : Operator(pInput1, pInput2, pName) {
         std::cout << "Softmax_Cross_Entropy::Softmax_Cross_Entropy(Operator *, Operator *, int, std::string)" << '\n';
         Alloc(pInput1, pInput2, epsilon);
     }
@@ -40,7 +40,7 @@ public:
         delete m_aSoftmax_Result;
     }
 
-    virtual bool Alloc(Operator *pInput1, Operator *pInput2, int epsilon = 1e-8) {
+    virtual bool Alloc(Operator *pInput1, Operator *pInput2, double epsilon = 1e-20) {
         std::cout << "Softmax_Cross_Entropy::Alloc(Operator *, Operator *, int)" << '\n';
         // if pInput1 and pInput2의 shape가 다르면 abort
 
@@ -76,6 +76,8 @@ public:
         double max[Time][Batch] = { 0.0 };
         int    num_of_output    = Channel * Row * Col;
 
+        double temp = 0.0;
+
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {
                 max[ti][ba] = Max(input_data[ti][ba], Channel, Row, Col);
@@ -83,19 +85,35 @@ public:
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            sum[ti][ba] += exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon;
+                            // std::cout << (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon) << '\n';
+                            temp += (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon);
                         }
                     }
                 }
+                // 부동소수점 문제가 있는 듯 함
+                sum[ti][ba] = temp;
+                temp = 0.0;
             }
         }
+
+        // for (int ti = 0; ti < Time; ti++) {
+        //     for (int ba = 0; ba < Batch; ba++) {
+        //         sum[ti][ba];
+        //         // std::cout << sum[ti][ba] << ' ';
+        //     }
+        // }
+
 
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            softmax_result[ti][ba][ch][ro][co] = (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) ) / sum[ti][ba];
+                            // std::cout << (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon) << ", " << sum[ti][ba] << '\n';
+                            softmax_result[ti][ba][ch][ro][co] = (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon) / sum[ti][ba];
+                            output[ti][ba][0][0][0]           += cross_entropy(label_data[ti][ba][ch][ro][co],
+                                                                               softmax_result[ti][ba][ch][ro][co],
+                                                                               num_of_output);
                         }
                     }
                 }
@@ -103,20 +121,6 @@ public:
         }
 
         // GetSoftmaxResult()->PrintData();
-
-        for (int ti = 0; ti < Time; ti++) {
-            for (int ba = 0; ba < Batch; ba++) {
-                for (int ch = 0; ch < Channel; ch++) {
-                    for (int ro = 0; ro < Row; ro++) {
-                        for (int co = 0; co < Col; co++) {
-                            output[ti][ba][0][0][0] += cross_entropy(label_data[ti][ba][ch][ro][co],
-                                                                     softmax_result[ti][ba][ch][ro][co],
-                                                                     num_of_output);
-                        }
-                    }
-                }
-            }
-        }
 
         // GetInputOperator()[0]->GetOutput()->PrintData();
         // GetInputOperator()[1]->GetOutput()->PrintData();
@@ -142,15 +146,17 @@ public:
         int Row     = shape[3];
         int Col     = shape[4];
 
+        int num_of_output = Channel * Row * Col;
+
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            if (label_data[ti][ba][ch][ro][co] == 1) {
-                                delta_input_data[ti][ba][ch][ro][co] = softmax_cross_entropy_derivative(softmax_result[ti][ba], ch, ro, co, shape);
-                                // std::cout << "target_prediction : " << softmax_result[ti][ba][ch][ro][co] << '\n';
-                            }
+                            delta_input_data[ti][ba][ch][ro][co] = softmax_cross_entropy_derivative(label_data[ti][ba][ch][ro][co],
+                                                                                                    softmax_result[ti][ba][ch][ro][co],
+                                                                                                    num_of_output);
+                            // std::cout << "target_prediction : " << softmax_result[ti][ba][ch][ro][co] << '\n';
                         }
                     }
                 }
@@ -178,75 +184,42 @@ public:
             }
         }
 
+        // std::cout << max << '\n';
+
         return max;
     }
 
     double cross_entropy(double label, double prediction, int num_of_output) {
-        // std::cout << "label : " << label <<  '\n';
-        // std::cout << "prediction : " << prediction <<  '\n';
-        // std::cout << "num_of_output : " << num_of_output <<  '\n';
-        // std::cout << "-label *log(prediction) / num_of_output : " << -label *log(prediction) / num_of_output <<  '\n';
-
         double error_ = -label *log(prediction + m_epsilon) / num_of_output;
 
-        if (std::isnan(error_) || (error_ < m_max_error)) {
-            error_ = m_min_error;
-        }
+        // if (std::isnan(error_) || (error_ < m_max_error)) {
+        // error_ = m_min_error;
+        // }
+        //
+        // if (std::isinf(error_) || (error_ > m_max_error)) {
+        // error_ = m_max_error;
+        // }
 
-        if (std::isinf(error_) || (error_ > m_max_error)) {
-            error_ = m_max_error;
-        }
+        // if (std::isnan(error_)) {
+        // error_ = m_min_error;
+        // }
+        //
+        // if (std::isinf(error_)) {
+        // error_ = m_max_error;
+        // }
 
         return error_;
     }
 
-    double softmax_cross_entropy_derivative(double ***prediction, int ans_ch, int ans_ro, int ans_co, int *shape) {
-        int Channel = shape[2];
-        int Row     = shape[3];
-        int Col     = shape[4];
+    double softmax_cross_entropy_derivative(double label_data, double prediction, int num_of_output) {
+        double delta_ = -label_data * (1 - prediction) / num_of_output;
 
-        // epsilon 값을 어디에 적용해야 할 것인지 의문점이 있다.
-
-        double target_prediction = prediction[ans_ch][ans_ro][ans_co];
-        // int    num_of_output     = Channel * Row * Col;
-
-        // std::cout << "target_prediction : " << target_prediction << '\n';
-        // std::cout << "answer point" << ans_ch << ", " << ans_ro << ", " << ans_co << '\n';
-
-        double delta_ = 0.0;
-
-        for (int ch = 0; ch < Channel; ch++) {
-            for (int ro = 0; ro < Row; ro++) {
-                for (int co = 0; co < Col; co++) {
-                    if ((ch == ans_ch) && (ro == ans_ro) && (co == ans_co)) {
-                        delta_ += target_prediction * (1 - target_prediction);
-                        // std::cout << "delta_ += target_prediction * (1 - target_prediction) : " << delta_ <<","<< target_prediction<<"," << (1 - target_prediction)<< '\n';
-                    } else {
-                        // delta_ += prediction[ch][ro][co] * (-target_prediction);
-                        // std::cout << "delta += prediction[ch][ro][co] *(-target_prediction) : " << delta_ <<","<< prediction[ch][ro][co]<<"," << (-target_prediction)<< '\n';
-                    }
-                }
-            }
-        }
-
-        // std::cout << "delta_ : " << delta << '\n';
-
-        // delta = delta / ((target_prediction + m_epsilon) * num_of_output);
-        // delta = delta / (target_prediction + m_epsilon);
-
-        // std::cout << "delta : " << delta << '\n';
-
-        // how can programming in C++98
-        if (std::isnan(delta_) || (delta_ < m_max_error)) {
-            delta_ = m_min_error;
-        }
-
-        if (std::isinf(delta_) || (delta_ > m_max_error)) {
-            delta_ = m_max_error;
-        }
-
-        // if(delta == *nan || delta == *-nan){
-        // delta = m_epsilon;
+        // if (std::isnan(delta_)) {
+        // delta_ = m_min_error;
+        // }
+        //
+        // if (std::isinf(delta_)) {
+        // delta_ = m_max_error;
         // }
 
         return delta_;

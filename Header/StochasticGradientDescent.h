@@ -27,11 +27,20 @@ public:
         // learning rate 부분 다시 구현할 필요 있음
         float learning_rate = GetOptimizeDirection() * GetLearningRate();
 
-        for (int ti = 0; ti < shape[0]; ti++) {
-            for (int ba = 0; ba < shape[1]; ba++) {
-                for (int ch = 0; ch < shape[2]; ch++) {
-                    for (int ro = 0; ro < shape[3]; ro++) {
-                        for (int co = 0; co < shape[4]; co++) {
+        // average 학습
+        // int input_batch = GetBatch();
+
+        int Time    = shape[0];
+        int Batch   = shape[1];
+        int Channel = shape[2];
+        int Row     = shape[3];
+        int Col     = shape[4];
+
+        for (int ti = 0; ti < Time; ti++) {
+            for (int ba = 0; ba < Batch; ba++) {
+                for (int ch = 0; ch < Channel; ch++) {
+                    for (int ro = 0; ro < Row; ro++) {
+                        for (int co = 0; co < Col; co++) {
                             trainable_data[ti][ba][ch][ro][co] += learning_rate * gradient[ti][ba][ch][ro][co];
                             gradient[ti][ba][ch][ro][co]        = 0;
                         }

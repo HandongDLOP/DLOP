@@ -12,21 +12,21 @@ class Cross_Entropy : public Operator {
 private:
     // Tensor *m_aSoftmax_Result = NULL;
     double m_epsilon   = 0.0;        // for backprop
-    double m_min_error = 1e-40;
-    double m_max_error = 1e+40;
+    double m_min_error = 1e-10;
+    double m_max_error = 1e+10;
 
 public:
     // Constructor의 작업 순서는 다음과 같다.
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
     // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (Cross_Entropy::Alloc())
-    Cross_Entropy(Operator *pInput1, Operator *pInput2, int epsilon = 1e-4) : Operator(pInput1, pInput2) {
+    Cross_Entropy(Operator *pInput1, Operator *pInput2, int epsilon = 1e-30) : Operator(pInput1, pInput2) {
         std::cout << "Cross_Entropy::Cross_Entropy(Operator *, Operator *, int)" << '\n';
         Alloc(pInput1, pInput2, epsilon);
     }
 
     Cross_Entropy(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pInput1, pInput2, pName) {
         std::cout << "Cross_Entropy::Cross_Entropy(Operator *, Operator *, std::string)" << '\n';
-        Alloc(pInput1, pInput2, 1e-4);
+        Alloc(pInput1, pInput2, 1e-30);
     }
 
     Cross_Entropy(Operator *pInput1, Operator *pInput2, int epsilon, std::string pName) : Operator(pInput1, pInput2, pName) {
@@ -38,7 +38,7 @@ public:
         std::cout << "Cross_Entropy::~Cross_Entropy()" << '\n';
     }
 
-    virtual bool Alloc(Operator *pInput1, Operator *pInput2, int epsilon = 1e-8) {
+    virtual bool Alloc(Operator *pInput1, Operator *pInput2, int epsilon = 1e-30) {
         std::cout << "Cross_Entropy::Alloc(Operator *, Operator *, int)" << '\n';
         // if pInput1 and pInput2의 shape가 다르면 abort
 
@@ -143,13 +143,22 @@ public:
 
         double error_ = -label *log(prediction + m_epsilon) / num_of_output;
 
-        if (std::isnan(error_) || (error_ < m_max_error)) {
+        // if (std::isnan(error_) || (error_ < m_max_error)) {
+        // error_ = m_min_error;
+        // }
+        //
+        // if (std::isinf(error_) || (error_ > m_max_error)) {
+        // error_ = m_max_error;
+        // }
+
+        if (std::isnan(error_)) {
             error_ = m_min_error;
         }
 
-        if (std::isinf(error_) || (error_ > m_max_error)) {
+        if (std::isinf(error_)) {
             error_ = m_max_error;
         }
+
 
         return error_;
     }
@@ -157,13 +166,21 @@ public:
     double cross_entropy_derivative(double label_data, double input_data, int num_of_output) {
         double delta_ = 0.0;
 
-        delta_ = label_data / ((input_data * num_of_output) + m_epsilon);
+        delta_ = -label_data / ((input_data * num_of_output) + m_epsilon);
 
-        if (std::isnan(delta_) || (delta_ < m_max_error)) {
+        // if (std::isnan(delta_) || (delta_ < m_max_error)) {
+        // delta_ = m_min_error;
+        // }
+        //
+        // if (std::isinf(delta_) || (delta_ > m_max_error)) {
+        // delta_ = m_max_error;
+        // }
+
+        if (std::isnan(delta_)) {
             delta_ = m_min_error;
         }
 
-        if (std::isinf(delta_) || (delta_ > m_max_error)) {
+        if (std::isinf(delta_)) {
             delta_ = m_max_error;
         }
 
