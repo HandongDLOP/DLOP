@@ -102,14 +102,14 @@ int main(int argc, char const *argv[]) {
 
     // ======================= Training =======================
 
-    if (argc != 2) {
-        std::cout << "There is no count of training" << '\n';
-        return 0;
-    }
+    // if (argc != 2) {
+    //     std::cout << "There is no count of training" << '\n';
+    //     return 0;
+    // }
 
     HGUNN.PrintGraph();
 
-    for (int i = 0; i < atoi(argv[1]); i++) {
+    for (int i = 0; i < 1000; i++) {
         if ((i % 100) == 0) std::cout << "epoch : " << i << '\n';
 
         dataset->CreateTrainDataPair(BATCH);
@@ -124,7 +124,7 @@ int main(int argc, char const *argv[]) {
 
     // ======================= Testing =======================
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 5; i++) {
         std::cout << "\ninput : " << i << '\n';
         dataset->CreateTestDataPair(BATCH);
         x1->FeedOutput(dataset->GetTestFeedImage());
