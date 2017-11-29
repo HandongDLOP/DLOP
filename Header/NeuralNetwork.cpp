@@ -126,6 +126,25 @@ void NeuralNetwork::PrintGraph(Operator *pStart, Operator *pEnd) {
     std::cout << '\n';
 }
 
+void NeuralNetwork::PrintData(int forceprint) {
+    Operator *end_operator = m_aEnd;
+
+    end_operator->PrintData(forceprint);
+
+}
+
+void NeuralNetwork::PrintData(Operator *pOperator, int forceprint) {
+    std::cout << "\n\n" << pOperator->GetName() << ": PrintData()" << '\n';
+
+    if (pOperator->GetOutput() != NULL) pOperator->PrintOutput(forceprint);
+
+    if (pOperator->GetDelta() != NULL) pOperator->PrintDelta(forceprint);
+
+    if (pOperator->GetGradient() != NULL) pOperator->PrintGradient(forceprint);
+
+    std::cout << pOperator->GetName() << ": ~PrintData() \n\n";
+}
+
 void NeuralNetwork::PrintData(Operator *pStart, Operator *pEnd, int forceprint) {
     // Operator *start_operator = NULL;
     Operator *end_operator = NULL;
@@ -133,13 +152,15 @@ void NeuralNetwork::PrintData(Operator *pStart, Operator *pEnd, int forceprint) 
     // if (pStart != NULL) start_operator = pStart;
     // else start_operator = m_pStart;
 
-    if (pStart != NULL) end_operator = pEnd;
+    if (pEnd != NULL) end_operator = pEnd;
     else end_operator = m_aEnd;
 
     std::cout << '\n';
     end_operator->PrintData(forceprint);
     std::cout << '\n';
 }
+
+
 
 // ===========================================================================================
 

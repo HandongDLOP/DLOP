@@ -72,9 +72,13 @@ public:
         m_aOptimizer = pOptimizer;
     }
 
-    void PrintGraph(Operator * pStart = NULL, Operator * pEnd = NULL);
+    void PrintGraph(Operator *pStart = NULL, Operator *pEnd = NULL);
 
-    void PrintData(Operator * pStart = NULL, Operator * pEnd = NULL, int forceprint = 0);
+    void PrintData(int forceprint = 0);
+
+    void PrintData(Operator *pOperator, int forceprint = 0);
+
+    void PrintData(Operator *pStart, Operator *pEnd, int forceprint = 0);
 
     // ===========================================================================================
     bool CreateGraph(Optimizer *pOptimizer);

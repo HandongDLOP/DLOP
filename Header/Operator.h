@@ -137,21 +137,7 @@ public:
     }
 
     void FeedOutput(Tensor *pTensor) {
-
-        // std::cout << "m_aOutput " << m_aOutput << '\n';
-        // std::cout << "pTensor " << pTensor << '\n';
-        //
-        // pTensor->PrintData();
-        // pTensor->PrintShape();
-
-        // delete m_aOutput;
-        // m_aOutput = NULL;
         m_aOutput = pTensor;
-
-
-        //
-        // std::cout << "m_aOutput " << m_aOutput << '\n';
-        // std::cout << "pTensor " << pTensor << '\n';
     }
 
     void SetGradient(Tensor *pTensor) {
@@ -242,21 +228,21 @@ public:
 
     void PrintData(int forceprint = 0);
 
-    void PrintOutput(int forceprint = 0){
+    void PrintOutput(int forceprint = 0) {
         std::cout << this->GetName() << ": Shape of Output" << '\n';
         this->GetOutput()->PrintShape();
         std::cout << this->GetName() << ": Value of Output" << '\n';
         this->GetOutput()->PrintData();
     }
 
-    void PrintDelta(int forceprint = 0){
+    void PrintDelta(int forceprint = 0) {
         std::cout << this->GetName() << ": Shape of Delta" << '\n';
         this->GetDelta()->PrintShape();
         std::cout << this->GetName() << ": Value of Delta" << '\n';
         this->GetDelta()->PrintData();
     }
 
-    void PrintGradient(int forceprint = 0){
+    void PrintGradient(int forceprint = 0) {
         std::cout << this->GetName() << ": Shape of Gradient" << '\n';
         this->GetGradient()->PrintShape();
         std::cout << this->GetName() << ": Value of Gradient" << '\n';

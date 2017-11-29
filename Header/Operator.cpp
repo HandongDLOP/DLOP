@@ -233,7 +233,7 @@ void Operator::PrintGraph(int depth) {
 }
 
 void Operator::PrintData(int forceprint) {
-    std::cout << '\n' << this->GetName() << ": PrintData()" << '\n';
+    std::cout << "\n\n" << this->GetName() << ": PrintData()" << '\n';
 
     if (m_aOutput != NULL) this->PrintOutput(forceprint);
 
@@ -241,7 +241,7 @@ void Operator::PrintData(int forceprint) {
 
     if (m_aGradient != NULL) this->PrintGradient(forceprint);
 
-    std::cout << this->GetName() << ": ~PrintData() \n" << '\n';
+    std::cout << this->GetName() << ": ~PrintData() \n\n";
 
     // value 조정
     for (int i = 0; i < m_InputDegree; i++) {

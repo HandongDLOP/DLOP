@@ -123,10 +123,8 @@ int main(int argc, char const *argv[]) {
 
         // HGUNN.PrintData();
 
-        // std::cout << "pred" << '\n';
-        // act_1->GetOutput()->PrintData();
-        // std::cout << "ans" << '\n';
-        // ans->GetOutput()->PrintData();
+        HGUNN.PrintData(act_2);
+        HGUNN.PrintData(ans);
 
         // if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(err->GetSoftmaxResult(), ans->GetOutput()) << '\n';
         if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(act_2->GetOutput(), ans->GetOutput()) << '\n';
