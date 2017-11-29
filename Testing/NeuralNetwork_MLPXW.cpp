@@ -159,7 +159,7 @@ int main(int argc, char const *argv[]) {
         HGUNN.Training();
         HGUNN.UpdateVariable();
 
-        HGUNN.PrintData();
+        // HGUNN.PrintData();
     }
 
     // ======================= Testing =======================

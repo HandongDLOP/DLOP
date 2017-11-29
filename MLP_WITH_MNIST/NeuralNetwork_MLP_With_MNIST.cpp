@@ -46,6 +46,9 @@ double Accuracy(Tensor *pred, Tensor *ans) {
 int main(int argc, char const *argv[]) {
     std::cout << "---------------Start-----------------" << '\n';
 
+    // Data Load
+    DataSet *dataset = CreateDataSet();
+
     NeuralNetwork HGUNN;
 
     // create input data placeholder
@@ -108,14 +111,12 @@ int main(int argc, char const *argv[]) {
 
     HGUNN.PrintGraph();
 
-    DataSet *dataset = CreateDataSet();
-
     for (int i = 0; i < atoi(argv[1]); i++) {
         if ((i % 100) == 0) std::cout << "epoch : " << i << '\n';
 
-        dataset->CreateDataPair(TRAIN, BATCH, i, 1);
-        x1->FeedOutput(dataset->GetFeedImage(TRAIN));
-        ans->FeedOutput(dataset->GetFeedLabel(TRAIN));
+        dataset->CreateTrainDataPair(BATCH);
+        x1->FeedOutput(dataset->GetTrainFeedImage());
+        ans->FeedOutput(dataset->GetTrainFeedLabel());
 
         HGUNN.Training();
         HGUNN.UpdateVariable();
@@ -135,9 +136,9 @@ int main(int argc, char const *argv[]) {
 
     for (int i = 0; i < 2; i++) {
         std::cout << "\n\ninput : " << i << '\n';
-        dataset->CreateDataPair(TEST, BATCH, i, 0);
-        x1->FeedOutput(dataset->GetFeedImage(TEST));
-        ans->FeedOutput(dataset->GetFeedLabel(TEST));
+        dataset->CreateTestDataPair(BATCH);
+        x1->FeedOutput(dataset->GetTestFeedImage());
+        ans->FeedOutput(dataset->GetTestFeedLabel());
 
         HGUNN.Testing();
 

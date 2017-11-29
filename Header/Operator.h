@@ -1,6 +1,8 @@
 #ifndef OPERATOR_H_
 #define OPERATOR_H_
 
+#include <stdio.h>
+
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -236,7 +238,7 @@ public:
 
     // ===========================================================================================
 
-    void PrintGraph();
+    void PrintGraph(int depth = 0);
 
     void PrintData(int forceprint = 0);
 

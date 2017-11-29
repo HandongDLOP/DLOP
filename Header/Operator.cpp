@@ -215,7 +215,7 @@ bool Operator::ComputeBackPropagate() {
 
 // ===========================================================================================
 
-void Operator::PrintGraph(  /*recursive하게 번호를 넘길 것*/) {
+void Operator::PrintGraph(int depth) {
     std::cout << this->GetName() << '\n';
 
     // value 조정
@@ -227,13 +227,12 @@ void Operator::PrintGraph(  /*recursive하게 번호를 넘길 것*/) {
     // Back propagation을 하다가 base operator가 나오지 않으면, 실행되지 않은 Placeholder가 있지는 않은지 확인해볼 것
     for (int i = 0; i < m_InputDegree; i++) {
         if (m_apInputOperator[i]->GetOutputDegree() == m_apInputOperator[i]->GetCurrentOutputDegree()) {
-            m_apInputOperator[i]->PrintGraph();
+            m_apInputOperator[i]->PrintGraph(depth);
         }
     }
 }
 
 void Operator::PrintData(int forceprint) {
-
     std::cout << '\n' << this->GetName() << ": PrintData()" << '\n';
 
     if (m_aOutput != NULL) this->PrintOutput(forceprint);
