@@ -11,19 +11,25 @@
 class Softmax_Cross_Entropy : public Operator {
 private:
     Tensor *m_aSoftmax_Result = NULL;
+    double m_epsilon = 0.0; // for backprop
 
 public:
     // Constructor의 작업 순서는 다음과 같다.
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
     // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (Softmax_Cross_Entropy::Alloc())
-    Softmax_Cross_Entropy(Operator *pInput1, Operator *pInput2) : Operator(pInput1, pInput2) {
-        std::cout << "Softmax_Cross_Entropy::Softmax_Cross_Entropy(Operator *, MetaParameter *)" << '\n';
-        Alloc(pInput1, pInput2);
+    Softmax_Cross_Entropy(Operator *pInput1, Operator *pInput2, int epsilon = 1e-4) : Operator(pInput1, pInput2) {
+        std::cout << "Softmax_Cross_Entropy::Softmax_Cross_Entropy(Operator *, Operator *, int)" << '\n';
+        Alloc(pInput1, pInput2, epsilon);
     }
 
     Softmax_Cross_Entropy(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pInput1, pInput2, pName) {
-        std::cout << "Softmax_Cross_Entropy::Softmax_Cross_Entropy(Operator *, MetaParameter *, std::string)" << '\n';
-        Alloc(pInput1, pInput2);
+        std::cout << "Softmax_Cross_Entropy::Softmax_Cross_Entropy(Operator *, Operator *, std::string)" << '\n';
+        Alloc(pInput1, pInput2, 1e-4);
+    }
+
+    Softmax_Cross_Entropy(Operator *pInput1, Operator *pInput2, int epsilon, std::string pName) : Operator(pInput1, pInput2, pName) {
+        std::cout << "Softmax_Cross_Entropy::Softmax_Cross_Entropy(Operator *, Operator *, int, std::string)" << '\n';
+        Alloc(pInput1, pInput2, epsilon);
     }
 
     virtual ~Softmax_Cross_Entropy() {
@@ -32,8 +38,8 @@ public:
         delete m_aSoftmax_Result;
     }
 
-    virtual bool Alloc(Operator *pInput1, Operator *pInput2) {
-        std::cout << "Softmax_Cross_Entropy::Alloc(Operator *, Operator *)" << '\n';
+    virtual bool Alloc(Operator *pInput1, Operator *pInput2, int epsilon = 1e-2) {
+        std::cout << "Softmax_Cross_Entropy::Alloc(Operator *, Operator *, int)" << '\n';
         // if pInput1 and pInput2의 shape가 다르면 abort
 
         int *shape     = GetInputOperator()[0]->GetOutput()->GetShape();
@@ -41,6 +47,8 @@ public:
         SetOutput(output);
 
         m_aSoftmax_Result = new Tensor(shape);
+
+        m_epsilon = epsilon;
 
         return true;
     }
@@ -136,7 +144,8 @@ public:
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
                             if (label_data[ti][ba][ch][ro][co] == 1) {
-                                delta_input_data[ti][ba][ch][ro][co] = softmax_cross_entropy_derivative(softmax_result[ti][ba], ch, ro, co, 1e-4, shape);
+                                delta_input_data[ti][ba][ch][ro][co] = softmax_cross_entropy_derivative(softmax_result[ti][ba], ch, ro, co, shape);
+                                std::cout << "target_prediction : " << softmax_result[ti][ba][ch][ro][co] << '\n';
                             }
                         }
                     }
@@ -177,15 +186,18 @@ public:
         return -label *log(prediction) / num_of_output;
     }
 
-    double softmax_cross_entropy_derivative(double ***prediction, int ans_ch, int ans_ro, int ans_co, double epsilon, int *shape) {
+    double softmax_cross_entropy_derivative(double ***prediction, int ans_ch, int ans_ro, int ans_co, int *shape) {
         int Channel = shape[2];
         int Row     = shape[3];
         int Col     = shape[4];
 
         // epsilon 값을 어디에 적용해야 할 것인지 의문점이 있다.
 
-        int target_prediction = prediction[ans_ch][ans_ro][ans_co];
+        double target_prediction = prediction[ans_ch][ans_ro][ans_co];
         int num_of_output     = Channel * Row * Col;
+
+        std::cout << "target_prediction : " << target_prediction << '\n';
+        std::cout << "answer point" << ans_ch << ", " << ans_ro << ", " << ans_co << '\n';
 
         double delta = 0.0;
 
@@ -194,14 +206,20 @@ public:
                 for (int co = 0; co < Col; co++) {
                     if ((ch == ans_ch) && (ro == ans_ro) && (co == ans_co)) {
                         delta += target_prediction * (1 - target_prediction);
+                        std::cout << "delta_ += target_prediction * (1 - target_prediction) : " << delta <<","<< target_prediction<<"," << (1 - target_prediction)<< '\n';
                     } else {
-                        delta += prediction[ch][ro][co] * (-target_prediction);
+                        delta += prediction[ch][ro][co] *(-target_prediction);
+                        std::cout << "delta += prediction[ch][ro][co] *(-target_prediction) : " << delta <<","<< prediction[ch][ro][co]<<"," << (-target_prediction)<< '\n';
                     }
                 }
             }
         }
 
-        delta = delta / ((target_prediction + epsilon) * num_of_output);
+        std::cout << "delta_ : " << delta << '\n';
+
+        delta = delta / ((target_prediction + m_epsilon) * num_of_output) ;
+
+        std::cout << "delta : " << delta << '\n';
 
         return delta;
     }

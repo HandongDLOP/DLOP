@@ -129,7 +129,7 @@ int main(int argc, char const *argv[]) {
     //
     // Operator *err = new MSE(act_2, ans, "MSE");
 
-    Softmax_Cross_Entropy * err = new Softmax_Cross_Entropy(add_2, ans, "MSE");
+    Softmax_Cross_Entropy * err = new Softmax_Cross_Entropy(add_2, ans, "SCE");
 
     Optimizer *optimizer = new StochasticGradientDescent(err, 0.6, MINIMIZE);
 
@@ -162,7 +162,11 @@ int main(int argc, char const *argv[]) {
 
         HGUNN.PrintData(ans);
         HGUNN.PrintData(err);
+        std::cout << "softmax_result" << '\n';
+        err->GetSoftmaxResult()->PrintData();
+        
         HGUNN.PrintData(add_2);
+
 
         HGUNN.UpdateVariable();
 

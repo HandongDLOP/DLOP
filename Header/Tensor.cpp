@@ -181,7 +181,7 @@ void Tensor::PrintData(int forceprint) {
         std::cout << "[ ";
 
         for (int ti = 0; ti < Time; ti++) {
-            std::cout << "[ ";
+            std::cout << "[ \n";
 
             for (int ba = 0; ba < Batch; ba++) {
                 std::cout << "[ ";
