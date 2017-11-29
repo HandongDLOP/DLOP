@@ -23,13 +23,12 @@ void NeuralNetwork::Delete() {
     DeleteOperator();
     delete m_aEnd;
     delete m_aOptimizer;
-
 }
 
 // ===========================================================================================
 
 
-bool NeuralNetwork::AllocOptimizer(Optimizer * pOptimizer) {
+bool NeuralNetwork::AllocOptimizer(Optimizer *pOptimizer) {
     pOptimizer->GetObjectOperator()->AllocOptimizer(pOptimizer);
 
     // Object Operator는 거의 100% Optimizer가 필요 없다.
@@ -112,8 +111,39 @@ bool NeuralNetwork::Testing(Operator *pStart, Operator *pEnd) {
 
 // ===========================================================================================
 
-bool NeuralNetwork::CreateGraph(Optimizer* pOptimizer){
+void NeuralNetwork::PrintGraph(Operator *pStart, Operator *pEnd) {
+    // Operator *start_operator = NULL;
+    Operator *end_operator = NULL;
 
+    // if (pStart != NULL) start_operator = pStart;
+    // else start_operator = m_pStart;
+
+    if (pStart != NULL) end_operator = pEnd;
+    else end_operator = m_aEnd;
+
+    std::cout << '\n';
+    end_operator->PrintGraph();
+    std::cout << '\n';
+}
+
+void NeuralNetwork::PrintData(Operator *pStart, Operator *pEnd) {
+    // Operator *start_operator = NULL;
+    Operator *end_operator = NULL;
+
+    // if (pStart != NULL) start_operator = pStart;
+    // else start_operator = m_pStart;
+
+    if (pStart != NULL) end_operator = pEnd;
+    else end_operator = m_aEnd;
+
+    std::cout << '\n';
+    end_operator->PrintData();
+    std::cout << '\n';
+}
+
+// ===========================================================================================
+
+bool NeuralNetwork::CreateGraph(Optimizer *pOptimizer) {
     // Final Operator
 
     // SetEndOperator();
@@ -129,6 +159,6 @@ bool NeuralNetwork::CreateGraph(Optimizer* pOptimizer){
 }
 
 // bool NeuralNetwork::CreateGraph(){
-//     // 추후에 만들 Optimizer는 그 자체가 Trainable Operator주소를 가질 수 있도록 만들 것이다.
-//     // factory method 삭제예정
+//// 추후에 만들 Optimizer는 그 자체가 Trainable Operator주소를 가질 수 있도록 만들 것이다.
+//// factory method 삭제예정
 // }

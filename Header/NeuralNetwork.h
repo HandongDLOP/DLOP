@@ -19,7 +19,7 @@
 #include "Softmax_Cross_Entropy.h"
 
 
-enum RUNNINGOPTION{
+enum RUNNINGOPTION {
     TRAINING,
     TESTING
 };
@@ -69,14 +69,6 @@ public:
     bool Training(Operator *pStart = NULL, Operator *pEnd = NULL);
     bool Testing(Operator *pStart = NULL, Operator *pEnd = NULL);
 
-
-    // // 나중에 사용자가 사용할 일이 없는 Method는 Private으로 올리도록 한다.
-    // bool SetEndOperator() {
-    //     // End Operator는 자동으로 찾는다.
-    //     m_aEnd = m_pStart->CheckEndOperator();
-    //     return true;
-    // }
-
     void SetEndOperator(Operator *pEnd) {
         m_aEnd->AddEdgebetweenOperators(pEnd);
     }
@@ -85,12 +77,16 @@ public:
         m_aOptimizer = pOptimizer;
     }
 
+    void PrintGraph(Operator * pStart = NULL, Operator * pEnd = NULL);
+
+    void PrintData(Operator * pStart = NULL, Operator * pEnd = NULL);
+
     // ===========================================================================================
     bool CreateGraph(Optimizer *pOptimizer);
 
     // ===========================================================================================
 
-    void UpdateVariable(){
+    void UpdateVariable() {
         m_aOptimizer->UpdateVariable();
     }
 };

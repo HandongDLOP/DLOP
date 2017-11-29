@@ -215,6 +215,48 @@ bool Operator::ComputeBackPropagate() {
 
 // ===========================================================================================
 
+void Operator::PrintGraph(  /*recursive하게 번호를 넘길 것*/) {
+    std::cout << this->GetName() << '\n';
+
+    // value 조정
+    for (int i = 0; i < m_InputDegree; i++) {
+        if (m_apInputOperator[i] != NULL) m_apInputOperator[i]->IncreaseCurrentOutputDegree();
+    }
+    m_currentOutputDegree = 0;
+
+    // Back propagation을 하다가 base operator가 나오지 않으면, 실행되지 않은 Placeholder가 있지는 않은지 확인해볼 것
+    for (int i = 0; i < m_InputDegree; i++) {
+        if (m_apInputOperator[i]->GetOutputDegree() == m_apInputOperator[i]->GetCurrentOutputDegree()) {
+            m_apInputOperator[i]->PrintGraph();
+        }
+    }
+}
+
+void Operator::PrintData() {
+    if (m_aOutput != NULL) {
+        this->PrintOutput();
+    }
+
+    if (m_aDelta != NULL) this->PrintDelta();
+
+    if (m_aGradient != NULL) this->PrintGradient();
+
+    // value 조정
+    for (int i = 0; i < m_InputDegree; i++) {
+        if (m_apInputOperator[i] != NULL) m_apInputOperator[i]->IncreaseCurrentOutputDegree();
+    }
+    m_currentOutputDegree = 0;
+
+    // Back propagation을 하다가 base operator가 나오지 않으면, 실행되지 않은 Placeholder가 있지는 않은지 확인해볼 것
+    for (int i = 0; i < m_InputDegree; i++) {
+        if (m_apInputOperator[i]->GetOutputDegree() == m_apInputOperator[i]->GetCurrentOutputDegree()) {
+            m_apInputOperator[i]->PrintData();
+        }
+    }
+}
+
+// ===========================================================================================
+
 Operator * Operator::CheckEndOperator() {
     // recursively
     if (m_OutputDegree == 0) {

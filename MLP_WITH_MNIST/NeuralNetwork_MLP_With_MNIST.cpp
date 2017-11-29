@@ -106,6 +106,8 @@ int main(int argc, char const *argv[]) {
         return 0;
     }
 
+    HGUNN.PrintGraph();
+
     DataSet *dataset = CreateDataSet();
 
     for (int i = 0; i < atoi(argv[1]); i++) {
@@ -117,6 +119,8 @@ int main(int argc, char const *argv[]) {
 
         HGUNN.Training();
         HGUNN.UpdateVariable();
+
+        HGUNN.PrintData();
 
         // std::cout << "pred" << '\n';
         // act_1->GetOutput()->PrintData();

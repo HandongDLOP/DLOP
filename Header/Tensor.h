@@ -120,7 +120,7 @@ public:
 
     // ===========================================================================================
 
-    void PrintData();
+    void PrintData(int forceprint = 0);
     void PrintShape();
 
     // Initialization(const std::string &type = "default");

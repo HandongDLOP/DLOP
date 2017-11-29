@@ -162,7 +162,7 @@ Tensor * Tensor::Constants(int pTime, int pBatch, int pChannel, int pRow, int pC
     return temp_Tensor;
 }
 
-void Tensor::PrintData() {
+void Tensor::PrintData(int forceprint ) {
     if (m_aData == NULL) {
         std::cout << "data is empty!" << '\n';
         exit(0);
@@ -174,32 +174,39 @@ void Tensor::PrintData() {
     int Row     = m_aShape[3];
     int Col     = m_aShape[4];
 
-    std::cout << "[ ";
+    int lenght = Time * Batch * Channel * Row * Col;
 
-    for (int ti = 0; ti < Time; ti++) {
+    if(lenght < 100 || forceprint == 1){
         std::cout << "[ ";
 
-        for (int ba = 0; ba < Batch; ba++) {
+        for (int ti = 0; ti < Time; ti++) {
             std::cout << "[ ";
 
-            for (int ch = 0; ch < Channel; ch++) {
+            for (int ba = 0; ba < Batch; ba++) {
                 std::cout << "[ ";
 
-                for (int ro = 0; ro < Row; ro++) {
+                for (int ch = 0; ch < Channel; ch++) {
                     std::cout << "[ ";
 
-                    for (int co = 0; co < Col; co++) {
-                        std::cout << m_aData[ti][ba][ch][ro][co] << ", ";
+                    for (int ro = 0; ro < Row; ro++) {
+                        std::cout << "[ ";
+
+                        for (int co = 0; co < Col; co++) {
+                            std::cout << m_aData[ti][ba][ch][ro][co] << ", ";
+                        }
+                        std::cout << " ]";
                     }
                     std::cout << " ]";
                 }
-                std::cout << " ]";
+                std::cout << " ]\n";
             }
-            std::cout << " ]\n";
+            std::cout << " ]";
         }
-        std::cout << " ]";
+        std::cout << " ]\n";
+    } else {
+        std::cout << "too big!" << '\n';
     }
-    std::cout << " ]\n";
+
 }
 
 void Tensor::PrintShape() {
