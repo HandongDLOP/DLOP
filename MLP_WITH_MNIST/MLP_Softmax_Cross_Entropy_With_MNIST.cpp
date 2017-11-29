@@ -62,11 +62,11 @@ int main(int argc, char const *argv[]) {
     // ======================= layer 1=======================
     // Tensor *_w1 = Tensor::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6);
     Tensor   *_w1 = Tensor::Zeros(1, 1, 1, 784, 10);
-    Operator *w1 = new Variable(_w1, "w1", 1);
+    Operator *w1  = new Variable(_w1, "w1", 1);
 
     // Tensor *_b1 = Tensor::Constants(1, 1, 1, 1, 15, 1.0);
     Tensor   *_b1 = Tensor::Zeros(1, 1, 1, 1, 10);
-    Operator *b1 = new Variable(_b1, "b1", 1);
+    Operator *b1  = new Variable(_b1, "b1", 1);
 
     Operator *mat_1 = new MatMul(x1, w1, "mat_1");
 
@@ -74,7 +74,7 @@ int main(int argc, char const *argv[]) {
 
     // Operator *act_1 = new Sigmoid(add_1, "sig_1");
 
-    Softmax_Cross_Entropy * err = new Softmax_Cross_Entropy(add_1, ans, 1e-50, "SCE");
+    Softmax_Cross_Entropy *err = new Softmax_Cross_Entropy(add_1, ans, 1e-50, "SCE");
     // Cross_Entropy * err = new Cross_Entropy(act_1, ans, "CE");
 
     Optimizer *optimizer = new StochasticGradientDescent(err, 0.5, MINIMIZE);
@@ -102,23 +102,7 @@ int main(int argc, char const *argv[]) {
         HGUNN.Training();
         HGUNN.UpdateVariable();
 
-        // HGUNN.PrintData(add_1, 1);
-        // err->GetSoftmaxResult()->PrintData();
-        // HGUNN.PrintData(err, 1);
-        // HGUNN.PrintData(x1, 1);
-        // HGUNN.PrintData(add_1);
-        // HGUNN.PrintData(ans);
-
-        // if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(act_1->GetOutput(), ans->GetOutput()) << '\n';
-        if ((i % 100) == 0) {
-
-            HGUNN.PrintData(err, 1);
-            err->GetSoftmaxResult()->PrintData(1);
-            HGUNN.PrintData(add_1, 1);
-            HGUNN.PrintData(mat_1, 1);
-
-            std::cout << "Accuracy is : " << Accuracy(add_1->GetOutput(), ans->GetOutput()) << '\n';
-        }
+        if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(add_1->GetOutput(), ans->GetOutput()) << '\n';
     }
 
     // ======================= Testing =======================
@@ -126,22 +110,15 @@ int main(int argc, char const *argv[]) {
     std::cout << "\n<<<Testing>>>\n" << '\n';
 
     double test_accuracy = 0.0;
-    int loops = 10000/BATCH;
+    int    loops         = 10000 / BATCH;
 
-    for (int i = 0; i < loops ; i++) {
+    for (int i = 0; i < loops; i++) {
         // std::cout << "\ninput : " << i << '\n';
         dataset->CreateTestDataPair(BATCH);
         x1->FeedOutput(dataset->GetTestFeedImage());
         ans->FeedOutput(dataset->GetTestFeedLabel());
 
         HGUNN.Testing();
-
-        // std::cout << "pred" << '\n';
-        // act_1->GetOutput()->PrintData();
-        // std::cout << "ans" << '\n';
-        // ans->GetOutput()->PrintData();
-
-        // std::cout << "Accuracy is : " << Accuracy(act_1->GetOutput(), ans->GetOutput()) << '\n';
 
         test_accuracy += Accuracy(add_1->GetOutput(), ans->GetOutput()) / (double)loops;
     }

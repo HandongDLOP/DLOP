@@ -90,7 +90,7 @@ public:
                         }
                     }
                 }
-                // 부동소수점 문제가 있는 듯 함
+                // 부동소수점 문제가 있는 듯 함 - 중요
                 sum[ti][ba] = temp;
                 temp = 0.0;
             }
@@ -174,6 +174,7 @@ public:
     }
 
     double Max(double ***data, int Channel, int Row, int Col) {
+        // initialize
         double max = data[0][0][0];
 
         for (int ch = 0; ch < Channel; ch++) {
