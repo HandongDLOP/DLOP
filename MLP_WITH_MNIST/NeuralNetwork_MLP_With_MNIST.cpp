@@ -4,7 +4,7 @@
 #include "..//Header//NeuralNetwork.h"
 #include "MNIST_Reader.h"
 
-#define BATCH    100
+#define BATCH    50
 
 int Argmax(double *data, int Dimension) {
     int index  = 0;
@@ -33,9 +33,11 @@ double Accuracy(Tensor *pred, Tensor *ans) {
         pred_index = Argmax(pred_data[0][ba][0][0], 10);
         ans_index  = Argmax(ans_data[0][ba][0][0], 10);
 
-        // std::cout << pred_index << " " << ans_index << '\n';
-
-        if (pred_index == ans_index) accuracy += 1.0 / BATCH;
+        if (pred_index == ans_index) {
+            accuracy += 1.0 / BATCH;
+        } else {
+            std::cout << pred_index << '\n';
+        }
     }
 
     return accuracy;
@@ -55,13 +57,13 @@ int main(int argc, char const *argv[]) {
     Operator *ans  = HGUNN.AddPlaceholder(_ans, "answer");
 
     // ======================= layer 1=======================
-    Tensor   *_w1 = Tensor::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6);
+    Tensor *_w1 = Tensor::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6);
     // Tensor   *_w1 = Tensor::Zeros(1, 1, 1, 784, 15);
-    Operator *w1  = new Variable(_w1, "w1", 1);
+    Operator *w1 = new Variable(_w1, "w1", 1);
 
-    Tensor   *_b1 = Tensor::Constants(1, 1, 1, 1, 15, 1.0);
+    Tensor *_b1 = Tensor::Constants(1, 1, 1, 1, 15, 1.0);
     // Tensor   *_b1 = Tensor::Zeros(1, 1, 1, 1, 15);
-    Operator *b1  = new Variable(_b1, "b1", 1);
+    Operator *b1 = new Variable(_b1, "b1", 1);
 
     Operator *mat_1 = new MatMul(x1, w1, "mat_1");
 
@@ -72,13 +74,13 @@ int main(int argc, char const *argv[]) {
 
     // ======================= layer 2=======================
 
-    Tensor   *_w2 = Tensor::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6);
+    Tensor *_w2 = Tensor::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6);
     // Tensor   *_w2 = Tensor::Zeros(1, 1, 1, 15, 10);
-    Operator *w2  = new Variable(_w2, "w2", 1);
+    Operator *w2 = new Variable(_w2, "w2", 1);
 
-    Tensor   *_b2 = Tensor::Constants(1, 1, 1, 1, 10, 1.0);
+    Tensor *_b2 = Tensor::Constants(1, 1, 1, 1, 10, 1.0);
     // Tensor   *_b2 = Tensor::Zeros(1, 1, 1, 1, 10);
-    Operator *b2  = new Variable(_b2, "b2", 1);
+    Operator *b2 = new Variable(_b2, "b2", 1);
 
     Operator *mat_2 = new MatMul(act_1, w2, "mat_2");
 
@@ -91,7 +93,7 @@ int main(int argc, char const *argv[]) {
 
     // Softmax_Cross_Entropy * err = new Softmax_Cross_Entropy(add_2, ans, "MSE");
 
-    Optimizer *optimizer = new StochasticGradientDescent(err, 0.7, MINIMIZE);
+    Optimizer *optimizer = new StochasticGradientDescent(err, 0.5, MINIMIZE);
 
     // ======================= Create Graph =======================
     HGUNN.SetEndOperator(err);
