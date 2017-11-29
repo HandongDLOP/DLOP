@@ -74,7 +74,7 @@ public:
 
     void PrintGraph(Operator * pStart = NULL, Operator * pEnd = NULL);
 
-    void PrintData(Operator * pStart = NULL, Operator * pEnd = NULL);
+    void PrintData(Operator * pStart = NULL, Operator * pEnd = NULL, int forceprint = 0);
 
     // ===========================================================================================
     bool CreateGraph(Optimizer *pOptimizer);

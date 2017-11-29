@@ -232,14 +232,17 @@ void Operator::PrintGraph(  /*recursive하게 번호를 넘길 것*/) {
     }
 }
 
-void Operator::PrintData() {
-    if (m_aOutput != NULL) {
-        this->PrintOutput();
-    }
+void Operator::PrintData(int forceprint) {
 
-    if (m_aDelta != NULL) this->PrintDelta();
+    std::cout << '\n' << this->GetName() << ": PrintData()" << '\n';
 
-    if (m_aGradient != NULL) this->PrintGradient();
+    if (m_aOutput != NULL) this->PrintOutput(forceprint);
+
+    if (m_aDelta != NULL) this->PrintDelta(forceprint);
+
+    if (m_aGradient != NULL) this->PrintGradient(forceprint);
+
+    std::cout << this->GetName() << ": ~PrintData() \n" << '\n';
 
     // value 조정
     for (int i = 0; i < m_InputDegree; i++) {

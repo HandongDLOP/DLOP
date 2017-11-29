@@ -238,23 +238,23 @@ public:
 
     void PrintGraph();
 
-    void PrintData();
+    void PrintData(int forceprint = 0);
 
-    void PrintOutput(){
+    void PrintOutput(int forceprint = 0){
         std::cout << this->GetName() << ": Shape of Output" << '\n';
         this->GetOutput()->PrintShape();
         std::cout << this->GetName() << ": Value of Output" << '\n';
         this->GetOutput()->PrintData();
     }
 
-    void PrintDelta(){
+    void PrintDelta(int forceprint = 0){
         std::cout << this->GetName() << ": Shape of Delta" << '\n';
         this->GetDelta()->PrintShape();
         std::cout << this->GetName() << ": Value of Delta" << '\n';
         this->GetDelta()->PrintData();
     }
 
-    void PrintGradient(){
+    void PrintGradient(int forceprint = 0){
         std::cout << this->GetName() << ": Shape of Gradient" << '\n';
         this->GetGradient()->PrintShape();
         std::cout << this->GetName() << ": Value of Gradient" << '\n';

@@ -60,11 +60,12 @@ bool Tensor::Delete() {
     int Batch   = GetBatch();
     int Channel = GetChannel();
     int Row     = GetRow();
+
     // int Col     = m_aShape[4];
 
     // =============================================================
 
-    for (int ti = 0; ti < Time ; ti++) {
+    for (int ti = 0; ti < Time; ti++) {
         for (int ba = 0; ba < Batch; ba++) {
             for (int ch = 0; ch < Channel; ch++) {
                 for (int ro = 0; ro < Row; ro++) {
@@ -108,7 +109,7 @@ Tensor * Tensor::Truncated_normal(int pTime, int pBatch, int pChannel, int pRow,
     std::mt19937 gen(rd());
     std::normal_distribution<double> rand(mean, stddev);
 
-    // // 추후 교수님이 주신 코드를 참고해서 바꿀 것
+    //// 추후 교수님이 주신 코드를 참고해서 바꿀 것
     // double   stdev = (double)sqrt(2.F / (pRow + pCol + pChannel));
     // unsigned seed  = (unsigned)std::chrono::system_clock::now().time_since_epoch().count();
     // std::default_random_engine generator(seed);
@@ -162,7 +163,7 @@ Tensor * Tensor::Constants(int pTime, int pBatch, int pChannel, int pRow, int pC
     return temp_Tensor;
 }
 
-void Tensor::PrintData(int forceprint ) {
+void Tensor::PrintData(int forceprint) {
     if (m_aData == NULL) {
         std::cout << "data is empty!" << '\n';
         exit(0);
@@ -176,7 +177,7 @@ void Tensor::PrintData(int forceprint ) {
 
     int lenght = Time * Batch * Channel * Row * Col;
 
-    if(lenght < 100 || forceprint == 1){
+    if ((lenght < 100) || (forceprint == 1)) {
         std::cout << "[ ";
 
         for (int ti = 0; ti < Time; ti++) {
@@ -206,7 +207,6 @@ void Tensor::PrintData(int forceprint ) {
     } else {
         std::cout << "too big!" << '\n';
     }
-
 }
 
 void Tensor::PrintShape() {

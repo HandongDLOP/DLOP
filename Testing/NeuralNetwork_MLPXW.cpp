@@ -148,6 +148,8 @@ int main(int argc, char const *argv[]) {
         return 0;
     }
 
+    HGUNN.PrintGraph();
+
     for (int i = 0; i < atoi(argv[1]); i++) {
         // for (int i = 0; i < 1; i++) {
         if ((i % 100) == 0) std::cout << "epoch : " << i << '\n';
@@ -156,6 +158,8 @@ int main(int argc, char const *argv[]) {
 
         HGUNN.Training();
         HGUNN.UpdateVariable();
+
+        HGUNN.PrintData();
     }
 
     // ======================= Testing =======================

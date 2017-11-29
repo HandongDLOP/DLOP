@@ -126,7 +126,7 @@ void NeuralNetwork::PrintGraph(Operator *pStart, Operator *pEnd) {
     std::cout << '\n';
 }
 
-void NeuralNetwork::PrintData(Operator *pStart, Operator *pEnd) {
+void NeuralNetwork::PrintData(Operator *pStart, Operator *pEnd, int forceprint) {
     // Operator *start_operator = NULL;
     Operator *end_operator = NULL;
 
@@ -137,7 +137,7 @@ void NeuralNetwork::PrintData(Operator *pStart, Operator *pEnd) {
     else end_operator = m_aEnd;
 
     std::cout << '\n';
-    end_operator->PrintData();
+    end_operator->PrintData(forceprint);
     std::cout << '\n';
 }
 
