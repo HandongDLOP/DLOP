@@ -60,6 +60,7 @@ public:
         int *shape              = GetOutput()->GetShape();
         double *****output      = GetOutput()->GetData();
         double *****delta       = GetDelta()->GetData();
+        GetInputOperator()[0]->GetDelta()->Reset();
         double *****delta_input = GetInputOperator()[0]->GetDelta()->GetData();
 
         for (int ti = 0; ti < shape[0]; ti++) {
@@ -80,7 +81,7 @@ public:
 
         // GetInputOperator()[0]->GetDelta()->PrintData();
 
-        GetDelta()->Reset();
+        // GetDelta()->Reset();
 
         return true;
     }

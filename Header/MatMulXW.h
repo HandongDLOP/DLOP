@@ -141,9 +141,8 @@ public:
 
         // GetDelta()->PrintData();
 
-        //// 각자 Operator에서 해주어야 한다.
-        // GetInputOperator()[0]->GetDelta()->Reset();
-        // GetInputOperator()[0]->GetDelta()->Reset();
+        GetInputOperator()[0]->GetDelta()->Reset();
+        GetInputOperator()[1]->GetDelta()->Reset();
         double *****delta_input0 = GetInputOperator()[0]->GetDelta()->GetData();  // weight
         double *****delta_input1 = GetInputOperator()[1]->GetDelta()->GetData();  // input
 
@@ -170,7 +169,7 @@ public:
 
         // GetInputOperator()[1]->GetDelta()->PrintData();
 
-        GetDelta()->Reset();
+        // GetDelta()->Reset();
 
         return true;
     }

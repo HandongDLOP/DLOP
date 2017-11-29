@@ -77,7 +77,7 @@ public:
         // GetOutput()->PrintData();
         // GetGradient()->PrintData();
 
-        GetDelta()->Reset();
+        // GetDelta()->Reset();
         return true;
     }
 };

@@ -120,6 +120,7 @@ public:
 
         double *****label_data       = GetInputOperator()[1]->GetOutput()->GetData();
         double *****softmax_result   = GetSoftmaxResult()->GetData();
+        GetInputOperator()[0]->GetDelta()->Reset();
         double *****delta_input_data = GetInputOperator()[0]->GetDelta()->GetData();
 
         int Time    = shape[0];

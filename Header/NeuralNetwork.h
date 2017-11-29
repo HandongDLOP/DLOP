@@ -19,11 +19,6 @@
 #include "Softmax_Cross_Entropy.h"
 
 
-enum RUNNINGOPTION {
-    TRAINING,
-    TESTING
-};
-
 class NeuralNetwork {
 private:
     // Operator 개수

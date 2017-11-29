@@ -136,8 +136,11 @@ public:
         int *shape = GetOutput()->GetShape();
         // int *shape_Input1   = GetInputOperator()[1]->GetOutput()->GetShape();
         double *****delta   = GetDelta()->GetData();
+        GetInputOperator()[0]->GetDelta()->Reset();
         double *****_delta0 = GetInputOperator()[0]->GetDelta()->GetData();
+        GetInputOperator()[1]->GetDelta()->Reset();
         double *****_delta1 = GetInputOperator()[1]->GetDelta()->GetData();
+
 
         // Tensor *x1 = Tensor::Constants(shape_Input0[0], shape_Input0[1], shape_Input0[2], shape_Input0[3], shape_Input0[4], 1);
         //
@@ -174,7 +177,7 @@ public:
 
         // GetInputOperator()[1]->GetDelta()->PrintData();
 
-        GetDelta()->Reset();
+        // GetDelta()->Reset();
         return true;
     }
 };

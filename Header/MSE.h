@@ -75,6 +75,7 @@ public:
         int  num_of_output       = shape[2] * shape[3] * shape[4];  /* * InputDim0->GetDim()[2] == ch*/;
         double *****input0       = GetInputOperator()[0]->GetOutput()->GetData();
         double *****input1       = GetInputOperator()[1]->GetOutput()->GetData();
+        GetInputOperator()[0]->GetDelta()->Reset();
         double *****delta_Input0 = GetInputOperator()[0]->GetDelta()->GetData();
 
         for (int ti = 0; ti < shape[0]; ti++) {

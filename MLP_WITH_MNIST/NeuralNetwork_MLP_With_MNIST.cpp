@@ -36,7 +36,7 @@ double Accuracy(Tensor *pred, Tensor *ans) {
         if (pred_index == ans_index) {
             accuracy += 1.0 / BATCH;
         } else {
-            std::cout << pred_index << '\n';
+            // std::cout << pred_index << '\n';
         }
     }
 
@@ -120,7 +120,7 @@ int main(int argc, char const *argv[]) {
         HGUNN.Training();
         HGUNN.UpdateVariable();
 
-        HGUNN.PrintData();
+        // HGUNN.PrintData();
 
         // std::cout << "pred" << '\n';
         // act_1->GetOutput()->PrintData();
