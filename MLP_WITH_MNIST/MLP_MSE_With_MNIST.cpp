@@ -1,3 +1,5 @@
+/*g++ -g -o testing -std=c++11 MLP_MSE_With_MNIST.cpp ../Header/Operator.cpp ../Header/NeuralNetwork.cpp ../Header/Tensor.cpp*/
+
 #include <iostream>
 #include <string>
 
