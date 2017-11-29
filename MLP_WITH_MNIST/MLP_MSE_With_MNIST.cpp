@@ -104,17 +104,19 @@ int main(int argc, char const *argv[]) {
 
     // ======================= Training =======================
 
-    // if (argc != 2) {
-    //     std::cout << "There is no count of training" << '\n';
-    //     return 0;
-    // }
+    int loops = 0;
+
+    if (argc != 2) {
+        std::cout << "There is no count of training" << '\n';
+        loops = 1000;
+    } else loops = atoi(argv[1]);
 
     HGUNN.PrintGraph();
 
     std::cout << "======================= Training =======================" << '\n';
 
-    for (int i = 0; i < 4000; i++) {
-        if ((i % 100) == 0) std::cout << "epoch : " << i << '\n';
+    for (int i = 0; i < loops; i++) {
+        if ((i % 100) == 0) std::cout << "loops : " << i << '\n';
 
         dataset->CreateTrainDataPair(BATCH);
         x1->FeedOutput(dataset->GetTrainFeedImage());
@@ -131,7 +133,7 @@ int main(int argc, char const *argv[]) {
     std::cout << "======================= Testing =======================" << '\n';
 
     double test_accuracy = 0.0;
-    int loops = 10000/BATCH;
+    loops = 10000/BATCH;
 
     for (int i = 0; i < loops; i++) {
         // std::cout << "\ninput : " << i << '\n';

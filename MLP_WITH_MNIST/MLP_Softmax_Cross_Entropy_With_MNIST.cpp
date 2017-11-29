@@ -87,14 +87,16 @@ int main(int argc, char const *argv[]) {
 
     // ======================= Training =======================
 
+    int loops = 0;
+
     if (argc != 2) {
         std::cout << "There is no count of training" << '\n';
-        return 0;
-    }
+        loops = 1000;
+    } else loops = atoi(argv[1]);
 
     HGUNN.PrintGraph();
 
-    for (int i = 0; i < atoi(argv[1]); i++) {
+    for (int i = 0; i < loops; i++) {
         if ((i % 100) == 0) std::cout << "roops : " << i << '\n';
 
         dataset->CreateTrainDataPair(BATCH);
@@ -112,7 +114,7 @@ int main(int argc, char const *argv[]) {
     std::cout << "\n<<<Testing>>>\n" << '\n';
 
     double test_accuracy = 0.0;
-    int    loops         = 10000 / BATCH;
+    loops = 10000 / BATCH;
 
     for (int i = 0; i < loops; i++) {
         // std::cout << "\ninput : " << i << '\n';
