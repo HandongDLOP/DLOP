@@ -109,6 +109,8 @@ int main(int argc, char const *argv[]) {
 
     HGUNN.PrintGraph();
 
+    std::cout << "======================= Training =======================" << '\n';
+
     for (int i = 0; i < 1000; i++) {
         if ((i % 100) == 0) std::cout << "epoch : " << i << '\n';
 
@@ -124,16 +126,25 @@ int main(int argc, char const *argv[]) {
 
     // ======================= Testing =======================
 
-    for (int i = 0; i < 5; i++) {
-        std::cout << "\ninput : " << i << '\n';
+    std::cout << "======================= Testing =======================" << '\n';
+
+    double test_accuracy = 0.0;
+    int loops = 10000/BATCH;
+
+    for (int i = 0; i < loops; i++) {
+        // std::cout << "\ninput : " << i << '\n';
         dataset->CreateTestDataPair(BATCH);
         x1->FeedOutput(dataset->GetTestFeedImage());
         ans->FeedOutput(dataset->GetTestFeedLabel());
 
         HGUNN.Testing();
 
-        std::cout << "Accuracy is : " << Accuracy(act_2->GetOutput(), ans->GetOutput()) << '\n';
+        // if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(act_2->GetOutput(), ans->GetOutput()) << '\n';
+
+        test_accuracy += Accuracy(act_2->GetOutput(), ans->GetOutput());
     }
+
+    std::cout << "Test Accuracy is : " << test_accuracy / loops << '\n';
 
     delete dataset;
 
