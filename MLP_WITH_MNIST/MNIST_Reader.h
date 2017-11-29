@@ -55,12 +55,6 @@ private:
     vector<int> *shuffled_list_for_test  = NULL;
     vector<int> *shuffled_list_for_train = NULL;
 
-    // vector<int> shuffled_list_for_test(0, NUMBER_OF_TEST_DATA);
-    // vector<int> shuffled_list_for_train(0, NUMBER_OF_TRAIN_DATA);
-
-    // int shuffled_list_for_test[NUMBER_OF_TEST_DATA]   = { 0 };
-    // int shuffled_list_for_train[NUMBER_OF_TRAIN_DATA] = { 0 };
-
     int Recallnum_of_test  = 0;
     int Recallnum_of_train = 0;
 

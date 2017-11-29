@@ -50,7 +50,7 @@ public:
     }
 
     virtual ~Tensor() {
-        std::cout << "Tensor::~Tensor()" << '\n';
+        // std::cout << "Tensor::~Tensor()" << '\n';
 
         // delete를 제대로 하기 위해서는 계속해서 새로운 Tensor를 만들어낼 필요가 있다.
         Delete();

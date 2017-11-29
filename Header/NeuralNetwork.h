@@ -74,6 +74,7 @@ public:
 
     void PrintGraph(Operator *pStart = NULL, Operator *pEnd = NULL);
 
+    // 추후에는 그래프에 있는 Operator인지도 확인해야 한다.
     void PrintData(int forceprint = 0);
 
     void PrintData(Operator *pOperator, int forceprint = 0);

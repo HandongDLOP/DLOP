@@ -118,8 +118,9 @@ public:
 
         int *shape = GetInputOperator()[0]->GetOutput()->GetShape();
 
-        double *****label_data       = GetInputOperator()[1]->GetOutput()->GetData();
-        double *****softmax_result   = GetSoftmaxResult()->GetData();
+        double *****label_data     = GetInputOperator()[1]->GetOutput()->GetData();
+        double *****softmax_result = GetSoftmaxResult()->GetData();
+
         GetInputOperator()[0]->GetDelta()->Reset();
         double *****delta_input_data = GetInputOperator()[0]->GetDelta()->GetData();
 
@@ -134,7 +135,9 @@ public:
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            delta_input_data[ti][ba][ch][ro][co] = label_data[ti][ba][ch][ro][co] - softmax_result[ti][ba][ch][ro][co];
+                            if (label_data[ti][ba][ch][ro][co] == 1) {
+                                delta_input_data[ti][ba][ch][ro][co] = softmax_cross_entropy_derivative(softmax_result[ti][ba], ch, ro, co, 1e-4, shape);
+                            }
                         }
                     }
                 }
@@ -172,6 +175,35 @@ public:
         // std::cout << "-label *log(prediction) / num_of_output : " << -label *log(prediction) / num_of_output <<  '\n';
 
         return -label *log(prediction) / num_of_output;
+    }
+
+    double softmax_cross_entropy_derivative(double ***prediction, int ans_ch, int ans_ro, int ans_co, double epsilon, int *shape) {
+        int Channel = shape[2];
+        int Row     = shape[3];
+        int Col     = shape[4];
+
+        // epsilon 값을 어디에 적용해야 할 것인지 의문점이 있다.
+
+        int target_prediction = prediction[ans_ch][ans_ro][ans_co];
+        int num_of_output     = Channel * Row * Col;
+
+        double delta = 0.0;
+
+        for (int ch = 0; ch < Channel; ch++) {
+            for (int ro = 0; ro < Row; ro++) {
+                for (int co = 0; co < Col; co++) {
+                    if ((ch == ans_ch) && (ro == ans_ro) && (co == ans_co)) {
+                        delta += target_prediction * (1 - target_prediction);
+                    } else {
+                        delta += prediction[ch][ro][co] * (-target_prediction);
+                    }
+                }
+            }
+        }
+
+        delta = delta / ((target_prediction + epsilon) * num_of_output);
+
+        return delta;
     }
 
     Tensor* GetSoftmaxResult() {
