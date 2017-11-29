@@ -64,10 +64,13 @@ public:
         delete Train_image;
         delete Train_label;
 
-        delete Test_image_feed;
-        delete Test_label_feed;
-        delete Train_image_feed;
-        delete Train_label_feed;
+        // if (Test_image_feed != NULL) delete Test_image_feed;
+        //
+        // if (Test_label_feed != NULL) delete Test_label_feed;
+        //
+        // if (Train_image_feed != NULL) delete Train_image_feed;
+        //
+        // if (Train_label_feed != NULL) delete Train_label_feed;
     }
 
     void CreateDataPair(OPTION pOption, int batch_size, int epoch, int israndom = 0) {
