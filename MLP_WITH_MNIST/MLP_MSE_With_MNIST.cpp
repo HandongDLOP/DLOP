@@ -18,23 +18,23 @@ int main(int argc, char const *argv[]) {
     NeuralNetwork HGUNN;
 
     // create input, label data placeholder
-    Operator *x1  = HGUNN.AddPlaceholder(Tensor::Constants(1, BATCH, 1, 1, 784, 1.0), "x1");
+    Operator *x1    = HGUNN.AddPlaceholder(Tensor::Constants(1, BATCH, 1, 1, 784, 1.0), "x1");
     Operator *label = HGUNN.AddPlaceholder(Tensor::Constants(1, BATCH, 1, 1, 10, 1.0), "label");
 
     // ======================= layer 1======================
-    Operator *w1    = new Variable(Tensor::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6), "w1");
-    Operator *b1    = new Variable(Tensor::Constants(1, 1, 1, 1, 15, 1.0), "b1");
+    Operator *w1      = new Variable(Tensor::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6), "w1");
+    Operator *b1      = new Variable(Tensor::Constants(1, 1, 1, 1, 15, 1.0), "b1");
     Operator *matmul1 = new MatMul(x1, w1, "matmul1");
-    Operator *add1 = new Add(matmul1, b1, "add1");
-    Operator *act1 = new Sigmoid(add1, "sig1");
+    Operator *add1    = new Add(matmul1, b1, "add1");
+    Operator *act1    = new Sigmoid(add1, "sig1");
 
     // ======================= layer 2=======================
-    Operator *w2    = new Variable(Tensor::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6), "w2");
-    Operator *b2    = new Variable(Tensor::Constants(1, 1, 1, 1, 10, 1.0), "b2");
+    Operator *w2      = new Variable(Tensor::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6), "w2");
+    Operator *b2      = new Variable(Tensor::Constants(1, 1, 1, 1, 10, 1.0), "b2");
     Operator *matmul2 = new MatMul(act1, w2, "matmul2");
-    Operator *add2 = new Add(b2, matmul2, "add2");
-    Operator *act2 = new Sigmoid(add2, "sig2");
-    Operator *err   = new MSE(act2, label, "MSE");
+    Operator *add2    = new Add(b2, matmul2, "add2");
+    Operator *act2    = new Sigmoid(add2, "sig2");
+    Operator *err     = new MSE(act2, label, "MSE");
 
     // ======================= Optimizer=======================
     Optimizer *optimizer = new GradientDescentOptimizer(err, 0.5, MINIMIZE);
