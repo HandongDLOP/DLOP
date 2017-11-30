@@ -59,10 +59,10 @@ int main(int argc, char const *argv[]) {
 
         HGUNN.Run(err);
         // I'll implement flexibility about the situation that change of Batch size
-        test_accuracy += temp::Accuracy(add->GetOutput(), label->GetOutput(), BATCH) / (int)LOOP_FOR_TEST;
+        test_accuracy += temp::Accuracy(add->GetOutput(), label->GetOutput(), BATCH);
     }
 
-    std::cout << "Test Accuracy is : " << test_accuracy << "\n\n";
+    std::cout << "Test Accuracy is : " << test_accuracy / (int)LOOP_FOR_TEST << "\n\n";
 
     // ======================= delete ======================
     // ~MNISTDataSet
