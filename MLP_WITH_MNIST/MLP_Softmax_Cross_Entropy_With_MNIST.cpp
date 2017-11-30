@@ -66,7 +66,18 @@ int main(int argc, char const *argv[]) {
 
     std::cout << "Test Accuracy is : " << test_accuracy << "\n\n";
 
+    // ======================= delete ======================
+    // ~MNISTDataSet
     delete dataset;
+    // ~Operator
+    delete w;
+    delete b;
+    delete matmul;
+    delete add;
+    // ~Objective
+    delete err;
+    // ~Optimizer
+    delete optimizer;
 
     return 0;
 }

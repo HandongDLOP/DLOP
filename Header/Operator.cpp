@@ -67,23 +67,23 @@ void Operator::Delete() {
     // delete m_aOptimizer;
 }
 
-bool Operator::DeleteInputOperator() {
-    // Postorder : like ForwardPropagate
-    for (int i = 0; i < m_InputDegree; i++) {
-        m_apInputOperator[i]->IncreaseCurrentOutputDegree();
-
-        if (m_apInputOperator[i]->GetCurrentOutputDegree() == 1) {
-            m_apInputOperator[i]->DeleteInputOperator();
-        }
-
-        if (m_apInputOperator[i]->GetOutputDegree() == m_apInputOperator[i]->GetCurrentOutputDegree()) {
-            // std::cout << '\n' << m_apInputOperator[i]->GetName() << '\n' << std::endl;
-            delete m_apInputOperator[i];
-        }
-    }
-
-    return true;
-}
+// bool Operator::DeleteInputOperator() {
+//     // Postorder : like ForwardPropagate
+//     for (int i = 0; i < m_InputDegree; i++) {
+//         m_apInputOperator[i]->IncreaseCurrentOutputDegree();
+//
+//         if (m_apInputOperator[i]->GetCurrentOutputDegree() == 1) {
+//             m_apInputOperator[i]->DeleteInputOperator();
+//         }
+//
+//         if (m_apInputOperator[i]->GetOutputDegree() == m_apInputOperator[i]->GetCurrentOutputDegree()) {
+//             // std::cout << '\n' << m_apInputOperator[i]->GetName() << '\n' << std::endl;
+//             delete m_apInputOperator[i];
+//         }
+//     }
+//
+//     return true;
+// }
 
 // ===========================================================================================
 

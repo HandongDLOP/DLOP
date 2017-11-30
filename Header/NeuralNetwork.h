@@ -25,10 +25,10 @@ private:
 
     // 그래프 형식으로 바꿔야 합니다.
     // 그래프가 되기 위해서는 다음 오퍼레이터의 링크를 건네는 Operator가 필요합니다.
-    Operator *m_pStart = new Operator("Base Operator");  // (Default)
+    Operator *m_aStart = new Operator("Base Operator");  // (Default)
     Operator *m_aEnd   = new Operator("Final Operator");     // (Default)
 
-    Optimizer *m_aOptimizer = NULL;
+    Optimizer *m_pOptimizer = NULL;
 
 public:
     // Operator의 개수를 정합니다.
@@ -42,7 +42,8 @@ public:
     bool AllocOptimizer(Optimizer *pOptimizer);
 
     void Delete();
-    bool DeleteOperator();
+    bool DeletePlaceholder();
+    // bool DeleteOperator();
 
     // ===========================================================================================
 
@@ -65,7 +66,7 @@ public:
     }
 
     void SetOptimizer(Optimizer *pOptimizer) {
-        m_aOptimizer = pOptimizer;
+        m_pOptimizer = pOptimizer;
     }
 
     void PrintGraph(Operator *pStart = NULL, Operator *pEnd = NULL);
@@ -83,7 +84,15 @@ public:
     // ===========================================================================================
 
     void UpdateVariable() {
-        m_aOptimizer->UpdateVariable();
+        m_pOptimizer->UpdateVariable();
+    }
+
+    Operator * GetBaseOperator(){
+        return m_aStart;
+    }
+
+    Operator * GetFinalOperator(){
+        return m_aEnd;
     }
 };
 

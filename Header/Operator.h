@@ -116,7 +116,7 @@ public:
 
     virtual void Delete();
 
-    bool         DeleteInputOperator();
+    // bool         DeleteInputOperator();
 
     // ===========================================================================================
 

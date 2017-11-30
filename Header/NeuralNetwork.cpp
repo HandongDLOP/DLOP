@@ -14,15 +14,17 @@ NeuralNetwork::~NeuralNetwork() {
 
 bool NeuralNetwork::Alloc() {
     std::cout << "NeuralNetwork::Alloc()" << '\n';
-    m_aEnd->AddEdgebetweenOperators(m_pStart);
+    m_aEnd->AddEdgebetweenOperators(m_aStart);
     return true;
 }
 
 void NeuralNetwork::Delete() {
     std::cout << "NeuralNetwork::Delete()" << '\n';
-    DeleteOperator();
-    delete m_aEnd;
-    delete m_aOptimizer;
+    // DeleteOperator()
+    DeletePlaceholder();
+    delete m_aStart;
+    // delete m_aEnd;
+    // delete m_pOptimizer;
 }
 
 // ===========================================================================================
@@ -37,8 +39,20 @@ bool NeuralNetwork::AllocOptimizer(Optimizer *pOptimizer) {
     return true;
 }
 
-bool NeuralNetwork::DeleteOperator() {
-    m_aEnd->DeleteInputOperator();
+// bool NeuralNetwork::DeleteOperator() {
+//     m_aEnd->DeleteInputOperator();
+//     return true;
+// }
+
+bool NeuralNetwork::DeletePlaceholder(){
+    Operator ** list_of_placeholder = m_aStart->GetOutputOperator();
+    int num_of_placeholder = m_aStart->GetOutputDegree();
+
+    for(int i = 0; i < num_of_placeholder; i++){
+        delete list_of_placeholder[i];
+        list_of_placeholder[i] = NULL;
+    }
+
     return true;
 }
 
@@ -50,7 +64,7 @@ Operator * NeuralNetwork::AddPlaceholder(Tensor *pTensor, std::string pName) {
     // placeholder의 경우 trainable하지 않다.
     Operator *temp = new Placeholder(pTensor, pName);
 
-    temp->AddEdgebetweenOperators(m_pStart);
+    temp->AddEdgebetweenOperators(m_aStart);
 
     return temp;
 }
@@ -77,7 +91,7 @@ bool NeuralNetwork::BackPropagate(Operator *pStart, Operator *pEnd) {
         if (m_aEnd == NULL) {
             std::cout << "There is no linked Operator!" << '\n';
             return false;
-        } else pEnd = m_aOptimizer->GetObjectOperator();
+        } else pEnd = m_pOptimizer->GetObjectOperator();
     }
 
     // ObjectOperator로부터 시작한다
@@ -117,7 +131,7 @@ void NeuralNetwork::PrintGraph(Operator *pStart, Operator *pEnd) {
     Operator *end_operator = NULL;
 
     // if (pStart != NULL) start_operator = pStart;
-    // else start_operator = m_pStart;
+    // else start_operator = m_aStart;
 
     if (pStart != NULL) end_operator = pEnd;
     else end_operator = m_aEnd;
@@ -151,7 +165,7 @@ void NeuralNetwork::PrintData(Operator *pStart, Operator *pEnd, int forceprint) 
     Operator *end_operator = NULL;
 
     // if (pStart != NULL) start_operator = pStart;
-    // else start_operator = m_pStart;
+    // else start_operator = m_aStart;
 
     if (pEnd != NULL) end_operator = pEnd;
     else end_operator = m_aEnd;
