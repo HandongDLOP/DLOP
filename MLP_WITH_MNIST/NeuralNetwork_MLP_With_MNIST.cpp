@@ -6,7 +6,7 @@
 #include "..//Header//NeuralNetwork.h"
 #include "MNIST_Reader.h"
 
-#define BATCH    10
+#define BATCH    100
 
 int Argmax(double *data, int Dimension) {
     int index  = 0;
@@ -124,11 +124,11 @@ int main(int argc, char const *argv[]) {
         HGUNN.UpdateVariable();
 
         if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(add_1->GetOutput(), ans->GetOutput()) << '\n';
-        if ((i % 100) == 0) {
-            std::cout << "cost is : " << '\n';
-            HGUNN.PrintData(err, 1);
-            err->GetSoftmaxResult()->PrintData(1);
-        }
+        // if ((i % 100) == 0) {
+        //     std::cout << "cost is : " << '\n';
+        //     HGUNN.PrintData(err, 1);
+        //     err->GetSoftmaxResult()->PrintData(1);
+        // }
     }
 
     // ======================= Testing =======================

@@ -71,7 +71,7 @@ public:
         double max[Time][Batch] = { 0.0 };
         int    num_of_output    = Channel * Row * Col;
 
-        // double temp = 0.0;
+        double temp = 0.0;
 
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {
@@ -81,14 +81,13 @@ public:
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
                             // std::cout << (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon) << '\n';
-                            sum[ti][ba] += (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon);
-                            // temp += (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon);
+                            temp += (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon);
                         }
                     }
                 }
                 // 부동소수점 문제가 있는 듯 함 - 중요
-                // sum[ti][ba] = temp;
-                // temp = 0.0;
+                sum[ti][ba] = temp;
+                temp = 0.0;
             }
         }
 
