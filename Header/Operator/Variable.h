@@ -10,7 +10,7 @@ public:
         std::cout << "Variable::Variable(std::string)" << '\n';
     }
 
-    Variable(Tensor *pTensor, std::string pName, int pTrainable = 0) : Operator(pTensor, pName) {
+    Variable(Tensor *pTensor, std::string pName, int pTrainable = 1) : Operator(pTensor, pName) {
         std::cout << "Variable::Variable(Tensor *, std::string)" << '\n';
 
         Alloc(pTensor, pTrainable);

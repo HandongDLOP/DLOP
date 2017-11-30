@@ -16,6 +16,7 @@
 #include "Objective//Softmax_Cross_Entropy.h"
 
 
+
 class NeuralNetwork {
 private:
     // Operator 개수

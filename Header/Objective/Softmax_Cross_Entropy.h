@@ -7,8 +7,6 @@ class Softmax_Cross_Entropy : public Operator {
 private:
     Tensor *m_aSoftmax_Result = NULL;
     double m_epsilon          = 0.0; // for backprop
-    double m_min_error        = 1e-40;
-    double m_max_error        = 1e+40;
 
 public:
     // Constructor의 작업 순서는 다음과 같다.
@@ -87,16 +85,9 @@ public:
                 }
                 // 부동소수점 문제가 있는 듯 함 - 중요
                 sum[ti][ba] = temp;
-                temp = 0.0;
+                temp        = 0.0;
             }
         }
-
-        // for (int ti = 0; ti < Time; ti++) {
-        //     for (int ba = 0; ba < Batch; ba++) {
-        //         sum[ti][ba];
-        //         // std::cout << sum[ti][ba] << ' ';
-        //     }
-        // }
 
 
         for (int ti = 0; ti < Time; ti++) {
@@ -115,11 +106,6 @@ public:
             }
         }
 
-        // GetSoftmaxResult()->PrintData();
-
-        // GetInputOperator()[0]->GetOutput()->PrintData();
-        // GetInputOperator()[1]->GetOutput()->PrintData();
-        // GetOutput()->PrintData();
 
         return true;
     }
@@ -148,22 +134,18 @@ public:
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            delta_input_data[ti][ba][ch][ro][co] = softmax_cross_entropy_derivative(label_data[ti][ba][ch][ro][co],
+                            delta_input_data[ti][ba][ch][ro][co] = softmax_cross_entropy_derivative(label_data[ti][ba],
                                                                                                     softmax_result[ti][ba][ch][ro][co],
+                                                                                                    shape,
+                                                                                                    ch,
+                                                                                                    ro,
+                                                                                                    co,
                                                                                                     num_of_output);
-                            // std::cout << "target_prediction : " << softmax_result[ti][ba][ch][ro][co] << '\n';
                         }
                     }
                 }
             }
         }
-
-        // std::cout << "softmax" << '\n';
-        // GetSoftmaxResult()->PrintData();
-        // std::cout << "answer" << '\n';
-        // GetInputOperator()[1]->GetOutput()->PrintData();
-        // std::cout << "del" << '\n';
-        // GetInputOperator()[0]->GetDelta()->PrintData();
 
         return true;
     }
@@ -186,39 +168,27 @@ public:
     }
 
     double cross_entropy(double label, double prediction, int num_of_output) {
-        // double error_ = -label *log(prediction + m_epsilon) / num_of_output;
-        double error_ = -label *log(prediction + m_epsilon);
-
-        // if (std::isnan(error_) || (error_ < m_max_error)) {
-        // error_ = m_min_error;
-        // }
-        //
-        // if (std::isinf(error_) || (error_ > m_max_error)) {
-        // error_ = m_max_error;
-        // }
-
-        // if (std::isnan(error_)) {
-        // error_ = m_min_error;
-        // }
-        //
-        // if (std::isinf(error_)) {
-        // error_ = m_max_error;
-        // }
+        double error_ = -label *log(prediction + m_epsilon) / num_of_output;
 
         return error_;
     }
 
-    double softmax_cross_entropy_derivative(double label_data, double prediction, int num_of_output) {
-        // double delta_ = -label_data * (1 - prediction) / num_of_output;
-        double delta_ = -label_data * (1 - prediction);
+    double softmax_cross_entropy_derivative(double ***label_data, double prediction, int *shape, int pChannel, int pRow, int pCol, int num_of_output) {
+        int Channel = shape[2];
+        int Row     = shape[3];
+        int Col     = shape[4];
 
-        // if (std::isnan(delta_)) {
-        // delta_ = m_min_error;
-        // }
-        //
-        // if (std::isinf(delta_)) {
-        // delta_ = m_max_error;
-        // }
+        double delta_ = 0.0;
+
+        for (int ch = 0; ch < Channel; ch++) {
+            for (int ro = 0; ro < Row; ro++) {
+                for (int co = 0; co < Col; co++) {
+                    if ((ch == pChannel) && (ro == pRow) && (co == pCol)) {
+                        delta_ += -label_data[ch][ro][co] * (1 - prediction);
+                    } else delta_ += -label_data[ch][ro][co] * (-prediction);
+                }
+            }
+        }
 
         return delta_;
     }
