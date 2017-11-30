@@ -9,11 +9,10 @@
 
 #define BATCH             100
 #define LOOP_FOR_TRAIN    1000
-#define LOOP_FOR_TEST     10000 / BATCH
+#define LOOP_FOR_TEST     (10000 / BATCH)
 
 int main(int argc, char const *argv[]) {
-
-    // Graph declare
+    // Network declare
     NeuralNetwork HGUNN;
 
     // create input, label data placeholder
