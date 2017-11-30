@@ -28,7 +28,7 @@ int main(int argc, char const *argv[]) {
     Softmax_Cross_Entropy *err = new Softmax_Cross_Entropy(add, label, 1e-50, "SCE");
 
     // ======================= Optimizer=======================
-    Optimizer *optimizer = new StochasticGradientDescent(err, 0.01, MINIMIZE);
+    Optimizer *optimizer = new GradientDescentOptimizer(err, 0.01, MINIMIZE);
 
     // ======================= Create Graph ===================
     HGUNN.CreateGraph(optimizer);
@@ -67,14 +67,14 @@ int main(int argc, char const *argv[]) {
     // ======================= delete ======================
     // ~MNISTDataSet
     delete dataset;
-    // ~Operator
+    // ~Operators
     delete w;
     delete b;
     delete matmul;
     delete add;
-    // ~Objective
+    // ~Objectives
     delete err;
-    // ~Optimizer
+    // ~Optimizers
     delete optimizer;
 
     return 0;

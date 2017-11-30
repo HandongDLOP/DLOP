@@ -3,7 +3,7 @@
 
 #include "MetaParameter.h"
 
-#include "Optimizer//StochasticGradientDescent.h"
+#include "Optimizer//GradientDescentOptimizer.h"
 
 class Operator {
 private:

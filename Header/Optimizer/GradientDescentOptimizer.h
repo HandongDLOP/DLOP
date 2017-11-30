@@ -1,23 +1,23 @@
-#ifndef STOCHASTICGRADIENTDESCENT_H_
-#define STOCHASTICGRADIENTDESCENT_H_    value
+#ifndef GRADIENTDESCENTOPTIMIZER_H_
+#define GRADIENTDESCENTOPTIMIZER_H_    value
 
 #include "..//Optimizer.h"
 
-class StochasticGradientDescent : public Optimizer {
+class GradientDescentOptimizer : public Optimizer {
 private:
     /* data */
 
 public:
-    StochasticGradientDescent(Operator *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer(pObjectOperator, pLearningRate, pOptimizeDirection) {
-        std::cout << "StochasticGradientDescent::StochasticGradientDescent(Operator *, float, OptimizeDirection)" << '\n';
+    GradientDescentOptimizer(Operator *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer(pObjectOperator, pLearningRate, pOptimizeDirection) {
+        std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Operator *, float, OptimizeDirection)" << '\n';
     }
 
-    virtual ~StochasticGradientDescent() {
-        std::cout << "StochasticGradientDescent::~StochasticGradientDescent()" << '\n';
+    virtual ~GradientDescentOptimizer() {
+        std::cout << "GradientDescentOptimizer::~GradientDescentOptimizer()" << '\n';
     }
 
     virtual bool UpdateVariable(TrainableData *pTrainableData) {
-        // std::cout << "StochasticGradientDescent::UpdateVariable(TrainableData *)" << '\n';
+        // std::cout << "GradientDescentOptimizer::UpdateVariable(TrainableData *)" << '\n';
 
         int *shape = pTrainableData->Data->GetShape();
 
@@ -53,4 +53,4 @@ public:
 };
 
 
-#endif  // STOCHASTICGRADIENTDESCENT_H_
+#endif  // GRADIENTDESCENTOPTIMIZER_H_
