@@ -97,7 +97,7 @@ int main(int argc, char const *argv[]) {
     HGUNN.PrintGraph();
 
     for (int i = 0; i < loops; i++) {
-        if ((i % 100) == 0) std::cout << "roops : " << i << '\n';
+        if ((i % 100) == 0) std::cout << "loops : " << i << '\n';
 
         dataset->CreateTrainDataPair(BATCH);
         x1->FeedOutput(dataset->GetTrainFeedImage());
