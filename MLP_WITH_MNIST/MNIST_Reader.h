@@ -32,7 +32,7 @@ int random_generator(int i) {
     return rand() % i;
 }
 
-class DataSet {
+class MNISTDataSet {
 private:
     // 직접 해제
     double **Test_image  = NULL;
@@ -56,11 +56,11 @@ private:
     int Recallnum_of_train = 0;
 
 public:
-    DataSet() {
+    MNISTDataSet() {
         Alloc();
     }
 
-    virtual ~DataSet() {
+    virtual ~MNISTDataSet() {
         Delete();
     }
 
@@ -122,7 +122,7 @@ public:
     }
 
     void CreateTestDataPair(int batch_size) {
-        if ((batch_size * Recallnum_of_test % NUMBER_OF_TEST_DATA) == 0) ShuffleDataPair(TEST, batch_size);
+        // if (((batch_size * Recallnum_of_test) % NUMBER_OF_TEST_DATA) == 0) ShuffleDataPair(TEST, batch_size);
 
         // cout << Recallnum_of_test << '\n';
 
@@ -142,6 +142,7 @@ public:
     }
 
     void ShuffleDataPair(OPTION pOption, int batch_size) {
+        // std::cout << "shuffle" << '\n';
         srand(unsigned(time(0)));
         // int  number_of_data = 0;
         vector<int> *shuffled_list = NULL;
@@ -393,8 +394,8 @@ double** ReshapeData(OPTION pOption) {
     } else return NULL;
 }
 
-DataSet* CreateDataSet() {
-    DataSet *dataset = new DataSet();
+MNISTDataSet* CreateMNISTDataSet() {
+    MNISTDataSet *dataset = new MNISTDataSet();
 
     dataset->SetTestImage(ReshapeData(TESTIMAGE));
 

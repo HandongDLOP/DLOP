@@ -6,7 +6,7 @@
 #include "..//Header//NeuralNetwork.h"
 #include "MNIST_Reader.h"
 
-#define BATCH    50
+#define BATCH    10
 
 int Argmax(double *data, int Dimension) {
     int index  = 0;
@@ -49,7 +49,7 @@ int main(int argc, char const *argv[]) {
     std::cout << "---------------Start-----------------" << '\n';
 
     // Data Load
-    DataSet *dataset = CreateDataSet();
+    MNISTDataSet *dataset = CreateMNISTDataSet();
 
     NeuralNetwork HGUNN;
 
@@ -96,7 +96,7 @@ int main(int argc, char const *argv[]) {
     Softmax_Cross_Entropy *err = new Softmax_Cross_Entropy(add_1, ans, 1e-50, "SCE");
     // Cross_Entropy * err = new Cross_Entropy(act_1, ans, "CE");
 
-    Optimizer *optimizer = new StochasticGradientDescent(err, 0.01, MINIMIZE);
+    Optimizer *optimizer = new StochasticGradientDescent(err, 0.5, MINIMIZE);
 
     // ======================= Create Graph =======================
     HGUNN.SetEndOperator(err);
@@ -124,31 +124,34 @@ int main(int argc, char const *argv[]) {
         HGUNN.UpdateVariable();
 
         if ((i % 100) == 0) std::cout << "Accuracy is : " << Accuracy(add_1->GetOutput(), ans->GetOutput()) << '\n';
-        // if ((i % 100) == 0) std::cout << "cost is : " << '\n';
-        // if ((i % 100) == 0) HGUNN.PrintData(err, 1);
+        if ((i % 100) == 0) {
+            std::cout << "cost is : " << '\n';
+            HGUNN.PrintData(err, 1);
+            err->GetSoftmaxResult()->PrintData(1);
+        }
     }
 
     // ======================= Testing =======================
 
-    std::cout << "\n<<<Testing>>>\n" << '\n';
+    // std::cout << "\n<<<Testing>>>\n" << '\n';
+    //
+    // double test_accuracy = 0.0;
+    // loops = 10000 / BATCH;
+    //
+    // for (int i = 0; i < loops; i++) {
+    //     // std::cout << "\ninput : " << i << '\n';
+    //     dataset->CreateTestDataPair(BATCH);
+    //     x1->FeedOutput(dataset->GetTestFeedImage());
+    //     ans->FeedOutput(dataset->GetTestFeedLabel());
+    //
+    //     HGUNN.Testing();
+    //
+    //     // std::cout << Accuracy(add_1->GetOutput(), ans->GetOutput()) << '\n';
+    //
+    //     test_accuracy += Accuracy(add_1->GetOutput(), ans->GetOutput()) / (double)loops;
+    // }
 
-    double test_accuracy = 0.0;
-    loops = 10000 / BATCH;
-
-    for (int i = 0; i < loops; i++) {
-        // std::cout << "\ninput : " << i << '\n';
-        dataset->CreateTestDataPair(BATCH);
-        x1->FeedOutput(dataset->GetTestFeedImage());
-        ans->FeedOutput(dataset->GetTestFeedLabel());
-
-        HGUNN.Testing();
-
-        std::cout << Accuracy(add_1->GetOutput(), ans->GetOutput()) << '\n';
-
-        test_accuracy += Accuracy(add_1->GetOutput(), ans->GetOutput()) / (double)loops;
-    }
-
-    std::cout << "Accuracy is : " << test_accuracy << '\n';
+    // std::cout << "Accuracy is : " << test_accuracy << '\n';
 
     delete dataset;
 

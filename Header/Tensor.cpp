@@ -40,7 +40,7 @@ bool Tensor::Alloc(int pTime, int pBatch, int pChannel, int pRow, int pCol) {
                     m_aData[ti][ba][ch][ro] = new double[pCol];
 
                     for (int co = 0; co < pCol; co++) {
-                        m_aData[ti][ba][ch][ro][co] = 0;  // 0으로 초기화
+                        m_aData[ti][ba][ch][ro][co] = 0.0;  // 0으로 초기화
                     }
                 }
             }

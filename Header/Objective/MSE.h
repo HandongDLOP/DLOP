@@ -80,6 +80,7 @@ public:
                     for (int ro = 0; ro < shape[3]; ro++) {
                         for (int co = 0; co < shape[4]; co++) {
                             delta_Input0[ti][ba][ch][ro][co] = (input0[ti][ba][ch][ro][co] - input1[ti][ba][ch][ro][co]) / num_of_output;
+                            // delta_Input0[ti][ba][ch][ro][co] = (input0[ti][ba][ch][ro][co] - input1[ti][ba][ch][ro][co]);
                         }
                     }
                 }
@@ -93,6 +94,7 @@ public:
 
     double Error(double input0, double input1, int num_of_output) {
         return (input0 - input1) * (input0 - input1) / num_of_output * 0.5;
+        // return (input0 - input1) * (input0 - input1) / 2.0;
     }
 };
 

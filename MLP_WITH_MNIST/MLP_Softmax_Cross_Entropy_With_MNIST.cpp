@@ -49,7 +49,7 @@ int main(int argc, char const *argv[]) {
     std::cout << "---------------Start-----------------" << '\n';
 
     // Data Load
-    DataSet *dataset = CreateDataSet();
+    MNISTDataSet *dataset = CreateMNISTDataSet();
 
     NeuralNetwork HGUNN;
 

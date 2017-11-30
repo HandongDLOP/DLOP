@@ -71,7 +71,7 @@ public:
         double max[Time][Batch] = { 0.0 };
         int    num_of_output    = Channel * Row * Col;
 
-        double temp = 0.0;
+        // double temp = 0.0;
 
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {
@@ -81,13 +81,14 @@ public:
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
                             // std::cout << (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon) << '\n';
-                            temp += (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon);
+                            sum[ti][ba] += (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon);
+                            // temp += (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon);
                         }
                     }
                 }
                 // 부동소수점 문제가 있는 듯 함 - 중요
-                sum[ti][ba] = temp;
-                temp = 0.0;
+                // sum[ti][ba] = temp;
+                // temp = 0.0;
             }
         }
 
@@ -186,7 +187,8 @@ public:
     }
 
     double cross_entropy(double label, double prediction, int num_of_output) {
-        double error_ = -label *log(prediction + m_epsilon) / num_of_output;
+        // double error_ = -label *log(prediction + m_epsilon) / num_of_output;
+        double error_ = -label *log(prediction + m_epsilon);
 
         // if (std::isnan(error_) || (error_ < m_max_error)) {
         // error_ = m_min_error;
@@ -208,7 +210,8 @@ public:
     }
 
     double softmax_cross_entropy_derivative(double label_data, double prediction, int num_of_output) {
-        double delta_ = -label_data * (1 - prediction) / num_of_output;
+        // double delta_ = -label_data * (1 - prediction) / num_of_output;
+        double delta_ = -label_data * (1 - prediction);
 
         // if (std::isnan(delta_)) {
         // delta_ = m_min_error;

@@ -145,14 +145,14 @@ public:
         // if (std::isinf(error_) || (error_ > m_max_error)) {
         // error_ = m_max_error;
         // }
-
-        if (std::isnan(error_)) {
-            error_ = m_min_error;
-        }
-
-        if (std::isinf(error_)) {
-            error_ = m_max_error;
-        }
+        //
+        // if (std::isnan(error_)) {
+        //     error_ = m_min_error;
+        // }
+        //
+        // if (std::isinf(error_)) {
+        //     error_ = m_max_error;
+        // }
 
 
         return error_;
@@ -161,7 +161,8 @@ public:
     double cross_entropy_derivative(double label_data, double input_data, int num_of_output) {
         double delta_ = 0.0;
 
-        delta_ = -label_data / ((input_data * num_of_output) + m_epsilon);
+        // delta_ = -label_data / ((input_data * num_of_output) + m_epsilon);
+        delta_ = -label_data / (input_data + m_epsilon);
 
         // if (std::isnan(delta_) || (delta_ < m_max_error)) {
         // delta_ = m_min_error;
@@ -170,14 +171,14 @@ public:
         // if (std::isinf(delta_) || (delta_ > m_max_error)) {
         // delta_ = m_max_error;
         // }
-
-        if (std::isnan(delta_)) {
-            delta_ = m_min_error;
-        }
-
-        if (std::isinf(delta_)) {
-            delta_ = m_max_error;
-        }
+        //
+        // if (std::isnan(delta_)) {
+        //     delta_ = m_min_error;
+        // }
+        //
+        // if (std::isinf(delta_)) {
+        //     delta_ = m_max_error;
+        // }
 
         return delta_;
     }
