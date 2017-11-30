@@ -1,23 +1,19 @@
 #ifndef NEURALNETWORK_H_
 #define NEURALNETWORK_H_
 
-#include <iostream>
-#include <string>
+#include "Operator//Placeholder.h"
+#include "Operator//Variable.h"
 
+#include "Operator//Relu.h"
+#include "Operator//Sigmoid.h"
+#include "Operator//Softmax.h"
 
-#include "Placeholder.h"
-#include "Variable.h"
+#include "Operator//AddXB.h"
+#include "Operator//MatMulXW.h"
 
-#include "Relu.h"
-#include "Sigmoid.h"
-#include "Softmax.h"
-
-#include "AddXB.h"
-#include "MatMulXW.h"
-
-#include "MSE.h"
-#include "Cross_Entropy.h"
-#include "Softmax_Cross_Entropy.h"
+#include "Objective//MSE.h"
+#include "Objective//Cross_Entropy.h"
+#include "Objective//Softmax_Cross_Entropy.h"
 
 
 class NeuralNetwork {

@@ -1,11 +1,7 @@
 #ifndef ADD_H_
 #define ADD_H_    value
 
-#include <iostream>
-#include <string>
-
-#include "Tensor.h"
-#include "Operator.h"
+#include "..//Operator.h"
 
 class Add : public Operator {
 public:

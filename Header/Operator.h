@@ -1,15 +1,9 @@
 #ifndef OPERATOR_H_
 #define OPERATOR_H_
 
-// #include <stdio.h>
-
-// #include <iostream>
-// #include <string>
-// #include <algorithm>
-
-// #include "Tensor.h"
 #include "MetaParameter.h"
-#include "StochasticGradientDescent.h"
+
+#include "Optimizer//StochasticGradientDescent.h"
 
 class Operator {
 private:

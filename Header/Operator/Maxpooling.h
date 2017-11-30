@@ -1,11 +1,7 @@
 #ifndef MAXPOOLING_H_
 #define MAXPOOLING_H_    value
 
-#include <iostream>
-#include <string>
-
-#include "Tensor.h"
-#include "Operator.h"
+#include "..//Operator.h"
 
 class Maxpooling : public Operator {
 public:

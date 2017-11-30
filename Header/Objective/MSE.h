@@ -1,11 +1,7 @@
 #ifndef MSE_H_
 #define MSE_H_    value
 
-#include <iostream>
-#include <string>
-
-#include "Tensor.h"
-#include "Operator.h"
+#include "..//Operator.h"
 
 class MSE : public Operator {
 public:

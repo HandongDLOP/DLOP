@@ -1,12 +1,7 @@
 #ifndef SOFTMAX_CROSS_ENTROPY_H_
 #define SOFTMAX_CROSS_ENTROPY_H_    value
 
-#include <iostream>
-// #include <string>
-#include <math.h>
-
-// #include "Tensor.h"
-#include "Operator.h"
+#include "..//Operator.h"
 
 class Softmax_Cross_Entropy : public Operator {
 private:

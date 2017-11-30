@@ -1,12 +1,7 @@
 #ifndef CROSS_ENTROPY_H_
 #define CROSS_ENTROPY_H_    value
 
-#include <iostream>
-// #include <string>
-#include <math.h>
-
-// #include "Tensor.h"
-#include "Operator.h"
+#include "..//Operator.h"
 
 class Cross_Entropy : public Operator {
 private:

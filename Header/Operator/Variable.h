@@ -1,10 +1,7 @@
 #ifndef VARIABLE_H_
 #define VARIABLE_H_    value
 
-#include <iostream>
-
-#include "Tensor.h"
-#include "Operator.h"
+#include "..//Operator.h"
 
 class Variable : public Operator {
 private:

@@ -1,8 +1,6 @@
 #ifndef OPTIMIZER_H_
 #define OPTIMIZER_H_    value
 
-// #include <algorithm>
-
 #include "Tensor.h"
 
 class Operator;

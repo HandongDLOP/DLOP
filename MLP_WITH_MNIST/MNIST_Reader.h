@@ -1,8 +1,5 @@
 #include <fstream>
-#include <iostream>
-#include <stdio.h>
 #include <algorithm>
-#include <stdlib.h>
 #include <vector>
 #include <ctime>
 #include <cstdlib>

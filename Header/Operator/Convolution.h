@@ -1,11 +1,7 @@
 #ifndef CONVOLUTION_H_
 #define CONVOLUTION_H_    value
 
-#include <iostream>
-#include <string>
-
-#include "Tensor.h"
-#include "Operator.h"
+#include "..//Operator.h"
 
 class Convolution : public Operator {
 public:

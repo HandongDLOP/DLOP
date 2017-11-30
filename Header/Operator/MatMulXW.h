@@ -1,11 +1,7 @@
 #ifndef MATMUL_H_
 #define MATMUL_H_    value
 
-#include <iostream>
-#include <string>
-
-#include "Tensor.h"
-#include "Operator.h"
+#include "..//Operator.h"
 
 class MatMul : public Operator {
 public:
@@ -65,9 +61,9 @@ public:
         // }
 
         // w * x 의 형태에서만 진행
-        int Time    = pInput1->GetOutput()->GetTime();
-        int Batch   = pInput1->GetOutput()->GetBatch();
-        int Channel = pInput1->GetOutput()->GetChannel();
+        int Time    = pInput0->GetOutput()->GetTime();
+        int Batch   = pInput0->GetOutput()->GetBatch();
+        int Channel = pInput0->GetOutput()->GetChannel();
         int Row     = pInput0->GetOutput()->GetRow();
         int Col     = pInput1->GetOutput()->GetCol();
 
@@ -80,7 +76,7 @@ public:
     }
 
     virtual bool ComputeForwardPropagate() {
-        std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
+        // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int Time    = GetOutput()->GetTime();
         int Batch   = GetOutput()->GetBatch();
@@ -106,7 +102,7 @@ public:
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
                             for (int hid = 0; hid < Hidden; hid++) {
-                                temp += input0[0][0][ch][ro][hid] * input1[ti][ba][ch][hid][co];
+                                temp += input0[ti][ba][ch][ro][hid] * input1[0][0][ch][hid][co];
                             }
                             output[ti][ba][ch][ro][co] = temp;
                             temp                       = 0.0;
@@ -122,7 +118,7 @@ public:
     }
 
     virtual bool ComputeBackPropagate() {
-        std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
+        // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int Time    = GetOutput()->GetTime();
         int Batch   = GetOutput()->GetBatch();
@@ -141,9 +137,8 @@ public:
 
         // GetDelta()->PrintData();
 
-        //// 각자 Operator에서 해주어야 한다.
-        // GetInputOperator()[0]->GetDelta()->Reset();
-        // GetInputOperator()[0]->GetDelta()->Reset();
+        GetInputOperator()[0]->GetDelta()->Reset();
+        GetInputOperator()[1]->GetDelta()->Reset();
         double *****delta_input0 = GetInputOperator()[0]->GetDelta()->GetData();  // weight
         double *****delta_input1 = GetInputOperator()[1]->GetDelta()->GetData();  // input
 
@@ -153,16 +148,14 @@ public:
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
                             for (int hid = 0; hid < Hidden; hid++) {
-                                delta_input0[0][0][ch][ro][hid]   += input1[ti][ba][ch][hid][co] * delta[ti][ba][ch][ro][co];
-                                delta_input1[ti][ba][ch][hid][co] += input0[0][0][ch][ro][hid] * delta[ti][ba][ch][ro][co];
+                                delta_input0[ti][ba][ch][ro][hid] += input1[0][0][ch][hid][co] * delta[ti][ba][ch][ro][co];
+                                delta_input1[0][0][ch][hid][co]   += input0[ti][ba][ch][ro][hid] * delta[ti][ba][ch][ro][co];
                             }
                         }
                     }
                 }
             }
         }
-
-
         // for (int i = 0; i < size_Weight; i++) {
         // _delta_input[i / output_col] += delta[i % output_col] * Weight[i];
         // _delta_Weight[i]              = delta[i % output_col] * input_data[i / output_col];
@@ -172,7 +165,7 @@ public:
 
         // GetInputOperator()[1]->GetDelta()->PrintData();
 
-        GetDelta()->Reset();
+        // GetDelta()->Reset();
 
         return true;
     }

@@ -1,7 +1,7 @@
 #ifndef STOCHASTICGRADIENTDESCENT_H_
 #define STOCHASTICGRADIENTDESCENT_H_    value
 
-#include "Optimizer.h"
+#include "..//Optimizer.h"
 
 class StochasticGradientDescent : public Optimizer {
 private:

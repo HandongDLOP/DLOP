@@ -1,10 +1,7 @@
 #ifndef PLACEHOLDER_H_
 #define PLACEHOLDER_H_    value
 
-#include <iostream>
-
-#include "Tensor.h"
-#include "Operator.h"
+#include "..//Operator.h"
 
 class Placeholder : public Operator {
 private:
