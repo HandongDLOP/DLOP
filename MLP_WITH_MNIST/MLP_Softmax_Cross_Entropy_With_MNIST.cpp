@@ -21,11 +21,13 @@ int main(int argc, char const *argv[]) {
     Operator *label = HGUNN.AddPlaceholder(Tensor::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
 
     // ======================= layer 1=======================
-    Operator *w                = new Variable(Tensor::Zeros(1, 1, 1, 784, 10), "w");
-    Operator *b                = new Variable(Tensor::Zeros(1, 1, 1, 1, 10), "b");
-    Operator *matmul           = new MatMul(x, w, "matmul");
-    Operator *add              = new Add(matmul, b, "add");
-    Softmax_Cross_Entropy *err = new Softmax_Cross_Entropy(add, label, 1e-50, "SCE");
+    Operator *w      = new Variable(Tensor::Zeros(1, 1, 1, 784, 10), "w");
+    Operator *b      = new Variable(Tensor::Zeros(1, 1, 1, 1, 10), "b");
+    Operator *matmul = new MatMul(x, w, "matmul");
+    Operator *add    = new Add(matmul, b, "add");
+
+    // ======================= Error=======================
+    Operator *err = new Softmax_Cross_Entropy(add, label, 1e-50, "SCE");
 
     // ======================= Optimizer=======================
     Optimizer *optimizer = new GradientDescentOptimizer(err, 0.01, MINIMIZE);

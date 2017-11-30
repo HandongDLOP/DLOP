@@ -34,7 +34,9 @@ int main(int argc, char const *argv[]) {
     Operator *matmul2 = new MatMul(act1, w2, "matmul2");
     Operator *add2    = new Add(b2, matmul2, "add2");
     Operator *act2    = new Sigmoid(add2, "sig2");
-    Operator *err     = new MSE(act2, label, "MSE");
+
+    // ======================= Error=======================
+    Operator *err = new MSE(act2, label, "MSE");
 
     // ======================= Optimizer=======================
     Optimizer *optimizer = new GradientDescentOptimizer(err, 0.5, MINIMIZE);
