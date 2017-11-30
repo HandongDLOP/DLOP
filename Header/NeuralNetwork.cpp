@@ -14,7 +14,7 @@ NeuralNetwork::~NeuralNetwork() {
 
 bool NeuralNetwork::Alloc() {
     std::cout << "NeuralNetwork::Alloc()" << '\n';
-    m_aEnd->AddEdgebetweenOperators(m_aStart);
+    // m_aEnd->AddEdgebetweenOperators(m_aStart);
     return true;
 }
 
@@ -23,7 +23,6 @@ void NeuralNetwork::Delete() {
     // DeleteOperator()
     DeletePlaceholder();
     delete m_aStart;
-    // delete m_aEnd;
     // delete m_pOptimizer;
 }
 
@@ -40,15 +39,15 @@ bool NeuralNetwork::AllocOptimizer(Optimizer *pOptimizer) {
 }
 
 // bool NeuralNetwork::DeleteOperator() {
-//     m_aEnd->DeleteInputOperator();
-//     return true;
+// m_aEnd->DeleteInputOperator();
+// return true;
 // }
 
-bool NeuralNetwork::DeletePlaceholder(){
-    Operator ** list_of_placeholder = m_aStart->GetOutputOperator();
-    int num_of_placeholder = m_aStart->GetOutputDegree();
+bool NeuralNetwork::DeletePlaceholder() {
+    Operator **list_of_placeholder = m_aStart->GetOutputOperator();
+    int num_of_placeholder         = m_aStart->GetOutputDegree();
 
-    for(int i = 0; i < num_of_placeholder; i++){
+    for (int i = 0; i < num_of_placeholder; i++) {
         delete list_of_placeholder[i];
         list_of_placeholder[i] = NULL;
     }
@@ -74,78 +73,58 @@ Operator * NeuralNetwork::AddPlaceholder(Tensor *pTensor, std::string pName) {
 // 주소에 따라 조절되는 알고리즘 추가 필요
 // forwardPropagate Algorithm 수정 필요
 bool NeuralNetwork::ForwardPropagate(Operator *pStart, Operator *pEnd) {
-    if (pEnd == NULL) {
-        if (m_aEnd == NULL) {
-            std::cout << "There is no linked Operator!" << '\n';
-            return false;
-        } else pEnd = m_aEnd;
-    }
-
     pEnd->ForwardPropagate();
 
     return true;
 }
 
-bool NeuralNetwork::BackPropagate(Operator *pStart, Operator *pEnd) {
-    if (pEnd == NULL) {
-        if (m_aEnd == NULL) {
-            std::cout << "There is no linked Operator!" << '\n';
-            return false;
-        } else pEnd = m_pOptimizer->GetObjectOperator();
-    }
-
+bool NeuralNetwork::BackPropagate(Operator *pStart, Optimizer *pOptimizer) {
     // ObjectOperator로부터 시작한다
-    pEnd->BackPropagate();
+    pOptimizer->GetObjectOperator()->BackPropagate();
 
     return true;
 }
 
 // ===========================================================================================
 
-bool NeuralNetwork::Training(Operator *pStart, Operator *pEnd) {
-    // std::cout << "\n<<<ForwardPropagate>>>\n" << '\n';
 
+bool NeuralNetwork::Run(Operator *pStart, Operator *pEnd) {
     ForwardPropagate(pStart, pEnd);
-
-    // std::cout << "\n<<<BackPropagate>>>\n" << '\n';
-
-    BackPropagate(pStart, pEnd);
-
     return true;
 }
 
-bool NeuralNetwork::Testing(Operator *pStart, Operator *pEnd) {
-    // std::cout << "\n<<<Testing>>>\n" << '\n';
+bool NeuralNetwork::Run(Operator *pEnd) {
+    ForwardPropagate(m_aStart, pEnd);
+    return true;
+}
 
-    ForwardPropagate(pStart, pEnd);
+bool NeuralNetwork::Run(Optimizer *pOptimizer) {
+    ForwardPropagate(m_aStart, pOptimizer->GetObjectOperator());
 
-    // std::cout << '\n';
+    BackPropagate(m_aStart, pOptimizer);
 
+    UpdateVariable(pOptimizer);
     return true;
 }
 
 // ===========================================================================================
 
-void NeuralNetwork::PrintGraph(Operator *pStart, Operator *pEnd) {
-    // Operator *start_operator = NULL;
-    Operator *end_operator = NULL;
+// ===========================================================================================
 
-    // if (pStart != NULL) start_operator = pStart;
-    // else start_operator = m_aStart;
-
-    if (pStart != NULL) end_operator = pEnd;
-    else end_operator = m_aEnd;
-
+void NeuralNetwork::PrintGraph(Operator *pEnd) {
     std::cout << '\n';
-    end_operator->PrintGraph();
+    pEnd->PrintGraph();
     std::cout << '\n';
 }
 
-void NeuralNetwork::PrintData(int forceprint) {
-    Operator *end_operator = m_aEnd;
+void NeuralNetwork::PrintGraph(Optimizer *pOptimizer) {
+    std::cout << '\n';
+    pOptimizer->GetObjectOperator()->PrintGraph();
+    std::cout << '\n';
+}
 
-    end_operator->PrintData(forceprint);
-
+void NeuralNetwork::PrintData(Optimizer *pOptimizer, int forceprint) {
+    pOptimizer->GetObjectOperator()->PrintData(forceprint);
 }
 
 void NeuralNetwork::PrintData(Operator *pOperator, int forceprint) {
@@ -160,23 +139,6 @@ void NeuralNetwork::PrintData(Operator *pOperator, int forceprint) {
     std::cout << pOperator->GetName() << ": ~PrintData() \n\n";
 }
 
-void NeuralNetwork::PrintData(Operator *pStart, Operator *pEnd, int forceprint) {
-    // Operator *start_operator = NULL;
-    Operator *end_operator = NULL;
-
-    // if (pStart != NULL) start_operator = pStart;
-    // else start_operator = m_aStart;
-
-    if (pEnd != NULL) end_operator = pEnd;
-    else end_operator = m_aEnd;
-
-    std::cout << '\n';
-    end_operator->PrintData(forceprint);
-    std::cout << '\n';
-}
-
-
-
 // ===========================================================================================
 
 bool NeuralNetwork::CreateGraph(Optimizer *pOptimizer) {
@@ -186,7 +148,7 @@ bool NeuralNetwork::CreateGraph(Optimizer *pOptimizer) {
 
     // =====================================
 
-    SetOptimizer(pOptimizer);
+    // SetOptimizer(pOptimizer);
     AllocOptimizer(pOptimizer);
 
     // =====================================

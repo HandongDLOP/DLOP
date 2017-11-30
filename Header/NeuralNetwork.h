@@ -26,9 +26,9 @@ private:
     // 그래프 형식으로 바꿔야 합니다.
     // 그래프가 되기 위해서는 다음 오퍼레이터의 링크를 건네는 Operator가 필요합니다.
     Operator *m_aStart = new Operator("Base Operator");  // (Default)
-    Operator *m_aEnd   = new Operator("Final Operator");     // (Default)
+    // Operator *m_aEnd   = new Operator("Final Operator");     // (Default)
 
-    Optimizer *m_pOptimizer = NULL;
+    // Optimizer *m_pOptimizer = NULL;
 
 public:
     // Operator의 개수를 정합니다.
@@ -55,45 +55,55 @@ public:
     // Propagate
     // Prameter에 basket이 추가될 수 있음
     bool ForwardPropagate(Operator *pStart, Operator *pEnd);
-    bool BackPropagate(Operator *pStart, Operator *pEnd);
+    bool BackPropagate(Operator *pStart, Optimizer *pOptimizer);
 
-    // For NeuralNetwork Training
-    bool Training(Operator *pStart = NULL, Operator *pEnd = NULL);
-    bool Testing(Operator *pStart = NULL, Operator *pEnd = NULL);
+    //// For NeuralNetwork Training
+    // bool Training(Operator *pStart, Operator *pEnd);
+    // bool Testing(Operator *pStart, Operator *pEnd);
+    //
+    // bool Training(Operator *pEnd);
+    // bool Testing(Operator *pEnd);
+    //
+    // bool Training(Optimizer *pOptimizer);
+    // bool Testing(Optimizer *pOptimizer);
 
-    void SetEndOperator(Operator *pEnd) {
-        m_aEnd->AddEdgebetweenOperators(pEnd);
-    }
+    bool Run(Operator *pStart, Operator *pEnd);
+    bool Run(Operator *pEnd);
+    bool Run(Optimizer *pOptimizer);
 
-    void SetOptimizer(Optimizer *pOptimizer) {
-        m_pOptimizer = pOptimizer;
-    }
 
-    void PrintGraph(Operator *pStart = NULL, Operator *pEnd = NULL);
+    // void SetEndOperator(Operator *pEnd) {
+    // m_aEnd->AddEdgebetweenOperators(pEnd);
+    // }
+
+    // void SetOptimizer(Optimizer *pOptimizer) {
+    // m_pOptimizer = pOptimizer;
+    // }
+
+    void PrintGraph(Operator *pEnd);
+    void PrintGraph(Optimizer *pOptimizer);
 
     // 추후에는 그래프에 있는 Operator인지도 확인해야 한다.
-    void PrintData(int forceprint = 0);
+    void PrintData(Optimizer *pOptimizer, int forceprint = 0);
 
     void PrintData(Operator *pOperator, int forceprint = 0);
-
-    void PrintData(Operator *pStart, Operator *pEnd, int forceprint = 0);
 
     // ===========================================================================================
     bool CreateGraph(Optimizer *pOptimizer);
 
     // ===========================================================================================
 
-    void UpdateVariable() {
-        m_pOptimizer->UpdateVariable();
+    void UpdateVariable(Optimizer *pOptimizer) {
+        pOptimizer->UpdateVariable();
     }
 
-    Operator * GetBaseOperator(){
+    Operator* GetBaseOperator() {
         return m_aStart;
     }
 
-    Operator * GetFinalOperator(){
-        return m_aEnd;
-    }
+    // Operator * GetFinalOperator(){
+    // return m_aEnd;
+    // }
 };
 
 #endif  // NEURALNETWORK_H_

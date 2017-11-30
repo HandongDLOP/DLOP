@@ -16,7 +16,7 @@ int main(int argc, char const *argv[]) {
     // Network declare
     NeuralNetwork HGUNN;
 
-    // create input, label data placeholder
+    // create input, label data placeholder, placeholder is always managed by NeuralNetwork
     Operator *x     = HGUNN.AddPlaceholder(Tensor::Constants(1, BATCH, 1, 1, 784, 0.0), "x");
     Operator *label = HGUNN.AddPlaceholder(Tensor::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
 
@@ -31,22 +31,20 @@ int main(int argc, char const *argv[]) {
     Optimizer *optimizer = new StochasticGradientDescent(err, 0.01, MINIMIZE);
 
     // ======================= Create Graph ===================
-    HGUNN.SetEndOperator(err);
     HGUNN.CreateGraph(optimizer);
 
     // ======================= Prepare Data ===================
     MNISTDataSet *dataset = CreateMNISTDataSet();
 
     // ======================= Training =======================
-    HGUNN.PrintGraph();
+    HGUNN.PrintGraph(optimizer);
 
     for (int i = 0; i < LOOP_FOR_TRAIN; i++) {
         dataset->CreateTrainDataPair(BATCH);
         x->FeedOutput(dataset->GetTrainFeedImage());
         label->FeedOutput(dataset->GetTrainFeedLabel());
 
-        HGUNN.Training();
-        HGUNN.UpdateVariable();
+        HGUNN.Run(optimizer);
 
         if ((i % 100) == 0) std::cout << "Accuracy is : " << temp::Accuracy(add->GetOutput(), label->GetOutput(), BATCH) << '\n';
     }
@@ -59,7 +57,7 @@ int main(int argc, char const *argv[]) {
         x->FeedOutput(dataset->GetTestFeedImage());
         label->FeedOutput(dataset->GetTestFeedLabel());
 
-        HGUNN.Testing();
+        HGUNN.Run(err);
         // I'll implement flexibility about the situation that change of Batch size
         test_accuracy += temp::Accuracy(add->GetOutput(), label->GetOutput(), BATCH) / (int)LOOP_FOR_TEST;
     }
