@@ -9,6 +9,7 @@
 
 #define BATCH             100
 #define LOOP_FOR_TRAIN    1000
+// 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
 int main(int argc, char const *argv[]) {
