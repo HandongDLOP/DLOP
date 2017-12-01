@@ -190,7 +190,7 @@ public:
             }
         }
 
-        return delta_;
+        return delta_ / num_of_output;
     }
 
     Tensor* GetSoftmaxResult() {
