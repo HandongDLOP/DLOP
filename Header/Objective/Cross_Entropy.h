@@ -162,7 +162,7 @@ public:
         double delta_ = 0.0;
 
         // delta_ = -label_data / ((input_data * num_of_output) + m_epsilon);
-        delta_ = -label_data / (input_data + m_epsilon);
+        delta_ = -label_data / (input_data + m_epsilon) / num_of_output;
 
         // if (std::isnan(delta_) || (delta_ < m_max_error)) {
         // delta_ = m_min_error;
