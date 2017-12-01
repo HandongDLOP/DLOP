@@ -31,7 +31,7 @@ void NeuralNetwork::Delete() {
 
 bool NeuralNetwork::AllocOptimizer(Optimizer *pOptimizer) {
     pOptimizer->GetObjectOperator()->AllocOptimizer(pOptimizer);
-    pOptimizer->SetBatch(pOptimizer->GetObjectOperator()->GetOutput()->GetBatch());
+    // pOptimizer->SetBatch(pOptimizer->GetObjectOperator()->GetOutput()->GetBatch());
 
     // Object Operator는 거의 100% Optimizer가 필요 없다.
     // m_aEnd->SetOptimizer(pOptimizer);
