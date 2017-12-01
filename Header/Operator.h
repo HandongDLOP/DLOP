@@ -37,59 +37,59 @@ private:
 
 public:
     Operator() {
-        std::cout << "Operator::Operator() 상속자 상속상태" << '\n';
+        std::cout << "Operator::Operator()" << '\n';
     }
 
     Operator(std::string pName) {
-        std::cout << "Operator::Operator(std::string) 상속자 상속상태" << '\n';
+        std::cout << "Operator::Operator(std::string)" << '\n';
         m_name = pName;
     }
 
     // ===========================================================================================
 
     Operator(Tensor *pTensor) {
-        std::cout << "Operator::Operator(Tensor *, std::string pName) 상속자 상속상태" << '\n';
+        std::cout << "Operator::Operator(Tensor *, std::string pName)" << '\n';
         Alloc(pTensor);
     }
 
     Operator(Tensor *pTensor, std::string pName) : Operator(pName) {
-        std::cout << "Operator::Operator(Tensor *, std::string pName) 상속자 상속상태" << '\n';
+        std::cout << "Operator::Operator(Tensor *, std::string pName)" << '\n';
         Alloc(pTensor);
     }
 
     // ===========================================================================================
 
     Operator(Operator *pInput) {
-        std::cout << "Operator::Operator(Operator *) 상속자 상속상태" << '\n';
+        std::cout << "Operator::Operator(Operator *)" << '\n';
         Alloc(pInput);
     }
 
     Operator(Operator *pInput, std::string pName) : Operator(pName) {
-        std::cout << "Operator::Operator(Operator *, std::string) 상속자 상속상태" << '\n';
+        std::cout << "Operator::Operator(Operator *, std::string)" << '\n';
         Alloc(pInput);
     }
 
     // ===========================================================================================
 
     Operator(Operator *pInput, MetaParameter *pParam) {
-        std::cout << "Operator::Operator(Operator *, MetaParameter *) 상속자 상속상태" << '\n';
+        std::cout << "Operator::Operator(Operator *, MetaParameter *)" << '\n';
         Alloc(pInput);
     }
 
     Operator(Operator *pInput, MetaParameter *pParam, std::string pName) : Operator(pName) {
-        std::cout << "Operator::Operator(Operator *, MetaParameter *, std::string) 상속자 상속상태" << '\n';
+        std::cout << "Operator::Operator(Operator *, MetaParameter *, std::string)" << '\n';
         Alloc(pInput);
     }
 
     // ===========================================================================================
 
     Operator(Operator *pInput0, Operator *pInput1) {
-        std::cout << "Operator::Operator(Operator *, Operator *) 상속자 상속상태" << '\n';
+        std::cout << "Operator::Operator(Operator *, Operator *)" << '\n';
         Alloc(pInput0, pInput1);
     }
 
     Operator(Operator *pInput0, Operator *pInput1, std::string pName) : Operator(pName) {
-        std::cout << "Operator::Operator(Operator *, Operator *, std::string) 상속자 상속상태" << '\n';
+        std::cout << "Operator::Operator(Operator *, Operator *, std::string)" << '\n';
         Alloc(pInput0, pInput1);
     }
 
