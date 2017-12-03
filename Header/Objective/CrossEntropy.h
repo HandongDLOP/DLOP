@@ -1,9 +1,9 @@
-#ifndef CROSS_ENTROPY_H_
-#define CROSS_ENTROPY_H_    value
+#ifndef CROSSENTROPY_H_
+#define CROSSENTROPY_H_    value
 
 #include "..//Operator.h"
 
-class Cross_Entropy : public Operator {
+class CrossEntropy : public Operator {
 private:
     // Tensor *m_aSoftmax_Result = NULL;
     double m_epsilon   = 0.0;        // for backprop
@@ -13,28 +13,28 @@ private:
 public:
     // Constructor의 작업 순서는 다음과 같다.
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
-    // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (Cross_Entropy::Alloc())
-    Cross_Entropy(Operator *pInput1, Operator *pInput2, int epsilon = 1e-30) : Operator(pInput1, pInput2) {
-        std::cout << "Cross_Entropy::Cross_Entropy(Operator *, Operator *, int)" << '\n';
+    // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (CrossEntropy::Alloc())
+    CrossEntropy(Operator *pInput1, Operator *pInput2, int epsilon = 1e-30) : Operator(pInput1, pInput2) {
+        std::cout << "CrossEntropy::CrossEntropy(Operator *, Operator *, int)" << '\n';
         Alloc(pInput1, pInput2, epsilon);
     }
 
-    Cross_Entropy(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pInput1, pInput2, pName) {
-        std::cout << "Cross_Entropy::Cross_Entropy(Operator *, Operator *, std::string)" << '\n';
+    CrossEntropy(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pInput1, pInput2, pName) {
+        std::cout << "CrossEntropy::CrossEntropy(Operator *, Operator *, std::string)" << '\n';
         Alloc(pInput1, pInput2, 1e-30);
     }
 
-    Cross_Entropy(Operator *pInput1, Operator *pInput2, int epsilon, std::string pName) : Operator(pInput1, pInput2, pName) {
-        std::cout << "Cross_Entropy::Cross_Entropy(Operator *, Operator *, int, std::string)" << '\n';
+    CrossEntropy(Operator *pInput1, Operator *pInput2, int epsilon, std::string pName) : Operator(pInput1, pInput2, pName) {
+        std::cout << "CrossEntropy::CrossEntropy(Operator *, Operator *, int, std::string)" << '\n';
         Alloc(pInput1, pInput2, epsilon);
     }
 
-    virtual ~Cross_Entropy() {
-        std::cout << "Cross_Entropy::~Cross_Entropy()" << '\n';
+    virtual ~CrossEntropy() {
+        std::cout << "CrossEntropy::~CrossEntropy()" << '\n';
     }
 
     virtual bool Alloc(Operator *pInput1, Operator *pInput2, int epsilon = 1e-30) {
-        std::cout << "Cross_Entropy::Alloc(Operator *, Operator *, int)" << '\n';
+        std::cout << "CrossEntropy::Alloc(Operator *, Operator *, int)" << '\n';
         // if pInput1 and pInput2의 shape가 다르면 abort
 
         int *shape     = GetInputOperator()[0]->GetOutput()->GetShape();
@@ -184,4 +184,4 @@ public:
     }
 };
 
-#endif  // CROSS_ENTROPY_H_
+#endif  // CROSSENTROPY_H_

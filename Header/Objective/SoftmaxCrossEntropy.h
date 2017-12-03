@@ -1,9 +1,9 @@
-#ifndef SOFTMAX_CROSS_ENTROPY_H_
-#define SOFTMAX_CROSS_ENTROPY_H_    value
+#ifndef SOFTMAXCROSSENTROPY_H_
+#define SOFTMAXCROSSENTROPY_H_    value
 
 #include "..//Operator.h"
 
-class Softmax_Cross_Entropy : public Operator {
+class SoftmaxCrossEntropy : public Operator {
 private:
     Tensor *m_aSoftmax_Result = NULL;
     double m_epsilon          = 0.0; // for backprop
@@ -11,30 +11,30 @@ private:
 public:
     // Constructor의 작업 순서는 다음과 같다.
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
-    // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (Softmax_Cross_Entropy::Alloc())
-    Softmax_Cross_Entropy(Operator *pInput1, Operator *pInput2, double epsilon = 1e-20) : Operator(pInput1, pInput2) {
-        std::cout << "Softmax_Cross_Entropy::Softmax_Cross_Entropy(Operator *, Operator *, int)" << '\n';
+    // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (SoftmaxCrossEntropy::Alloc())
+    SoftmaxCrossEntropy(Operator *pInput1, Operator *pInput2, double epsilon = 1e-20) : Operator(pInput1, pInput2) {
+        std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator *, Operator *, int)" << '\n';
         Alloc(pInput1, pInput2, epsilon);
     }
 
-    Softmax_Cross_Entropy(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pInput1, pInput2, pName) {
-        std::cout << "Softmax_Cross_Entropy::Softmax_Cross_Entropy(Operator *, Operator *, std::string)" << '\n';
+    SoftmaxCrossEntropy(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pInput1, pInput2, pName) {
+        std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator *, Operator *, std::string)" << '\n';
         Alloc(pInput1, pInput2, 1e-20);
     }
 
-    Softmax_Cross_Entropy(Operator *pInput1, Operator *pInput2, double epsilon, std::string pName) : Operator(pInput1, pInput2, pName) {
-        std::cout << "Softmax_Cross_Entropy::Softmax_Cross_Entropy(Operator *, Operator *, int, std::string)" << '\n';
+    SoftmaxCrossEntropy(Operator *pInput1, Operator *pInput2, double epsilon, std::string pName) : Operator(pInput1, pInput2, pName) {
+        std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator *, Operator *, int, std::string)" << '\n';
         Alloc(pInput1, pInput2, epsilon);
     }
 
-    virtual ~Softmax_Cross_Entropy() {
-        std::cout << "Softmax_Cross_Entropy::~Softmax_Cross_Entropy()" << '\n';
+    virtual ~SoftmaxCrossEntropy() {
+        std::cout << "SoftmaxCrossEntropy::~SoftmaxCrossEntropy()" << '\n';
 
         delete m_aSoftmax_Result;
     }
 
     virtual bool Alloc(Operator *pInput1, Operator *pInput2, double epsilon = 1e-20) {
-        std::cout << "Softmax_Cross_Entropy::Alloc(Operator *, Operator *, int)" << '\n';
+        std::cout << "SoftmaxCrossEntropy::Alloc(Operator *, Operator *, int)" << '\n';
         // if pInput1 and pInput2의 shape가 다르면 abort
 
         int *shape     = GetInputOperator()[0]->GetOutput()->GetShape();
@@ -134,7 +134,7 @@ public:
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            delta_input_data[ti][ba][ch][ro][co] = softmax_cross_entropy_derivative(label_data[ti][ba],
+                            delta_input_data[ti][ba][ch][ro][co] = SoftmaxCrossEntropy_derivative(label_data[ti][ba],
                                                                                                     softmax_result[ti][ba][ch][ro][co],
                                                                                                     shape,
                                                                                                     ch,
@@ -173,7 +173,7 @@ public:
         return error_;
     }
 
-    double softmax_cross_entropy_derivative(double ***label_data, double prediction, int *shape, int pChannel, int pRow, int pCol, int num_of_output) {
+    double SoftmaxCrossEntropy_derivative(double ***label_data, double prediction, int *shape, int pChannel, int pRow, int pCol, int num_of_output) {
         int Channel = shape[2];
         int Row     = shape[3];
         int Col     = shape[4];
@@ -198,4 +198,4 @@ public:
     }
 };
 
-#endif  // SOFTMAX_CROSS_ENTROPY_H_
+#endif  // SOFTMAXCROSSENTROPY_H_

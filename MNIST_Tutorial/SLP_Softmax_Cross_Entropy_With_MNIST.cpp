@@ -1,4 +1,4 @@
-/*g++ -g -o testing -std=c++11 MLP_Softmax_Cross_Entropy_With_MNIST.cpp ../Header/Operator.cpp ../Header/NeuralNetwork.cpp ../Header/Tensor.cpp*/
+/*g++ -g -o testing -std=c++11 SLP_Softmax_Cross_Entropy_With_MNIST.cpp ../Header/Operator.cpp ../Header/NeuralNetwork.cpp ../Header/Tensor.cpp*/
 
 #include <iostream>
 #include <string>
@@ -27,7 +27,7 @@ int main(int argc, char const *argv[]) {
     Operator *add    = new Add(matmul, b, "add");
 
     // ======================= Error=======================
-    Operator *err = new Softmax_Cross_Entropy(add, label, 1e-50, "SCE");
+    Operator *err = new SoftmaxCrossEntropy(add, label, 1e-50, "SCE");
 
     // ======================= Optimizer=======================
     Optimizer *optimizer = new GradientDescentOptimizer(err, 0.01, MINIMIZE);

@@ -27,7 +27,7 @@ int main(int argc, char const *argv[]) {
     Add add(&matmul, &b, "add");
 
     // ======================= Error=======================
-    Softmax_Cross_Entropy err(&add, label, 1e-50, "SCE");
+    SoftmaxCrossEntropy err(&add, label, 1e-50, "SCE");
 
     // ======================= Optimizer=======================
     GradientDescentOptimizer optimizer(&err, 0.01, MINIMIZE);

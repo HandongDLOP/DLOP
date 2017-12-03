@@ -12,8 +12,8 @@
 #include "Operator//MatMulXW.h"
 
 #include "Objective//MSE.h"
-#include "Objective//Cross_Entropy.h"
-#include "Objective//Softmax_Cross_Entropy.h"
+#include "Objective//CrossEntropy.h"
+#include "Objective//SoftmaxCrossEntropy.h"
 
 class NeuralNetwork {
 private:
