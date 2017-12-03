@@ -3,24 +3,25 @@
 
 #include "..//Operator.h"
 
-class MatMul : public Operator {
+template<typename DTYPE>
+class MatMul : public Operator<DTYPE>{
 public:
-    MatMul(Operator *pInput0, Operator *pInput1) : Operator(pInput0, pInput1) {
-        std::cout << "MatMul::MatMul(Operator *, MetaParameter *)" << '\n';
-        Alloc(pInput0, pInput1);
+    MatMul(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) : Operator<DTYPE>(pInput0, pInput1) {
+        std::cout << "MatMul::MatMul(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
+        this->Alloc(pInput0, pInput1);
     }
 
-    MatMul(Operator *pInput0, Operator *pInput1, std::string pName) : Operator(pInput0, pInput1, pName) {
-        std::cout << "MatMul::MatMul(Operator *, MetaParameter *, std::string)" << '\n';
-        Alloc(pInput0, pInput1);
+    MatMul(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) : Operator<DTYPE>(pInput0, pInput1, pName) {
+        std::cout << "MatMul::MatMul(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
+        this->Alloc(pInput0, pInput1);
     }
 
     virtual ~MatMul() {
         std::cout << "MatMul::~MatMul()" << '\n';
     }
 
-    virtual bool Alloc(Operator *pInput0, Operator *pInput1) {
-        std::cout << "MatMul::Alloc(Operator *, Operator *)" << '\n';
+    virtual bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
+        std::cout << "MatMul::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
 
         int *shape_Input0 = pInput0->GetOutput()->GetShape();
         int *shape_Input1 = pInput1->GetOutput()->GetShape();
@@ -68,9 +69,9 @@ public:
         int Col     = pInput1->GetOutput()->GetCol();
 
         // 결과물 shape (m by n @ n by k => m by k)
-        SetOutput(new Tensor(Time, Batch, Channel, Row, Col));
+        this->SetOutput(new Tensor<DTYPE>(Time, Batch, Channel, Row, Col));
         // Gradient는 Trainable한 요소에서만 필요하다.
-        SetDelta(new Tensor(Time, Batch, Channel, Row, Col));
+        this->SetDelta(new Tensor<DTYPE>(Time, Batch, Channel, Row, Col));
 
         return true;
     }
@@ -78,19 +79,19 @@ public:
     virtual bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        int Time    = GetOutput()->GetTime();
-        int Batch   = GetOutput()->GetBatch();
-        int Channel = GetOutput()->GetChannel();
-        int Row     = GetOutput()->GetRow();
-        int Col     = GetOutput()->GetCol();
-        int Hidden  = GetInputOperator()[0]->GetOutput()->GetCol();
+        int Time    = this->GetOutput()->GetTime();
+        int Batch   = this->GetOutput()->GetBatch();
+        int Channel = this->GetOutput()->GetChannel();
+        int Row     = this->GetOutput()->GetRow();
+        int Col     = this->GetOutput()->GetCol();
+        int Hidden  = this->GetInputOperator()[0]->GetOutput()->GetCol();
 
-        double *****input0 = GetInputOperator()[0]->GetOutput()->GetData();  // weight
-        double *****input1 = GetInputOperator()[1]->GetOutput()->GetData();  // input
-        double *****output = GetOutput()->GetData();
+        DTYPE *****input0 = this->GetInputOperator()[0]->GetOutput()->GetData();  // weight
+        DTYPE *****input1 = this->GetInputOperator()[1]->GetOutput()->GetData();  // input
+        DTYPE *****output = this->GetOutput()->GetData();
 
-        // double *****output_data     = new float[row * col];
-        double temp = 0.0;
+        // DTYPE *****output_data     = new float[row * col];
+        DTYPE temp = 0.0;
 
         // GetInputOperator()[0]->GetOutput()->PrintShape();
         // GetInputOperator()[1]->GetOutput()->PrintShape();
@@ -120,27 +121,27 @@ public:
     virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int Time    = GetOutput()->GetTime();
-        int Batch   = GetOutput()->GetBatch();
-        int Channel = GetOutput()->GetChannel();
-        int Row     = GetOutput()->GetRow();
-        int Col     = GetOutput()->GetCol();
-        int Hidden  = GetInputOperator()[0]->GetOutput()->GetCol();
+        int Time    = this->GetOutput()->GetTime();
+        int Batch   = this->GetOutput()->GetBatch();
+        int Channel = this->GetOutput()->GetChannel();
+        int Row     = this->GetOutput()->GetRow();
+        int Col     = this->GetOutput()->GetCol();
+        int Hidden  = this->GetInputOperator()[0]->GetOutput()->GetCol();
 
-        double *****input0 = GetInputOperator()[0]->GetOutput()->GetData();  // weight
-        double *****input1 = GetInputOperator()[1]->GetOutput()->GetData();  // input
+        DTYPE *****input0 = this->GetInputOperator()[0]->GetOutput()->GetData();  // weight
+        DTYPE *****input1 = this->GetInputOperator()[1]->GetOutput()->GetData();  // input
 
         // GetInputOperator()[0]->GetOutput()->PrintData();
         // GetInputOperator()[1]->GetOutput()->PrintData();
 
-        double *****delta = GetDelta()->GetData();
+        DTYPE *****delta = this->GetDelta()->GetData();
 
         // GetDelta()->PrintData();
 
-        GetInputOperator()[0]->GetDelta()->Reset();
-        GetInputOperator()[1]->GetDelta()->Reset();
-        double *****delta_input0 = GetInputOperator()[0]->GetDelta()->GetData();  // weight
-        double *****delta_input1 = GetInputOperator()[1]->GetDelta()->GetData();  // input
+        this->GetInputOperator()[0]->GetDelta()->Reset();
+        this->GetInputOperator()[1]->GetDelta()->Reset();
+        DTYPE *****delta_input0 = this->GetInputOperator()[0]->GetDelta()->GetData();  // weight
+        DTYPE *****delta_input1 = this->GetInputOperator()[1]->GetDelta()->GetData();  // input
 
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {

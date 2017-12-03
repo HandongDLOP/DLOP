@@ -3,29 +3,30 @@
 
 #include "..//Optimizer.h"
 
-class GradientDescentOptimizer : public Optimizer {
+template<typename DTYPE>
+class GradientDescentOptimizer : public Optimizer<DTYPE> {
 private:
     /* data */
 
 public:
-    GradientDescentOptimizer(Operator *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer(pObjectOperator, pLearningRate, pOptimizeDirection) {
-        std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Operator *, float, OptimizeDirection)" << '\n';
+    GradientDescentOptimizer(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pObjectOperator, pLearningRate, pOptimizeDirection) {
+        std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
     }
 
     virtual ~GradientDescentOptimizer() {
         std::cout << "GradientDescentOptimizer::~GradientDescentOptimizer()" << '\n';
     }
 
-    virtual bool UpdateVariable(TrainableData *pTrainableData) {
+    virtual bool UpdateVariable(TrainableData<DTYPE> *pTrainableData) {
         // std::cout << "GradientDescentOptimizer::UpdateVariable(TrainableData *)" << '\n';
 
         int *shape = pTrainableData->Data->GetShape();
 
-        double *****trainable_data = pTrainableData->Data->GetData();
-        double *****gradient       = pTrainableData->Gradient->GetData();
+        DTYPE *****trainable_data = pTrainableData->Data->GetData();
+        DTYPE *****gradient       = pTrainableData->Gradient->GetData();
 
         // learning rate 부분 다시 구현할 필요 있음
-        float learning_rate = GetOptimizeDirection() * GetLearningRate();
+        float learning_rate = this->GetOptimizeDirection() * this->GetLearningRate();
 
         // average 학습
         // int input_batch = GetBatch();

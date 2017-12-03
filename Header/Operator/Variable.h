@@ -3,40 +3,41 @@
 
 #include "..//Operator.h"
 
-class Variable : public Operator {
+template<typename DTYPE>
+class Variable : public Operator<DTYPE> {
 private:
 public:
-    Variable(std::string pName) : Operator(pName) {
+    Variable(std::string pName) : Operator<DTYPE>(pName) {
         std::cout << "Variable::Variable(std::string)" << '\n';
     }
 
-    Variable(Tensor *pTensor, std::string pName, int pTrainable = 1) : Operator(pTensor, pName) {
-        std::cout << "Variable::Variable(Tensor *, std::string)" << '\n';
+    Variable(Tensor<DTYPE> *pTensor, std::string pName, int pTrainable = 1) : Operator<DTYPE>(pTensor, pName) {
+        std::cout << "Variable::Variable(Tensor<DTYPE> *, std::string)" << '\n';
 
-        Alloc(pTensor, pTrainable);
+        this->Alloc(pTensor, pTrainable);
     }
 
     virtual ~Variable() {
         std::cout << "Variable::~Variable()" << '\n';
     }
 
-    virtual bool Alloc(Tensor *pTensor, int pTrainable) {
+    virtual bool Alloc(Tensor<DTYPE> *pTensor, int pTrainable) {
         if (pTensor->GetShape()[0] != 1) {
             std::cout << "data has unvalid time dimension" << '\n';
             exit(0);
         }
 
-        SetOutput(pTensor);
+        this->SetOutput(pTensor);
 
-        Tensor *gradient = new Tensor(pTensor->GetShape());
+        Tensor<DTYPE> *gradient = new Tensor<DTYPE>(pTensor->GetShape());
 
-        SetGradient(gradient);
+        this->SetGradient(gradient);
 
-        Tensor *delta = new Tensor(pTensor->GetShape());
+        Tensor<DTYPE> *delta = new Tensor<DTYPE>(pTensor->GetShape());
 
-        SetDelta(delta);
+        this->SetDelta(delta);
 
-        SetTrainable(pTrainable);
+        this->SetTrainable(pTrainable);
 
         return true;
     }
@@ -50,9 +51,9 @@ public:
     virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int *shape        = GetOutput()->GetShape();
-        double *****delta = GetDelta()->GetData();
-        double *****grad  = GetGradient()->GetData();
+        int *shape        = this->GetOutput()->GetShape();
+        DTYPE *****delta = this->GetDelta()->GetData();
+        DTYPE *****grad  = this->GetGradient()->GetData();
 
         // 이전에 구해져 있던 gradient와 합치기
         for (int ti = 0; ti < shape[0]; ti++) {

@@ -3,28 +3,29 @@
 
 #include "..//Operator.h"
 
-class SoftmaxCrossEntropy : public Operator {
+template<typename DTYPE>
+class SoftmaxCrossEntropy : public Operator<DTYPE> {
 private:
-    Tensor *m_aSoftmax_Result = NULL;
-    double m_epsilon          = 0.0; // for backprop
+    Tensor<DTYPE> *m_aSoftmax_Result = NULL;
+    DTYPE m_epsilon          = 0.0; // for backprop
 
 public:
     // Constructor의 작업 순서는 다음과 같다.
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
     // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (SoftmaxCrossEntropy::Alloc())
-    SoftmaxCrossEntropy(Operator *pInput1, Operator *pInput2, double epsilon = 1e-20) : Operator(pInput1, pInput2) {
-        std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator *, Operator *, int)" << '\n';
-        Alloc(pInput1, pInput2, epsilon);
+    SoftmaxCrossEntropy(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, DTYPE epsilon = 1e-20) : Operator<DTYPE>(pInput0, pInput1) {
+        std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
+        Alloc(pInput0, pInput1, epsilon);
     }
 
-    SoftmaxCrossEntropy(Operator *pInput1, Operator *pInput2, std::string pName) : Operator(pInput1, pInput2, pName) {
-        std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator *, Operator *, std::string)" << '\n';
-        Alloc(pInput1, pInput2, 1e-20);
+    SoftmaxCrossEntropy(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) : Operator<DTYPE>(pInput0, pInput1, pName) {
+        std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
+        Alloc(pInput0, pInput1, 1e-20);
     }
 
-    SoftmaxCrossEntropy(Operator *pInput1, Operator *pInput2, double epsilon, std::string pName) : Operator(pInput1, pInput2, pName) {
-        std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator *, Operator *, int, std::string)" << '\n';
-        Alloc(pInput1, pInput2, epsilon);
+    SoftmaxCrossEntropy(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, DTYPE epsilon, std::string pName) : Operator<DTYPE>(pInput0, pInput1, pName) {
+        std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, int, std::string)" << '\n';
+        Alloc(pInput0, pInput1, epsilon);
     }
 
     virtual ~SoftmaxCrossEntropy() {
@@ -33,15 +34,15 @@ public:
         delete m_aSoftmax_Result;
     }
 
-    virtual bool Alloc(Operator *pInput1, Operator *pInput2, double epsilon = 1e-20) {
-        std::cout << "SoftmaxCrossEntropy::Alloc(Operator *, Operator *, int)" << '\n';
-        // if pInput1 and pInput2의 shape가 다르면 abort
+    virtual bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, DTYPE epsilon = 1e-20) {
+        std::cout << "SoftmaxCrossEntropy::Alloc(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
+        // if pInput0 and pInput1의 shape가 다르면 abort
 
-        int *shape     = GetInputOperator()[0]->GetOutput()->GetShape();
-        Tensor *output = new Tensor(shape[0], shape[1], 1, 1, 1);
-        SetOutput(output);
+        int *shape     = pInput0->GetOutput()->GetShape();
+        Tensor<DTYPE> *output = new Tensor<DTYPE>(shape[0], shape[1], 1, 1, 1);
+        this->SetOutput(output);
 
-        m_aSoftmax_Result = new Tensor(shape);
+        m_aSoftmax_Result = new Tensor<DTYPE>(shape);
 
         m_epsilon = epsilon;
 
@@ -51,13 +52,13 @@ public:
     virtual bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        int *shape             = GetInputOperator()[0]->GetOutput()->GetShape();
-        double *****input_data = GetInputOperator()[0]->GetOutput()->GetData();
-        double *****label_data = GetInputOperator()[1]->GetOutput()->GetData();
+        int *shape             = Operator<DTYPE>::GetInputOperator()[0]->GetOutput()->GetShape();
+        DTYPE *****input_data = Operator<DTYPE>::GetInputOperator()[0]->GetOutput()->GetData();
+        DTYPE *****label_data = Operator<DTYPE>::GetInputOperator()[1]->GetOutput()->GetData();
 
-        GetOutput()->Reset();
-        double *****output         = GetOutput()->GetData();
-        double *****softmax_result = GetSoftmaxResult()->GetData();
+        this->GetOutput()->Reset();
+        DTYPE *****output         = Operator<DTYPE>::GetOutput()->GetData();
+        DTYPE *****softmax_result = m_aSoftmax_Result->GetData();
 
         int Time    = shape[0];
         int Batch   = shape[1];
@@ -65,11 +66,11 @@ public:
         int Row     = shape[3];
         int Col     = shape[4];
 
-        double sum[Time][Batch] = { 0.0 };
-        double max[Time][Batch] = { 0.0 };
+        DTYPE sum[Time][Batch] = { 0.0 };
+        DTYPE max[Time][Batch] = { 0.0 };
         int    num_of_output    = Channel * Row * Col;
 
-        double temp = 0.0;
+        DTYPE temp = 0.0;
 
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {
@@ -113,13 +114,13 @@ public:
     virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int *shape = GetInputOperator()[0]->GetOutput()->GetShape();
+        int *shape = Operator<DTYPE>::GetInputOperator()[0]->GetOutput()->GetShape();
 
-        double *****label_data     = GetInputOperator()[1]->GetOutput()->GetData();
-        double *****softmax_result = GetSoftmaxResult()->GetData();
+        DTYPE *****label_data     = Operator<DTYPE>::GetInputOperator()[1]->GetOutput()->GetData();
+        DTYPE *****softmax_result = m_aSoftmax_Result->GetData();
 
-        GetInputOperator()[0]->GetDelta()->Reset();
-        double *****delta_input_data = GetInputOperator()[0]->GetDelta()->GetData();
+        this->GetInputOperator()[0]->GetDelta()->Reset();
+        DTYPE *****delta_input_data = Operator<DTYPE>::GetInputOperator()[0]->GetDelta()->GetData();
 
         int Time    = shape[0];
         int Batch   = shape[1];
@@ -150,9 +151,9 @@ public:
         return true;
     }
 
-    double Max(double ***data, int Channel, int Row, int Col) {
+    DTYPE Max(DTYPE ***data, int Channel, int Row, int Col) {
         // initialize
-        double max = data[0][0][0];
+        DTYPE max = data[0][0][0];
 
         for (int ch = 0; ch < Channel; ch++) {
             for (int ro = 0; ro < Row; ro++) {
@@ -167,18 +168,18 @@ public:
         return max;
     }
 
-    double cross_entropy(double label, double prediction, int num_of_output) {
-        double error_ = -label *log(prediction + m_epsilon) / num_of_output;
+    DTYPE cross_entropy(DTYPE label, DTYPE prediction, int num_of_output) {
+        DTYPE error_ = -label *log(prediction + m_epsilon) / num_of_output;
 
         return error_;
     }
 
-    double SoftmaxCrossEntropy_derivative(double ***label_data, double prediction, int *shape, int pChannel, int pRow, int pCol, int num_of_output) {
+    DTYPE SoftmaxCrossEntropy_derivative(DTYPE ***label_data, DTYPE prediction, int *shape, int pChannel, int pRow, int pCol, int num_of_output) {
         int Channel = shape[2];
         int Row     = shape[3];
         int Col     = shape[4];
 
-        double delta_ = 0.0;
+        DTYPE delta_ = 0.0;
 
         for (int ch = 0; ch < Channel; ch++) {
             for (int ro = 0; ro < Row; ro++) {
@@ -193,9 +194,6 @@ public:
         return delta_ / num_of_output;
     }
 
-    Tensor* GetSoftmaxResult() {
-        return m_aSoftmax_Result;
-    }
 };
 
 #endif  // SOFTMAXCROSSENTROPY_H_

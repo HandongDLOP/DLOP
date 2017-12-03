@@ -3,29 +3,30 @@
 
 #include "..//Operator.h"
 
-class Placeholder : public Operator {
+template<typename DTYPE>
+class Placeholder : public Operator<DTYPE> {
 private:
 public:
-    Placeholder(std::string pName) : Operator(pName) {
+    Placeholder(std::string pName) : Operator<DTYPE>(pName) {
         std::cout << "Placeholder::Placeholder(std::string)" << '\n';
     }
 
-    Placeholder(Tensor *pTensor, std::string pName) : Operator(pTensor, pName) {
+    Placeholder(Tensor<DTYPE> *pTensor, std::string pName) : Operator<DTYPE>(pTensor, pName) {
         std::cout << "Placeholder::Placeholder(Tensor *, std::string)" << '\n';
 
-        Alloc(pTensor);
+        this->Alloc(pTensor);
     }
 
     virtual ~Placeholder() {
         std::cout << "Placeholder::~Placeholder()" << '\n';
     }
 
-    virtual bool Alloc(Tensor *pTensor) {
-        SetOutput(pTensor);
+    virtual bool Alloc(Tensor<DTYPE> *pTensor) {
+        this->SetOutput(pTensor);
 
         // no meaning
-        Tensor *delta = new Tensor(pTensor->GetShape());
-        SetDelta(delta);
+        Tensor<DTYPE> *delta = new Tensor<DTYPE>(pTensor->GetShape());
+        this->SetDelta(delta);
 
         return true;
     }

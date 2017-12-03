@@ -3,36 +3,38 @@
 
 #include "Tensor.h"
 
-class Operator;
+template<typename DTYPE> class Operator;
 
 enum OptimizeDirection {
     MAXIMIZE,
     MINIMIZE
 };
 
+template<typename DTYPE>
 struct TrainableData {
-    Tensor *Data     = NULL;
-    Tensor *Gradient = NULL;
+    Tensor<DTYPE> *Data     = NULL;
+    Tensor<DTYPE> *Gradient = NULL;
 };
 
+template<typename DTYPE>
 class Optimizer {
 private:
     /* data */
     // momentum이나 이런 애들은 따로 변수를 가지고 있어야 한다.
 
-    Operator *m_pObjectOperator = NULL;
+    Operator<DTYPE> *m_pObjectOperator = NULL;
 
     float m_LearningRate    = 0.f;
     int m_OptimizeDirection = 1;  // 1 or -1
 
     // int m_Batch = 0;
 
-    TrainableData **m_aTrainableData = NULL;
+    TrainableData<DTYPE> **m_aTrainableData = NULL;
     int m_TrainableDataDegree        = 0;
 
 public:
-    Optimizer(Operator *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
-        std::cout << "Optimizer::Optimizer(Operator *, float, OptimizeDirection)" << '\n';
+    Optimizer(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+        std::cout << "Optimizer::Optimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
 
         Alloc(pObjectOperator, pLearningRate, pOptimizeDirection);
     }
@@ -43,7 +45,7 @@ public:
         Delete();
     }
 
-    bool Alloc(Operator *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+    bool Alloc(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
         SetObjectOperator(pObjectOperator);
         SetLearningRate(pLearningRate);
         SetOptimizeDirection(pOptimizeDirection);
@@ -60,19 +62,19 @@ public:
         return true;
     }
 
-    bool AddTrainableData(Tensor *pData, Tensor *pWeight) {
+    bool AddTrainableData(Tensor<DTYPE> *pData, Tensor<DTYPE> *pWeight) {
         if (m_TrainableDataDegree != 0) {
-            TrainableData **temp = new TrainableData *[m_TrainableDataDegree + 1];
+            TrainableData<DTYPE> **temp = new TrainableData<DTYPE> *[m_TrainableDataDegree + 1];
             std::copy(m_aTrainableData, m_aTrainableData + m_TrainableDataDegree, temp);
 
             delete[] m_aTrainableData;
 
             m_aTrainableData = temp;
         } else {
-            m_aTrainableData = new TrainableData *[m_TrainableDataDegree + 1];
+            m_aTrainableData = new TrainableData<DTYPE> *[m_TrainableDataDegree + 1];
         }
 
-        TrainableData *pTrainableData = new TrainableData();
+        TrainableData<DTYPE> *pTrainableData = new TrainableData<DTYPE>();
         pTrainableData->Data     = pData;
         pTrainableData->Gradient = pWeight;
 
@@ -91,11 +93,11 @@ public:
         return true;
     }
 
-    // virtual bool UpdateVariable(Tensor *Trainable, Tensor *Gradient) = 0;
-    virtual bool UpdateVariable(TrainableData *pTrainableData) = 0;
+    // virtual bool UpdateVariable(Tensor<DTYPE> *Trainable, Tensor<DTYPE> *Gradient) = 0;
+    virtual bool UpdateVariable(TrainableData<DTYPE> *pTrainableData) = 0;
 
 
-    void         SetObjectOperator(Operator *pObjectOperator) {
+    void         SetObjectOperator(Operator<DTYPE> *pObjectOperator) {
         m_pObjectOperator = pObjectOperator;
     }
 
@@ -112,7 +114,7 @@ public:
         else if (pOptimizeDirection == MINIMIZE) m_OptimizeDirection = -1;
     }
 
-    Operator* GetObjectOperator() {
+    Operator<DTYPE>* GetObjectOperator() {
         return m_pObjectOperator;
     }
 

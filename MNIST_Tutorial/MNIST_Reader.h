@@ -41,13 +41,13 @@ private:
     double **Train_label = NULL;
 
     // 따로 해제
-    Tensor *Test_image_feed  = NULL;
-    Tensor *Test_label_feed  = NULL;
-    Tensor *Train_image_feed = NULL;
-    Tensor *Train_label_feed = NULL;
+    Tensor<double> *Test_image_feed  = NULL;
+    Tensor<double> *Test_label_feed  = NULL;
+    Tensor<double> *Train_image_feed = NULL;
+    Tensor<double> *Train_label_feed = NULL;
 
-    Tensor *Test_Data_pair[2]  = { NULL, NULL };
-    Tensor *Train_Data_pair[2] = { NULL, NULL };
+    Tensor<double> *Test_Data_pair[2]  = { NULL, NULL };
+    Tensor<double> *Train_Data_pair[2] = { NULL, NULL };
 
     vector<int> *shuffled_list_for_test  = NULL;
     vector<int> *shuffled_list_for_train = NULL;
@@ -235,8 +235,8 @@ public:
         }
         // cout << '\n';
 
-        Tensor *image_Tensor = new Tensor(image_data, image_shape, image_rank);
-        Tensor *label_Tensor = new Tensor(label_data, label_shape, label_rank);
+        Tensor<double> *image_Tensor = new Tensor<double>(image_data, image_shape, image_rank);
+        Tensor<double> *label_Tensor = new Tensor<double>(label_data, label_shape, label_rank);
 
         if (pOption == TEST) {
             if (Test_image_feed != NULL) delete Test_image_feed;
@@ -271,19 +271,19 @@ public:
         Train_label = pTrain_label;
     }
 
-    Tensor* GetTestFeedImage() {
+    Tensor<double>* GetTestFeedImage() {
         return Test_image_feed;
     }
 
-    Tensor* GetTrainFeedImage() {
+    Tensor<double>* GetTrainFeedImage() {
         return Train_image_feed;
     }
 
-    Tensor* GetTestFeedLabel() {
+    Tensor<double>* GetTestFeedLabel() {
         return Test_label_feed;
     }
 
-    Tensor* GetTrainFeedLabel() {
+    Tensor<double>* GetTrainFeedLabel() {
         return Train_label_feed;
     }
 };

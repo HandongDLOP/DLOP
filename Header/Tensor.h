@@ -8,14 +8,13 @@
 #include <chrono>
 #include <random>
 
-// template <class T>
-
+template <typename DTYPE>
 class Tensor {
 private:
     // 현재는 scala 값은 따로 존재하지 않고 rnak0 dimension 1로 취급한다.
     int m_Rank;
     int *m_aShape;
-    double *****m_aData;
+    DTYPE *****m_aData;
 
 public:
     Tensor() {
@@ -41,8 +40,8 @@ public:
         }
     }
 
-    Tensor(double *****pData, int *pShape, int pRank = 5) {
-        // std::cout << "Tensor::Tensor(double*****, int *, int)" << '\n';
+    Tensor(DTYPE *****pData, int *pShape, int pRank = 5) {
+        // std::cout << "Tensor::Tensor(DTYPE*****, int *, int)" << '\n';
         m_Rank   = pRank;
         m_aShape = pShape;
         m_aData  = pData;
@@ -65,18 +64,18 @@ public:
 
     // ===========================================================================================
 
-    static Tensor* Truncated_normal(int pTime, int pBatch, int pChannel, int pRow, int pCol, double mean, double stddev);
+    static Tensor* Truncated_normal(int pTime, int pBatch, int pChannel, int pRow, int pCol, DTYPE mean, DTYPE stddev);
 
 
     static Tensor* Zeros(int pTime, int pBatch, int pChannel, int pRow, int pCol);
 
 
-    static Tensor* Constants(int pTime, int pBatch, int pChannel, int pRow, int pCol, double constant);
+    static Tensor* Constants(int pTime, int pBatch, int pChannel, int pRow, int pCol, DTYPE constant);
 
 
     // ===========================================================================================
 
-    void SetData(double *****pData) {
+    void SetData(DTYPE *****pData) {
         if (m_aData != NULL) delete m_aData;
         m_aData = pData;
     }
@@ -113,7 +112,7 @@ public:
         return m_aShape[4];
     }
 
-    double***** GetData() const {
+    DTYPE***** GetData() const {
         return m_aData;
     }
 

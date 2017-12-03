@@ -14,23 +14,23 @@
 
 int main(int argc, char const *argv[]) {
     // Network declare
-    NeuralNetwork HGUNN;
+    NeuralNetwork<double> HGUNN;
 
     // create input, label data placeholder, placeholder is always managed by NeuralNetwork
-    Operator *x     = HGUNN.AddPlaceholder(Tensor::Constants(1, BATCH, 1, 1, 784, 0.0), "x");
-    Operator *label = HGUNN.AddPlaceholder(Tensor::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
+    Operator<double> *x     = HGUNN.AddPlaceholder(Tensor<double>::Constants(1, BATCH, 1, 1, 784, 0.0), "x");
+    Operator<double> *label = HGUNN.AddPlaceholder(Tensor<double>::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
 
     // ======================= layer 1=======================
-    Variable w(Tensor::Zeros(1, 1, 1, 784, 10), "w");
-    Variable b(Tensor::Zeros(1, 1, 1, 1, 10), "b");
-    MatMul   matmul(x, &w, "matmul");
-    Add add(&matmul, &b, "add");
+    Variable<double> w(Tensor<double>::Zeros(1, 1, 1, 784, 10), "w");
+    Variable<double> b(Tensor<double>::Zeros(1, 1, 1, 1, 10), "b");
+    MatMul<double>   matmul(x, &w, "matmul");
+    Add<double> add(&matmul, &b, "add");
 
     // ======================= Error=======================
-    SoftmaxCrossEntropy err(&add, label, 1e-50, "SCE");
+    SoftmaxCrossEntropy<double> err(&add, label, 1e-50, "SCE");
 
     // ======================= Optimizer=======================
-    GradientDescentOptimizer optimizer(&err, 0.01, MINIMIZE);
+    GradientDescentOptimizer<double> optimizer(&err, 0.01, MINIMIZE);
 
     // ======================= Create Graph ===================
     HGUNN.CreateGraph(&optimizer);
@@ -68,16 +68,7 @@ int main(int argc, char const *argv[]) {
 
     //// ======================= delete ======================
     //// ~MNISTDataSet
-    // delete dataset;
-    //// ~Operators
-    // delete w;
-    // delete b;
-    // delete matmul;
-    // delete add;
-    //// ~Objectives
-    // delete err;
-    //// ~Optimizers
-    // delete optimizer;
+    delete dataset;
 
     return 0;
 }

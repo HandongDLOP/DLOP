@@ -1,4 +1,4 @@
 Test_code: main
 
 main:
-	g++ -g -o testing -std=c++11 0testIsNAN.cpp
+	g++ -g -o testing -std=c++11 Template_test.cpp Template.cpp

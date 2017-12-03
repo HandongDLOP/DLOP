@@ -6,7 +6,7 @@
 #include "..//Header//NeuralNetwork.h"
 #include "..//Header//Temporary_method.h"
 #include "MNIST_Reader.h"
-
+//
 #define BATCH             100
 #define LOOP_FOR_TRAIN    1000
 // 10,000 is number of Test data
@@ -14,23 +14,23 @@
 
 int main(int argc, char const *argv[]) {
     // Network declare
-    NeuralNetwork HGUNN;
+    NeuralNetwork<double> HGUNN;
 
     // create input, label data placeholder, placeholder is always managed by NeuralNetwork
-    Operator *x     = HGUNN.AddPlaceholder(Tensor::Constants(1, BATCH, 1, 1, 784, 0.0), "x");
-    Operator *label = HGUNN.AddPlaceholder(Tensor::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
+    Operator<double> *x     = HGUNN.AddPlaceholder(Tensor<double>::Constants(1, BATCH, 1, 1, 784, 0.0), "x");
+    Operator<double> *label = HGUNN.AddPlaceholder(Tensor<double>::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
 
     // ======================= layer 1=======================
-    Operator *w      = new Variable(Tensor::Zeros(1, 1, 1, 784, 10), "w");
-    Operator *b      = new Variable(Tensor::Zeros(1, 1, 1, 1, 10), "b");
-    Operator *matmul = new MatMul(x, w, "matmul");
-    Operator *add    = new Add(matmul, b, "add");
+    Operator<double> *w      = new Variable<double>(Tensor<double>::Zeros(1, 1, 1, 784, 10), "w");
+    Operator<double> *b      = new Variable<double>(Tensor<double>::Zeros(1, 1, 1, 1, 10), "b");
+    Operator<double> *matmul = new MatMul<double>(x, w, "matmul");
+    Operator<double> *add    = new Add<double>(matmul, b, "add");
 
     // ======================= Error=======================
-    Operator *err = new SoftmaxCrossEntropy(add, label, 1e-50, "SCE");
+    Operator<double> *err = new SoftmaxCrossEntropy<double>(add, label, 1e-50, "SCE");
 
     // ======================= Optimizer=======================
-    Optimizer *optimizer = new GradientDescentOptimizer(err, 0.01, MINIMIZE);
+    Optimizer<double> *optimizer = new GradientDescentOptimizer<double>(err, 0.01, MINIMIZE);
 
     // ======================= Create Graph ===================
     HGUNN.CreateGraph(optimizer);
@@ -52,7 +52,7 @@ int main(int argc, char const *argv[]) {
     }
 
     // ======================= Testing ======================
-    double test_accuracy = 0.0;
+    float test_accuracy = 0.0;
 
     for (int i = 0; i < (int)LOOP_FOR_TEST; i++) {
         dataset->CreateTestDataPair(BATCH);

@@ -1,9 +1,10 @@
 #include "Tensor.h"
 
 namespace temp {
-int Argmax(double *data, int Dimension) {
-    int index  = 0;
-    double max = data[0];
+template<typename DTYPE>
+int Argmax(DTYPE *data, int Dimension) {
+    int   index = 0;
+    DTYPE max   = data[0];
 
     for (int dim = 1; dim < Dimension; dim++) {
         if (data[dim] > max) {
@@ -15,11 +16,12 @@ int Argmax(double *data, int Dimension) {
     return index;
 }
 
-double Accuracy(Tensor *pred, Tensor *ans, int Batch) {
-    double *****pred_data = pred->GetData();
-    double *****ans_data  = ans->GetData();
+template<typename DTYPE>
+float Accuracy(Tensor<DTYPE> *pred, Tensor<DTYPE> *ans, int Batch) {
+    DTYPE *****pred_data = pred->GetData();
+    DTYPE *****ans_data  = ans->GetData();
 
-    double accuracy = 0.0;
+    DTYPE accuracy = 0.0;
 
     int pred_index = 0;
     int ans_index  = 0;

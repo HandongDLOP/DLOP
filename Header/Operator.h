@@ -2,22 +2,22 @@
 #define OPERATOR_H_
 
 #include "MetaParameter.h"
-
 #include "Optimizer//GradientDescentOptimizer.h"
 
+template<typename DTYPE>
 class Operator {
 private:
-    Tensor *m_aOutput = NULL;
+    Tensor<DTYPE> *m_aOutput = NULL;
 
     // Training 과정을 공부한 후 다시 확인해야 할 부분
     // Gradient의 경우는 자신의 Output Operator에서 계산해서 이미 넘겨준 상태 (계산 과정 잘 생각해보기)
-    Tensor *m_aGradient = NULL;
-    Tensor *m_aDelta    = NULL;
+    Tensor<DTYPE> *m_aGradient = NULL;
+    Tensor<DTYPE> *m_aDelta    = NULL;
 
     // for Linked List
     // Pointer array를 만들기 위한 공간으로 Alloc할 때 공간을 동적할당한다.
-    Operator **m_apOutputOperator = NULL;
-    Operator **m_apInputOperator  = NULL;
+    Operator<DTYPE> **m_apOutputOperator = NULL;
+    Operator<DTYPE> **m_apInputOperator  = NULL;
 
     int m_OutputDegree = 0;
     int m_InputDegree  = 0;
@@ -32,74 +32,74 @@ private:
     // Private Operator
 
 private:
-    bool _AddInputEdge(Operator *pInput);
-    bool _AddOutputEdge(Operator *pOutput);
+    bool _AddInputEdge(Operator<DTYPE> *pInput);
+    bool _AddOutputEdge(Operator<DTYPE> *pOutput);
 
 public:
     Operator() {
-        std::cout << "Operator::Operator()" << '\n';
+        std::cout << "Operator<DTYPE>::Operator()" << '\n';
     }
 
     Operator(std::string pName) {
-        std::cout << "Operator::Operator(std::string)" << '\n';
+        std::cout << "Operator<DTYPE>::Operator(std::string)" << '\n';
         m_name = pName;
     }
 
     // ===========================================================================================
 
-    Operator(Tensor *pTensor) {
-        std::cout << "Operator::Operator(Tensor *, std::string pName)" << '\n';
-        Alloc(pTensor);
+    Operator(Tensor<DTYPE> *pTensor) {
+        std::cout << "Operator<DTYPE>::Operator(Tensor<DTYPE> *, std::string pName)" << '\n';
+        this->Alloc(pTensor);
     }
 
-    Operator(Tensor *pTensor, std::string pName) : Operator(pName) {
-        std::cout << "Operator::Operator(Tensor *, std::string pName)" << '\n';
-        Alloc(pTensor);
-    }
-
-    // ===========================================================================================
-
-    Operator(Operator *pInput) {
-        std::cout << "Operator::Operator(Operator *)" << '\n';
-        Alloc(pInput);
-    }
-
-    Operator(Operator *pInput, std::string pName) : Operator(pName) {
-        std::cout << "Operator::Operator(Operator *, std::string)" << '\n';
-        Alloc(pInput);
+    Operator(Tensor<DTYPE> *pTensor, std::string pName) : Operator(pName) {
+        std::cout << "Operator<DTYPE>::Operator(Tensor<DTYPE> *, std::string pName)" << '\n';
+        this->Alloc(pTensor);
     }
 
     // ===========================================================================================
 
-    Operator(Operator *pInput, MetaParameter *pParam) {
-        std::cout << "Operator::Operator(Operator *, MetaParameter *)" << '\n';
-        Alloc(pInput);
+    Operator(Operator<DTYPE> *pInput) {
+        std::cout << "Operator<DTYPE>::Operator(Operator<DTYPE> *)" << '\n';
+        this->Alloc(pInput);
     }
 
-    Operator(Operator *pInput, MetaParameter *pParam, std::string pName) : Operator(pName) {
-        std::cout << "Operator::Operator(Operator *, MetaParameter *, std::string)" << '\n';
-        Alloc(pInput);
+    Operator(Operator<DTYPE> *pInput, std::string pName) : Operator(pName) {
+        std::cout << "Operator<DTYPE>::Operator(Operator<DTYPE> *, std::string)" << '\n';
+        this->Alloc(pInput);
     }
 
     // ===========================================================================================
 
-    Operator(Operator *pInput0, Operator *pInput1) {
-        std::cout << "Operator::Operator(Operator *, Operator *)" << '\n';
-        Alloc(pInput0, pInput1);
+    Operator(Operator<DTYPE> *pInput, MetaParameter<DTYPE> *pParam) {
+        std::cout << "Operator<DTYPE>::Operator(Operator<DTYPE> *, MetaParameter<DTYPE> *)" << '\n';
+        this->Alloc(pInput);
     }
 
-    Operator(Operator *pInput0, Operator *pInput1, std::string pName) : Operator(pName) {
-        std::cout << "Operator::Operator(Operator *, Operator *, std::string)" << '\n';
-        Alloc(pInput0, pInput1);
+    Operator(Operator<DTYPE> *pInput, MetaParameter<DTYPE> *pParam, std::string pName) : Operator(pName) {
+        std::cout << "Operator<DTYPE>::Operator(Operator<DTYPE> *, MetaParameter<DTYPE> *, std::string)" << '\n';
+        this->Alloc(pInput);
+    }
+
+    // ===========================================================================================
+
+    Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
+        std::cout << "Operator<DTYPE>::Operator(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
+        this->Alloc(pInput0, pInput1);
+    }
+
+    Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) : Operator(pName) {
+        std::cout << "Operator<DTYPE>::Operator(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
+        this->Alloc(pInput0, pInput1);
     }
 
     // ===========================================================================================
 
     virtual ~Operator() {
-        std::cout << "Operator::~Operator()" << '\n';
+        std::cout << "Operator<DTYPE>::~Operator()" << '\n';
 
         // parent class Delete
-        Delete();
+        this->Delete();
 
         // 자식 클래스에서는 새롭게 만들어지는 MetaParameter에 관한 delete를 만들어주어야 한다
     }
@@ -107,12 +107,12 @@ public:
     // ===========================================================================================
 
     // 추후 Private으로 옮길 의향 있음
-    virtual bool Alloc(Tensor *pTensor);
-    virtual bool Alloc(Operator *pInput);
-    virtual bool Alloc(Operator *pInput0, Operator *pInput1);
-    virtual bool Alloc(MetaParameter *pParam = NULL);
+    virtual bool Alloc(Tensor<DTYPE> *pTensor);
+    virtual bool Alloc(Operator<DTYPE> *pInput);
+    virtual bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1);
+    virtual bool Alloc(MetaParameter<DTYPE> *pParam = NULL);
 
-    bool         AllocOptimizer(Optimizer *pOptimizer);
+    bool         AllocOptimizer(Optimizer<DTYPE> *pOptimizer);
 
     virtual void Delete();
 
@@ -120,25 +120,25 @@ public:
 
     // ===========================================================================================
 
-    bool AddEdgebetweenOperators(Operator *pInput);
+    bool AddEdgebetweenOperators(Operator<DTYPE> *pInput);
 
     // ===========================================================================================
 
     //// Setter
     // Gradient 부분은 Trainable한 부분에서만 만들기에 NULL로 초기화할 가능성이 생길 것으로 보인다.
-    void SetOutput(Tensor *pTensor) {
+    void SetOutput(Tensor<DTYPE> *pTensor) {
         m_aOutput = pTensor;
     }
 
-    void FeedOutput(Tensor *pTensor) {
+    void FeedOutput(Tensor<DTYPE> *pTensor) {
         m_aOutput = pTensor;
     }
 
-    void SetGradient(Tensor *pTensor) {
+    void SetGradient(Tensor<DTYPE> *pTensor) {
         m_aGradient = pTensor;
     }
 
-    void SetDelta(Tensor *pTensor) {
+    void SetDelta(Tensor<DTYPE> *pTensor) {
         m_aDelta = pTensor;
     }
 
@@ -161,23 +161,23 @@ public:
     //
     //// Getter (파생 클래스에서 사용합니다.)
 
-    Tensor* GetOutput() const {
+    Tensor<DTYPE>* GetOutput() const {
         return m_aOutput;
     }
 
-    Tensor* GetGradient() const {
+    Tensor<DTYPE>* GetGradient() const {
         return m_aGradient;
     }
 
-    Tensor* GetDelta() const {
+    Tensor<DTYPE>* GetDelta() const {
         return m_aDelta;
     }
 
-    Operator** GetInputOperator() const {
+    Operator<DTYPE>** GetInputOperator() const {
         return m_apInputOperator;
     }
 
-    Operator** GetOutputOperator() const {
+    Operator<DTYPE>** GetOutputOperator() const {
         return m_apOutputOperator;
     }
 
@@ -245,7 +245,7 @@ public:
 
     // ===========================================================================================
 
-    Operator* CheckEndOperator();
+    // Operator<DTYPE>* CheckEndOperator();
 };
 
 #endif  // OPERATOR_H_
