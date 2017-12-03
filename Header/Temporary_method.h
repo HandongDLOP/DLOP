@@ -21,7 +21,7 @@ float Accuracy(Tensor<DTYPE> *pred, Tensor<DTYPE> *ans, int Batch) {
     DTYPE *****pred_data = pred->GetData();
     DTYPE *****ans_data  = ans->GetData();
 
-    DTYPE accuracy = 0.0;
+    float accuracy = 0.0;
 
     int pred_index = 0;
     int ans_index  = 0;

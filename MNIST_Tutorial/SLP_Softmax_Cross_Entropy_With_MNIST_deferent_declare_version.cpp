@@ -36,7 +36,7 @@ int main(int argc, char const *argv[]) {
     HGUNN.CreateGraph(&optimizer);
 
     // ======================= Prepare Data ===================
-    MNISTDataSet *dataset = CreateMNISTDataSet();
+    MNISTDataSet<double> *dataset = CreateMNISTDataSet<double>();
 
     // ======================= Training =======================
     HGUNN.PrintGraph(&optimizer);

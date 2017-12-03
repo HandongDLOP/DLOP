@@ -1,5 +1,7 @@
 #include "NeuralNetwork.h"
 
+template class NeuralNetwork<int>;
+template class NeuralNetwork<float>;
 template class NeuralNetwork<double>;
 
 // template<typename DTYPE>
@@ -69,7 +71,7 @@ Operator<DTYPE> * NeuralNetwork<DTYPE>::AddPlaceholder(Tensor<DTYPE> *pTensor, s
     std::cout << "NeuralNetwork<DTYPE>::Placeholder(Tensor<DTYPE> *, std::string )" << '\n';
 
     // placeholder의 경우 trainable하지 않다.
-    Operator<DTYPE> *temp = new Placeholder<double>(pTensor, pName);
+    Operator<DTYPE> *temp = new Placeholder<DTYPE>(pTensor, pName);
 
     temp->AddEdgebetweenOperators(m_aStart);
 

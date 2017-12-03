@@ -32,22 +32,23 @@ int random_generator(int i) {
     return rand() % i;
 }
 
+template <typename DTYPE>
 class MNISTDataSet {
 private:
     // 직접 해제
-    double **Test_image  = NULL;
-    double **Test_label  = NULL;
-    double **Train_image = NULL;
-    double **Train_label = NULL;
+    DTYPE **Test_image  = NULL;
+    DTYPE **Test_label  = NULL;
+    DTYPE **Train_image = NULL;
+    DTYPE **Train_label = NULL;
 
     // 따로 해제
-    Tensor<double> *Test_image_feed  = NULL;
-    Tensor<double> *Test_label_feed  = NULL;
-    Tensor<double> *Train_image_feed = NULL;
-    Tensor<double> *Train_label_feed = NULL;
+    Tensor<DTYPE> *Test_image_feed  = NULL;
+    Tensor<DTYPE> *Test_label_feed  = NULL;
+    Tensor<DTYPE> *Train_image_feed = NULL;
+    Tensor<DTYPE> *Train_label_feed = NULL;
 
-    Tensor<double> *Test_Data_pair[2]  = { NULL, NULL };
-    Tensor<double> *Train_Data_pair[2] = { NULL, NULL };
+    Tensor<DTYPE> *Test_Data_pair[2]  = { NULL, NULL };
+    Tensor<DTYPE> *Train_Data_pair[2] = { NULL, NULL };
 
     vector<int> *shuffled_list_for_test  = NULL;
     vector<int> *shuffled_list_for_train = NULL;
@@ -169,8 +170,8 @@ public:
         int Recallnum         = 0;
         int start_point       = 0;
         int cur_point         = 0;
-        double **origin_image = Test_image;
-        double **origin_label = Test_label;
+        DTYPE **origin_image = Test_image;
+        DTYPE **origin_label = Test_label;
 
         vector<int> *shuffled_list = NULL;
 
@@ -192,17 +193,17 @@ public:
         }
 
         // create input image data
-        double *****image_data = new double ****[1];
+        DTYPE *****image_data = new DTYPE ****[1];
 
-        image_data[0] = new double ***[batch_size];
+        image_data[0] = new DTYPE ***[batch_size];
 
         int *image_shape = new int[5] { 1, batch_size, 1, 1, DIMENSION_OF_MNIST_IMAGE };
         int  image_rank  = 5;
         // double **origin_image = ReshapeData(image_option);
 
         // create input label data
-        double *****label_data = new double ****[1];
-        label_data[0] = new double ***[batch_size];
+        DTYPE *****label_data = new DTYPE ****[1];
+        label_data[0] = new DTYPE ***[batch_size];
 
         int *label_shape = new int[5] { 1, batch_size, 1, 1, 10 };
         int  label_rank  = 5;
@@ -214,10 +215,10 @@ public:
 
             // cout << cur_point << ' ';
 
-            image_data[0][ba]    = new double **[1];
-            image_data[0][ba][0] = new double *[1];
+            image_data[0][ba]    = new DTYPE **[1];
+            image_data[0][ba][0] = new DTYPE *[1];
             // image_data[0][ba][0][0] = origin_image[random];
-            image_data[0][ba][0][0] = new double[DIMENSION_OF_MNIST_IMAGE];
+            image_data[0][ba][0][0] = new DTYPE[DIMENSION_OF_MNIST_IMAGE];
 
             for (int dim = 0; dim < DIMENSION_OF_MNIST_IMAGE; dim++) {
                 image_data[0][ba][0][0][dim] = origin_image[cur_point][dim];
@@ -225,9 +226,9 @@ public:
 
             // ---------------------------------------------------------------------
 
-            label_data[0][ba]       = new double **[1];
-            label_data[0][ba][0]    = new double *[1];
-            label_data[0][ba][0][0] = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            label_data[0][ba]       = new DTYPE **[1];
+            label_data[0][ba][0]    = new DTYPE *[1];
+            label_data[0][ba][0][0] = new DTYPE[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             // cout << (int)origin_label[random][0] << '\n';
             label_data[0][ba][0][0][(int)origin_label[cur_point][0]] = 1.0;
 
@@ -235,8 +236,8 @@ public:
         }
         // cout << '\n';
 
-        Tensor<double> *image_Tensor = new Tensor<double>(image_data, image_shape, image_rank);
-        Tensor<double> *label_Tensor = new Tensor<double>(label_data, label_shape, label_rank);
+        Tensor<DTYPE> *image_Tensor = new Tensor<DTYPE>(image_data, image_shape, image_rank);
+        Tensor<DTYPE> *label_Tensor = new Tensor<DTYPE>(label_data, label_shape, label_rank);
 
         if (pOption == TEST) {
             if (Test_image_feed != NULL) delete Test_image_feed;
@@ -255,35 +256,35 @@ public:
         }
     }
 
-    void SetTestImage(double **pTest_image) {
+    void SetTestImage(DTYPE **pTest_image) {
         Test_image = pTest_image;
     }
 
-    void SetTestLabel(double **pTest_label) {
+    void SetTestLabel(DTYPE **pTest_label) {
         Test_label = pTest_label;
     }
 
-    void SetTrainImage(double **pTrain_image) {
+    void SetTrainImage(DTYPE **pTrain_image) {
         Train_image = pTrain_image;
     }
 
-    void SetTrainLabel(double **pTrain_label) {
+    void SetTrainLabel(DTYPE **pTrain_label) {
         Train_label = pTrain_label;
     }
 
-    Tensor<double>* GetTestFeedImage() {
+    Tensor<DTYPE>* GetTestFeedImage() {
         return Test_image_feed;
     }
 
-    Tensor<double>* GetTrainFeedImage() {
+    Tensor<DTYPE>* GetTrainFeedImage() {
         return Train_image_feed;
     }
 
-    Tensor<double>* GetTestFeedLabel() {
+    Tensor<DTYPE>* GetTestFeedLabel() {
         return Test_label_feed;
     }
 
-    Tensor<double>* GetTrainFeedLabel() {
+    Tensor<DTYPE>* GetTrainFeedLabel() {
         return Train_label_feed;
     }
 };
@@ -298,7 +299,8 @@ int ReverseInt(int i) {
     return ((int)ch1 << 24) + ((int)ch2 << 16) + ((int)ch3 << 8) + ch4;
 }
 
-void IMAGE_Reader(string DATAPATH, double **arr) {
+template <typename DTYPE>
+void IMAGE_Reader(string DATAPATH, DTYPE **arr) {
     // arr.resize(NumberOfImages, vector<double>(DataOfAnImage));
     ifstream fin;
 
@@ -325,12 +327,12 @@ void IMAGE_Reader(string DATAPATH, double **arr) {
         int dim_of_image = n_rows * n_cols;
 
         for (int i = 0; i < number_of_images; ++i) {
-            arr[i] = new double[dim_of_image];
+            arr[i] = new DTYPE[dim_of_image];
 
             for (int d = 0; d < dim_of_image; ++d) {
                 unsigned char temp = 0;
                 fin.read((char *)&temp, sizeof(temp));
-                arr[i][d] = (double)temp / 255.0;
+                arr[i][d] = (DTYPE)temp / 255.0;
                 // cout << arr[i][d] << ' ';
             }
             // cout << "\n\n";
@@ -338,7 +340,8 @@ void IMAGE_Reader(string DATAPATH, double **arr) {
     }
 }
 
-void LABEL_Reader(string DATAPATH, double **arr) {
+template <typename DTYPE>
+void LABEL_Reader(string DATAPATH, DTYPE **arr) {
     // arr.resize(NumberOfImages, vector<double>(DataOfAnImage));
     ifstream fin;
 
@@ -357,12 +360,12 @@ void LABEL_Reader(string DATAPATH, double **arr) {
         // cout << number_of_labels << '\n';
 
         for (int i = 0; i < number_of_labels; ++i) {
-            arr[i] = new double[1];
+            arr[i] = new DTYPE[1];
 
             unsigned char temp = 0;
             fin.read((char *)&temp, 1);
 
-            arr[i][0] = (double)temp;
+            arr[i][0] = (DTYPE)temp;
 
             // cout << (double)temp << ' ';
             // cout << "\n\n";
@@ -370,40 +373,42 @@ void LABEL_Reader(string DATAPATH, double **arr) {
     }
 }
 
-double** ReshapeData(OPTION pOption) {
+template <typename DTYPE>
+DTYPE** ReshapeData(OPTION pOption) {
     if (pOption == TESTIMAGE) {
-        double **Test_data = new double *[NUMBER_OF_TEST_DATA];
+        DTYPE **Test_data = new DTYPE *[NUMBER_OF_TEST_DATA];
         IMAGE_Reader(TEST_IMAGE_FILE, Test_data);
 
         return Test_data;
     } else if (pOption == TESTLABEL) {
-        double **Test_label = new double *[NUMBER_OF_TEST_DATA];
+        DTYPE **Test_label = new DTYPE *[NUMBER_OF_TEST_DATA];
         LABEL_Reader(TEST_LABEL_FILE, Test_label);
 
         return Test_label;
     } else if (pOption == TRAINIMAGE) {
-        double **Train_data = new double *[NUMBER_OF_TRAIN_DATA];
+        DTYPE **Train_data = new DTYPE *[NUMBER_OF_TRAIN_DATA];
         IMAGE_Reader(TRAIN_IMAGE_FILE, Train_data);
 
         return Train_data;
     } else if (pOption == TRAINLABEL) {
-        double **Train_label = new double *[NUMBER_OF_TRAIN_DATA];
+        DTYPE **Train_label = new DTYPE *[NUMBER_OF_TRAIN_DATA];
         LABEL_Reader(TRAIN_LABEL_FILE, Train_label);
 
         return Train_label;
     } else return NULL;
 }
 
-MNISTDataSet* CreateMNISTDataSet() {
-    MNISTDataSet *dataset = new MNISTDataSet();
+template <typename DTYPE>
+MNISTDataSet<DTYPE>* CreateMNISTDataSet() {
+    MNISTDataSet<DTYPE> *dataset = new MNISTDataSet<DTYPE>();
 
-    dataset->SetTestImage(ReshapeData(TESTIMAGE));
+    dataset->SetTestImage(ReshapeData<DTYPE>(TESTIMAGE));
 
-    dataset->SetTestLabel(ReshapeData(TESTLABEL));
+    dataset->SetTestLabel(ReshapeData<DTYPE>(TESTLABEL));
 
-    dataset->SetTrainImage(ReshapeData(TRAINIMAGE));
+    dataset->SetTrainImage(ReshapeData<DTYPE>(TRAINIMAGE));
 
-    dataset->SetTrainLabel(ReshapeData(TRAINLABEL));
+    dataset->SetTrainLabel(ReshapeData<DTYPE>(TRAINLABEL));
 
     return dataset;
 }

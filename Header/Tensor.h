@@ -64,7 +64,7 @@ public:
 
     // ===========================================================================================
 
-    static Tensor* Truncated_normal(int pTime, int pBatch, int pChannel, int pRow, int pCol, DTYPE mean, DTYPE stddev);
+    static Tensor* Truncated_normal(int pTime, int pBatch, int pChannel, int pRow, int pCol, float mean, float stddev);
 
 
     static Tensor* Zeros(int pTime, int pBatch, int pChannel, int pRow, int pCol);

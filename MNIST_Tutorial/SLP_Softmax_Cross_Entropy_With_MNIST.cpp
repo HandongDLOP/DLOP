@@ -14,29 +14,29 @@
 
 int main(int argc, char const *argv[]) {
     // Network declare
-    NeuralNetwork<double> HGUNN;
+    NeuralNetwork<float> HGUNN;
 
     // create input, label data placeholder, placeholder is always managed by NeuralNetwork
-    Operator<double> *x     = HGUNN.AddPlaceholder(Tensor<double>::Constants(1, BATCH, 1, 1, 784, 0.0), "x");
-    Operator<double> *label = HGUNN.AddPlaceholder(Tensor<double>::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
+    Operator<float> *x     = HGUNN.AddPlaceholder(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 0.0), "x");
+    Operator<float> *label = HGUNN.AddPlaceholder(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
 
     // ======================= layer 1=======================
-    Operator<double> *w      = new Variable<double>(Tensor<double>::Zeros(1, 1, 1, 784, 10), "w");
-    Operator<double> *b      = new Variable<double>(Tensor<double>::Zeros(1, 1, 1, 1, 10), "b");
-    Operator<double> *matmul = new MatMul<double>(x, w, "matmul");
-    Operator<double> *add    = new Add<double>(matmul, b, "add");
+    Operator<float> *w      = new Variable<float>(Tensor<float>::Zeros(1, 1, 1, 784, 10), "w");
+    Operator<float> *b      = new Variable<float>(Tensor<float>::Zeros(1, 1, 1, 1, 10), "b");
+    Operator<float> *matmul = new MatMul<float>(x, w, "matmul");
+    Operator<float> *add    = new Add<float>(matmul, b, "add");
 
     // ======================= Error=======================
-    Operator<double> *err = new SoftmaxCrossEntropy<double>(add, label, 1e-50, "SCE");
+    Operator<float> *err = new SoftmaxCrossEntropy<float>(add, label, 1e-50, "SCE");
 
     // ======================= Optimizer=======================
-    Optimizer<double> *optimizer = new GradientDescentOptimizer<double>(err, 0.01, MINIMIZE);
+    Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE);
 
     // ======================= Create Graph ===================
     HGUNN.CreateGraph(optimizer);
 
     // ======================= Prepare Data ===================
-    MNISTDataSet *dataset = CreateMNISTDataSet();
+    MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
 
     // ======================= Training =======================
     HGUNN.PrintGraph(optimizer);

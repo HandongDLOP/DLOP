@@ -1,5 +1,7 @@
 #include "Tensor.h"
 
+template class Tensor<int>;
+template class Tensor<float>;
 template class Tensor<double>;
 
 template <typename DTYPE>
@@ -109,12 +111,12 @@ void Tensor<DTYPE>::Reset() {
 // ===========================================================================================
 
 template <typename DTYPE>
-Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTime, int pBatch, int pChannel, int pRow, int pCol, DTYPE mean, DTYPE stddev) {
+Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTime, int pBatch, int pChannel, int pRow, int pCol, float mean, float stddev) {
     std::cout << "Tensor<DTYPE>::Truncated_normal()" << '\n';
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::normal_distribution<DTYPE> rand(mean, stddev);
+    std::normal_distribution<float> rand(mean, stddev);
 
     //// 추후 교수님이 주신 코드를 참고해서 바꿀 것
     // DTYPE   stdev = (DTYPE)sqrt(2.F / (pRow + pCol + pChannel));

@@ -1,5 +1,7 @@
 #include "Operator.h"
 
+template class Operator<int>;
+template class Operator<float>;
 template class Operator<double>;
 
 template <typename DTYPE>
