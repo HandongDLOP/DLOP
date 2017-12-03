@@ -48,8 +48,6 @@ int main(int argc, char const *argv[]) {
     MNISTDataSet<double> *dataset = CreateMNISTDataSet<double>();
 
     // ======================= Training =======================
-    HGUNN.PrintGraph(optimizer);
-
     for (int i = 0; i < LOOP_FOR_TRAIN; i++) {
         dataset->CreateTrainDataPair(BATCH);
         x1->FeedOutput(dataset->GetTrainFeedImage());
@@ -57,7 +55,7 @@ int main(int argc, char const *argv[]) {
 
         HGUNN.Run(optimizer);
 
-        if ((i % 100) == 0) std::cout << "Accuracy is : " << temp::Accuracy(act2->GetOutput(), label->GetOutput(), BATCH) << '\n';
+        if ((i % 100) == 0) std::cout << "Train Accuracy is : " << temp::Accuracy(act2->GetOutput(), label->GetOutput(), BATCH) << '\n';
     }
 
     // ======================= Testing =======================

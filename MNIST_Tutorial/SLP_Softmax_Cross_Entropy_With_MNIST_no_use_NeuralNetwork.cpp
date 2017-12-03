@@ -1,4 +1,4 @@
-/*g++ -g -o testing -std=c++11 SLP_Softmax_Cross_Entropy_With_MNIST.cpp ../Header/Operator.cpp ../Header/NeuralNetwork.cpp ../Header/Tensor.cpp*/
+/*g++ -g -o testing -std=c++11 SLP_Softmax_Cross_Entropy_With_MNIST_no_use_NeuralNetwork.cpp ../Header/Operator.cpp ../Header/NeuralNetwork.cpp ../Header/Tensor.cpp*/
 
 #include <iostream>
 #include <string>
@@ -13,12 +13,10 @@
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
 int main(int argc, char const *argv[]) {
-    // Network declare
-    NeuralNetwork<float> HGUNN;
 
     // create input, label data placeholder, placeholder is always managed by NeuralNetwork
-    Operator<float> *x     = HGUNN.AddPlaceholder(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 0.0), "x");
-    Operator<float> *label = HGUNN.AddPlaceholder(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
+    Operator<float> *x     = new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 0.0), "x");
+    Operator<float> *label = new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
 
     // ======================= layer 1=======================
     Operator<float> *w      = new Variable<float>(Tensor<float>::Zeros(1, 1, 1, 784, 10), "w");
@@ -33,7 +31,8 @@ int main(int argc, char const *argv[]) {
     Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE);
 
     // ======================= Create Graph ===================
-    HGUNN.CreateGraph(optimizer);
+    optimizer->AddTrainableData(w->GetOutput(), w->GetGradient());
+    optimizer->AddTrainableData(b->GetOutput(), b->GetGradient());
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
@@ -44,11 +43,22 @@ int main(int argc, char const *argv[]) {
         x->FeedOutput(dataset->GetTrainFeedImage());
         label->FeedOutput(dataset->GetTrainFeedLabel());
 
-        HGUNN.Run(optimizer);
+        // ForwardPropagate
+        matmul->ComputeForwardPropagate();
+        add->ComputeForwardPropagate();
+        err->ComputeForwardPropagate();
 
-        if ((i % 100) == 0) std::cout << "Train Accuracy is : "
-                                      << temp::Accuracy(add->GetOutput(), label->GetOutput(), BATCH)
-                                      << '\n';
+        // BackPropagate
+        err->ComputeBackPropagate();
+        add->ComputeBackPropagate();
+        matmul->ComputeBackPropagate();
+        b->ComputeBackPropagate();
+        w->ComputeBackPropagate();
+
+        // UpdateVariable
+        optimizer->UpdateVariable();
+
+        if ((i % 100) == 0) std::cout << "Train Accuracy is : " << temp::Accuracy(add->GetOutput(), label->GetOutput(), BATCH) << '\n';
     }
 
     // ======================= Testing ======================
@@ -59,7 +69,11 @@ int main(int argc, char const *argv[]) {
         x->FeedOutput(dataset->GetTestFeedImage());
         label->FeedOutput(dataset->GetTestFeedLabel());
 
-        HGUNN.Run(err);
+        // ForwardPropagate
+        matmul->ComputeForwardPropagate();
+        add->ComputeForwardPropagate();
+        err->ComputeForwardPropagate();
+
         // I'll implement flexibility about the situation that change of Batch size
         test_accuracy += temp::Accuracy(add->GetOutput(), label->GetOutput(), BATCH);
     }
