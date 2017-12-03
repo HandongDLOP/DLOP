@@ -4,7 +4,7 @@
 #include "..//Operator.h"
 
 template<typename DTYPE>
-class Placeholder : public Operator<DTYPE> {
+class Placeholder : public Operator<DTYPE>{
 private:
 public:
     Placeholder(std::string pName) : Operator<DTYPE>(pName) {
@@ -43,7 +43,6 @@ public:
         return true;
     }
 };
-
 
 
 #endif  // PLACEHOLDER_H_

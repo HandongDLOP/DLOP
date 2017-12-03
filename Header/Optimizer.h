@@ -30,7 +30,7 @@ private:
     // int m_Batch = 0;
 
     TrainableData<DTYPE> **m_aTrainableData = NULL;
-    int m_TrainableDataDegree        = 0;
+    int m_TrainableDataDegree               = 0;
 
 public:
     Optimizer(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
@@ -106,7 +106,7 @@ public:
     }
 
     // void SetBatch(int pBatch){
-    //     m_Batch = pBatch;
+    // m_Batch = pBatch;
     // }
 
     void SetOptimizeDirection(OptimizeDirection pOptimizeDirection) {
@@ -123,7 +123,7 @@ public:
     }
 
     // int GetBatch(){
-    //     return m_Batch;
+    // return m_Batch;
     // }
 
     int GetOptimizeDirection() {

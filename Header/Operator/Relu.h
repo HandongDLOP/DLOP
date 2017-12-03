@@ -4,7 +4,7 @@
 #include "..//Operator.h"
 
 template<typename DTYPE>
-class Relu : public Operator<DTYPE> {
+class Relu : public Operator<DTYPE>{
 public:
     // Constructor의 작업 순서는 다음과 같다.
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
@@ -32,7 +32,7 @@ public:
     virtual bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        int *shape         = this->GetInputOperator()[0]->GetOutput()->GetShape();
+        int *shape        = this->GetInputOperator()[0]->GetOutput()->GetShape();
         DTYPE *****input  = this->GetInputOperator()[0]->GetOutput()->GetData();
         DTYPE *****output = this->GetOutput()->GetData();
 
@@ -54,9 +54,10 @@ public:
     virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int *shape              = this->GetOutput()->GetShape();
-        DTYPE *****output      = this->GetOutput()->GetData();
-        DTYPE *****delta       = this->GetDelta()->GetData();
+        int *shape        = this->GetOutput()->GetShape();
+        DTYPE *****output = this->GetOutput()->GetData();
+        DTYPE *****delta  = this->GetDelta()->GetData();
+
         this->GetInputOperator()[0]->GetDelta()->Reset();
         DTYPE *****delta_input = this->GetInputOperator()[0]->GetDelta()->GetData();
 

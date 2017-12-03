@@ -6,14 +6,14 @@ template class NeuralNetwork<double>;
 
 // template<typename DTYPE>
 // NeuralNetwork<DTYPE>::NeuralNetwork() {
-//     std::cout << "NeuralNetwork<DTYPE>::NeuralNetwork()" << '\n';
-//     this->Alloc();
+// std::cout << "NeuralNetwork<DTYPE>::NeuralNetwork()" << '\n';
+// this->Alloc();
 // }
 //
 // template<typename DTYPE>
 // NeuralNetwork<DTYPE>::~NeuralNetwork() {
-//     this->Delete();
-//     std::cout << "NeuralNetwork<DTYPE>::~NeuralNetwork()" << '\n';
+// this->Delete();
+// std::cout << "NeuralNetwork<DTYPE>::~NeuralNetwork()" << '\n';
 // }
 
 // ===========================================================================================
@@ -67,7 +67,7 @@ bool NeuralNetwork<DTYPE>::DeletePlaceholder() {
 // ===========================================================================================
 
 template<typename DTYPE>
-Operator<DTYPE> * NeuralNetwork<DTYPE>::AddPlaceholder(Tensor<DTYPE> *pTensor, std::string pName) {
+Operator<DTYPE> *NeuralNetwork<DTYPE>::AddPlaceholder(Tensor<DTYPE> *pTensor, std::string pName) {
     std::cout << "NeuralNetwork<DTYPE>::Placeholder(Tensor<DTYPE> *, std::string )" << '\n';
 
     // placeholder의 경우 trainable하지 않다.

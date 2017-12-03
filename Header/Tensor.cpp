@@ -4,7 +4,7 @@ template class Tensor<int>;
 template class Tensor<float>;
 template class Tensor<double>;
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Tensor<DTYPE>::Alloc() {
     m_Rank   = 0;
     m_aShape = NULL;
@@ -13,7 +13,7 @@ bool Tensor<DTYPE>::Alloc() {
     return true;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Tensor<DTYPE>::Alloc(int pTime, int pBatch, int pChannel, int pRow, int pCol) {
     // ============================================================
 
@@ -59,7 +59,7 @@ bool Tensor<DTYPE>::Alloc(int pTime, int pBatch, int pChannel, int pRow, int pCo
     return true;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Tensor<DTYPE>::Delete() {
     // std::cout << "Tensor<DTYPE>::Delete()" << '\n';
 
@@ -93,7 +93,7 @@ bool Tensor<DTYPE>::Delete() {
     return true;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 void Tensor<DTYPE>::Reset() {
     for (int ti = 0; ti < m_aShape[0]; ti++) {
         for (int ba = 0; ba < m_aShape[1]; ba++) {
@@ -110,7 +110,7 @@ void Tensor<DTYPE>::Reset() {
 
 // ===========================================================================================
 
-template <typename DTYPE>
+template<typename DTYPE>
 Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTime, int pBatch, int pChannel, int pRow, int pCol, float mean, float stddev) {
     std::cout << "Tensor<DTYPE>::Truncated_normal()" << '\n';
 
@@ -143,7 +143,7 @@ Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTime, int pBatch, int pChann
     return temp_Tensor;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 Tensor<DTYPE> *Tensor<DTYPE>::Zeros(int pTime, int pBatch, int pChannel, int pRow, int pCol) {
     std::cout << "Tensor<DTYPE>::Zero()" << '\n';
 
@@ -152,7 +152,7 @@ Tensor<DTYPE> *Tensor<DTYPE>::Zeros(int pTime, int pBatch, int pChannel, int pRo
     return temp_Tensor;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pTime, int pBatch, int pChannel, int pRow, int pCol, DTYPE constant) {
     std::cout << "Tensor<DTYPE>::Constant()" << '\n';
 
@@ -174,7 +174,7 @@ Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pTime, int pBatch, int pChannel, int
     return temp_Tensor;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 void Tensor<DTYPE>::PrintData(int forceprint) {
     if (m_aData == NULL) {
         std::cout << "data is empty!" << '\n';
@@ -221,7 +221,7 @@ void Tensor<DTYPE>::PrintData(int forceprint) {
     }
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 void Tensor<DTYPE>::PrintShape() {
     std::cout << "[ ";
 

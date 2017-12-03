@@ -5,14 +5,12 @@
 
 class Objective {
 private:
-/* data */
+    /* data */
 
 public:
-Objective() {}
+    Objective() {}
 
-virtual ~Objective() {}
-
-void ComputeDeltaBar(Tensor * pDesiredOutput);
+    virtual ~Objective() {}
 };
 
 #endif  // OBJECTIVE_FUNCTION_H_

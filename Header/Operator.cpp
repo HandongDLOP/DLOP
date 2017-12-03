@@ -4,14 +4,14 @@ template class Operator<int>;
 template class Operator<float>;
 template class Operator<double>;
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Operator<DTYPE>::Alloc(Tensor<DTYPE> *pTensor) {
     std::cout << "Operator<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
 
     return true;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Operator<DTYPE>::Alloc(Operator<DTYPE> *pInput) {
     std::cout << "Operator<DTYPE>::Alloc(Operator<DTYPE> *)" << '\n';
 
@@ -21,7 +21,7 @@ bool Operator<DTYPE>::Alloc(Operator<DTYPE> *pInput) {
     return true;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Operator<DTYPE>::Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
     std::cout << "Operator<DTYPE>::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
 
@@ -32,7 +32,7 @@ bool Operator<DTYPE>::Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) 
     return true;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Operator<DTYPE>::Alloc(MetaParameter<DTYPE> *pParam) {
     return true;
 }
@@ -48,7 +48,7 @@ bool Operator<DTYPE>::Alloc(MetaParameter<DTYPE> *pParam) {
 // return true;
 // }
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Operator<DTYPE>::AllocOptimizer(Optimizer<DTYPE> *pOptimizer) {
     for (int i = 0; i < m_InputDegree; i++) {
         m_apInputOperator[i]->AllocOptimizer(pOptimizer);
@@ -61,7 +61,7 @@ bool Operator<DTYPE>::AllocOptimizer(Optimizer<DTYPE> *pOptimizer) {
     return true;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 void Operator<DTYPE>::Delete() {
     std::cout << "Operator<DTYPE>::Delete()" << '\n';
 
@@ -97,7 +97,7 @@ void Operator<DTYPE>::Delete() {
 // ===========================================================================================
 
 // Add Graph Edge
-template <typename DTYPE>
+template<typename DTYPE>
 bool Operator<DTYPE>::_AddInputEdge(Operator<DTYPE> *pInput) {
     if (m_InputDegree != 0) {
         Operator<DTYPE> **temp = new Operator<DTYPE> *[m_InputDegree + 1];
@@ -117,7 +117,7 @@ bool Operator<DTYPE>::_AddInputEdge(Operator<DTYPE> *pInput) {
     return true;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Operator<DTYPE>::_AddOutputEdge(Operator<DTYPE> *pOutput) {
     if (m_OutputDegree != 0) {
         Operator<DTYPE> **temp = new Operator<DTYPE> *[m_OutputDegree + 1];
@@ -137,7 +137,7 @@ bool Operator<DTYPE>::_AddOutputEdge(Operator<DTYPE> *pOutput) {
     return true;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Operator<DTYPE>::AddEdgebetweenOperators(Operator<DTYPE> *pInput) {
     // 양방향 Edge 생성
     this->_AddInputEdge(pInput);
@@ -168,7 +168,7 @@ bool Operator<DTYPE>::AddEdgebetweenOperators(Operator<DTYPE> *pInput) {
 // return true;
 // }
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Operator<DTYPE>::ForwardPropagate() {
     // 알고리즘 잘 이해하기
     // BFS로 나중에는 바꿀 것
@@ -197,7 +197,7 @@ bool Operator<DTYPE>::ForwardPropagate() {
     return true;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Operator<DTYPE>::BackPropagate() {
     this->ComputeBackPropagate();
 
@@ -218,14 +218,14 @@ bool Operator<DTYPE>::BackPropagate() {
 
 // ===========================================================================================
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Operator<DTYPE>::ComputeForwardPropagate() {
     // std::cout << m_name << " : ComputeForwardPropagate()" << '\n';
 
     return true;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 bool Operator<DTYPE>::ComputeBackPropagate() {
     // std::cout << m_name << " : ComputeBackPropagate()" << '\n';
 
@@ -234,7 +234,7 @@ bool Operator<DTYPE>::ComputeBackPropagate() {
 
 // ===========================================================================================
 
-template <typename DTYPE>
+template<typename DTYPE>
 void Operator<DTYPE>::PrintGraph(int depth) {
     std::cout << this->GetName() << '\n';
 
@@ -252,7 +252,7 @@ void Operator<DTYPE>::PrintGraph(int depth) {
     }
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 void Operator<DTYPE>::PrintData(int forceprint) {
     std::cout << "\n\n" << this->GetName() << ": PrintData()" << '\n';
 
@@ -282,11 +282,11 @@ void Operator<DTYPE>::PrintData(int forceprint) {
 
 // template <typename DTYPE>
 // Operator<DTYPE> * Operator<DTYPE>::CheckEndOperator() {
-//     // recursively
-//     if (m_OutputDegree == 0) {
-//         return this;
-//     } else {
-//         // 추후에는 모든 Operator의 Output을 확인하도록 한다.
-//         return m_apOutputOperator[0]->CheckEndOperator();
-//     }
+//// recursively
+// if (m_OutputDegree == 0) {
+// return this;
+// } else {
+//// 추후에는 모든 Operator의 Output을 확인하도록 한다.
+// return m_apOutputOperator[0]->CheckEndOperator();
+// }
 // }

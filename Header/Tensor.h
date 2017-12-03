@@ -8,7 +8,7 @@
 #include <chrono>
 #include <random>
 
-template <typename DTYPE>
+template<typename DTYPE>
 class Tensor {
 private:
     // 현재는 scala 값은 따로 존재하지 않고 rnak0 dimension 1로 취급한다.

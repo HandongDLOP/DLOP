@@ -4,7 +4,7 @@
 #include "..//Operator.h"
 
 template<typename DTYPE>
-class Variable : public Operator<DTYPE> {
+class Variable : public Operator<DTYPE>{
 private:
 public:
     Variable(std::string pName) : Operator<DTYPE>(pName) {
@@ -51,7 +51,7 @@ public:
     virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int *shape        = this->GetOutput()->GetShape();
+        int *shape       = this->GetOutput()->GetShape();
         DTYPE *****delta = this->GetDelta()->GetData();
         DTYPE *****grad  = this->GetGradient()->GetData();
 

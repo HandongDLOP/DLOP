@@ -4,10 +4,10 @@
 #include "..//Operator.h"
 
 template<typename DTYPE>
-class SoftmaxCrossEntropy : public Operator<DTYPE> {
+class SoftmaxCrossEntropy : public Operator<DTYPE>{
 private:
     Tensor<DTYPE> *m_aSoftmax_Result = NULL;
-    DTYPE m_epsilon          = 0.0; // for backprop
+    DTYPE m_epsilon                  = 0.0; // for backprop
 
 public:
     // Constructor의 작업 순서는 다음과 같다.
@@ -38,7 +38,7 @@ public:
         std::cout << "SoftmaxCrossEntropy::Alloc(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
         // if pInput0 and pInput1의 shape가 다르면 abort
 
-        int *shape     = pInput0->GetOutput()->GetShape();
+        int *shape            = pInput0->GetOutput()->GetShape();
         Tensor<DTYPE> *output = new Tensor<DTYPE>(shape[0], shape[1], 1, 1, 1);
         this->SetOutput(output);
 
@@ -52,7 +52,7 @@ public:
     virtual bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        int *shape             = Operator<DTYPE>::GetInputOperator()[0]->GetOutput()->GetShape();
+        int *shape            = Operator<DTYPE>::GetInputOperator()[0]->GetOutput()->GetShape();
         DTYPE *****input_data = Operator<DTYPE>::GetInputOperator()[0]->GetOutput()->GetData();
         DTYPE *****label_data = Operator<DTYPE>::GetInputOperator()[1]->GetOutput()->GetData();
 
@@ -68,7 +68,7 @@ public:
 
         DTYPE sum[Time][Batch] = { 0.0 };
         DTYPE max[Time][Batch] = { 0.0 };
-        int    num_of_output    = Channel * Row * Col;
+        int   num_of_output    = Channel * Row * Col;
 
         DTYPE temp = 0.0;
 
@@ -89,7 +89,6 @@ public:
                 temp        = 0.0;
             }
         }
-
 
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {
@@ -136,12 +135,12 @@ public:
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
                             delta_input_data[ti][ba][ch][ro][co] = SoftmaxCrossEntropy_derivative(label_data[ti][ba],
-                                                                                                    softmax_result[ti][ba][ch][ro][co],
-                                                                                                    shape,
-                                                                                                    ch,
-                                                                                                    ro,
-                                                                                                    co,
-                                                                                                    num_of_output);
+                                                                                                  softmax_result[ti][ba][ch][ro][co],
+                                                                                                  shape,
+                                                                                                  ch,
+                                                                                                  ro,
+                                                                                                  co,
+                                                                                                  num_of_output);
                         }
                     }
                 }
@@ -193,7 +192,6 @@ public:
 
         return delta_ / num_of_output;
     }
-
 };
 
 #endif  // SOFTMAXCROSSENTROPY_H_

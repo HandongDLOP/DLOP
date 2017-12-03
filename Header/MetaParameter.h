@@ -18,15 +18,16 @@ template<typename DTYPE>
 class MetaParameter {
 public:
     // 정의
-    MetaParameter(){}
-    virtual ~MetaParameter(){}
+    MetaParameter() {}
+
+    virtual ~MetaParameter() {}
 };
 
 template<typename DTYPE>
-class ConvParam : public MetaParameter<DTYPE> {
+class ConvParam : public MetaParameter<DTYPE>{
 private:
     Operator<DTYPE> *filter = NULL;
-    int *stride = NULL;
+    int *stride             = NULL;
     PADDING value;
     // std::string m_name     = NULL;
     void *data_format      = NULL;
@@ -44,10 +45,10 @@ public:
 };
 
 template<typename DTYPE>
-class MaxpoolParam : public MetaParameter<DTYPE> {
+class MaxpoolParam : public MetaParameter<DTYPE>{
 private:
     Tensor<DTYPE> *ksize = NULL;
-    int *stride = NULL;
+    int *stride          = NULL;
     PADDING value;
     // std::string m_name     = NULL;
     void *data_format      = NULL;

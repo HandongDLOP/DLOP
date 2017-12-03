@@ -4,7 +4,7 @@
 #include "..//Optimizer.h"
 
 template<typename DTYPE>
-class GradientDescentOptimizer : public Optimizer<DTYPE> {
+class GradientDescentOptimizer : public Optimizer<DTYPE>{
 private:
     /* data */
 

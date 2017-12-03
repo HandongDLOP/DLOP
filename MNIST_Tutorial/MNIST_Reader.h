@@ -32,7 +32,7 @@ int random_generator(int i) {
     return rand() % i;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 class MNISTDataSet {
 private:
     // 직접 해제
@@ -102,23 +102,23 @@ public:
         delete Train_label;
 
         // if (Test_image_feed != NULL) {
-        //     delete Test_image_feed;
-        //     Test_image_feed = NULL;
+        // delete Test_image_feed;
+        // Test_image_feed = NULL;
         // }
         //
         // if (Test_label_feed != NULL) {
-        //     delete Test_label_feed;
-        //     Test_label_feed = NULL;
+        // delete Test_label_feed;
+        // Test_label_feed = NULL;
         // }
         //
         // if (Train_image_feed != NULL) {
-        //     delete Train_image_feed;
-        //     Train_image_feed = NULL;
+        // delete Train_image_feed;
+        // Train_image_feed = NULL;
         // }
         //
         // if (Train_label_feed != NULL) {
-        //     delete Train_label_feed;
-        //     Train_label_feed = NULL;
+        // delete Train_label_feed;
+        // Train_label_feed = NULL;
         // }
     }
 
@@ -166,10 +166,10 @@ public:
     }
 
     void CreateDataPair(OPTION pOption, int batch_size) {
-        int number_of_data    = NUMBER_OF_TEST_DATA;
-        int Recallnum         = 0;
-        int start_point       = 0;
-        int cur_point         = 0;
+        int number_of_data   = NUMBER_OF_TEST_DATA;
+        int Recallnum        = 0;
+        int start_point      = 0;
+        int cur_point        = 0;
         DTYPE **origin_image = Test_image;
         DTYPE **origin_label = Test_label;
 
@@ -193,17 +193,17 @@ public:
         }
 
         // create input image data
-        DTYPE *****image_data = new DTYPE ****[1];
+        DTYPE *****image_data = new DTYPE * ** *[1];
 
-        image_data[0] = new DTYPE ***[batch_size];
+        image_data[0] = new DTYPE * * *[batch_size];
 
         int *image_shape = new int[5] { 1, batch_size, 1, 1, DIMENSION_OF_MNIST_IMAGE };
         int  image_rank  = 5;
         // double **origin_image = ReshapeData(image_option);
 
         // create input label data
-        DTYPE *****label_data = new DTYPE ****[1];
-        label_data[0] = new DTYPE ***[batch_size];
+        DTYPE *****label_data = new DTYPE * ** *[1];
+        label_data[0] = new DTYPE * * *[batch_size];
 
         int *label_shape = new int[5] { 1, batch_size, 1, 1, 10 };
         int  label_rank  = 5;
@@ -215,7 +215,7 @@ public:
 
             // cout << cur_point << ' ';
 
-            image_data[0][ba]    = new DTYPE **[1];
+            image_data[0][ba]    = new DTYPE * *[1];
             image_data[0][ba][0] = new DTYPE *[1];
             // image_data[0][ba][0][0] = origin_image[random];
             image_data[0][ba][0][0] = new DTYPE[DIMENSION_OF_MNIST_IMAGE];
@@ -226,7 +226,7 @@ public:
 
             // ---------------------------------------------------------------------
 
-            label_data[0][ba]       = new DTYPE **[1];
+            label_data[0][ba]       = new DTYPE * *[1];
             label_data[0][ba][0]    = new DTYPE *[1];
             label_data[0][ba][0][0] = new DTYPE[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             // cout << (int)origin_label[random][0] << '\n';
@@ -299,7 +299,7 @@ int ReverseInt(int i) {
     return ((int)ch1 << 24) + ((int)ch2 << 16) + ((int)ch3 << 8) + ch4;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 void IMAGE_Reader(string DATAPATH, DTYPE **arr) {
     // arr.resize(NumberOfImages, vector<double>(DataOfAnImage));
     ifstream fin;
@@ -340,7 +340,7 @@ void IMAGE_Reader(string DATAPATH, DTYPE **arr) {
     }
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 void LABEL_Reader(string DATAPATH, DTYPE **arr) {
     // arr.resize(NumberOfImages, vector<double>(DataOfAnImage));
     ifstream fin;
@@ -373,7 +373,7 @@ void LABEL_Reader(string DATAPATH, DTYPE **arr) {
     }
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 DTYPE** ReshapeData(OPTION pOption) {
     if (pOption == TESTIMAGE) {
         DTYPE **Test_data = new DTYPE *[NUMBER_OF_TEST_DATA];
@@ -398,7 +398,7 @@ DTYPE** ReshapeData(OPTION pOption) {
     } else return NULL;
 }
 
-template <typename DTYPE>
+template<typename DTYPE>
 MNISTDataSet<DTYPE>* CreateMNISTDataSet() {
     MNISTDataSet<DTYPE> *dataset = new MNISTDataSet<DTYPE>();
 
