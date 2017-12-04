@@ -114,11 +114,11 @@ public:
         else if (pOptimizeDirection == MINIMIZE) m_OptimizeDirection = -1;
     }
 
-    Operator<DTYPE>* GetObjectOperator() {
+    Operator<DTYPE>* GetObjectOperator() const {
         return m_pObjectOperator;
     }
 
-    float GetLearningRate() {
+    float GetLearningRate() const {
         return m_LearningRate;
     }
 

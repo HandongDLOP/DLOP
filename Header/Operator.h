@@ -197,11 +197,11 @@ public:
         return m_currentInputDegree;
     }
 
-    std::string GetName() {
+    std::string GetName() const{
         return m_name;
     }
 
-    int GetTrainable() {
+    int GetTrainable() const{
         return m_Trainable;
     }
 

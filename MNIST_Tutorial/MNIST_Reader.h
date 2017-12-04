@@ -72,16 +72,13 @@ public:
             Number_of_test[i] = i;
         }
 
-
         int Number_of_train[NUMBER_OF_TRAIN_DATA] = { 0 };
 
         for (int i = 0; i < NUMBER_OF_TRAIN_DATA; i++) {
             Number_of_train[i] = i;
         }
 
-
         shuffled_list_for_test = new vector<int>(Number_of_test, Number_of_test + NUMBER_OF_TEST_DATA);
-
 
         shuffled_list_for_train = new vector<int>(Number_of_train, Number_of_train + NUMBER_OF_TRAIN_DATA);
     }
