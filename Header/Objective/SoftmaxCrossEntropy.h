@@ -52,12 +52,12 @@ public:
     virtual bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        int *shape            = Operator<DTYPE>::GetInputOperator()[0]->GetOutput()->GetShape();
-        DTYPE *****input_data = Operator<DTYPE>::GetInputOperator()[0]->GetOutput()->GetData();
-        DTYPE *****label_data = Operator<DTYPE>::GetInputOperator()[1]->GetOutput()->GetData();
+        int *shape            = this->GetInputOperator()[0]->GetOutput()->GetShape();
+        DTYPE *****input_data = this->GetInputOperator()[0]->GetOutput()->GetData();
+        DTYPE *****label_data = this->GetInputOperator()[1]->GetOutput()->GetData();
 
         this->GetOutput()->Reset();
-        DTYPE *****output         = Operator<DTYPE>::GetOutput()->GetData();
+        DTYPE *****output         = this->GetOutput()->GetData();
         DTYPE *****softmax_result = m_aSoftmax_Result->GetData();
 
         int Time    = shape[0];
@@ -113,13 +113,13 @@ public:
     virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int *shape = Operator<DTYPE>::GetInputOperator()[0]->GetOutput()->GetShape();
+        int *shape = this->GetInputOperator()[0]->GetOutput()->GetShape();
 
-        DTYPE *****label_data     = Operator<DTYPE>::GetInputOperator()[1]->GetOutput()->GetData();
+        DTYPE *****label_data     = this->GetInputOperator()[1]->GetOutput()->GetData();
         DTYPE *****softmax_result = m_aSoftmax_Result->GetData();
 
         this->GetInputOperator()[0]->GetDelta()->Reset();
-        DTYPE *****delta_input_data = Operator<DTYPE>::GetInputOperator()[0]->GetDelta()->GetData();
+        DTYPE *****delta_input_data = this->GetInputOperator()[0]->GetDelta()->GetData();
 
         int Time    = shape[0];
         int Batch   = shape[1];
