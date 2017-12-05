@@ -36,7 +36,7 @@
 //         std::cout << "CrossEntropy::~CrossEntropy()" << '\n';
 //     }
 //
-//     virtual bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, int epsilon = 1e-30) {
+//     virtual int Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, int epsilon = 1e-30) {
 //         std::cout << "CrossEntropy::Alloc(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
 //         // if pInput0 and pInput1의 shape가 다르면 abort
 //
@@ -48,10 +48,10 @@
 //
 //         m_epsilon = epsilon;
 //
-//         return true;
+//         return 1;
 //     }
 //
-//     template <typename TENSOR_DTYPE> bool ComputeForwardPropagate() {
+//     template <typename TENSOR_DTYPE> int ComputeForwardPropagate() {
 //         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 //
 //         int *shape            = this->GetInputOperator()[0]->GetOutput()->GetShape();
@@ -88,10 +88,10 @@
 //         // GetInputOperator()[1]->GetOutput()->PrintData();
 //         // GetOutput()->PrintData();
 //
-//         return true;
+//         return 1;
 //     }
 //
-//     virtual bool ComputeBackPropagate() {
+//     virtual int ComputeBackPropagate() {
 //         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 //
 //         int *shape = this->GetInputOperator()[0]->GetOutput()->GetShape();
@@ -130,7 +130,7 @@
 //         // std::cout << "del" << '\n';
 //         // GetInputOperator()[0]->GetDelta()->PrintData();
 //
-//         return true;
+//         return 1;
 //     }
 //
 //     DTYPE cross_entropy(DTYPE label, DTYPE prediction, int num_of_output) {

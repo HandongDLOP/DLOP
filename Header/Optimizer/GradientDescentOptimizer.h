@@ -17,7 +17,7 @@ public:
         std::cout << "GradientDescentOptimizer::~GradientDescentOptimizer()" << '\n';
     }
 
-    bool UpdateVariable(TrainableData<DTYPE> *pTrainableData) {
+    int UpdateVariable(TrainableData<DTYPE> *pTrainableData) {
         // std::cout << "GradientDescentOptimizer::UpdateVariable(TrainableData *)" << '\n';
 
         int *shape = pTrainableData->Data->GetShape();
@@ -49,7 +49,7 @@ public:
                 }
             }
         }
-        return true;
+        return 1;
     }
 };
 

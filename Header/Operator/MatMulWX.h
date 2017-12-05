@@ -19,7 +19,7 @@
 //         std::cout << "MatMul::~MatMul()" << '\n';
 //     }
 //
-//     virtual bool Alloc(Operator *pInput0, Operator *pInput1) {
+//     virtual int Alloc(Operator *pInput0, Operator *pInput1) {
 //         std::cout << "MatMul::Alloc(Operator *, Operator *)" << '\n';
 //
 //         int *shape_Input0 = pInput0->GetOutput()->GetShape();
@@ -72,10 +72,10 @@
 //         // Gradient는 Trainable한 요소에서만 필요하다.
 //         SetDelta(new Tensor(Time, Batch, Channel, Row, Col));
 //
-//         return true;
+//         return 1;
 //     }
 //
-//     virtual bool ComputeForwardPropagate() {
+//     virtual int ComputeForwardPropagate() {
 //         std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 //
 //         int Time    = GetOutput()->GetTime();
@@ -114,10 +114,10 @@
 //
 //         // SetOutput(output_data);
 //
-//         return true;
+//         return 1;
 //     }
 //
-//     virtual bool ComputeBackPropagate() {
+//     virtual int ComputeBackPropagate() {
 //         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 //
 //         int Time    = GetOutput()->GetTime();
@@ -170,7 +170,7 @@
 //
 //         GetDelta()->Reset();
 //
-//         return true;
+//         return 1;
 //     }
 // };
 //

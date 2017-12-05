@@ -45,24 +45,24 @@ public:
         Delete();
     }
 
-    bool Alloc(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+    int Alloc(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
         SetObjectOperator(pObjectOperator);
         SetLearningRate(pLearningRate);
         SetOptimizeDirection(pOptimizeDirection);
 
-        return true;
+        return 1;
     }
 
-    bool Delete() {
+    int Delete() {
         for (int i = 0; i < m_TrainableDataDegree; i++) {
             delete m_aTrainableData[i];
         }
         delete m_aTrainableData;
 
-        return true;
+        return 1;
     }
 
-    bool AddTrainableData(Tensor<DTYPE> *pData, Tensor<DTYPE> *pWeight) {
+    int AddTrainableData(Tensor<DTYPE> *pData, Tensor<DTYPE> *pWeight) {
         if (m_TrainableDataDegree != 0) {
             TrainableData<DTYPE> **temp = new TrainableData<DTYPE> *[m_TrainableDataDegree + 1];
             std::copy(m_aTrainableData, m_aTrainableData + m_TrainableDataDegree, temp);
@@ -82,19 +82,19 @@ public:
 
         m_TrainableDataDegree++;
 
-        return true;
+        return 1;
     }
 
-    bool UpdateVariable() {
+    int UpdateVariable() {
         for (int i = 0; i < m_TrainableDataDegree; i++) {
             // UpdateVariable(m_aTrainableData[i]->Data, m_aTrainableData[i]->Gradient);
             UpdateVariable(m_aTrainableData[i]);
         }
-        return true;
+        return 1;
     }
 
-    // virtual bool UpdateVariable(Tensor<DTYPE> *Trainable, Tensor<DTYPE> *Gradient) = 0;
-    virtual bool UpdateVariable(TrainableData<DTYPE> *pTrainableData) = 0;
+    // virtual int UpdateVariable(Tensor<DTYPE> *Trainable, Tensor<DTYPE> *Gradient) = 0;
+    virtual int UpdateVariable(TrainableData<DTYPE> *pTrainableData) = 0;
 
 
     void         SetObjectOperator(Operator<DTYPE> *pObjectOperator) {

@@ -23,7 +23,7 @@ public:
         std::cout << "Variable::~Variable()" << '\n';
     }
 
-    virtual bool Alloc(Tensor<DTYPE> *pTensor, int pTrainable) {
+    virtual int Alloc(Tensor<DTYPE> *pTensor, int pTrainable) {
         if (pTensor->GetShape()[0] != 1) {
             std::cout << "data has unvalid time dimension" << '\n';
             exit(0);
@@ -41,16 +41,16 @@ public:
 
         this->SetTrainable(pTrainable);
 
-        return true;
+        return 1;
     }
 
-    virtual bool ComputeForwardPropagate() {
+    virtual int ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        return true;
+        return 1;
     }
 
-    virtual bool ComputeBackPropagate() {
+    virtual int ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape         = this->GetOutput()->GetShape();
@@ -78,7 +78,7 @@ public:
         // GetGradient()->PrintData();
 
         // GetDelta()->Reset();
-        return true;
+        return 1;
     }
 };
 

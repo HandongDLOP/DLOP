@@ -21,7 +21,7 @@ public:
         std::cout << "Relu::~Relu()" << '\n';
     }
 
-    virtual bool Alloc(Operator<DTYPE> *pInput) {
+    virtual int Alloc(Operator<DTYPE> *pInput) {
         std::cout << "Relu::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
 
         Tensor<DTYPE> *output = new Tensor<DTYPE>(pInput->GetOutput()->GetShape());
@@ -29,10 +29,10 @@ public:
         Tensor<DTYPE> *delta = new Tensor<DTYPE>(pInput->GetOutput()->GetShape());
         this->SetDelta(delta);
 
-        return true;
+        return 1;
     }
 
-    virtual bool ComputeForwardPropagate() {
+    virtual int ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int *shape          = this->GetInputOperator()[0]->GetOutput()->GetShape();
@@ -51,10 +51,10 @@ public:
             }
         }
 
-        return true;
+        return 1;
     }
 
-    virtual bool ComputeBackPropagate() {
+    virtual int ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape          = this->GetOutput()->GetShape();
@@ -84,7 +84,7 @@ public:
 
         // GetDelta()->Reset();
 
-        return true;
+        return 1;
     }
 
     // for relu

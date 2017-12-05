@@ -19,10 +19,10 @@ template class NeuralNetwork<double>;
 // ===========================================================================================
 
 template<typename DTYPE>
-bool NeuralNetwork<DTYPE>::Alloc() {
+int NeuralNetwork<DTYPE>::Alloc() {
     std::cout << "NeuralNetwork<DTYPE>::Alloc()" << '\n';
     // m_aEnd->AddEdgebetweenOperators(m_aStart);
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
@@ -37,22 +37,22 @@ void NeuralNetwork<DTYPE>::Delete() {
 // ===========================================================================================
 
 template<typename DTYPE>
-bool NeuralNetwork<DTYPE>::AllocOptimizer(Optimizer<DTYPE> *pOptimizer) {
+int NeuralNetwork<DTYPE>::AllocOptimizer(Optimizer<DTYPE> *pOptimizer) {
     pOptimizer->GetObjectOperator()->AllocOptimizer(pOptimizer);
     // pOptimizer->SetBatch(pOptimizer->GetObjectOperator()->GetOutput()->GetBatch());
 
     // Object Operator는 거의 100% Optimizer가 필요 없다.
     // m_aEnd->SetOptimizer(pOptimizer);
-    return true;
+    return 1;
 }
 
-// bool NeuralNetwork<DTYPE>::DeleteOperator() {
+// int NeuralNetwork<DTYPE>::DeleteOperator() {
 // m_aEnd->DeleteInputOperator();
-// return true;
+// return 1;
 // }
 
 template<typename DTYPE>
-bool NeuralNetwork<DTYPE>::DeletePlaceholder() {
+int NeuralNetwork<DTYPE>::DeletePlaceholder() {
     Operator<DTYPE> **list_of_placeholder = m_aStart->GetOutputOperator();
     int num_of_placeholder                = m_aStart->GetOutputDegree();
 
@@ -61,7 +61,7 @@ bool NeuralNetwork<DTYPE>::DeletePlaceholder() {
         list_of_placeholder[i] = NULL;
     }
 
-    return true;
+    return 1;
 }
 
 // ===========================================================================================
@@ -83,42 +83,42 @@ Operator<DTYPE> *NeuralNetwork<DTYPE>::AddPlaceholder(Tensor<DTYPE> *pTensor, st
 // 주소에 따라 조절되는 알고리즘 추가 필요
 // forwardPropagate Algorithm 수정 필요
 template<typename DTYPE>
-bool NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd) {
+int NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd) {
     pEnd->ForwardPropagate();
 
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
-bool NeuralNetwork<DTYPE>::BackPropagate(Operator<DTYPE> *pStart, Optimizer<DTYPE> *pOptimizer) {
+int NeuralNetwork<DTYPE>::BackPropagate(Operator<DTYPE> *pStart, Optimizer<DTYPE> *pOptimizer) {
     // ObjectOperator로부터 시작한다
     pOptimizer->GetObjectOperator()->BackPropagate();
 
-    return true;
+    return 1;
 }
 
 // ===========================================================================================
 
 template<typename DTYPE>
-bool NeuralNetwork<DTYPE>::Run(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd) {
+int NeuralNetwork<DTYPE>::Run(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd) {
     this->ForwardPropagate(pStart, pEnd);
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
-bool NeuralNetwork<DTYPE>::Run(Operator<DTYPE> *pEnd) {
+int NeuralNetwork<DTYPE>::Run(Operator<DTYPE> *pEnd) {
     this->ForwardPropagate(m_aStart, pEnd);
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
-bool NeuralNetwork<DTYPE>::Run(Optimizer<DTYPE> *pOptimizer) {
+int NeuralNetwork<DTYPE>::Run(Optimizer<DTYPE> *pOptimizer) {
     this->ForwardPropagate(m_aStart, pOptimizer->GetObjectOperator());
 
     this->BackPropagate(m_aStart, pOptimizer);
 
     this->UpdateVariable(pOptimizer);
-    return true;
+    return 1;
 }
 
 // ===========================================================================================
@@ -160,7 +160,7 @@ void NeuralNetwork<DTYPE>::PrintData(Operator<DTYPE> *pOperator, int forceprint)
 // ===========================================================================================
 
 template<typename DTYPE>
-bool NeuralNetwork<DTYPE>::CreateGraph(Optimizer<DTYPE> *pOptimizer) {
+int NeuralNetwork<DTYPE>::CreateGraph(Optimizer<DTYPE> *pOptimizer) {
     // Final Operator
 
     // SetEndOperator();
@@ -172,10 +172,10 @@ bool NeuralNetwork<DTYPE>::CreateGraph(Optimizer<DTYPE> *pOptimizer) {
 
     // =====================================
 
-    return true;
+    return 1;
 }
 
-// bool NeuralNetwork<DTYPE>::CreateGraph(){
+// int NeuralNetwork<DTYPE>::CreateGraph(){
 //// 추후에 만들 Optimizer는 그 자체가 Trainable Operator주소를 가질 수 있도록 만들 것이다.
 //// factory method 삭제예정
 // }

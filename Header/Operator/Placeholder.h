@@ -23,26 +23,26 @@ public:
         std::cout << "Placeholder::~Placeholder()" << '\n';
     }
 
-    virtual bool Alloc(Tensor<DTYPE> *pTensor) {
+    virtual int Alloc(Tensor<DTYPE> *pTensor) {
         this->SetOutput(pTensor);
 
         // no meaning
         Tensor<DTYPE> *delta = new Tensor<DTYPE>(pTensor->GetShape());
         this->SetDelta(delta);
 
-        return true;
+        return 1;
     }
 
-    virtual bool ComputeForwardPropagate() {
+    virtual int ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
-        return true;
+        return 1;
     }
 
-    virtual bool ComputeBackPropagate() {
+    virtual int ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        return true;
+        return 1;
     }
 };
 

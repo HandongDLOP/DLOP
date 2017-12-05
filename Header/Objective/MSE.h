@@ -26,7 +26,7 @@ public:
         std::cout << "MSE::~MSE()" << '\n';
     }
 
-    virtual bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
+    virtual int Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
         std::cout << "MSE::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
         // if pInput0 and pInput1의 shape가 다르면 abort
 
@@ -34,10 +34,10 @@ public:
         Tensor<DTYPE> *output = new Tensor<DTYPE>(shape[0], shape[1], 1, 1, 1);
         this->SetOutput(output);
 
-        return true;
+        return 1;
     }
 
-    virtual bool ComputeForwardPropagate() {
+    virtual int ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int *shape          = this->GetInputOperator()[0]->GetOutput()->GetShape();
@@ -66,10 +66,10 @@ public:
         // GetInputOperator()[1]->GetOutput()->PrintData();
         // GetOutput()->PrintData();
 
-        return true;
+        return 1;
     }
 
-    virtual bool ComputeBackPropagate() {
+    virtual int ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape          = this->GetInputOperator()[0]->GetOutput()->GetShape();
@@ -95,7 +95,7 @@ public:
 
         // GetInputOperator()[0]->GetDelta()->PrintData();
 
-        return true;
+        return 1;
     }
 
     DTYPE Error(DTYPE input0, DTYPE input1, int num_of_output) {

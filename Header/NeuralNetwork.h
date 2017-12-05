@@ -46,12 +46,12 @@ public:
     // ===========================================================================================
 
     // 추후 private로 옮길 의향 있음
-    bool Alloc();
-    bool AllocOptimizer(Optimizer<DTYPE> *pOptimizer);
+    int Alloc();
+    int AllocOptimizer(Optimizer<DTYPE> *pOptimizer);
 
     void Delete();
-    bool DeletePlaceholder();
-    // bool DeleteOperator();
+    int DeletePlaceholder();
+    // int DeleteOperator();
 
     // ===========================================================================================
 
@@ -62,22 +62,22 @@ public:
 
     // Propagate
     // Prameter에 basket이 추가될 수 있음
-    bool ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
-    bool BackPropagate(Operator<DTYPE> *pStart, Optimizer<DTYPE> *pOptimizer);
+    int ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
+    int BackPropagate(Operator<DTYPE> *pStart, Optimizer<DTYPE> *pOptimizer);
 
     //// For NeuralNetwork Training
-    // bool Training(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
-    // bool Testing(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
+    // int Training(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
+    // int Testing(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
     //
-    // bool Training(Operator<DTYPE> *pEnd);
-    // bool Testing(Operator<DTYPE> *pEnd);
+    // int Training(Operator<DTYPE> *pEnd);
+    // int Testing(Operator<DTYPE> *pEnd);
     //
-    // bool Training(Optimizer<DTYPE> *pOptimizer);
-    // bool Testing(Optimizer<DTYPE> *pOptimizer);
+    // int Training(Optimizer<DTYPE> *pOptimizer);
+    // int Testing(Optimizer<DTYPE> *pOptimizer);
 
-    bool Run(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
-    bool Run(Operator<DTYPE> *pEnd);
-    bool Run(Optimizer<DTYPE> *pOptimizer);
+    int Run(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
+    int Run(Operator<DTYPE> *pEnd);
+    int Run(Optimizer<DTYPE> *pOptimizer);
 
 
     // void SetEndOperator(Operator<DTYPE> *pEnd) {
@@ -97,7 +97,7 @@ public:
     void PrintData(Operator<DTYPE> *pOperator, int forceprint = 0);
 
     // ===========================================================================================
-    bool CreateGraph(Optimizer<DTYPE> *pOptimizer);
+    int CreateGraph(Optimizer<DTYPE> *pOptimizer);
 
     // ===========================================================================================
 

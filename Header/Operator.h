@@ -32,8 +32,8 @@ private:
     // Private Operator
 
 private:
-    bool _AddInputEdge(Operator<DTYPE> *pInput);
-    bool _AddOutputEdge(Operator<DTYPE> *pOutput);
+    int _AddInputEdge(Operator<DTYPE> *pInput);
+    int _AddOutputEdge(Operator<DTYPE> *pOutput);
 
 public:
     Operator() {
@@ -107,20 +107,20 @@ public:
     // ===========================================================================================
 
     // 추후 Private으로 옮길 의향 있음
-    virtual bool Alloc(Tensor<DTYPE> *pTensor);
-    virtual bool Alloc(Operator<DTYPE> *pInput);
-    virtual bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1);
-    virtual bool Alloc(MetaParameter<DTYPE> *pParam = NULL);
+    virtual int Alloc(Tensor<DTYPE> *pTensor);
+    virtual int Alloc(Operator<DTYPE> *pInput);
+    virtual int Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1);
+    virtual int Alloc(MetaParameter<DTYPE> *pParam = NULL);
 
-    bool         AllocOptimizer(Optimizer<DTYPE> *pOptimizer);
+    int         AllocOptimizer(Optimizer<DTYPE> *pOptimizer);
 
     virtual void Delete();
 
-    // bool         DeleteInputOperator();
+    // int         DeleteInputOperator();
 
     // ===========================================================================================
 
-    bool AddEdgebetweenOperators(Operator<DTYPE> *pInput);
+    int AddEdgebetweenOperators(Operator<DTYPE> *pInput);
 
     // ===========================================================================================
 
@@ -208,12 +208,12 @@ public:
     // ===========================================================================================
 
     // Propagate
-    bool         ForwardPropagate();        // ForwardPropagate 진행 방향 및 순서
-    virtual bool ComputeForwardPropagate();  // Compute to (추후 interface 형태로 수정 예정)
+    int         ForwardPropagate();        // ForwardPropagate 진행 방향 및 순서
+    virtual int ComputeForwardPropagate();  // Compute to (추후 interface 형태로 수정 예정)
 
     // BackPropagate
-    bool         BackPropagate(); // BackPropagate 진행 방향 및 순서
-    virtual bool ComputeBackPropagate();  // compute delta and detabar(if we need to) (추후 interface 형태로 수정 예정)
+    int         BackPropagate(); // BackPropagate 진행 방향 및 순서
+    virtual int ComputeBackPropagate();  // compute delta and detabar(if we need to) (추후 interface 형태로 수정 예정)
 
 
     // ===========================================================================================

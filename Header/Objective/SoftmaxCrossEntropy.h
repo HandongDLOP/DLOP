@@ -36,7 +36,7 @@ public:
         delete m_aSoftmax_Result;
     }
 
-    virtual bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, DTYPE epsilon = 1e-20) {
+    virtual int Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, DTYPE epsilon = 1e-20) {
         std::cout << "SoftmaxCrossEntropy::Alloc(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
         // if pInput0 and pInput1의 shape가 다르면 abort
 
@@ -49,10 +49,10 @@ public:
         m_aSoftmax_Result = new Tensor<DTYPE>(pInput0->GetOutput()->GetShape());
         m_epsilon         = epsilon;
 
-        return true;
+        return 1;
     }
 
-    virtual bool ComputeForwardPropagate() {
+    virtual int ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
         int *shape              = this->GetInputOperator()[0]->GetOutput()->GetShape();
         TENSOR_DTYPE input_data = this->GetInputOperator()[0]->GetOutput()->GetData();
@@ -109,10 +109,10 @@ public:
         }
 
 
-        return true;
+        return 1;
     }
 
-    virtual bool ComputeBackPropagate() {
+    virtual int ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape = this->GetInputOperator()[0]->GetOutput()->GetShape();
@@ -149,7 +149,7 @@ public:
             }
         }
 
-        return true;
+        return 1;
     }
 
     template<typename TEMP_DTYPE>

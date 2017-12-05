@@ -5,16 +5,16 @@ template class Tensor<float>;
 template class Tensor<double>;
 
 template<typename DTYPE>
-bool Tensor<DTYPE>::Alloc() {
+int Tensor<DTYPE>::Alloc() {
     m_Rank   = 0;
     m_aShape = NULL;
     m_aData  = NULL;
 
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
-bool Tensor<DTYPE>::Alloc(int pTime, int pBatch, int pChannel, int pRow, int pCol) {
+int Tensor<DTYPE>::Alloc(int pTime, int pBatch, int pChannel, int pRow, int pCol) {
     // ============================================================
 
     m_Rank = 5;
@@ -56,11 +56,11 @@ bool Tensor<DTYPE>::Alloc(int pTime, int pBatch, int pChannel, int pRow, int pCo
     // ==============================================================
 
 
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
-bool Tensor<DTYPE>::Delete() {
+int Tensor<DTYPE>::Delete() {
     // std::cout << "Tensor<DTYPE>::Delete()" << '\n';
 
     int Time    = GetTime();
@@ -90,7 +90,7 @@ bool Tensor<DTYPE>::Delete() {
 
     delete[] m_aShape;
 
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>

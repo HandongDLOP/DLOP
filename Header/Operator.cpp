@@ -5,39 +5,39 @@ template class Operator<float>;
 template class Operator<double>;
 
 template<typename DTYPE>
-bool Operator<DTYPE>::Alloc(Tensor<DTYPE> *pTensor) {
+int Operator<DTYPE>::Alloc(Tensor<DTYPE> *pTensor) {
     std::cout << "Operator<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
 
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
-bool Operator<DTYPE>::Alloc(Operator<DTYPE> *pInput) {
+int Operator<DTYPE>::Alloc(Operator<DTYPE> *pInput) {
     std::cout << "Operator<DTYPE>::Alloc(Operator<DTYPE> *)" << '\n';
 
     // Shape도 받을 수 있도록 코드 수정 alloc도 마찬가지
     this->AddEdgebetweenOperators(pInput);
 
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
-bool Operator<DTYPE>::Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
+int Operator<DTYPE>::Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
     std::cout << "Operator<DTYPE>::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
 
     // Shape도 받을 수 있도록 코드 수정 alloc도 마찬가지
     this->AddEdgebetweenOperators(pInput0);
     this->AddEdgebetweenOperators(pInput1);
 
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
-bool Operator<DTYPE>::Alloc(MetaParameter<DTYPE> *pParam) {
-    return true;
+int Operator<DTYPE>::Alloc(MetaParameter<DTYPE> *pParam) {
+    return 1;
 }
 
-// bool Operator<DTYPE>::AllocOptimizer(Optimizer_name pOptimizer_name) {
+// int Operator<DTYPE>::AllocOptimizer(Optimizer_name pOptimizer_name) {
 // for (int i = 0; i < m_InputDegree; i++) {
 // m_apInputOperator[i]->AllocOptimizer(pOptimizer_name);
 //
@@ -45,11 +45,11 @@ bool Operator<DTYPE>::Alloc(MetaParameter<DTYPE> *pParam) {
 // m_apInputOperator[i]->SetOptimizer(pOptimizer);
 // }
 //
-// return true;
+// return 1;
 // }
 
 template<typename DTYPE>
-bool Operator<DTYPE>::AllocOptimizer(Optimizer<DTYPE> *pOptimizer) {
+int Operator<DTYPE>::AllocOptimizer(Optimizer<DTYPE> *pOptimizer) {
     for (int i = 0; i < m_InputDegree; i++) {
         m_apInputOperator[i]->AllocOptimizer(pOptimizer);
 
@@ -58,7 +58,7 @@ bool Operator<DTYPE>::AllocOptimizer(Optimizer<DTYPE> *pOptimizer) {
         }
     }
 
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
@@ -76,7 +76,7 @@ void Operator<DTYPE>::Delete() {
     // delete m_aOptimizer;
 }
 
-// bool Operator<DTYPE>::DeleteInputOperator() {
+// int Operator<DTYPE>::DeleteInputOperator() {
 //// Postorder : like ForwardPropagate
 // for (int i = 0; i < m_InputDegree; i++) {
 // m_apInputOperator[i]->IncreaseCurrentOutputDegree();
@@ -91,14 +91,14 @@ void Operator<DTYPE>::Delete() {
 // }
 // }
 //
-// return true;
+// return 1;
 // }
 
 // ===========================================================================================
 
 // Add Graph Edge
 template<typename DTYPE>
-bool Operator<DTYPE>::_AddInputEdge(Operator<DTYPE> *pInput) {
+int Operator<DTYPE>::_AddInputEdge(Operator<DTYPE> *pInput) {
     if (m_InputDegree != 0) {
         Operator<DTYPE> **temp = new Operator<DTYPE> *[m_InputDegree + 1];
         std::copy(m_apInputOperator, m_apInputOperator + m_InputDegree, temp);
@@ -114,11 +114,11 @@ bool Operator<DTYPE>::_AddInputEdge(Operator<DTYPE> *pInput) {
 
     m_InputDegree++;
 
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
-bool Operator<DTYPE>::_AddOutputEdge(Operator<DTYPE> *pOutput) {
+int Operator<DTYPE>::_AddOutputEdge(Operator<DTYPE> *pOutput) {
     if (m_OutputDegree != 0) {
         Operator<DTYPE> **temp = new Operator<DTYPE> *[m_OutputDegree + 1];
         std::copy(m_apOutputOperator, m_apOutputOperator + m_OutputDegree, temp);
@@ -134,23 +134,23 @@ bool Operator<DTYPE>::_AddOutputEdge(Operator<DTYPE> *pOutput) {
 
     m_OutputDegree++;
 
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
-bool Operator<DTYPE>::AddEdgebetweenOperators(Operator<DTYPE> *pInput) {
+int Operator<DTYPE>::AddEdgebetweenOperators(Operator<DTYPE> *pInput) {
     // 양방향 Edge 생성
     this->_AddInputEdge(pInput);
     pInput->_AddOutputEdge(this);
 
-    return true;
+    return 1;
 }
 
 // ===========================================================================================
 
 /* BFS로 다시 구현할 필요 있음 */
 
-// bool Operator<DTYPE>::ForwardPropagate(){
+// int Operator<DTYPE>::ForwardPropagate(){
 //// Preorder
 // this->ComputeForwardPropagate();
 //
@@ -165,11 +165,11 @@ bool Operator<DTYPE>::AddEdgebetweenOperators(Operator<DTYPE> *pInput) {
 // m_apOutputOperator[i]->ForwardPropagate();
 // }
 // }
-// return true;
+// return 1;
 // }
 
 template<typename DTYPE>
-bool Operator<DTYPE>::ForwardPropagate() {
+int Operator<DTYPE>::ForwardPropagate() {
     // 알고리즘 잘 이해하기
     // BFS로 나중에는 바꿀 것
     if (m_InputDegree == m_currentInputDegree) {
@@ -194,11 +194,11 @@ bool Operator<DTYPE>::ForwardPropagate() {
         }
     }
 
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
-bool Operator<DTYPE>::BackPropagate() {
+int Operator<DTYPE>::BackPropagate() {
     this->ComputeBackPropagate();
 
     // value 조정
@@ -213,23 +213,23 @@ bool Operator<DTYPE>::BackPropagate() {
             m_apInputOperator[i]->BackPropagate();
         }
     }
-    return true;
+    return 1;
 }
 
 // ===========================================================================================
 
 template<typename DTYPE>
-bool Operator<DTYPE>::ComputeForwardPropagate() {
+int Operator<DTYPE>::ComputeForwardPropagate() {
     // std::cout << m_name << " : ComputeForwardPropagate()" << '\n';
 
-    return true;
+    return 1;
 }
 
 template<typename DTYPE>
-bool Operator<DTYPE>::ComputeBackPropagate() {
+int Operator<DTYPE>::ComputeBackPropagate() {
     // std::cout << m_name << " : ComputeBackPropagate()" << '\n';
 
-    return true;
+    return 1;
 }
 
 // ===========================================================================================

@@ -17,7 +17,7 @@
 //         std::cout << "Softmax::~Softmax()" << '\n';
 //     }
 //
-//     virtual bool Alloc(Operator *pInput) {
+//     virtual int Alloc(Operator *pInput) {
 //         std::cout << "Softmax::Alloc(Operator *, Operator *)" << '\n';
 //
 //         Tensor *output = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
@@ -25,10 +25,10 @@
 //         Tensor *delta = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
 //         SetDelta(delta);
 //
-//         return true;
+//         return 1;
 //     }
 //
-//     virtual bool ComputeForwardPropagate() {
+//     virtual int ComputeForwardPropagate() {
 //         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 //
 //         int *shape         = GetInputOperator()[0]->GetOutput()->GetShape();
@@ -70,10 +70,10 @@
 //             }
 //         }
 //
-//         return true;
+//         return 1;
 //     }
 //
-//     virtual bool ComputeBackPropagate() {
+//     virtual int ComputeBackPropagate() {
 //         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 //
 //         // int *shape              = GetOutput()->GetShape();
@@ -99,7 +99,7 @@
 //
 //         GetDelta()->Reset();
 //
-//         return true;
+//         return 1;
 //     }
 //
 //     double Max(double ***data, int Channel, int Row, int Col) {

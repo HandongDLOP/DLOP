@@ -57,13 +57,13 @@ public:
         Delete();
     }
 
-    bool Alloc();
-    bool Alloc(int pTime, int pBatch, int pChannel, int pRow, int pCol);
-    // bool Alloc(int * pShape, int pRank);
+    int Alloc();
+    int Alloc(int pTime, int pBatch, int pChannel, int pRow, int pCol);
+    // int Alloc(int * pShape, int pRank);
 
-    // bool Alloc(int pRank, std::initializer_list<int> pShape, INITIAL_MODE mode);
+    // int Alloc(int pRank, std::initializer_list<int> pShape, INITIAL_MODE mode);
 
-    bool Delete();
+    int Delete();
 
     // ===========================================================================================
 
