@@ -40,13 +40,14 @@ public:
         std::cout << "SoftmaxCrossEntropy::Alloc(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
         // if pInput0 and pInput1의 shape가 다르면 abort
 
-        int *shape            = pInput0->GetOutput()->GetShape();
-        Tensor<DTYPE> *output = new Tensor<DTYPE>(shape[0], shape[1], 1, 1, 1);
+        Tensor<DTYPE> *output = new Tensor<DTYPE>(pInput0->GetOutput()->GetTime(),
+                                                  pInput0->GetOutput()->GetBatch(),
+                                                  1,
+                                                  1,
+                                                  1);
         this->SetOutput(output);
-
-        m_aSoftmax_Result = new Tensor<DTYPE>(shape);
-
-        m_epsilon = epsilon;
+        m_aSoftmax_Result = new Tensor<DTYPE>(pInput0->GetOutput()->GetShape());
+        m_epsilon         = epsilon;
 
         return true;
     }
@@ -151,7 +152,8 @@ public:
         return true;
     }
 
-    template<typename TEMP_DTYPE> DTYPE Max(TEMP_DTYPE data, int Channel, int Row, int Col) {
+    template<typename TEMP_DTYPE>
+    DTYPE Max(TEMP_DTYPE data, int Channel, int Row, int Col) {
         // initialize
         DTYPE max = data[0][0][0];
 
@@ -174,7 +176,8 @@ public:
         return error_;
     }
 
-    template<typename TEMP_DTYPE> DTYPE SoftmaxCrossEntropy_derivative(TEMP_DTYPE label_data, DTYPE prediction, int *shape, int pChannel, int pRow, int pCol, int num_of_output) {
+    template<typename TEMP_DTYPE>
+    DTYPE SoftmaxCrossEntropy_derivative(TEMP_DTYPE label_data, DTYPE prediction, int *shape, int pChannel, int pRow, int pCol, int num_of_output) {
         int Channel = shape[2];
         int Row     = shape[3];
         int Col     = shape[4];
