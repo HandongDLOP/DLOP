@@ -10,7 +10,6 @@
 
 template<typename DTYPE>
 class Tensor {
-public:
     typedef DTYPE***** TENSOR_DTYPE;
 private:
     // 현재는 scala 값은 따로 존재하지 않고 rnak0 dimension 1로 취급한다.
@@ -129,19 +128,5 @@ public:
 
     // Initialization(const std::string &type = "default");
 };
-
-// template<typename DTYPE>
-// class temp : public Tensor<DTYPE>{
-// private:
-//     TENSOR_DTYPE data;
-//
-// public:
-//     temp (){
-//
-//     }
-//     virtual ~temp (){
-//
-//     }
-// };
 
 #endif  // TENSOR_H_

@@ -7,7 +7,6 @@ template<typename DTYPE>
 class Variable : public Operator<DTYPE>{
 public:
     typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
-public:
     Variable(std::string pName) : Operator<DTYPE>(pName) {
         std::cout << "Variable::Variable(std::string)" << '\n';
     }

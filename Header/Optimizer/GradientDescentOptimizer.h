@@ -5,10 +5,8 @@
 
 template<typename DTYPE>
 class GradientDescentOptimizer : public Optimizer<DTYPE>{
-private:
-    /* data */
-
 public:
+    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
     GradientDescentOptimizer(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pObjectOperator, pLearningRate, pOptimizeDirection) {
         std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
     }
@@ -22,8 +20,8 @@ public:
 
         int *shape = pTrainableData->Data->GetShape();
 
-        DTYPE *****trainable_data = pTrainableData->Data->GetData();
-        DTYPE *****gradient       = pTrainableData->Gradient->GetData();
+        TENSOR_DTYPE trainable_data = pTrainableData->Data->GetData();
+        TENSOR_DTYPE gradient       = pTrainableData->Gradient->GetData();
 
         // learning rate 부분 다시 구현할 필요 있음
         float learning_rate = this->GetOptimizeDirection() * this->GetLearningRate();
