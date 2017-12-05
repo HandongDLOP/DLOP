@@ -10,11 +10,13 @@
 
 template<typename DTYPE>
 class Tensor {
+public:
+    typedef DTYPE***** TENSOR_DTYPE;
 private:
     // 현재는 scala 값은 따로 존재하지 않고 rnak0 dimension 1로 취급한다.
     int m_Rank;
     int *m_aShape;
-    DTYPE *****m_aData;
+    TENSOR_DTYPE m_aData;
 
 public:
     Tensor() {
@@ -40,8 +42,8 @@ public:
         }
     }
 
-    Tensor(DTYPE *****pData, int *pShape, int pRank = 5) {
-        // std::cout << "Tensor::Tensor(DTYPE*****, int *, int)" << '\n';
+    Tensor(TENSOR_DTYPE pData, int *pShape, int pRank = 5) {
+        // std::cout << "Tensor::Tensor(TENSOR_DTYPE, int *, int)" << '\n';
         m_Rank   = pRank;
         m_aShape = pShape;
         m_aData  = pData;
@@ -75,7 +77,7 @@ public:
 
     // ===========================================================================================
 
-    void SetData(DTYPE *****pData) {
+    void SetData(TENSOR_DTYPE pData) {
         if (m_aData != NULL) delete m_aData;
         m_aData = pData;
     }
@@ -112,9 +114,13 @@ public:
         return m_aShape[4];
     }
 
-    DTYPE***** GetData() const {
+    TENSOR_DTYPE GetData() const {
         return m_aData;
     }
+    //
+    // typename GetType() const (
+    //     return TENSOR_DTYPE;
+    // )
 
     // ===========================================================================================
 
@@ -123,5 +129,19 @@ public:
 
     // Initialization(const std::string &type = "default");
 };
+
+// template<typename DTYPE>
+// class temp : public Tensor<DTYPE>{
+// private:
+//     TENSOR_DTYPE data;
+//
+// public:
+//     temp (){
+//
+//     }
+//     virtual ~temp (){
+//
+//     }
+// };
 
 #endif  // TENSOR_H_

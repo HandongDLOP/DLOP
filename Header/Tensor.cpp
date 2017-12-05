@@ -125,7 +125,7 @@ Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTime, int pBatch, int pChann
     // std::normal_distribution<DTYPE> dist(0.F, stdev);
 
     Tensor<DTYPE> *temp_Tensor = new Tensor(pTime, pBatch, pChannel, pRow, pCol);
-    DTYPE     *****temp_data   = temp_Tensor->GetData();
+    TENSOR_DTYPE temp_data   = temp_Tensor->GetData();
 
     for (int ti = 0; ti < pTime; ti++) {
         for (int ba = 0; ba < pBatch; ba++) {
@@ -157,7 +157,7 @@ Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pTime, int pBatch, int pChannel, int
     std::cout << "Tensor<DTYPE>::Constant()" << '\n';
 
     Tensor<DTYPE> *temp_Tensor = new Tensor(pTime, pBatch, pChannel, pRow, pCol);
-    DTYPE     *****temp_data   = temp_Tensor->GetData();
+    TENSOR_DTYPE temp_data   = temp_Tensor->GetData();
 
     for (int ti = 0; ti < pTime; ti++) {
         for (int ba = 0; ba < pBatch; ba++) {

@@ -6,6 +6,8 @@
 template<typename DTYPE>
 class Relu : public Operator<DTYPE>{
 public:
+    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
+public:
     // Constructor의 작업 순서는 다음과 같다.
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
     // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (Relu::Alloc())
@@ -18,7 +20,7 @@ public:
         std::cout << "Relu::~Relu()" << '\n';
     }
 
-    bool Alloc(Operator<DTYPE> *pInput) {
+    virtual bool Alloc(Operator<DTYPE> *pInput) {
         std::cout << "Relu::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
 
         Tensor<DTYPE> *output = new Tensor<DTYPE>(pInput->GetOutput()->GetShape());
@@ -29,12 +31,12 @@ public:
         return true;
     }
 
-    bool ComputeForwardPropagate() {
+    virtual bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int *shape        = this->GetInputOperator()[0]->GetOutput()->GetShape();
-        DTYPE *****input  = this->GetInputOperator()[0]->GetOutput()->GetData();
-        DTYPE *****output = this->GetOutput()->GetData();
+        TENSOR_DTYPE input  = this->GetInputOperator()[0]->GetOutput()->GetData();
+        TENSOR_DTYPE output = this->GetOutput()->GetData();
 
         for (int ti = 0; ti < shape[0]; ti++) {
             for (int ba = 0; ba < shape[1]; ba++) {
@@ -51,15 +53,15 @@ public:
         return true;
     }
 
-    bool ComputeBackPropagate() {
+    virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape        = this->GetOutput()->GetShape();
-        DTYPE *****output = this->GetOutput()->GetData();
-        DTYPE *****delta  = this->GetDelta()->GetData();
+        TENSOR_DTYPE output = this->GetOutput()->GetData();
+        TENSOR_DTYPE delta  = this->GetDelta()->GetData();
 
         this->GetInputOperator()[0]->GetDelta()->Reset();
-        DTYPE *****delta_input = this->GetInputOperator()[0]->GetDelta()->GetData();
+        TENSOR_DTYPE delta_input = this->GetInputOperator()[0]->GetDelta()->GetData();
 
         for (int ti = 0; ti < shape[0]; ti++) {
             for (int ba = 0; ba < shape[1]; ba++) {

@@ -6,6 +6,8 @@
 template<typename DTYPE>
 class MSE : public Operator<DTYPE>{
 public:
+    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
+public:
     // Constructor의 작업 순서는 다음과 같다.
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
     // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (MSE::Alloc())
@@ -23,7 +25,7 @@ public:
         std::cout << "MSE::~MSE()" << '\n';
     }
 
-    bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
+    virtual bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
         std::cout << "MSE::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
         // if pInput0 and pInput1의 shape가 다르면 abort
 
@@ -34,15 +36,15 @@ public:
         return true;
     }
 
-    bool ComputeForwardPropagate() {
+    virtual bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int *shape        = this->GetInputOperator()[0]->GetOutput()->GetShape();
-        DTYPE *****input0 = this->GetInputOperator()[0]->GetOutput()->GetData();
-        DTYPE *****input1 = this->GetInputOperator()[1]->GetOutput()->GetData();
+        TENSOR_DTYPE input0 = this->GetInputOperator()[0]->GetOutput()->GetData();
+        TENSOR_DTYPE input1 = this->GetInputOperator()[1]->GetOutput()->GetData();
 
         this->GetOutput()->Reset();
-        DTYPE *****output = this->GetOutput()->GetData();
+        TENSOR_DTYPE output = this->GetOutput()->GetData();
         int num_of_output = shape[2] * shape[3] * shape[4];
 
         for (int ti = 0; ti < shape[0]; ti++) {
@@ -66,16 +68,16 @@ public:
         return true;
     }
 
-    bool ComputeBackPropagate() {
+    virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape         = this->GetInputOperator()[0]->GetOutput()->GetShape();
         int  num_of_output = shape[2] * shape[3] * shape[4];  /* * InputDim0->GetDim()[2] == ch*/;
-        DTYPE *****input0  = this->GetInputOperator()[0]->GetOutput()->GetData();
-        DTYPE *****input1  = this->GetInputOperator()[1]->GetOutput()->GetData();
+        TENSOR_DTYPE input0  = this->GetInputOperator()[0]->GetOutput()->GetData();
+        TENSOR_DTYPE input1  = this->GetInputOperator()[1]->GetOutput()->GetData();
 
         this->GetInputOperator()[0]->GetDelta()->Reset();
-        DTYPE *****delta_Input0 = this->GetInputOperator()[0]->GetDelta()->GetData();
+        TENSOR_DTYPE delta_Input0 = this->GetInputOperator()[0]->GetDelta()->GetData();
 
         for (int ti = 0; ti < shape[0]; ti++) {
             for (int ba = 0; ba < shape[1]; ba++) {

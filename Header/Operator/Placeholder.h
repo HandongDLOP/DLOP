@@ -5,7 +5,8 @@
 
 template<typename DTYPE>
 class Placeholder : public Operator<DTYPE>{
-private:
+public:
+    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
 public:
     Placeholder(std::string pName) : Operator<DTYPE>(pName) {
         std::cout << "Placeholder::Placeholder(std::string)" << '\n';
@@ -21,7 +22,7 @@ public:
         std::cout << "Placeholder::~Placeholder()" << '\n';
     }
 
-    bool Alloc(Tensor<DTYPE> *pTensor) {
+    virtual bool Alloc(Tensor<DTYPE> *pTensor) {
         this->SetOutput(pTensor);
 
         // no meaning
@@ -31,13 +32,13 @@ public:
         return true;
     }
 
-    bool ComputeForwardPropagate() {
+    virtual bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         return true;
     }
 
-    bool ComputeBackPropagate() {
+    virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         return true;

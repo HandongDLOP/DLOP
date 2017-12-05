@@ -5,7 +5,8 @@
 
 template<typename DTYPE>
 class Variable : public Operator<DTYPE>{
-private:
+public:
+    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
 public:
     Variable(std::string pName) : Operator<DTYPE>(pName) {
         std::cout << "Variable::Variable(std::string)" << '\n';
@@ -21,7 +22,7 @@ public:
         std::cout << "Variable::~Variable()" << '\n';
     }
 
-    bool Alloc(Tensor<DTYPE> *pTensor, int pTrainable) {
+    virtual bool Alloc(Tensor<DTYPE> *pTensor, int pTrainable) {
         if (pTensor->GetShape()[0] != 1) {
             std::cout << "data has unvalid time dimension" << '\n';
             exit(0);
@@ -42,18 +43,18 @@ public:
         return true;
     }
 
-    bool ComputeForwardPropagate() {
+    virtual bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         return true;
     }
 
-    bool ComputeBackPropagate() {
+    virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape       = this->GetOutput()->GetShape();
-        DTYPE *****delta = this->GetDelta()->GetData();
-        DTYPE *****grad  = this->GetGradient()->GetData();
+        TENSOR_DTYPE delta = this->GetDelta()->GetData();
+        TENSOR_DTYPE grad  = this->GetGradient()->GetData();
 
         // 이전에 구해져 있던 gradient와 합치기
         for (int ti = 0; ti < shape[0]; ti++) {

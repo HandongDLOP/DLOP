@@ -5,6 +5,8 @@
 //
 // template<typename DTYPE>
 // class CrossEntropy : public Operator<DTYPE>{
+//public:
+//    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
 // private:
 //     // Tensor<DTYPE> *m_aSoftmax_Result = NULL;
 //     DTYPE m_epsilon   = 0.0;        // for backprop
@@ -30,7 +32,7 @@
 //         this->Alloc(pInput0, pInput1, epsilon);
 //     }
 //
-//     virtual ~CrossEntropy() {
+//     ~CrossEntropy() {
 //         std::cout << "CrossEntropy::~CrossEntropy()" << '\n';
 //     }
 //
@@ -49,7 +51,7 @@
 //         return true;
 //     }
 //
-//     virtual bool ComputeForwardPropagate() {
+//     template <typename TENSOR_DTYPE> bool ComputeForwardPropagate() {
 //         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 //
 //         int *shape            = this->GetInputOperator()[0]->GetOutput()->GetShape();

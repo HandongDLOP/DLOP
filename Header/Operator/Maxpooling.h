@@ -18,19 +18,19 @@
 //         std::cout << "Maxpooling::~Maxpooling()" << '\n';
 //     }
 //
-//     bool Alloc(Operator *pInput, MetaParameter *pParam) {
+//     virtual bool Alloc(Operator *pInput, MetaParameter *pParam) {
 //
 //         return true;
 //     }
 //
-//     bool ComputeForwardPropagate() {
+//     virtual bool ComputeForwardPropagate() {
 //         std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 //
 //
 //         return true;
 //     }
 //
-//     bool ComputeBackPropagate() {
+//     virtual bool ComputeBackPropagate() {
 //         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 //
 //         return true;

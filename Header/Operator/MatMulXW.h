@@ -6,6 +6,8 @@
 template<typename DTYPE>
 class MatMul : public Operator<DTYPE>{
 public:
+    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
+public:
     MatMul(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) : Operator<DTYPE>(pInput0, pInput1) {
         std::cout << "MatMul::MatMul(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
         this->Alloc(pInput0, pInput1);
@@ -20,7 +22,7 @@ public:
         std::cout << "MatMul::~MatMul()" << '\n';
     }
 
-    bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
+    virtual bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
         std::cout << "MatMul::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
 
         int *shape_Input0 = pInput0->GetOutput()->GetShape();
@@ -76,7 +78,7 @@ public:
         return true;
     }
 
-    bool ComputeForwardPropagate() {
+    virtual bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int Time    = this->GetOutput()->GetTime();
@@ -86,11 +88,11 @@ public:
         int Col     = this->GetOutput()->GetCol();
         int Hidden  = this->GetInputOperator()[0]->GetOutput()->GetCol();
 
-        DTYPE *****input0 = this->GetInputOperator()[0]->GetOutput()->GetData();  // weight
-        DTYPE *****input1 = this->GetInputOperator()[1]->GetOutput()->GetData();  // input
-        DTYPE *****output = this->GetOutput()->GetData();
+        TENSOR_DTYPE input0 = this->GetInputOperator()[0]->GetOutput()->GetData();  // weight
+        TENSOR_DTYPE input1 = this->GetInputOperator()[1]->GetOutput()->GetData();  // input
+        TENSOR_DTYPE output = this->GetOutput()->GetData();
 
-        // DTYPE *****output_data     = new float[row * col];
+        // TENSOR_DTYPE output_data     = new float[row * col];
         DTYPE temp = 0.0;
 
         // GetInputOperator()[0]->GetOutput()->PrintShape();
@@ -118,7 +120,7 @@ public:
         return true;
     }
 
-    bool ComputeBackPropagate() {
+    virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int Time    = this->GetOutput()->GetTime();
@@ -128,20 +130,20 @@ public:
         int Col     = this->GetOutput()->GetCol();
         int Hidden  = this->GetInputOperator()[0]->GetOutput()->GetCol();
 
-        DTYPE *****input0 = this->GetInputOperator()[0]->GetOutput()->GetData();  // weight
-        DTYPE *****input1 = this->GetInputOperator()[1]->GetOutput()->GetData();  // input
+        TENSOR_DTYPE input0 = this->GetInputOperator()[0]->GetOutput()->GetData();  // weight
+        TENSOR_DTYPE input1 = this->GetInputOperator()[1]->GetOutput()->GetData();  // input
 
         // GetInputOperator()[0]->GetOutput()->PrintData();
         // GetInputOperator()[1]->GetOutput()->PrintData();
 
-        DTYPE *****delta = this->GetDelta()->GetData();
+        TENSOR_DTYPE delta = this->GetDelta()->GetData();
 
         // GetDelta()->PrintData();
 
         this->GetInputOperator()[0]->GetDelta()->Reset();
         this->GetInputOperator()[1]->GetDelta()->Reset();
-        DTYPE *****delta_input0 = this->GetInputOperator()[0]->GetDelta()->GetData();  // weight
-        DTYPE *****delta_input1 = this->GetInputOperator()[1]->GetDelta()->GetData();  // input
+        TENSOR_DTYPE delta_input0 = this->GetInputOperator()[0]->GetDelta()->GetData();  // weight
+        TENSOR_DTYPE delta_input1 = this->GetInputOperator()[1]->GetDelta()->GetData();  // input
 
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {

@@ -5,6 +5,8 @@
 
 template<typename DTYPE>
 class SoftmaxCrossEntropy : public Operator<DTYPE>{
+public:
+    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
 private:
     Tensor<DTYPE> *m_aSoftmax_Result = NULL;
     DTYPE m_epsilon                  = 0.0; // for backprop
@@ -34,7 +36,7 @@ public:
         delete m_aSoftmax_Result;
     }
 
-    bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, DTYPE epsilon = 1e-20) {
+    virtual bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, DTYPE epsilon = 1e-20) {
         std::cout << "SoftmaxCrossEntropy::Alloc(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
         // if pInput0 and pInput1의 shape가 다르면 abort
 
@@ -49,16 +51,16 @@ public:
         return true;
     }
 
-    bool ComputeForwardPropagate() {
+    virtual bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int *shape            = this->GetInputOperator()[0]->GetOutput()->GetShape();
-        DTYPE *****input_data = this->GetInputOperator()[0]->GetOutput()->GetData();
-        DTYPE *****label_data = this->GetInputOperator()[1]->GetOutput()->GetData();
+        TENSOR_DTYPE input_data = this->GetInputOperator()[0]->GetOutput()->GetData();
+        TENSOR_DTYPE label_data = this->GetInputOperator()[1]->GetOutput()->GetData();
 
         this->GetOutput()->Reset();
-        DTYPE *****output         = this->GetOutput()->GetData();
-        DTYPE *****softmax_result = m_aSoftmax_Result->GetData();
+        TENSOR_DTYPE output         = this->GetOutput()->GetData();
+        TENSOR_DTYPE softmax_result = m_aSoftmax_Result->GetData();
 
         int Time    = shape[0];
         int Batch   = shape[1];
@@ -110,16 +112,16 @@ public:
         return true;
     }
 
-    bool ComputeBackPropagate() {
+    virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape = this->GetInputOperator()[0]->GetOutput()->GetShape();
 
-        DTYPE *****label_data     = this->GetInputOperator()[1]->GetOutput()->GetData();
-        DTYPE *****softmax_result = m_aSoftmax_Result->GetData();
+        TENSOR_DTYPE label_data     = this->GetInputOperator()[1]->GetOutput()->GetData();
+        TENSOR_DTYPE softmax_result = m_aSoftmax_Result->GetData();
 
         this->GetInputOperator()[0]->GetDelta()->Reset();
-        DTYPE *****delta_input_data = this->GetInputOperator()[0]->GetDelta()->GetData();
+        TENSOR_DTYPE delta_input_data = this->GetInputOperator()[0]->GetDelta()->GetData();
 
         int Time    = shape[0];
         int Batch   = shape[1];
@@ -150,7 +152,7 @@ public:
         return true;
     }
 
-    DTYPE Max(DTYPE ***data, int Channel, int Row, int Col) {
+    template <typename TEMP_DTYPE> DTYPE Max(TEMP_DTYPE data, int Channel, int Row, int Col) {
         // initialize
         DTYPE max = data[0][0][0];
 
@@ -173,7 +175,7 @@ public:
         return error_;
     }
 
-    DTYPE SoftmaxCrossEntropy_derivative(DTYPE ***label_data, DTYPE prediction, int *shape, int pChannel, int pRow, int pCol, int num_of_output) {
+    template <typename TEMP_DTYPE> DTYPE SoftmaxCrossEntropy_derivative(TEMP_DTYPE label_data, DTYPE prediction, int *shape, int pChannel, int pRow, int pCol, int num_of_output) {
         int Channel = shape[2];
         int Row     = shape[3];
         int Col     = shape[4];
