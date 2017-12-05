@@ -17,11 +17,11 @@ public:
         this->Alloc(pTensor);
     }
 
-    virtual ~Placeholder() {
+    ~Placeholder() {
         std::cout << "Placeholder::~Placeholder()" << '\n';
     }
 
-    virtual bool Alloc(Tensor<DTYPE> *pTensor) {
+    bool Alloc(Tensor<DTYPE> *pTensor) {
         this->SetOutput(pTensor);
 
         // no meaning
@@ -31,13 +31,13 @@ public:
         return true;
     }
 
-    virtual bool ComputeForwardPropagate() {
+    bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         return true;
     }
 
-    virtual bool ComputeBackPropagate() {
+    bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         return true;

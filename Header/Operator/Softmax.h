@@ -13,11 +13,11 @@
 //         Alloc(pInput);
 //     }
 //
-//     virtual ~Softmax() {
+//     ~Softmax() {
 //         std::cout << "Softmax::~Softmax()" << '\n';
 //     }
 //
-//     virtual bool Alloc(Operator *pInput) {
+//     bool Alloc(Operator *pInput) {
 //         std::cout << "Softmax::Alloc(Operator *, Operator *)" << '\n';
 //
 //         Tensor *output = new Tensor(GetInputOperator()[0]->GetOutput()->GetShape());
@@ -28,7 +28,7 @@
 //         return true;
 //     }
 //
-//     virtual bool ComputeForwardPropagate() {
+//     bool ComputeForwardPropagate() {
 //         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 //
 //         int *shape         = GetInputOperator()[0]->GetOutput()->GetShape();
@@ -73,7 +73,7 @@
 //         return true;
 //     }
 //
-//     virtual bool ComputeBackPropagate() {
+//     bool ComputeBackPropagate() {
 //         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 //
 //         // int *shape              = GetOutput()->GetShape();

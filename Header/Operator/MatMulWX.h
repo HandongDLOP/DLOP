@@ -15,11 +15,11 @@
 //         Alloc(pInput0, pInput1);
 //     }
 //
-//     virtual ~MatMul() {
+//     ~MatMul() {
 //         std::cout << "MatMul::~MatMul()" << '\n';
 //     }
 //
-//     virtual bool Alloc(Operator *pInput0, Operator *pInput1) {
+//     bool Alloc(Operator *pInput0, Operator *pInput1) {
 //         std::cout << "MatMul::Alloc(Operator *, Operator *)" << '\n';
 //
 //         int *shape_Input0 = pInput0->GetOutput()->GetShape();
@@ -75,7 +75,7 @@
 //         return true;
 //     }
 //
-//     virtual bool ComputeForwardPropagate() {
+//     bool ComputeForwardPropagate() {
 //         std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 //
 //         int Time    = GetOutput()->GetTime();
@@ -117,7 +117,7 @@
 //         return true;
 //     }
 //
-//     virtual bool ComputeBackPropagate() {
+//     bool ComputeBackPropagate() {
 //         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 //
 //         int Time    = GetOutput()->GetTime();

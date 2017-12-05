@@ -19,11 +19,11 @@ public:
         this->Alloc(pInput0, pInput1);
     }
 
-    virtual ~Add() {
+    ~Add() {
         std::cout << "Add::~Add()" << '\n';
     }
 
-    virtual bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
+    bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
         std::cout << "Add::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
         // if pInput0 and pInput1의 shape가 다르면 abort
 
@@ -84,7 +84,7 @@ public:
         return true;
     }
 
-    virtual bool ComputeForwardPropagate() {
+    bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int *shape_Input0 = this->GetInputOperator()[0]->GetOutput()->GetShape();
@@ -127,7 +127,7 @@ public:
         return true;
     }
 
-    virtual bool ComputeBackPropagate() {
+    bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape = this->GetOutput()->GetShape();

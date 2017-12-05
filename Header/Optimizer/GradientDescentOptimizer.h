@@ -13,11 +13,11 @@ public:
         std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
     }
 
-    virtual ~GradientDescentOptimizer() {
+    ~GradientDescentOptimizer() {
         std::cout << "GradientDescentOptimizer::~GradientDescentOptimizer()" << '\n';
     }
 
-    virtual bool UpdateVariable(TrainableData<DTYPE> *pTrainableData) {
+    bool UpdateVariable(TrainableData<DTYPE> *pTrainableData) {
         // std::cout << "GradientDescentOptimizer::UpdateVariable(TrainableData *)" << '\n';
 
         int *shape = pTrainableData->Data->GetShape();

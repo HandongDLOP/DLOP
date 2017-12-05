@@ -28,13 +28,13 @@ public:
         Alloc(pInput0, pInput1, epsilon);
     }
 
-    virtual ~SoftmaxCrossEntropy() {
+    ~SoftmaxCrossEntropy() {
         std::cout << "SoftmaxCrossEntropy::~SoftmaxCrossEntropy()" << '\n';
 
         delete m_aSoftmax_Result;
     }
 
-    virtual bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, DTYPE epsilon = 1e-20) {
+    bool Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, DTYPE epsilon = 1e-20) {
         std::cout << "SoftmaxCrossEntropy::Alloc(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
         // if pInput0 and pInput1의 shape가 다르면 abort
 
@@ -49,7 +49,7 @@ public:
         return true;
     }
 
-    virtual bool ComputeForwardPropagate() {
+    bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int *shape            = this->GetInputOperator()[0]->GetOutput()->GetShape();
@@ -110,7 +110,7 @@ public:
         return true;
     }
 
-    virtual bool ComputeBackPropagate() {
+    bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape = this->GetInputOperator()[0]->GetOutput()->GetShape();

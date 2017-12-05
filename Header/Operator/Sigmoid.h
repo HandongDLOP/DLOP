@@ -14,11 +14,11 @@ public:
         this->Alloc(pInput);
     }
 
-    virtual ~Sigmoid() {
+    ~Sigmoid() {
         std::cout << "Sigmoid::~Sigmoid()" << '\n';
     }
 
-    virtual bool Alloc(Operator<DTYPE> *pInput) {
+    bool Alloc(Operator<DTYPE> *pInput) {
         std::cout << "Sigmoid::Alloc(Operator *, Operator *)" << '\n';
 
         Tensor<DTYPE> *output = new Tensor<DTYPE>(this->GetInputOperator()[0]->GetOutput()->GetShape());
@@ -29,7 +29,7 @@ public:
         return true;
     }
 
-    virtual bool ComputeForwardPropagate() {
+    bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int *shape        = this->GetInputOperator()[0]->GetOutput()->GetShape();
@@ -52,7 +52,7 @@ public:
         return true;
     }
 
-    virtual bool ComputeBackPropagate() {
+    bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int *shape        = this->GetOutput()->GetShape();

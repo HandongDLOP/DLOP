@@ -18,23 +18,23 @@
 //         // Alloc(pInput, pParam);
 //     }
 //
-//     virtual ~Convolution() {
+//     ~Convolution() {
 //         std::cout << "Convolution::~Convolution()" << '\n';
 //     }
 //
-//     virtual bool Alloc(Operator *pInput, MetaParameter *pParam) {
+//     bool Alloc(Operator *pInput, MetaParameter *pParam) {
 //
 //         return true;
 //     }
 //
-//     virtual bool ComputeForwardPropagate() {
+//     bool ComputeForwardPropagate() {
 //         std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 //
 //
 //         return true;
 //     }
 //
-//     virtual bool ComputeBackPropagate() {
+//     bool ComputeBackPropagate() {
 //         std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 //
 //         return true;
