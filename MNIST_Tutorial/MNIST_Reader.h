@@ -119,12 +119,11 @@ public:
         // }
     }
 
+    // After we see test data at one time
     void CreateTestDataPair(int batch_size) {
         // if (((batch_size * Recallnum_of_test) % NUMBER_OF_TEST_DATA) == 0) ShuffleDataPair(TEST, batch_size);
 
-        // cout << Recallnum_of_test << '\n';
-
-        CreateDataPair(TEST, batch_size);
+        CreateTestDataPair_STEP2(batch_size);
 
         Recallnum_of_test++;
     }
@@ -132,9 +131,7 @@ public:
     void CreateTrainDataPair(int batch_size) {
         if ((batch_size * Recallnum_of_train % NUMBER_OF_TRAIN_DATA) == 0) ShuffleDataPair(TRAIN, batch_size);
 
-        // cout << Recallnum_of_test << '\n';
-
-        CreateDataPair(TRAIN, batch_size);
+        CreateTrainDataPair_STEP2(batch_size);
 
         Recallnum_of_train++;
     }
@@ -162,32 +159,15 @@ public:
         // for (vector<int>::iterator it = shuffled_list->begin(); it != shuffled_list->end(); ++it) cout << ' ' << *it;
     }
 
-    void CreateDataPair(OPTION pOption, int batch_size) {
+    void CreateTestDataPair_STEP2(int batch_size) {
         int number_of_data   = NUMBER_OF_TEST_DATA;
-        int Recallnum        = 0;
+        int Recallnum        = Recallnum_of_test;
         int start_point      = 0;
         int cur_point        = 0;
         DTYPE **origin_image = Test_image;
         DTYPE **origin_label = Test_label;
 
-        vector<int> *shuffled_list = NULL;
-
-        if (pOption == TEST) {
-            origin_image   = Test_image;
-            origin_label   = Test_label;
-            number_of_data = NUMBER_OF_TEST_DATA;
-            shuffled_list  = shuffled_list_for_test;
-            Recallnum      = Recallnum_of_test;
-        } else if (pOption == TRAIN) {
-            origin_image   = Train_image;
-            origin_label   = Train_label;
-            number_of_data = NUMBER_OF_TRAIN_DATA;
-            shuffled_list  = shuffled_list_for_train;
-            Recallnum      = Recallnum_of_train;
-        } else {
-            cout << "invalid OPTION!" << '\n';
-            exit(0);
-        }
+        vector<int> *shuffled_list = shuffled_list_for_test;
 
         // create input image data
         DTYPE *****image_data = new DTYPE * ** *[1];
@@ -236,21 +216,78 @@ public:
         Tensor<DTYPE> *image_Tensor = new Tensor<DTYPE>(image_data, image_shape, image_rank);
         Tensor<DTYPE> *label_Tensor = new Tensor<DTYPE>(label_data, label_shape, label_rank);
 
-        if (pOption == TEST) {
-            if (Test_image_feed != NULL) delete Test_image_feed;
+        if (Test_image_feed != NULL) delete Test_image_feed;
 
-            if (Test_label_feed != NULL) delete Test_label_feed;
+        if (Test_label_feed != NULL) delete Test_label_feed;
 
-            Test_image_feed = image_Tensor;
-            Test_label_feed = label_Tensor;
-        } else if (pOption == TRAIN) {
-            if (Train_image_feed != NULL) delete Train_image_feed;
+        Test_image_feed = image_Tensor;
+        Test_label_feed = label_Tensor;
+    }
 
-            if (Train_label_feed != NULL) delete Train_label_feed;
+    void CreateTrainDataPair_STEP2(int batch_size) {
+        int number_of_data   = NUMBER_OF_TRAIN_DATA;
+        int Recallnum        = Recallnum_of_train;
+        int start_point      = 0;
+        int cur_point        = 0;
+        DTYPE **origin_image = Train_image;
+        DTYPE **origin_label = Train_label;
 
-            Train_image_feed = image_Tensor;
-            Train_label_feed = label_Tensor;
+        vector<int> *shuffled_list = shuffled_list_for_train;
+
+
+        // create input image data
+        DTYPE *****image_data = new DTYPE * ** *[1];
+
+        image_data[0] = new DTYPE * * *[batch_size];
+
+        int *image_shape = new int[5] { 1, batch_size, 1, 1, DIMENSION_OF_MNIST_IMAGE };
+        int  image_rank  = 5;
+        // double **origin_image = ReshapeData(image_option);
+
+        // create input label data
+        DTYPE *****label_data = new DTYPE * ** *[1];
+        label_data[0] = new DTYPE * * *[batch_size];
+
+        int *label_shape = new int[5] { 1, batch_size, 1, 1, 10 };
+        int  label_rank  = 5;
+
+        start_point = (Recallnum * batch_size) % number_of_data;
+
+        for (int ba = 0; ba < batch_size; ba++) {
+            cur_point = (*shuffled_list)[start_point + ba];
+
+            // cout << cur_point << ' ';
+
+            image_data[0][ba]    = new DTYPE * *[1];
+            image_data[0][ba][0] = new DTYPE *[1];
+            // image_data[0][ba][0][0] = origin_image[random];
+            image_data[0][ba][0][0] = new DTYPE[DIMENSION_OF_MNIST_IMAGE];
+
+            for (int dim = 0; dim < DIMENSION_OF_MNIST_IMAGE; dim++) {
+                image_data[0][ba][0][0][dim] = origin_image[cur_point][dim];
+            }
+
+            // ---------------------------------------------------------------------
+
+            label_data[0][ba]       = new DTYPE * *[1];
+            label_data[0][ba][0]    = new DTYPE *[1];
+            label_data[0][ba][0][0] = new DTYPE[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            // cout << (int)origin_label[random][0] << '\n';
+            label_data[0][ba][0][0][(int)origin_label[cur_point][0]] = 1.0;
+
+            // cout << random << ' ';
         }
+        // cout << '\n';
+
+        Tensor<DTYPE> *image_Tensor = new Tensor<DTYPE>(image_data, image_shape, image_rank);
+        Tensor<DTYPE> *label_Tensor = new Tensor<DTYPE>(label_data, label_shape, label_rank);
+
+        if (Train_image_feed != NULL) delete Train_image_feed;
+
+        if (Train_label_feed != NULL) delete Train_label_feed;
+
+        Train_image_feed = image_Tensor;
+        Train_label_feed = label_Tensor;
     }
 
     void SetTestImage(DTYPE **pTest_image) {

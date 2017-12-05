@@ -13,7 +13,6 @@
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
 int main(int argc, char const *argv[]) {
-
     // create input, label data placeholder, placeholder is always managed by NeuralNetwork
     Operator<float> *x     = new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 0.0), "x");
     Operator<float> *label = new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
@@ -58,7 +57,9 @@ int main(int argc, char const *argv[]) {
         // UpdateVariable
         optimizer->UpdateVariable();
 
-        if ((i % 100) == 0) std::cout << "Train Accuracy is : " << temp::Accuracy(add->GetOutput(), label->GetOutput(), BATCH) << '\n';
+        if ((i % 100) == 0) std::cout << "Train Accuracy is : "
+                                      << (float)temp::Accuracy(add->GetOutput(), label->GetOutput(), BATCH)
+                                      << '\n';
     }
 
     // ======================= Testing ======================
@@ -75,7 +76,7 @@ int main(int argc, char const *argv[]) {
         err->ComputeForwardPropagate();
 
         // I'll implement flexibility about the situation that change of Batch size
-        test_accuracy += temp::Accuracy(add->GetOutput(), label->GetOutput(), BATCH);
+        test_accuracy += (float)temp::Accuracy(add->GetOutput(), label->GetOutput(), BATCH);
     }
 
     std::cout << "Test Accuracy is : " << test_accuracy / (int)LOOP_FOR_TEST << "\n\n";

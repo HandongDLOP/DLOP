@@ -46,7 +46,9 @@ int main(int argc, char const *argv[]) {
 
         HGUNN.Run(&optimizer);
 
-        if ((i % 100) == 0) std::cout << "Train Accuracy is : " << temp::Accuracy(add.GetOutput(), label->GetOutput(), BATCH) << '\n';
+        if ((i % 100) == 0) std::cout << "Train Accuracy is : "
+                                      << (float)temp::Accuracy(add.GetOutput(), label->GetOutput(), BATCH)
+                                      << '\n';
     }
 
     // ======================= Testing ======================
@@ -59,7 +61,7 @@ int main(int argc, char const *argv[]) {
 
         HGUNN.Run(&err);
         // I'll implement flexibility about the situation that change of Batch size
-        test_accuracy += temp::Accuracy(add.GetOutput(), label->GetOutput(), BATCH);
+        test_accuracy += (float)temp::Accuracy(add.GetOutput(), label->GetOutput(), BATCH);
     }
 
     std::cout << "Test Accuracy is : " << test_accuracy / (int)LOOP_FOR_TEST << "\n\n";
