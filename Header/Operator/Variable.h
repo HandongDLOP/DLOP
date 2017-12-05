@@ -5,8 +5,10 @@
 
 template<typename DTYPE>
 class Variable : public Operator<DTYPE>{
-public:
+private:
     typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
+
+public:
     Variable(std::string pName) : Operator<DTYPE>(pName) {
         std::cout << "Variable::Variable(std::string)" << '\n';
     }
@@ -51,7 +53,7 @@ public:
     virtual bool ComputeBackPropagate() {
         // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
-        int *shape       = this->GetOutput()->GetShape();
+        int *shape         = this->GetOutput()->GetShape();
         TENSOR_DTYPE delta = this->GetDelta()->GetData();
         TENSOR_DTYPE grad  = this->GetGradient()->GetData();
 

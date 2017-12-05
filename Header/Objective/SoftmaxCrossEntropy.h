@@ -5,14 +5,13 @@
 
 template<typename DTYPE>
 class SoftmaxCrossEntropy : public Operator<DTYPE>{
-public:
-
 private:
+    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
+
     Tensor<DTYPE> *m_aSoftmax_Result = NULL;
     DTYPE m_epsilon                  = 0.0; // for backprop
 
 public:
-    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
     // Constructor의 작업 순서는 다음과 같다.
     // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
     // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (SoftmaxCrossEntropy::Alloc())
@@ -54,7 +53,7 @@ public:
 
     virtual bool ComputeForwardPropagate() {
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
-        int *shape            = this->GetInputOperator()[0]->GetOutput()->GetShape();
+        int *shape              = this->GetInputOperator()[0]->GetOutput()->GetShape();
         TENSOR_DTYPE input_data = this->GetInputOperator()[0]->GetOutput()->GetData();
         TENSOR_DTYPE label_data = this->GetInputOperator()[1]->GetOutput()->GetData();
 
@@ -152,7 +151,7 @@ public:
         return true;
     }
 
-    template <typename TEMP_DTYPE> DTYPE Max(TEMP_DTYPE data, int Channel, int Row, int Col) {
+    template<typename TEMP_DTYPE> DTYPE Max(TEMP_DTYPE data, int Channel, int Row, int Col) {
         // initialize
         DTYPE max = data[0][0][0];
 
@@ -175,7 +174,7 @@ public:
         return error_;
     }
 
-    template <typename TEMP_DTYPE> DTYPE SoftmaxCrossEntropy_derivative(TEMP_DTYPE label_data, DTYPE prediction, int *shape, int pChannel, int pRow, int pCol, int num_of_output) {
+    template<typename TEMP_DTYPE> DTYPE SoftmaxCrossEntropy_derivative(TEMP_DTYPE label_data, DTYPE prediction, int *shape, int pChannel, int pRow, int pCol, int num_of_output) {
         int Channel = shape[2];
         int Row     = shape[3];
         int Col     = shape[4];

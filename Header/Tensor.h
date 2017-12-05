@@ -10,7 +10,9 @@
 
 template<typename DTYPE>
 class Tensor {
-    typedef DTYPE***** TENSOR_DTYPE;
+public:
+    typedef DTYPE *****TENSOR_DTYPE;
+
 private:
     // 현재는 scala 값은 따로 존재하지 않고 rnak0 dimension 1로 취급한다.
     int m_Rank;
@@ -116,9 +118,10 @@ public:
     TENSOR_DTYPE GetData() const {
         return m_aData;
     }
+
     //
     // typename GetType() const (
-    //     return TENSOR_DTYPE;
+    // return TENSOR_DTYPE;
     // )
 
     // ===========================================================================================

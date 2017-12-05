@@ -18,8 +18,10 @@ int Argmax(DTYPE *data, int Dimension) {
 
 template<typename DTYPE>
 float Accuracy(Tensor<DTYPE> *pred, Tensor<DTYPE> *ans, int Batch) {
-    DTYPE *****pred_data = pred->GetData();
-    DTYPE *****ans_data  = ans->GetData();
+    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
+
+    TENSOR_DTYPE pred_data = pred->GetData();
+    TENSOR_DTYPE ans_data  = ans->GetData();
 
     float accuracy = 0.0;
 

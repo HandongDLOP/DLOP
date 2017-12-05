@@ -5,8 +5,10 @@
 
 template<typename DTYPE>
 class MatMul : public Operator<DTYPE>{
-public:
+private:
     typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
+
+public:
     MatMul(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) : Operator<DTYPE>(pInput0, pInput1) {
         std::cout << "MatMul::MatMul(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
         this->Alloc(pInput0, pInput1);

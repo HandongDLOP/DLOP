@@ -5,8 +5,10 @@
 
 template<typename DTYPE>
 class GradientDescentOptimizer : public Optimizer<DTYPE>{
-public:
+private:
     typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
+
+public:
     GradientDescentOptimizer(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pObjectOperator, pLearningRate, pOptimizeDirection) {
         std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
     }

@@ -5,8 +5,10 @@
 
 template<typename DTYPE>
 class Placeholder : public Operator<DTYPE>{
-public:
+private:
     typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
+
+public:
     Placeholder(std::string pName) : Operator<DTYPE>(pName) {
         std::cout << "Placeholder::Placeholder(std::string)" << '\n';
     }
