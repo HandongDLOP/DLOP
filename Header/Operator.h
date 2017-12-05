@@ -6,8 +6,6 @@
 
 template<typename DTYPE>
 class Operator {
-public:
-    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
 private:
     Tensor<DTYPE> *m_aOutput = NULL;
 
