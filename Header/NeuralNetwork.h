@@ -6,13 +6,13 @@
 
 #include "Operator//Relu.h"
 #include "Operator//Sigmoid.h"
-// #include "Operator//Softmax.h"
+#include "Operator//Softmax.h"
 
 #include "Operator//AddXB.h"
 #include "Operator//MatMulXW.h"
 
 #include "Objective//MSE.h"
-// #include "Objective//CrossEntropy.h"
+#include "Objective//CrossEntropy.h"
 #include "Objective//SoftmaxCrossEntropy.h"
 
 template<typename DTYPE>

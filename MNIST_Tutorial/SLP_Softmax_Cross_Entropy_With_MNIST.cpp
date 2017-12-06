@@ -25,9 +25,11 @@ int main(int argc, char const *argv[]) {
     Operator<float> *b      = new Variable<float>(Tensor<float>::Zeros(1, 1, 1, 1, 10), "b");
     Operator<float> *matmul = new MatMul<float>(x, w, "matmul");
     Operator<float> *add    = new Add<float>(matmul, b, "add");
+    Operator<float> *act    = new Softmax<float>(add , "act");
 
     // ======================= Error=======================
-    Operator<float> *err = new SoftmaxCrossEntropy<float>(add, label, 1e-50, "SCE");
+    // Operator<float> *err = new SoftmaxCrossEntropy<float>(add, label, 1e-50, "SCE");
+    Operator<float> *err = new CrossEntropy<float>(act, label, 1e-50, "CE");
 
     // ======================= Optimizer=======================
     Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE);

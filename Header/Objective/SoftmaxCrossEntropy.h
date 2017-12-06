@@ -22,7 +22,7 @@ public:
 
     SoftmaxCrossEntropy(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) : Operator<DTYPE>(pInput0, pInput1, pName) {
         std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
-        Alloc(pInput0, pInput1, 1e-20);
+        Alloc(pInput0, pInput1);
     }
 
     SoftmaxCrossEntropy(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, DTYPE epsilon, std::string pName) : Operator<DTYPE>(pInput0, pInput1, pName) {
@@ -136,13 +136,15 @@ public:
                 for (int ch = 0; ch < Channel; ch++) {
                     for (int ro = 0; ro < Row; ro++) {
                         for (int co = 0; co < Col; co++) {
-                            delta_input_data[ti][ba][ch][ro][co] = SoftmaxCrossEntropy_derivative(label_data[ti][ba],
-                                                                                                  softmax_result[ti][ba][ch][ro][co],
-                                                                                                  shape,
-                                                                                                  ch,
-                                                                                                  ro,
-                                                                                                  co,
-                                                                                                  num_of_output);
+                            delta_input_data[ti][ba][ch][ro][co] = SoftmaxCrossEntropy_derivative(
+                                label_data[ti][ba],
+                                softmax_result[ti][ba][ch][ro][co],
+                                shape,
+                                ch,
+                                ro,
+                                co,
+                                num_of_output
+                                );
                         }
                     }
                 }
