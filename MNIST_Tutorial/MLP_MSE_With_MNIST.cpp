@@ -32,7 +32,7 @@ int main(int argc, char const *argv[]) {
     Operator<double> *w2      = new Variable<double>(Tensor<double>::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6), "w2");
     Operator<double> *b2      = new Variable<double>(Tensor<double>::Constants(1, 1, 1, 1, 10, 1.0), "b2");
     Operator<double> *matmul2 = new MatMul<double>(act1, w2, "matmul2");
-    Operator<double> *add2    = new Add<double>(b2, matmul2, "add2");
+    Operator<double> *add2    = new Add<double>(matmul2, b2, "add2");
     Operator<double> *act2    = new Sigmoid<double>(add2, "sig2");
 
     // ======================= Error=======================
@@ -41,8 +41,9 @@ int main(int argc, char const *argv[]) {
     // ======================= Optimizer=======================
     Optimizer<double> *optimizer = new GradientDescentOptimizer<double>(err, 0.5, MINIMIZE);
 
-    // ======================= Create Graph =======================
+    // ======================= Create Graph ======================
     HGUNN.CreateGraph(optimizer);
+
 
     // ======================= Prepare Data ===================
     MNISTDataSet<double> *dataset = CreateMNISTDataSet<double>();
@@ -81,10 +82,12 @@ int main(int argc, char const *argv[]) {
     delete b1;
     delete matmul1;
     delete add1;
+    delete act1;
     delete w2;
     delete b2;
     delete matmul2;
     delete add2;
+    delete act2;
     // ~Objectives
     delete err;
     // ~Optimizers
