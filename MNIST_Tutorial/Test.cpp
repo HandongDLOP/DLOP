@@ -7,20 +7,45 @@
 #include "..//Header//Temporary_method.h"
 #include "MNIST_Reader.h"
 //
-#define BATCH             2
+#define BATCH             1
 #define LOOP_FOR_TRAIN    1000
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
 int main(int argc, char const *argv[]) {
     // create input, label data placeholder, placeholder is always managed by NeuralNetwork
-    Operator<float> *x = new Placeholder<float>(Tensor<float>::Truncated_normal(1, BATCH, 1, 1, 10, 0.0, 0.6), "x");
-    // Operator<float> *label = new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
-    Operator<float> *res = new Reshape<float>(x, 1, 2, 5, "reshape");
+    Operator<float> *x = new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 1.0), "x");
+    Operator<float> *label = new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.0), "label");
+    Operator<float> *res = new Reshape<float>(x, 1, 28, 28, "reshape");
+
+    Operator<float> *weight = new Variable<float>(Tensor<float>::Constants(1, 10, 1, 3, 3, 1.0), "weight");
+
+    Operator<float> *conv = new Convolution<float>(res, weight, 1, 1, 1, 1, "convolution");
+
+    // Operator<float> *threshold = new Threshold<float>(conv, "threshold");
+
+    MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
+    dataset->CreateTrainDataPair(BATCH);
+
+    x->FeedOutput(dataset->GetTrainFeedImage());
+    label->FeedOutput(dataset->GetTrainFeedLabel());
 
     res->ComputeForwardPropagate();
+    conv->ComputeForwardPropagate();
+    // threshold->ComputeForwardPropagate();
+    //
+    // threshold->GetOutput()->PrintData(1);
+    // threshold->GetOutput()->PrintShape();
 
-    res->PrintData();
+    conv->GetOutput()->PrintData(1);
+    conv->GetOutput()->PrintShape();
+    weight->GetOutput()->PrintData(1);
+    weight->GetOutput()->PrintShape();
+    res->GetOutput()->PrintData(1);
+    res->GetOutput()->PrintShape();
+    label->GetOutput()->PrintData(1);
+    label->GetOutput()->PrintShape();
+
 
     // ======================= layer 1=======================
     // Operator<float> *w      = new Variable<float>(Tensor<float>::Zeros(1, 1, 1, 784, 10), "w");

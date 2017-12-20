@@ -17,7 +17,7 @@ private:
     // 현재는 scala 값은 따로 존재하지 않고 rnak0 dimension 1로 취급한다.
     int m_Rank;
     int *m_aShape;
-    TENSOR_DTYPE m_aData;
+    DTYPE ***** m_aData;
 
 public:
     Tensor() {

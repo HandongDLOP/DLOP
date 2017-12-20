@@ -6,12 +6,15 @@
 
 #include "Operator//Reshape.h"
 
+#include "Operator//Threshold.h"
 #include "Operator//Relu.h"
 #include "Operator//Sigmoid.h"
 #include "Operator//Softmax.h"
 
 #include "Operator//AddXB.h"
+#include "Operator//Addconv.h"
 #include "Operator//MatMulXW.h"
+#include "Operator//Convolution.h"
 
 #include "Objective//MSE.h"
 #include "Objective//CrossEntropy.h"

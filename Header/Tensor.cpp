@@ -207,9 +207,9 @@ void Tensor<DTYPE>::PrintData(int forceprint) {
                         for (int co = 0; co < Col; co++) {
                             std::cout << m_aData[ti][ba][ch][ro][co] << ", ";
                         }
-                        std::cout << " ]";
+                        std::cout << " ]\n";
                     }
-                    std::cout << " ]";
+                    std::cout << " ]\n";
                 }
                 std::cout << " ]\n";
             }

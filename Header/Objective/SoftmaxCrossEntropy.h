@@ -83,6 +83,7 @@ public:
                         for (int co = 0; co < Col; co++) {
                             // std::cout << (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon) << '\n';
                             temp += (exp(input_data[ti][ba][ch][ro][co] - max[ti][ba]) + m_epsilon);
+                            // std::cout << temp << '\n';
                         }
                     }
                 }
@@ -108,6 +109,7 @@ public:
             }
         }
 
+        // m_aSoftmax_Result->PrintData();
 
         return 1;
     }
