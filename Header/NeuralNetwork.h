@@ -15,6 +15,7 @@
 #include "Operator//Addconv.h"
 #include "Operator//MatMulXW.h"
 #include "Operator//Convolution.h"
+#include "Operator//Maxpooling.h"
 
 #include "Objective//MSE.h"
 #include "Objective//CrossEntropy.h"
