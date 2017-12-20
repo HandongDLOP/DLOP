@@ -4,6 +4,8 @@
 #include "Operator//Placeholder.h"
 #include "Operator//Variable.h"
 
+#include "Operator//Reshape.h"
+
 #include "Operator//Relu.h"
 #include "Operator//Sigmoid.h"
 #include "Operator//Softmax.h"

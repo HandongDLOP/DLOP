@@ -33,8 +33,6 @@ public:
     }
 
     virtual int ComputeForwardPropagate() {
-        // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
-
         int *shape          = this->GetInputOperator()[0]->GetOutput()->GetShape();
         TENSOR_DTYPE input  = this->GetInputOperator()[0]->GetOutput()->GetData();
         TENSOR_DTYPE output = this->GetOutput()->GetData();
@@ -56,8 +54,6 @@ public:
     }
 
     virtual int ComputeBackPropagate() {
-        // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
-
         int *shape          = this->GetOutput()->GetShape();
         TENSOR_DTYPE output = this->GetOutput()->GetData();
         TENSOR_DTYPE delta  = this->GetDelta()->GetData();
@@ -78,10 +74,6 @@ public:
                 }
             }
         }
-
-        // GetInputOperator()[0]->GetDelta()->PrintData();
-
-        // GetDelta()->Reset();
 
         return 1;
     }

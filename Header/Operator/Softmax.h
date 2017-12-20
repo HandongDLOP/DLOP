@@ -123,8 +123,6 @@ public:
             }
         }
 
-        // this->GetInputOperator()[0]->GetDelta()->PrintData();
-
         this->GetDelta()->Reset();
 
         return 1;
@@ -142,8 +140,6 @@ public:
                 }
             }
         }
-
-        // std::cout << max << '\n';
 
         return max;
     }

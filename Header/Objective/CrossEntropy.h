@@ -55,12 +55,12 @@ public:
         // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
 
         int *shape            = this->GetInputOperator()[0]->GetOutput()->GetShape();
-        DTYPE *****input_data = this->GetInputOperator()[0]->GetOutput()->GetData();
-        DTYPE *****label_data = this->GetInputOperator()[1]->GetOutput()->GetData();
+        TENSOR_DTYPE input_data = this->GetInputOperator()[0]->GetOutput()->GetData();
+        TENSOR_DTYPE label_data = this->GetInputOperator()[1]->GetOutput()->GetData();
 
         this->GetOutput()->Reset();
-        DTYPE *****output = this->GetOutput()->GetData();
-        // DTYPE *****softmax_result = GetSoftmaxResult()->GetData();
+        TENSOR_DTYPE output = this->GetOutput()->GetData();
+        // TENSOR_DTYPE softmax_result = GetSoftmaxResult()->GetData();
 
         int Time    = shape[0];
         int Batch   = shape[1];
@@ -96,11 +96,11 @@ public:
 
         int *shape = this->GetInputOperator()[0]->GetOutput()->GetShape();
 
-        DTYPE *****input_data = this->GetInputOperator()[0]->GetOutput()->GetData();
-        DTYPE *****label_data = this->GetInputOperator()[1]->GetOutput()->GetData();
+        TENSOR_DTYPE input_data = this->GetInputOperator()[0]->GetOutput()->GetData();
+        TENSOR_DTYPE label_data = this->GetInputOperator()[1]->GetOutput()->GetData();
 
         this->GetInputOperator()[0]->GetDelta()->Reset();
-        DTYPE *****delta_input_data = this->GetInputOperator()[0]->GetDelta()->GetData();
+        TENSOR_DTYPE delta_input_data = this->GetInputOperator()[0]->GetDelta()->GetData();
 
         int Time    = shape[0];
         int Batch   = shape[1];

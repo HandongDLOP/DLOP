@@ -70,14 +70,6 @@ public:
             }
         }
 
-        // Training
-        // GetOutput()->PrintData();
-        // GetGradient()->PrintData();
-        // GetOptimizer()->UpdateWeight(GetOutput(), GetGradient());
-        // GetOutput()->PrintData();
-        // GetGradient()->PrintData();
-
-        // GetDelta()->Reset();
         return 1;
     }
 };

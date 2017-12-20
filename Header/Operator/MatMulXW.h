@@ -39,31 +39,6 @@ public:
             exit(0);
         }
 
-        // factory method 작업
-
-        // if (shape_Input0[1] != shape_Input1[1]) {
-        // if ((shape_Input0[1] == 1) || (shape_Input1[1] == 1)) {
-        // if (shape_Input0[1] < shape_Input1[1]) {
-        // GetInputOperator()[0] = pInput1;
-        // GetInputOperator()[1] = pInput0;
-        // }
-        // } else {
-        // std::cout << "data has unvalid batch dimension" << '\n';
-        // exit(0);
-        // }
-        // }
-
-        // if(shape_Input0[1] > shape_Input1[1] && shape_Input0[0] > shape_Input1[0]){
-        // int time = pInput0->GetOutput()->GetBatch();
-        // int batch = pInput0->GetOutput()->GetBatch();
-        // } else if(shape_Input0[1] < shape_Input1[1] && shape_Input0[0] < shape_Input1[0]){
-        // int time = pInput1->GetOutput()->GetBatch();
-        // int batch = pInput1->GetOutput()->GetBatch();
-        // } else {
-        // std::cout << "invalid dimension" << '\n';
-        // exit(0);
-        // }
-
         // w * x 의 형태에서만 진행
         int Time    = pInput0->GetOutput()->GetTime();
         int Batch   = pInput0->GetOutput()->GetBatch();
@@ -93,12 +68,7 @@ public:
         TENSOR_DTYPE input1 = this->GetInputOperator()[1]->GetOutput()->GetData();  // input
         TENSOR_DTYPE output = this->GetOutput()->GetData();
 
-        // TENSOR_DTYPE output_data     = new float[row * col];
         DTYPE temp = 0.0;
-
-        // GetInputOperator()[0]->GetOutput()->PrintShape();
-        // GetInputOperator()[1]->GetOutput()->PrintShape();
-        // GetOutput()->PrintShape();
 
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {
@@ -116,13 +86,10 @@ public:
             }
         }
 
-        // SetOutput(output_data);
-
         return 1;
     }
 
     virtual int ComputeBackPropagate() {
-        // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
 
         int Time    = this->GetOutput()->GetTime();
         int Batch   = this->GetOutput()->GetBatch();
@@ -131,20 +98,15 @@ public:
         int Col     = this->GetOutput()->GetCol();
         int Hidden  = this->GetInputOperator()[0]->GetOutput()->GetCol();
 
-        TENSOR_DTYPE input0 = this->GetInputOperator()[0]->GetOutput()->GetData();  // weight
-        TENSOR_DTYPE input1 = this->GetInputOperator()[1]->GetOutput()->GetData();  // input
-
-        // GetInputOperator()[0]->GetOutput()->PrintData();
-        // GetInputOperator()[1]->GetOutput()->PrintData();
+        TENSOR_DTYPE input0 = this->GetInputOperator()[0]->GetOutput()->GetData();  // input
+        TENSOR_DTYPE input1 = this->GetInputOperator()[1]->GetOutput()->GetData();  // weight
 
         TENSOR_DTYPE delta = this->GetDelta()->GetData();
 
-        // GetDelta()->PrintData();
-
         this->GetInputOperator()[0]->GetDelta()->Reset();
         this->GetInputOperator()[1]->GetDelta()->Reset();
-        TENSOR_DTYPE delta_input0 = this->GetInputOperator()[0]->GetDelta()->GetData();  // weight
-        TENSOR_DTYPE delta_input1 = this->GetInputOperator()[1]->GetDelta()->GetData();  // input
+        TENSOR_DTYPE delta_input0 = this->GetInputOperator()[0]->GetDelta()->GetData();  // input
+        TENSOR_DTYPE delta_input1 = this->GetInputOperator()[1]->GetDelta()->GetData();  // weight
 
         for (int ti = 0; ti < Time; ti++) {
             for (int ba = 0; ba < Batch; ba++) {
@@ -160,16 +122,6 @@ public:
                 }
             }
         }
-        // for (int i = 0; i < size_Weight; i++) {
-        // _delta_input[i / output_col] += delta[i % output_col] * Weight[i];
-        // _delta_Weight[i]              = delta[i % output_col] * input_data[i / output_col];
-        // }
-
-        // GetInputOperator()[0]->GetDelta()->PrintData();
-
-        // GetInputOperator()[1]->GetDelta()->PrintData();
-
-        // GetDelta()->Reset();
 
         return 1;
     }

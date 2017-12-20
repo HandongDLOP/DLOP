@@ -28,12 +28,10 @@ public:
 
     virtual int Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
         std::cout << "Add::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
-        // if pInput0 and pInput1의 shape가 다르면 abort
 
         int *shape_Input0 = pInput0->GetOutput()->GetShape();
         int *shape_Input1 = pInput1->GetOutput()->GetShape();
 
-        // batch가 큰것으로 이미 정렬된 상태
         Tensor<DTYPE> *output = new Tensor<DTYPE>(this->GetInputOperator()[0]->GetOutput()->GetShape());
 
         this->SetOutput(output);
@@ -46,15 +44,11 @@ public:
     }
 
     virtual int ComputeForwardPropagate() {
-        // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
-
         int *shape_Input0 = this->GetInputOperator()[0]->GetOutput()->GetShape();
-        // int *shape_Input1       = GetInputOperator()[1]->GetOutput()->GetShape();
+
         TENSOR_DTYPE input0 = this->GetInputOperator()[0]->GetOutput()->GetData();
         TENSOR_DTYPE input1 = this->GetInputOperator()[1]->GetOutput()->GetData();
         TENSOR_DTYPE output = this->GetOutput()->GetData();
-
-        // factory method
 
         for (int ti = 0; ti < shape_Input0[0]; ti++) {
             for (int ba = 0; ba < shape_Input0[1]; ba++) {
@@ -62,24 +56,17 @@ public:
                     for (int ro = 0; ro < shape_Input0[3]; ro++) {
                         for (int co = 0; co < shape_Input0[4]; co++) {
                             output[ti][ba][ch][ro][co] = input0[ti][ba][ch][ro][co] + input1[0][0][ch][ro][co];
-                            // std::cout << input0[ti][ba][ch][ro][co] << " + " << input1[0][0][ch][ro][co] << " = " << output[ti][ba][ch][ro][co] << '\n';
                         }
                     }
                 }
             }
         }
-        // }
-
-        // GetOutput()->PrintData();
 
         return 1;
     }
 
     virtual int ComputeBackPropagate() {
-        // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
-
         int *shape = this->GetOutput()->GetShape();
-        // int *shape_Input1   = GetInputOperator()[1]->GetOutput()->GetShape();
         TENSOR_DTYPE delta = this->GetDelta()->GetData();
 
         this->GetInputOperator()[0]->GetDelta()->Reset();
@@ -99,13 +86,7 @@ public:
                 }
             }
         }
-        // }
 
-        // GetInputOperator()[0]->GetDelta()->PrintData();
-
-        // GetInputOperator()[1]->GetDelta()->PrintData();
-
-        // GetDelta()->Reset();
         return 1;
     }
 };
