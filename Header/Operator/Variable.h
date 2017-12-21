@@ -5,9 +5,6 @@
 
 template<typename DTYPE>
 class Variable : public Operator<DTYPE>{
-private:
-    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
-
 public:
     Variable(std::string pName) : Operator<DTYPE>(pName) {
         std::cout << "Variable::Variable(std::string)" << '\n';
@@ -24,52 +21,14 @@ public:
     }
 
     virtual int Alloc(Tensor<DTYPE> *pTensor, int pTrainable) {
-        if (pTensor->GetShape()[0] != 1) {
-            std::cout << "data has unvalid time dimension" << '\n';
-            exit(0);
-        }
-
-        this->SetOutput(pTensor);
-
-        Tensor<DTYPE> *gradient = new Tensor<DTYPE>(pTensor->GetShape());
-
-        this->SetGradient(gradient);
-
-        Tensor<DTYPE> *delta = new Tensor<DTYPE>(pTensor->GetShape());
-
-        this->SetDelta(delta);
-
-        this->SetTrainable(pTrainable);
-
         return 1;
     }
 
     virtual int ComputeForwardPropagate() {
-        // std::cout << GetName() << " : ComputeForwardPropagate()" << '\n';
-
         return 1;
     }
 
     virtual int ComputeBackPropagate() {
-        // std::cout << GetName() << " : ComputeBackPropagate()" << '\n';
-
-        int *shape         = this->GetOutput()->GetShape();
-        TENSOR_DTYPE delta = this->GetDelta()->GetData();
-        TENSOR_DTYPE grad  = this->GetGradient()->GetData();
-
-        // 이전에 구해져 있던 gradient와 합치기
-        for (int ti = 0; ti < shape[0]; ti++) {
-            for (int ba = 0; ba < shape[1]; ba++) {
-                for (int ch = 0; ch < shape[2]; ch++) {
-                    for (int ro = 0; ro < shape[3]; ro++) {
-                        for (int co = 0; co < shape[4]; co++) {
-                            grad[ti][ba][ch][ro][co] += delta[ti][ba][ch][ro][co];
-                        }
-                    }
-                }
-            }
-        }
-
         return 1;
     }
 };

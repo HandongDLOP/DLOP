@@ -26,7 +26,6 @@ public:
     virtual int Alloc(Tensor<DTYPE> *pTensor) {
         this->SetOutput(pTensor);
 
-        // no meaning
         Tensor<DTYPE> *delta = new Tensor<DTYPE>(pTensor->GetShape());
         this->SetDelta(delta);
 

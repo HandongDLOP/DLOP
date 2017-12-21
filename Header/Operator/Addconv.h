@@ -27,71 +27,14 @@ public:
     }
 
     virtual int Alloc(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1) {
-        std::cout << "Addconv::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
-
-        int *shape_Input0 = pInput0->GetOutput()->GetShape();
-        int *shape_Input1 = pInput1->GetOutput()->GetShape();
-
-        if(shape_Input0[2] != shape_Input1[4]){
-            std::cout << "invalid dimmension" << '\n';
-            exit(0);
-        }
-
-        Tensor<DTYPE> *output = new Tensor<DTYPE>(this->GetInputOperator()[0]->GetOutput()->GetShape());
-
-        this->SetOutput(output);
-
-        Tensor<DTYPE> *delta = new Tensor<DTYPE>(this->GetInputOperator()[0]->GetOutput()->GetShape());
-
-        this->SetDelta(delta);
-
         return 1;
     }
 
     virtual int ComputeForwardPropagate() {
-        int *shape_Input0 = this->GetInputOperator()[0]->GetOutput()->GetShape();
-
-        TENSOR_DTYPE input0 = this->GetInputOperator()[0]->GetOutput()->GetData();
-        TENSOR_DTYPE input1 = this->GetInputOperator()[1]->GetOutput()->GetData();
-        TENSOR_DTYPE output = this->GetOutput()->GetData();
-
-        for (int ti = 0; ti < shape_Input0[0]; ti++) {
-            for (int ba = 0; ba < shape_Input0[1]; ba++) {
-                for (int ch = 0; ch < shape_Input0[2]; ch++) {
-                    for (int ro = 0; ro < shape_Input0[3]; ro++) {
-                        for (int co = 0; co < shape_Input0[4]; co++) {
-                            output[ti][ba][ch][ro][co] = input0[ti][ba][ch][ro][co] + input1[0][0][0][0][ch];
-                        }
-                    }
-                }
-            }
-        }
-
         return 1;
     }
 
     virtual int ComputeBackPropagate() {
-        int *shape = this->GetOutput()->GetShape();
-        TENSOR_DTYPE delta = this->GetDelta()->GetData();
-
-        this->GetInputOperator()[0]->GetDelta()->Reset();
-        TENSOR_DTYPE _delta0 = this->GetInputOperator()[0]->GetDelta()->GetData();
-        this->GetInputOperator()[1]->GetDelta()->Reset();
-        TENSOR_DTYPE _delta1 = this->GetInputOperator()[1]->GetDelta()->GetData();
-
-        for (int ti = 0; ti < shape[0]; ti++) {
-            for (int ba = 0; ba < shape[1]; ba++) {
-                for (int ch = 0; ch < shape[2]; ch++) {
-                    for (int ro = 0; ro < shape[3]; ro++) {
-                        for (int co = 0; co < shape[4]; co++) {
-                            _delta0[ti][ba][ch][ro][co] = delta[ti][ba][ch][ro][co];
-                            _delta1[0][0][0][0][ch]  += delta[ti][ba][ch][ro][co];
-                        }
-                    }
-                }
-            }
-        }
-
         return 1;
     }
 };
