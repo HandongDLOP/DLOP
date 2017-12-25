@@ -1,79 +1,52 @@
 #ifndef TENSOR_H_
 #define TENSOR_H_
 
-#include <iostream>
-#include <stdlib.h>
 #include <time.h>
 #include <math.h>
 #include <chrono>
 #include <random>
 
-template<typename DTYPE>
-class Tensor {
+#include "Data.h"
+
+template<typename DTYPE> class Tensor {
 private:
+    Shape *m_aShape;
+    Data<DTYPE> *m_aData;
+
 public:
     Tensor() {
         std::cout << "Tensor::Tensor()" << '\n';
     }
 
-    Tensor(int pTime, int pBatch, int pChannel, int pRow, int pCol) {
-        std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
+    Tensor(Shape *pShape) {
+        std::cout << "Tensor::Tensor(Shape*)" << '\n';
+        Alloc(pShape);
     }
-
-    Tensor(int *pShape, int pRank = 5) {
-        std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
-    }
-
-    // Tensor(TENSOR_DTYPE pData, int *pShape, int pRank = 5) {}
 
     virtual ~Tensor() {
         Delete();
     }
 
-    int Alloc();
-    int Alloc(int pTime, int pBatch, int pChannel, int pRow, int pCol);
-
-
+    int Alloc(Shape *pShape);
     int Delete();
 
-    // ===========================================================================================
-
-    static Tensor* Truncated_normal(int pTime, int pBatch, int pChannel, int pRow, int pCol, float mean, float stddev);
-
-
-    static Tensor* Zeros(int pTime, int pBatch, int pChannel, int pRow, int pCol);
-
-
-    static Tensor* Constants(int pTime, int pBatch, int pChannel, int pRow, int pCol, DTYPE constant);
-
-
-    // ===========================================================================================
+    ///////////////////////////////////////////////////////////////////
 
     // void SetData(TENSOR_DTYPE pData) {}
 
-    void Reset();
+    // void SetData(Shape *pShape);
 
-    // ===========================================================================================
+    unsigned int Index(int rank, ...);
 
-    // int          GetRank() const {}
-    //
-    // int        * GetShape() const {}
-    //
-    // int          GetTime() const {}
-    //
-    // int          GetBatch() const {}
-    //
-    // int          GetChannel() const {}
-    //
-    // int          GetRow() const {}
-    //
-    // int          GetCol() const {}
+    ///////////////////////////////////////////////////////////////////
 
-    // TENSOR_DTYPE GetData() const {}
+    static Tensor* Truncated_normal(Shape *pShape, float mean, float stddev);
 
+    static Tensor* Zeros(Shape *pShape);
 
-    void PrintData(int forceprint = 0);
-    void PrintShape();
+    static Tensor* Constants(Shape *pShape, DTYPE constant);
+
+    ///////////////////////////////////////////////////////////////////
 };
 
 #endif  // TENSOR_H_
