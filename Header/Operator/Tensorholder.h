@@ -6,6 +6,7 @@
 template<typename DTYPE> class Tensorholder : public Operator<DTYPE>{
 private:
     int m_isTrainable;
+
 public:
     Tensorholder(std::string pName = "No Name", int pTrainable = 1) : Operator<DTYPE>(pName) {
         std::cout << "Tensorholder<DTYPE>::Tensorholder(std::string)" << '\n';
@@ -30,10 +31,10 @@ public:
             return FALSE;
         }
 
-        Shape * shapeOfDelta = new Shape(pTensor->GetShape());
+        Shape *shapeOfDelta = new Shape(pTensor->GetShape());
         this->SetDelta(new Tensor<DTYPE>(shapeOfDelta));
 
-        Shape * shapeOfGradient = new Shape(pTensor->GetShape());
+        Shape *shapeOfGradient = new Shape(pTensor->GetShape());
         this->SetGradient(new Tensor<DTYPE>(shapeOfGradient));
 
         return TRUE;
@@ -44,6 +45,15 @@ public:
     }
 
     int ComputeBackPropagate() {
+        int capacity = this->GetResult()->GetData()->GetCapacity();
+
+        Tensor<DTYPE> *delta    = this->GetDelta();
+        Tensor<DTYPE> *gradient = this->GetGradient();
+
+        for(int i = 0; i < capacity; i++){
+            (*gradient)[i] = (*delta)[i];
+        }
+
         return TRUE;
     }
 };
