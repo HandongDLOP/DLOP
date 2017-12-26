@@ -8,10 +8,6 @@ private:
     int m_isTrainable;
 
 public:
-    Tensorholder(std::string pName = "No Name", int pTrainable = 1) : Operator<DTYPE>(pName) {
-        std::cout << "Tensorholder<DTYPE>::Tensorholder(std::string)" << '\n';
-    }
-
     Tensorholder(Tensor<DTYPE> *pTensor, std::string pName, int pTrainable = 1) : Operator<DTYPE>(pName) {
         std::cout << "Tensorholder<DTYPE>::Tensorholder(Tensor<DTYPE> *, std::string)" << '\n';
         this->Alloc(pTensor, pTrainable);

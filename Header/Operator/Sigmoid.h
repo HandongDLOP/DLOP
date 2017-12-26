@@ -5,13 +5,7 @@
 
 template<typename DTYPE>
 class Sigmoid : public Operator<DTYPE>{
-private:
-    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
-
 public:
-    // Constructor의 작업 순서는 다음과 같다.
-    // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
-    // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (Sigmoid::Alloc())
     Sigmoid(Operator<DTYPE> *pInput, std::string pName) : Operator<DTYPE>(pInput, pName) {
         std::cout << "Sigmoid::Sigmoid(Operator *)" << '\n';
         this->Alloc(pInput);
@@ -21,19 +15,44 @@ public:
         std::cout << "Sigmoid::~Sigmoid()" << '\n';
     }
 
-    virtual int Alloc(Operator<DTYPE> *pInput) {
+    int Alloc(Operator<DTYPE> *pInput) {
         std::cout << "Sigmoid::Alloc(Operator *, Operator *)" << '\n';
 
+        Shape *shapeOfResult = new Shape(pInput->GetResult()->GetShape());
+        this->SetResult(new Tensor<DTYPE>(shapeOfResult));
 
-        return 1;
+        Shape *shapeOfDelta = new Shape(pInput->GetResult()->GetShape());
+        this->SetDelta(new Tensor<DTYPE>(shapeOfDelta));
+
+        return TRUE;
     }
 
-    virtual int ComputeForwardPropagate() {
-        return 1;
+    int ComputeForwardPropagate() {
+        Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
+        Tensor<DTYPE> *result = this->GetResult();
+        int capacity          = input->GetData()->GetCapacity();
+
+        for (int i = 0; i < capacity; i++) {
+            (*result)[i] = this->SIGMOID((*input)[i]);
+        }
+
+        return TRUE;
     }
 
-    virtual int ComputeBackPropagate() {
-        return 1;
+    int ComputeBackPropagate() {
+        Tensor<DTYPE> *result      = this->GetResult();
+        Tensor<DTYPE> *this_delta  = this->GetDelta();
+        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
+        int capacity               = result->GetData()->GetCapacity();
+
+        for (int i = 0; i < capacity; i++) {
+            (*input_delta)[i] = (*result)[i] * (1 - (*result)[i]) * (*this_delta)[i];
+        }
+        return TRUE;
+    }
+
+    inline DTYPE SIGMOID(DTYPE data) {
+        return 1.F / (1.F + (DTYPE)exp(-data));
     }
 };
 
