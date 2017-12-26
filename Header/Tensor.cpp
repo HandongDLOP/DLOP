@@ -12,19 +12,34 @@ template<typename DTYPE> Tensor<DTYPE>::Tensor() {
 }
 
 template<typename DTYPE> Tensor<DTYPE>::Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
-    std::cout << "Tensor::Tensor(Shape*)" << '\n';
+    std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
     m_aShape = NULL;
     m_aData  = NULL;
     Alloc(new Shape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize));
 }
 
+template<typename DTYPE> Tensor<DTYPE>::Tensor(Shape *pShape) {
+    std::cout << "Tensor::Tensor(Shape*)" << '\n';
+    m_aShape = NULL;
+    m_aData  = NULL;
+    Alloc(pShape);
+}
+
+template<typename DTYPE> Tensor<DTYPE>::Tensor(Tensor *pTensor) {
+    std::cout << "Tensor::Tensor(Shape*)" << '\n';
+    m_aShape = NULL;
+    m_aData  = NULL;
+    Alloc(pTensor);
+}
+
 template<typename DTYPE> Tensor<DTYPE>::~Tensor() {
+    std::cout << "Tensor::~Tensor()" << '\n';
     Delete();
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::Alloc(Shape *pShape) {
     if (pShape == NULL) {
-        printf("Receive invalid Shape value in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
+        printf("Receive NULL pointer of Shape class in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
     } else {
         m_aShape = pShape;
@@ -44,6 +59,18 @@ template<typename DTYPE> int Tensor<DTYPE>::Alloc(Shape *pShape) {
             }
             m_aData = new Data<DTYPE>(capacity);
         }
+    }
+
+    return TRUE;
+}
+
+template<typename DTYPE> int Tensor<DTYPE>::Alloc(Tensor<DTYPE> *pTensor) {
+    if (pTensor == NULL) {
+        printf("Receive NULL pointer of Tensor<DTYPE> class in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
+        return FALSE;
+    } else {
+        m_aShape = new Shape(pTensor->GetShape());
+        m_aData  = new Data<DTYPE>(pTensor->GetData());
     }
 
     return TRUE;
@@ -133,7 +160,7 @@ unsigned int Index5D(Shape *pShape, int ti, int ba, int ch, int ro, int co) {
 // int main(int argc, char const *argv[]) {
 //// Tensor<int> *temp = new Tensor<int>(1, 100, 1, 28, 28);
 //
-// Tensor<int> *temp = Tensor<int>::Constants(1, 100, 1, 28, 28, 3);
+// Tensor<int> *temp = Tensor<int>::Constants(100, 100, 100, 100, 100, 3);
 //
 // std::cout << Index5D(temp->GetShape(), 0, 1, 0, 1, 1) << '\n';
 //

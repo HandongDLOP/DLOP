@@ -5,39 +5,44 @@ Shape::Shape() {
     m_aDim = NULL;
 }
 
-Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
+Shape::Shape(int pSize0) {
+    std::cout << "Shape::Shape(int)" << '\n';
     m_Rank = 0;
     m_aDim = NULL;
 
-    Alloc(5, pSize0, pSize1, pSize2, pSize3, pSize4);
-}
-
-Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3) {
-    m_Rank = 0;
-    m_aDim = NULL;
-
-    Alloc(4, pSize0, pSize1, pSize2, pSize3);
-}
-
-Shape::Shape(int pSize0, int pSize1, int pSize2) {
-    m_Rank = 0;
-    m_aDim = NULL;
-
-    Alloc(3, pSize0, pSize1, pSize2);
+    Alloc(1, pSize0);
 }
 
 Shape::Shape(int pSize0, int pSize1) {
+    std::cout << "Shape::Shape(int, int)" << '\n';
     m_Rank = 0;
     m_aDim = NULL;
 
     Alloc(2, pSize0, pSize1);
 }
 
-Shape::Shape(int pSize0) {
+Shape::Shape(int pSize0, int pSize1, int pSize2) {
+    std::cout << "Shape::Shape(int, int, int)" << '\n';
     m_Rank = 0;
     m_aDim = NULL;
 
-    Alloc(1, pSize0);
+    Alloc(3, pSize0, pSize1, pSize2);
+}
+
+Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3) {
+    std::cout << "Shape::Shape(int, int, int, int)" << '\n';
+    m_Rank = 0;
+    m_aDim = NULL;
+
+    Alloc(4, pSize0, pSize1, pSize2, pSize3);
+}
+
+Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
+    std::cout << "Shape::Shape(int, int, int, int, int)" << '\n';
+    m_Rank = 0;
+    m_aDim = NULL;
+
+    Alloc(5, pSize0, pSize1, pSize2, pSize3, pSize4);
 }
 
 Shape::Shape(Shape *pShape) {
@@ -86,18 +91,16 @@ int Shape::Alloc(int pRank, ...) {
 }
 
 int Shape::Alloc(Shape *pShape) {
-    int pRank = pShape->GetRank();
-
     try {
-        m_aDim = new int[5];
+        m_Rank = pShape->GetRank();
+        m_aDim = new int[m_Rank];
+
+        for (int i = 0; i < m_Rank; i++) {
+            m_aDim[i] = (*pShape)[i];
+        }
     } catch (...) {
         printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
-    }
-
-    for (int i = 0; i < pRank; i++) {
-        // need to check whether int or not
-        m_aDim[i] = (*pShape)[i];
     }
 
     return TRUE;
@@ -131,23 +134,28 @@ int& Shape::operator[](int pRanknum) {
 }
 
 /////////////////////////////////////////////////// for Print Shape Information
-std::ostream& operator<<(std::ostream& pOS, Shape& pShape) {
-    int rank = pShape.GetRank();
+std::ostream& operator<<(std::ostream& pOS, Shape *pShape) {
+    int rank = pShape->GetRank();
 
     pOS << "Rank is " << rank << ", Dimension is [";
 
-    for (int i = 0; i < rank; i++) pOS << pShape[i] << ", ";
+    for (int i = 0; i < rank; i++) pOS << (*pShape)[i] << ", ";
     pOS << "]";
     return pOS;
 }
 
-// // example code
+//// example code
 // int main(int argc, char const *argv[]) {
-//     Shape *temp = new Shape(1, 1, 1, 4, 2);
+// Shape *temp = new Shape(1, 1, 1, 4, 2);
 //
-//     std::cout << *temp << '\n';
+// std::cout << *temp << '\n';
 //
-//     delete temp;
+// Shape *copy = new Shape(temp);
 //
-//     return 0;
+// std::cout << *copy << '\n';
+//
+// delete temp;
+// delete copy;
+//
+// return 0;
 // }

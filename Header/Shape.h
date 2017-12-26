@@ -21,12 +21,12 @@ private:
 
 public:
     Shape();
-    Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4);
-    Shape(int pSize0, int pSize1, int pSize2, int pSize3);
-    Shape(int pSize0, int pSize1, int pSize2);
-    Shape(int pSize0, int pSize1);
     Shape(int pSize0);
-    Shape(Shape *pShape);
+    Shape(int pSize0, int pSize1);
+    Shape(int pSize0, int pSize1, int pSize2);
+    Shape(int pSize0, int pSize1, int pSize2, int pSize3);
+    Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4);
+    Shape(Shape *pShape);  // Copy Constructor
     virtual ~Shape();
 
     int  Alloc();
@@ -39,6 +39,8 @@ public:
 
     int& operator[](int pRanknum);
 };
+/////////////////////////////////////////////////////////////
 
+std::ostream& operator<<(std::ostream& pOS, Shape *pShape);
 
 #endif  // __SHAPE__

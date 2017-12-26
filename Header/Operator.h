@@ -5,8 +5,7 @@
 // #include "Optimizer//GradientDescentOptimizer.h"
 #include "Tensor.h"
 
-template<typename DTYPE>
-class Operator {
+template<typename DTYPE> class Operator {
 private:
     Tensor<DTYPE> *m_aResult;
     Tensor<DTYPE> *m_aGradient;
@@ -24,24 +23,23 @@ private:
 
 public:
     Operator(std::string pName = "NO NAME");
-    Operator(Tensor<DTYPE> *pTensor, std::string pName = "NO NAME");
     Operator(Operator<DTYPE> *pInput, std::string pName = "NO NAME");
     Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName = "NO NAME");
     virtual ~Operator();
 
-    virtual int       Alloc(Tensor<DTYPE> *pTensor);
     virtual int       Alloc(int numInput, ...);
     virtual void      Delete();
-
-    int               _AddInputEdge(Operator<DTYPE> *pInput);
-    int               _AddOutputEdge(Operator<DTYPE> *pOutput);
-    int               AddEdgebetweenOperators(Operator<DTYPE> *pInput);
 
     void              SetResult(Tensor<DTYPE> *pTensor);
     void              SetGradient(Tensor<DTYPE> *pTensor);
     void              SetDelta(Tensor<DTYPE> *pTensor);
+
     void              IncreaseCurrentOutputDegree();
     void              IncreaseCurrentInputDegree();
+
+    int               _AddInputEdge(Operator<DTYPE> *pInput);
+    int               _AddOutputEdge(Operator<DTYPE> *pOutput);
+    void              AddEdgebetweenOperators(Operator<DTYPE> *pInput);
 
     Tensor<DTYPE>   * GetResult() const;
     Tensor<DTYPE>   * GetGradient() const;

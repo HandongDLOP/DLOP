@@ -15,7 +15,7 @@ private:
 public:
     Data();
     Data(unsigned int pCapacity);
-    Data(Data *pData);
+    Data(Data *pData);  // Copy Constructor
     virtual ~Data();
 
     int    Alloc(unsigned int pCapacity);

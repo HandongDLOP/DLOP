@@ -3,8 +3,6 @@
 
 #include <time.h>
 #include <math.h>
-// #include <chrono>
-// #include <random>
 
 #include "Data.h"
 
@@ -16,9 +14,12 @@ private:
 public:
     Tensor();
     Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);  // For 5D-Tensor
+    Tensor(Shape *pShape);
+    Tensor(Tensor<DTYPE> *pTensor);  // Copy Constructor
     virtual ~Tensor();
 
     int          Alloc(Shape *pShape);
+    int          Alloc(Tensor *pTensor);
     void         Delete();
 
     Shape      * GetShape();
