@@ -20,63 +20,24 @@ private:
     int *m_aDim;
 
 public:
-    Shape() {
-        m_Rank = 0;
-        m_aDim = NULL;
-    }
-
-    Shape(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) ;
-    Shape(int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
-    Shape(int pChannelSize, int pRowSize, int pColSize);
-    Shape(int pRowSize, int pColSize);
-    Shape(int pColSize);
-
-    /*
-     * Shape(int pRank, ...) {
-     *  std::cout << "Shape::Shape(int, ...)" << '\n';
-     *  m_Rank = 0;
-     *  m_aDim = NULL;
-     *
-     *  // for Variable Argument
-     *  va_list ap;
-     *  va_start(ap, pRank);
-     *
-     *  Alloc(pRank, ap);
-     *
-     *  va_end(ap);
-     * }
-     */
-
-    Shape(Shape *pShape) {
-        std::cout << "Shape::Shape(Shape *)" << '\n';
-        Alloc(pShape);
-    }
-
-    virtual ~Shape() {
-        std::cout << "Shape::~Shape()" << '\n';
-        Delete();
-    }
+    Shape();
+    Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4);
+    Shape(int pSize0, int pSize1, int pSize2, int pSize3);
+    Shape(int pSize0, int pSize1, int pSize2);
+    Shape(int pSize0, int pSize1);
+    Shape(int pSize0);
+    Shape(Shape *pShape);
+    virtual ~Shape();
 
     int  Alloc();
-    int  Alloc(int pRank, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
-    /*int  Alloc(int pRank, va_list ap);*/
+    int  Alloc(int pRank, ...);
     int  Alloc(Shape *pShape);
-    int  Delete();
+    void Delete();
 
     void SetRank(int pRank);
     int  GetRank();
 
-    int& operator[](int pRanknum) {
-        try {
-            if (pRanknum >= 0) return m_aDim[pRanknum];
-            else throw;
-        }
-        catch (...) {
-            printf("Receive invalid pRanknum value in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
-            exit(0);
-            // return FALSE;
-        }
-    }
+    int& operator[](int pRanknum);
 };
 
 

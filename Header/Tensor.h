@@ -3,8 +3,8 @@
 
 #include <time.h>
 #include <math.h>
-#include <chrono>
-#include <random>
+// #include <chrono>
+// #include <random>
 
 #include "Data.h"
 
@@ -14,39 +14,38 @@ private:
     Data<DTYPE> *m_aData;
 
 public:
-    Tensor() {
-        std::cout << "Tensor::Tensor()" << '\n';
-    }
+    Tensor();
+    Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);  // For 5D-Tensor
+    virtual ~Tensor();
 
-    Tensor(Shape *pShape) {
-        std::cout << "Tensor::Tensor(Shape*)" << '\n';
-        Alloc(pShape);
-    }
+    int          Alloc(Shape *pShape);
+    void         Delete();
 
-    virtual ~Tensor() {
-        Delete();
-    }
+    Shape      * GetShape();
+    Data<DTYPE>* GetData();
 
-    int Alloc(Shape *pShape);
-    int Delete();
-
-    ///////////////////////////////////////////////////////////////////
-
-    // void SetData(TENSOR_DTYPE pData) {}
-
-    // void SetData(Shape *pShape);
-
-    unsigned int Index(int rank, ...);
+    int          GetTimeSize();
+    int          GetBatchSize();
+    int          GetChannelSize();
+    int          GetRowSize();
+    int          GetColSize();
 
     ///////////////////////////////////////////////////////////////////
 
-    static Tensor* Truncated_normal(Shape *pShape, float mean, float stddev);
-
-    static Tensor* Zeros(Shape *pShape);
-
-    static Tensor* Constants(Shape *pShape, DTYPE constant);
+    DTYPE& operator[](unsigned int index);
+    // DTYPE& GetDatum(int ti, int ba, int ch, int ro, int co);
 
     ///////////////////////////////////////////////////////////////////
+
+    static Tensor* Truncated_normal(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, float mean, float stddev);
+
+    static Tensor* Zeros(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
+
+    static Tensor* Constants(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, DTYPE constant);
 };
+
+///////////////////////////////////////////////////////////////////
+
+inline unsigned int Index5D(Shape *pShape, int ti, int ba, int ch, int ro, int co);
 
 #endif  // TENSOR_H_
