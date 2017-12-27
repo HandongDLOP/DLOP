@@ -16,7 +16,7 @@
 
 #include "Objective//MSE.h"
 // #include "Objective//CrossEntropy.h"
-// #include "Objective//SoftmaxCrossEntropy.h"
+#include "Objective//SoftmaxCrossEntropy.h"
 
 // int main(int argc, char const *argv[]) {
 // Tensor<float> *_input       = Tensor<float>::Constants(1, 20, 1, 1, 4, 2);
@@ -112,31 +112,56 @@
 // return 0;
 // }
 
+// int main(int argc, char const *argv[]) {
+// Tensor<float> *_input      = Tensor<float>::Constants(1, 5, 3, 2, 2, 2);
+// Tensorholder<float> *input = new Tensorholder<float>(_input, "tensorholder");
+// Tensor<float> *_bias       = Tensor<float>::Constants(1, 1, 1, 1, 3, 1);
+// Tensorholder<float> *bias  = new Tensorholder<float>(_bias, "tensorholder");
+//
+// Operator<float> *add = new Addconv<float>(input, bias, "addconv");
+//
+// add->ComputeForwardPropagate();
+//
+// int ca             = add->GetDelta()->GetData()->GetCapacity();
+// Tensor<float> *del = add->GetDelta();
+//
+// for (int i = 0; i < ca; i++) {
+// (*del)[i] = 1;
+// }
+//
+// add->ComputeBackPropagate();
+//
+// std::cout << bias->GetDelta() << '\n';
+// std::cout << input->GetDelta() << '\n';
+//
+// delete input;
+// delete bias;
+// delete add;
+//
+// return 0;
+// }
+
 int main(int argc, char const *argv[]) {
-    Tensor<float> *_input      = Tensor<float>::Constants(1, 5, 3, 2, 2, 2);
+    Tensor<float> *_input      = Tensor<float>::Constants(1, 1, 1, 1, 10, 0);
     Tensorholder<float> *input = new Tensorholder<float>(_input, "tensorholder");
-    Tensor<float> *_bias       = Tensor<float>::Constants(1, 1, 1, 1, 3, 1);
-    Tensorholder<float> *bias  = new Tensorholder<float>(_bias, "tensorholder");
+    Tensor<float> *_label      = Tensor<float>::Constants(1, 1, 1, 1, 10, 0);
+    (*_label)[2] = 1.0;
+    Tensorholder<float> *label = new Tensorholder<float>(_label, "tensorholder");
 
-    Operator<float> *add = new Addconv<float>(input, bias, "addconv");
+    Operator<float> *err = new SoftmaxCrossEntropy<float>(input, label, "err");
 
-    add->ComputeForwardPropagate();
+    err->ComputeForwardPropagate();
 
-    int ca             = add->GetDelta()->GetData()->GetCapacity();
-    Tensor<float> *del = add->GetDelta();
+    std::cout << err->GetResult() << '\n';
 
-    for (int i = 0; i < ca; i++) {
-        (*del)[i] = 1;
-    }
+    err->ComputeBackPropagate();
 
-    add->ComputeBackPropagate();
-
-    std::cout << bias->GetDelta() << '\n';
+    // std::cout << bias->GetDelta() << '\n';
     std::cout << input->GetDelta() << '\n';
 
     delete input;
-    delete bias;
-    delete add;
+    delete label;
+    delete err;
 
     return 0;
 }
