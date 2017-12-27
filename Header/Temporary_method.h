@@ -32,13 +32,11 @@ template<typename DTYPE> float Accuracy(Tensor<DTYPE> *pred, Tensor<DTYPE> *ans,
         ans_index  = Argmax(ans, ba, 10);
 
         if (pred_index == ans_index) {
-            accuracy += 1.0 / Batch;
+            accuracy += 1 / (float)Batch;
         } else {
-            // std::cout << pred_index << '\n';
+            std::cout << pred_index << '\n';
         }
     }
-
-    // std::cout << '\n';
 
     return accuracy;
 }

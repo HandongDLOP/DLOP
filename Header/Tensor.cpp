@@ -43,12 +43,15 @@ template<typename DTYPE> Tensor<DTYPE>::Tensor(DTYPE *****pData, int *pShape, in
     int rowsize     = pShape[3];
     int colsize     = pShape[4];
 
+    int i = 0;
+
     for (int ti = 0; ti < timesize; ti++) {
         for (int ba = 0; ba < batchsize; ba++) {
             for (int ch = 0; ch < channelsize; ch++) {
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
-                        (*m_aData)[Index5D(m_aShape, ti, ba, ch, ro, co)] = pData[ti][ba][ch][ro][co];
+                        (*m_aData)[i] = pData[ti][ba][ch][ro][co];
+                        i++;
                     }
                 }
             }
@@ -179,7 +182,19 @@ template<typename DTYPE> DTYPE& Tensor<DTYPE>::operator[](unsigned int index) {
 template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, float mean, float stddev) {
     std::cout << "Tensor<DTYPE>::Truncated_normal()" << '\n';
 
-    return NULL;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<float> rand(mean, stddev);
+
+    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
+
+    int capacity = temp->GetData()->GetCapacity();
+
+    for (int i = 0; i < capacity; i++) {
+        (*temp)[i] = rand(gen);
+    }
+
+    return temp;
 }
 
 template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Zeros(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
