@@ -116,6 +116,34 @@ template<typename DTYPE> int Tensor<DTYPE>::GetColSize() {
     return (*m_aShape)[4];
 }
 
+//////////////////////////////////////////////////////////////////
+
+template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
+    int cur_capacity = m_aData->GetCapacity();
+    int new_capacity = pTimeSize * pBatchSize * pChannelSize * pRowSize * pColSize;
+
+    if (cur_capacity != new_capacity) {
+        printf("Receive invalid shape value in %s (%s %d), cannot Reshape\n", __FUNCTION__, __FILE__, __LINE__);
+        return FALSE;
+    } else {
+        (*m_aShape)[0] = pTimeSize;
+        (*m_aShape)[1] = pBatchSize;
+        (*m_aShape)[2] = pChannelSize;
+        (*m_aShape)[3] = pRowSize;
+        (*m_aShape)[4] = pColSize;
+    }
+
+    return TRUE;
+}
+
+template<typename DTYPE> void Tensor<DTYPE>::Reset() {
+    int capacity = m_aData->GetCapacity();
+
+    for (int i = 0; i < capacity; i++) {
+        (*m_aData)[i] = 0;
+    }
+}
+
 ///////////////////////////////////////////////////////////////////
 
 template<typename DTYPE> DTYPE& Tensor<DTYPE>::operator[](unsigned int index) {
@@ -152,8 +180,123 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pTimeSize, 
 
 ///////////////////////////////////////////////////////////////////
 
-unsigned int Index5D(Shape *pShape, int ti, int ba, int ch, int ro, int co) {
-    return (((ti * (*pShape)[1] + ba) * (*pShape)[2] + ch) * (*pShape)[3] + ro) * (*pShape)[4] + co;
+
+
+std::ostream& operator<<(std::ostream& pOS, Tensor<int> *pTensor) {
+    int timesize    = pTensor->GetTimeSize();
+    int batchsize   = pTensor->GetBatchSize();
+    int channelsize = pTensor->GetChannelSize();
+    int rowsize     = pTensor->GetRowSize();
+    int colsize     = pTensor->GetColSize();
+
+    Shape *shape = pTensor->GetShape();
+
+    pOS << "[ ";
+
+    for (int ti = 0; ti < timesize; ti++) {
+        pOS << "[ \n";
+
+        for (int ba = 0; ba < batchsize; ba++) {
+            pOS << "[ ";
+
+            for (int ch = 0; ch < channelsize; ch++) {
+                pOS << "[ ";
+
+                for (int ro = 0; ro < rowsize; ro++) {
+                    pOS << "[ ";
+
+                    for (int co = 0; co < colsize; co++) {
+                        pOS << (*pTensor)[Index5D(shape, ti, ba, ch, ro, co)] << ", ";
+                    }
+                    pOS << " ]\n";
+                }
+                pOS << " ]";
+            }
+            pOS << " ]\n";
+        }
+        pOS << " ]\n";
+    }
+    pOS << " ]\n";
+
+    return pOS;
+}
+
+std::ostream& operator<<(std::ostream& pOS, Tensor<float> *pTensor) {
+    int timesize    = pTensor->GetTimeSize();
+    int batchsize   = pTensor->GetBatchSize();
+    int channelsize = pTensor->GetChannelSize();
+    int rowsize     = pTensor->GetRowSize();
+    int colsize     = pTensor->GetColSize();
+
+    Shape *shape = pTensor->GetShape();
+
+    pOS << "[ ";
+
+    for (int ti = 0; ti < timesize; ti++) {
+        pOS << "[ \n";
+
+        for (int ba = 0; ba < batchsize; ba++) {
+            pOS << "[ ";
+
+            for (int ch = 0; ch < channelsize; ch++) {
+                pOS << "[ ";
+
+                for (int ro = 0; ro < rowsize; ro++) {
+                    pOS << "[ ";
+
+                    for (int co = 0; co < colsize; co++) {
+                        pOS << (*pTensor)[Index5D(shape, ti, ba, ch, ro, co)] << ", ";
+                    }
+                    pOS << " ]\n";
+                }
+                pOS << " ]";
+            }
+            pOS << " ]\n";
+        }
+        pOS << " ]\n";
+    }
+    pOS << " ]\n";
+
+    return pOS;
+}
+
+std::ostream& operator<<(std::ostream& pOS, Tensor<double> *pTensor) {
+    int timesize    = pTensor->GetTimeSize();
+    int batchsize   = pTensor->GetBatchSize();
+    int channelsize = pTensor->GetChannelSize();
+    int rowsize     = pTensor->GetRowSize();
+    int colsize     = pTensor->GetColSize();
+
+    Shape *shape = pTensor->GetShape();
+
+    pOS << "[ ";
+
+    for (int ti = 0; ti < timesize; ti++) {
+        pOS << "[ \n";
+
+        for (int ba = 0; ba < batchsize; ba++) {
+            pOS << "[ ";
+
+            for (int ch = 0; ch < channelsize; ch++) {
+                pOS << "[ ";
+
+                for (int ro = 0; ro < rowsize; ro++) {
+                    pOS << "[ ";
+
+                    for (int co = 0; co < colsize; co++) {
+                        pOS << (*pTensor)[Index5D(shape, ti, ba, ch, ro, co)] << ", ";
+                    }
+                    pOS << " ]\n";
+                }
+                pOS << " ]";
+            }
+            pOS << " ]\n";
+        }
+        pOS << " ]\n";
+    }
+    pOS << " ]\n";
+
+    return pOS;
 }
 
 //// example code

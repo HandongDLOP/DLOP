@@ -31,6 +31,7 @@ public:
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *bias   = this->GetInput()[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
+        result->Reset();
 
         int timesize    = input->GetTimeSize();
         int batchsize   = input->GetBatchSize();
@@ -47,8 +48,6 @@ public:
                 index = i * bias_capacity + j;
 
                 (*result)[index] = (*input)[index] + (*bias)[j];
-                std::cout << index << '\n';
-                std::cout << j << '\n';
             }
         }
 
@@ -56,6 +55,31 @@ public:
     }
 
     int ComputeBackPropagate() {
+        Tensor<DTYPE> *this_delta  = this->GetDelta();
+        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
+        input_delta->Reset();
+        Tensor<DTYPE> *bias_delta = this->GetInput()[1]->GetDelta();
+        bias_delta->Reset();
+
+        int timesize    = input_delta->GetTimeSize();
+        int batchsize   = input_delta->GetBatchSize();
+        int channelsize = input_delta->GetChannelSize();
+        int rowsize     = input_delta->GetRowSize();
+        int count       = timesize * batchsize * channelsize * rowsize;
+
+        int bias_capacity = bias_delta->GetData()->GetCapacity();
+
+        int index = 0;
+
+        for (int i = 0; i < count; i++) {
+            for (int j = 0; j < bias_capacity; j++) {
+                index = i * bias_capacity + j;
+
+                (*input_delta)[index] = (*this_delta)[index];
+                (*bias_delta)[j]     += (*this_delta)[index];
+            }
+        }
+
         return TRUE;
     }
 };

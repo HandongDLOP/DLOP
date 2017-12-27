@@ -5,30 +5,52 @@
 
 template<typename DTYPE>
 class Reshape : public Operator<DTYPE>{
+private:
+    Shape *m_aRe;
+
 public:
-    // Constructor의 작업 순서는 다음과 같다.
-    // 상속을 받는 Operator(Parent class)의 Alloc()을 실행하고, (Operator::Alloc())
-    // 나머지 MetaParameter에 대한 Alloc()을 진행한다. (Reshape::Alloc())
-    Reshape(Operator<DTYPE> *pInput, int pChannel, int pRow, int pCol, std::string pName) : Operator<DTYPE>(pInput, pName) {
+    Reshape(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
         std::cout << "Reshape::Reshape(Operator *)" << '\n';
-        this->Alloc(pInput, pChannel, pRow, pCol);
+        this->Alloc(pInput, pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
     }
 
     ~Reshape() {
         std::cout << "Reshape::~Reshape()" << '\n';
+        delete m_aRe;
     }
 
-    virtual int Alloc(Operator<DTYPE> *pInput, int pChannel, int pRow, int pCol) {
+    int Alloc(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
         std::cout << "Reshape::Alloc(Operator *, Operator *)" << '\n';
-        return 1;
+
+        m_aRe = new Shape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
+
+        this->SetResult(new Tensor<DTYPE>(pInput->GetResult()));  // copy data
+
+        Shape *shapeOfDelta = new Shape(m_aRe);
+        this->SetDelta(new Tensor<DTYPE>(shapeOfDelta));
+
+        return TRUE;
     }
 
-    virtual int ComputeForwardPropagate() {
-        return 1;
+    int ComputeForwardPropagate() {
+        Tensor<DTYPE> *result = this->GetResult();
+
+        result->Reshape((*m_aRe)[0], (*m_aRe)[1], (*m_aRe)[2], (*m_aRe)[3], (*m_aRe)[4]);
+
+        return TRUE;
     }
 
-    virtual int ComputeBackPropagate() {
-        return 1;
+    int ComputeBackPropagate() {
+        int capacity = this->GetDelta()->GetData()->GetCapacity();
+
+        Tensor<DTYPE> *this_delta  = this->GetDelta();
+        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
+
+        for (int i = 0; i < capacity; i++) {
+            (*input_delta)[i] = (*this_delta)[i];
+        }
+
+        return TRUE;
     }
 };
 

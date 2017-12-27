@@ -33,6 +33,11 @@ public:
 
     ///////////////////////////////////////////////////////////////////
 
+    int Reshape(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
+    void Reset();
+
+    ///////////////////////////////////////////////////////////////////
+
     DTYPE& operator[](unsigned int index);
     // DTYPE& GetDatum(int ti, int ba, int ch, int ro, int co);
 
@@ -47,6 +52,12 @@ public:
 
 ///////////////////////////////////////////////////////////////////
 
-inline unsigned int Index5D(Shape *pShape, int ti, int ba, int ch, int ro, int co);
+inline unsigned int Index5D(Shape *pShape, int ti, int ba, int ch, int ro, int co) {
+    return (((ti * (*pShape)[1] + ba) * (*pShape)[2] + ch) * (*pShape)[3] + ro) * (*pShape)[4] + co;
+}
+
+std::ostream& operator<<(std::ostream& pOS, Tensor<int> *pTensor);
+std::ostream& operator<<(std::ostream& pOS, Tensor<float> *pTensor);
+std::ostream& operator<<(std::ostream& pOS, Tensor<double> *pTensor);
 
 #endif  // TENSOR_H_
