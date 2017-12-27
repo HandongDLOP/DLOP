@@ -16,7 +16,7 @@ public:
     }
 
     int Alloc(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight) {
-        std::cout << "Add::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
+        std::cout << "MatMul::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
 
         int timesize    = pInput->GetResult()->GetTimeSize();
         int batchsize   = pInput->GetResult()->GetBatchSize();

@@ -50,7 +50,8 @@ public:
         Tensor<DTYPE> *input         = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *label         = this->GetInput()[1]->GetResult();
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
-        Tensor<DTYPE> *result        = this->GetResult();
+        // softmaxresult->Reset();
+        Tensor<DTYPE> *result = this->GetResult();
         result->Reset();
 
         int timesize    = input->GetTimeSize();
@@ -101,8 +102,8 @@ public:
 
                 for (int i = start; i < end; i++) {
                     (*softmaxresult)[i] = (exp((*input)[i] - max[ti][ba]) + m_epsilon) / sum[ti][ba];
-                    std::cout << -(*label)[i] * log((*softmaxresult)[i] + m_epsilon) / capacity << '\n';
-                    (*result)[start] += -(*label)[i] * log((*softmaxresult)[i] + m_epsilon) / capacity;
+
+                    (*result)[ti * batchsize + ba] += -(*label)[i] * log((*softmaxresult)[i] + m_epsilon) / capacity;
                 }
             }
         }

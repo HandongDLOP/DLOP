@@ -98,25 +98,6 @@ public:
         delete Train_image;
         delete Train_label;
 
-        // if (Test_image_feed != NULL) {
-        // delete Test_image_feed;
-        // Test_image_feed = NULL;
-        // }
-        //
-        // if (Test_label_feed != NULL) {
-        // delete Test_label_feed;
-        // Test_label_feed = NULL;
-        // }
-        //
-        // if (Train_image_feed != NULL) {
-        // delete Train_image_feed;
-        // Train_image_feed = NULL;
-        // }
-        //
-        // if (Train_label_feed != NULL) {
-        // delete Train_label_feed;
-        // Train_label_feed = NULL;
-        // }
     }
 
     // After we see test data at one time

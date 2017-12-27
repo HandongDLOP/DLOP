@@ -12,7 +12,7 @@ template<typename DTYPE> Data<DTYPE>::Data() {
 }
 
 template<typename DTYPE> Data<DTYPE>::Data(unsigned int pCapacity) {
-    std::cout << "Data<DTYPE>::Data(Shape *)" << '\n';
+    // std::cout << "Data<DTYPE>::Data(Shape *)" << '\n';
     m_Capacity = 0;
     m_Cols     = 0;
     m_Rows     = 0;
@@ -30,7 +30,7 @@ template<typename DTYPE> Data<DTYPE>::Data(Data *pData) {
 }
 
 template<typename DTYPE> Data<DTYPE>::~Data() {
-    std::cout << "Data<DTYPE>::~Data()" << '\n';
+    // std::cout << "Data<DTYPE>::~Data()" << '\n';
     Delete();
 }
 

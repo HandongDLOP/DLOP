@@ -19,15 +19,10 @@ struct TrainableData {
 template<typename DTYPE>
 class Optimizer {
 private:
-    /* data */
-    // momentum이나 이런 애들은 따로 변수를 가지고 있어야 한다.
-
     Operator<DTYPE> *m_pObjectOperator = NULL;
 
     float m_LearningRate    = 0.f;
     int m_OptimizeDirection = 1;  // 1 or -1
-
-    // int m_Batch = 0;
 
     TrainableData<DTYPE> **m_aTrainableData = NULL;
     int m_TrainableDataDegree               = 0;
@@ -50,7 +45,7 @@ public:
         SetLearningRate(pLearningRate);
         SetOptimizeDirection(pOptimizeDirection);
 
-        return 1;
+        return TRUE;
     }
 
     int Delete() {
@@ -59,7 +54,7 @@ public:
         }
         delete m_aTrainableData;
 
-        return 1;
+        return TRUE;
     }
 
     int AddTrainableData(Tensor<DTYPE> *pData, Tensor<DTYPE> *pWeight) {
@@ -82,7 +77,7 @@ public:
 
         m_TrainableDataDegree++;
 
-        return 1;
+        return TRUE;
     }
 
     int UpdateVariable() {
@@ -90,7 +85,7 @@ public:
             // UpdateVariable(m_aTrainableData[i]->Data, m_aTrainableData[i]->Gradient);
             UpdateVariable(m_aTrainableData[i]);
         }
-        return 1;
+        return TRUE;
     }
 
     // virtual int UpdateVariable(Tensor<DTYPE> *Trainable, Tensor<DTYPE> *Gradient) = 0;
@@ -105,10 +100,6 @@ public:
         m_LearningRate = pLearningRate;
     }
 
-    // void SetBatch(int pBatch){
-    // m_Batch = pBatch;
-    // }
-
     void SetOptimizeDirection(OptimizeDirection pOptimizeDirection) {
         if (pOptimizeDirection == MAXIMIZE) m_OptimizeDirection = 1;
         else if (pOptimizeDirection == MINIMIZE) m_OptimizeDirection = -1;
@@ -121,10 +112,6 @@ public:
     float GetLearningRate() const {
         return m_LearningRate;
     }
-
-    // int GetBatch(){
-    // return m_Batch;
-    // }
 
     int GetOptimizeDirection() {
         return m_OptimizeDirection;

@@ -32,8 +32,32 @@ template<typename DTYPE> Tensor<DTYPE>::Tensor(Tensor *pTensor) {
     Alloc(pTensor);
 }
 
+template<typename DTYPE> Tensor<DTYPE>::Tensor(DTYPE *****pData, int *pShape, int rank) {
+    // std::cout << "Tensor::Tensor(DTYPE *****, int *, int)" << '\n';
+    m_aShape = new Shape(pShape[0], pShape[1], pShape[2], pShape[3], pShape[4]);
+    m_aData  = new Data<DTYPE>(pShape[0] * pShape[1] * pShape[2] * pShape[3] * pShape[4]);
+
+    int timesize    = pShape[0];
+    int batchsize   = pShape[1];
+    int channelsize = pShape[2];
+    int rowsize     = pShape[3];
+    int colsize     = pShape[4];
+
+    for (int ti = 0; ti < timesize; ti++) {
+        for (int ba = 0; ba < batchsize; ba++) {
+            for (int ch = 0; ch < channelsize; ch++) {
+                for (int ro = 0; ro < rowsize; ro++) {
+                    for (int co = 0; co < colsize; co++) {
+                        (*m_aData)[Index5D(m_aShape, ti, ba, ch, ro, co)] = pData[ti][ba][ch][ro][co];
+                    }
+                }
+            }
+        }
+    }
+}
+
 template<typename DTYPE> Tensor<DTYPE>::~Tensor() {
-    std::cout << "Tensor::~Tensor()" << '\n';
+    // std::cout << "Tensor::~Tensor()" << '\n';
     Delete();
 }
 
@@ -179,7 +203,6 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pTimeSize, 
 }
 
 ///////////////////////////////////////////////////////////////////
-
 
 
 std::ostream& operator<<(std::ostream& pOS, Tensor<int> *pTensor) {

@@ -1,27 +1,26 @@
 #include "Tensor.h"
 
 namespace temp {
-template<typename DTYPE>
-int Argmax(DTYPE *data, int Dimension) {
+template<typename DTYPE> int Argmax(Tensor<DTYPE> *data, int ba, int Dimension) {
     int   index = 0;
-    DTYPE max   = data[0];
+    DTYPE max   = (*data)[ba * 10];
+    int   start = ba * 10;
+    int   end   = ba * 10 + 10;
 
-    for (int dim = 1; dim < Dimension; dim++) {
-        if (data[dim] > max) {
-            max   = data[dim];
-            index = dim;
+    for (int dim = start + 1; dim < end; dim++) {
+        if ((*data)[dim] > max) {
+            max   = (*data)[dim];
+            index = dim - start;
         }
     }
+
+    // std::cout << index << ' ';
 
     return index;
 }
 
-template<typename DTYPE>
-float Accuracy(Tensor<DTYPE> *pred, Tensor<DTYPE> *ans, int Batch) {
-    typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
-
-    TENSOR_DTYPE pred_data = pred->GetData();
-    TENSOR_DTYPE ans_data  = ans->GetData();
+template<typename DTYPE> float Accuracy(Tensor<DTYPE> *pred, Tensor<DTYPE> *ans, int Batch) {
+    // typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
 
     float accuracy = 0.0;
 
@@ -29,8 +28,8 @@ float Accuracy(Tensor<DTYPE> *pred, Tensor<DTYPE> *ans, int Batch) {
     int ans_index  = 0;
 
     for (int ba = 0; ba < Batch; ba++) {
-        pred_index = Argmax(pred_data[0][ba][0][0], 10);
-        ans_index  = Argmax(ans_data[0][ba][0][0], 10);
+        pred_index = Argmax(pred, ba, 10);
+        ans_index  = Argmax(ans, ba, 10);
 
         if (pred_index == ans_index) {
             accuracy += 1.0 / Batch;
@@ -38,6 +37,8 @@ float Accuracy(Tensor<DTYPE> *pred, Tensor<DTYPE> *ans, int Batch) {
             // std::cout << pred_index << '\n';
         }
     }
+
+    // std::cout << '\n';
 
     return accuracy;
 }
