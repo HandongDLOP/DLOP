@@ -9,7 +9,7 @@
 // #include "Operator//Softmax.h"
 
 #include "Operator//Addfc.h"
-// #include "Operator//Addconv.h"
+#include "Operator//Addconv.h"
 #include "Operator//MatMulfc.h"
 // #include "Operator//Convolution.h"
 // #include "Operator//Maxpooling.h"
@@ -83,31 +83,60 @@
 //
 // }
 
+// int main(int argc, char const *argv[]) {
+// Tensor<float> *_input      = Tensor<float>::Constants(1, 1, 1, 10, 2, 2);
+// Tensorholder<float> *input = new Tensorholder<float>(_input, "tensorholder");
+//
+// Operator<float> *re = new Reshape<float>(input, 1, 1, 1, 4, 5, "reshape");
+//
+// re->ComputeForwardPropagate();
+//
+// int ca             = re->GetDelta()->GetData()->GetCapacity();
+// Tensor<float> *del = re->GetDelta();
+//
+// for (int i = 0; i < ca; i++) {
+// (*del)[i] = i;
+// }
+//
+// std::cout << input->GetResult() << '\n';
+// std::cout << re->GetResult() << '\n';
+//
+// re->ComputeBackPropagate();
+//
+// std::cout << del << '\n';
+// std::cout << input->GetDelta() << '\n';
+//
+// delete input;
+// delete re;
+//
+// return 0;
+// }
+
 int main(int argc, char const *argv[]) {
-    Tensor<float> *_input      = Tensor<float>::Constants(1, 1, 1, 10, 2, 2);
+    Tensor<float> *_input      = Tensor<float>::Constants(1, 5, 3, 2, 2, 2);
     Tensorholder<float> *input = new Tensorholder<float>(_input, "tensorholder");
+    Tensor<float> *_bias       = Tensor<float>::Constants(1, 1, 1, 1, 3, 1);
+    Tensorholder<float> *bias  = new Tensorholder<float>(_bias, "tensorholder");
 
-    Operator<float> *re = new Reshape<float>(input, 1, 1, 1, 4, 5, "reshape");
+    Operator<float> *add = new Addconv<float>(input, bias, "addconv");
 
-    re->ComputeForwardPropagate();
+    add->ComputeForwardPropagate();
 
-    int ca             = re->GetDelta()->GetData()->GetCapacity();
-    Tensor<float> *del = re->GetDelta();
+    int ca             = add->GetDelta()->GetData()->GetCapacity();
+    Tensor<float> *del = add->GetDelta();
 
     for (int i = 0; i < ca; i++) {
-        (*del)[i] = i;
+        (*del)[i] = 1;
     }
 
-    std::cout << input->GetResult() << '\n';
-    std::cout << re->GetResult() << '\n';
+    add->ComputeBackPropagate();
 
-    re->ComputeBackPropagate();
-
-    std::cout << del << '\n';
+    std::cout << bias->GetDelta() << '\n';
     std::cout << input->GetDelta() << '\n';
 
     delete input;
-    delete re;
+    delete bias;
+    delete add;
 
     return 0;
 }
