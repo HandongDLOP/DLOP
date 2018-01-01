@@ -115,8 +115,6 @@ int main(int argc, char const *argv[]) {
 
         // HGUNN.Run(optimizer);
 
-
-
         if ((i % 100) == 0) {
             // std::cout << err->GetResult()->GetShape() << '\n';
             // std::cout << add->GetResult()->GetShape() << '\n';
@@ -131,6 +129,8 @@ int main(int argc, char const *argv[]) {
             // std::cout << res->GetResult()->GetShape() << '\n';
             // std::cout << x->GetResult()->GetShape() << '\n';
 
+            std::cout << "Loop : " << i << " ";
+
             std::cout << "Train Accuracy is : "
                       << (float)temp::Accuracy(add->GetResult(), label->GetResult(), BATCH)
                       << '\n';
@@ -138,19 +138,35 @@ int main(int argc, char const *argv[]) {
     }
 
     // ======================= Testing =======================
-    // double test_accuracy = 0.0;
+    double test_accuracy = 0.0;
 
-    // for (int i = 0; i < (int)LOOP_FOR_TEST; i++) {
-    // dataset->CreateTestDataPair(BATCH);
-    // x->FeedOutput(dataset->GetTestFeedImage());
-    // label->FeedOutput(dataset->GetTestFeedLabel());
-    //
-    //// HGUNN.Run(err);
-    //// I'll implement flexibility about the situation that change of Batch size
-    // test_accuracy += (float)temp::Accuracy(add->GetOutput(), label->GetOutput(), BATCH);
-    // }
-    //
-    // std::cout << "Test Accuracy is : " << test_accuracy / (int)LOOP_FOR_TEST << '\n';
+    for (int i = 0; i < (int)LOOP_FOR_TEST; i++) {
+    dataset->CreateTestDataPair(BATCH);
+    x->SetResult(dataset->GetTrainFeedImage());
+    label->SetResult(dataset->GetTrainFeedLabel());
+
+    // ======================= Forward=======================
+    res->ComputeForwardPropagate();
+
+    conv1->ComputeForwardPropagate();
+    add1->ComputeForwardPropagate();
+    act1->ComputeForwardPropagate();
+
+    conv2->ComputeForwardPropagate();
+    add2->ComputeForwardPropagate();
+    act2->ComputeForwardPropagate();
+
+    flat->ComputeForwardPropagate();
+    matmul->ComputeForwardPropagate();
+    add->ComputeForwardPropagate();
+    err->ComputeForwardPropagate();
+
+    // HGUNN.Run(err);
+    // I'll implement flexibility about the situation that change of Batch size
+    test_accuracy += (float)temp::Accuracy(add->GetResult(), label->GetResult(), BATCH);
+    }
+
+    std::cout << "Test Accuracy is : " << test_accuracy / (int)LOOP_FOR_TEST << '\n';
 
 
     return 0;
