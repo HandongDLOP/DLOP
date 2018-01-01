@@ -14,7 +14,7 @@
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
 int main(int argc, char const *argv[]) {
-    Operator<float> *w      = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 5, 5, 0.0, 0.6), "weight");
+    Operator<float> *w      = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 11, 11, 0.0, 0.6), "weight");
     Operator<float> *w_pool = new Maxpooling4D<float>(w, 2, 2, 2, 2, "maxpool");
 
     w_pool->ComputeForwardPropagate();
