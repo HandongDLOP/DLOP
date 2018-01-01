@@ -71,7 +71,7 @@ public:
                             for (int wro = 0; wro < rowsizeOfWeight; wro++) {
                                 for (int wco = 0; wco < colsizeOfWeight; wco++) {
                                     (*result)[Index4D(shapeOfResult, ba, ch, ro, co)]
-                                        += ((*input)[Index4D(shapeOfInput, ba, wch, ro + wro, co + wco)]
+                                        += ((*input)[Index4D(shapeOfInput, ba, wch, stride[1] * ro + wro, stride[2] * co + wco)]
                                             * (*weight)[Index4D(shapeOfWeight, ch, wch, wro, wco)]);
                                 }
                             }
@@ -121,7 +121,7 @@ public:
                         for (int wch = 0; wch < channelsizeOfWeight; wch++) {  // == (*shapeOfInput)[2];
                             for (int wro = 0; wro < rowsizeOfWeight; wro++) {
                                 for (int wco = 0; wco < colsizeOfWeight; wco++) {
-                                    input_index  = Index4D(shapeOfInput, ba, wch, ro + wro, co + wco);
+                                    input_index  = Index4D(shapeOfInput, ba, wch, stride[1] * ro + wro, stride[2] * co + wco);
                                     weight_index = Index4D(shapeOfWeight, ch, wch, wro, wco);
                                     result_index = Index4D(shapeOfResult, ba, ch, ro, co);
 

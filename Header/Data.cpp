@@ -145,13 +145,14 @@ template<typename DTYPE> DTYPE& Data<DTYPE>::operator[](unsigned int index) {
     return m_aData[index / SIZEOFCOLS][index % SIZEOFCOLS];
 }
 
-//// example code
+// // example code
 // int main(int argc, char const *argv[]) {
-// Data<int> *pData = new Data<int>(2048);
+//     Data<int> *pData = new Data<int>(2048);
 //
-// std::cout << (*pData)[2047] << '\n';
+//     std::cout << pData->GetCapacity() << '\n';
+//     std::cout << (*pData)[2048] << '\n';
 //
-// delete pData;
+//     delete pData;
 //
-// return 0;
+//     return 0;
 // }
