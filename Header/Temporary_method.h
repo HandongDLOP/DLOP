@@ -33,8 +33,6 @@ template<typename DTYPE> float Accuracy(Tensor<DTYPE> *pred, Tensor<DTYPE> *ans,
 
         if (pred_index == ans_index) {
             accuracy += 1 / (float)Batch;
-        } else {
-            std::cout << pred_index << '\n';
         }
     }
 

@@ -12,7 +12,7 @@
 #include "Operator//Addfc.h"
 #include "Operator//Addconv.h"
 #include "Operator//MatMulfc.h"
-// #include "Operator//Convolution.h"
+#include "Operator//Convolution.h"
 // #include "Operator//Maxpooling.h"
 
 #include "Objective//MSE.h"

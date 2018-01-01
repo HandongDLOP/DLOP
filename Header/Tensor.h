@@ -19,7 +19,7 @@ public:
     Tensor(Shape *pShape);
     Tensor(Tensor<DTYPE> *pTensor);  // Copy Constructor
     // temporary
-    Tensor(DTYPE***** pData, int * pShape, int rank);
+    Tensor(DTYPE *****pData, int *pShape, int rank);
     virtual ~Tensor();
 
     int          Alloc(Shape *pShape);
@@ -37,7 +37,7 @@ public:
 
     ///////////////////////////////////////////////////////////////////
 
-    int Reshape(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
+    int  Reshape(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
     void Reset();
 
     ///////////////////////////////////////////////////////////////////
@@ -58,6 +58,10 @@ public:
 
 inline unsigned int Index5D(Shape *pShape, int ti, int ba, int ch, int ro, int co) {
     return (((ti * (*pShape)[1] + ba) * (*pShape)[2] + ch) * (*pShape)[3] + ro) * (*pShape)[4] + co;
+}
+
+inline unsigned int Index4D(Shape *pShape, int ba, int ch, int ro, int co) {
+    return ((ba * (*pShape)[2] + ch) * (*pShape)[3] + ro) * (*pShape)[4] + co;
 }
 
 std::ostream& operator<<(std::ostream& pOS, Tensor<int> *pTensor);

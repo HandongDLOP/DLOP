@@ -24,7 +24,10 @@ public:
 
         m_aRe = new Shape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
 
-        this->SetResult(new Tensor<DTYPE>(pInput->GetResult()));  // copy data
+        Tensor<DTYPE> *result = new Tensor<DTYPE>(pInput->GetResult());
+        result->Reshape((*m_aRe)[0], (*m_aRe)[1], (*m_aRe)[2], (*m_aRe)[3], (*m_aRe)[4]);
+
+        this->SetResult(result);  // copy data
 
         Shape *shapeOfDelta = new Shape(m_aRe);
         this->SetDelta(new Tensor<DTYPE>(shapeOfDelta));
@@ -33,9 +36,14 @@ public:
     }
 
     int ComputeForwardPropagate() {
+        Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
-        result->Reshape((*m_aRe)[0], (*m_aRe)[1], (*m_aRe)[2], (*m_aRe)[3], (*m_aRe)[4]);
+        int capacity = result->GetData()->GetCapacity();
+
+        for(int i = 0; i < capacity; i++){
+            (*result)[i] = (*input)[i];
+        }
 
         return TRUE;
     }
