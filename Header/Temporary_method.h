@@ -22,7 +22,7 @@ template<typename DTYPE> int Argmax(Tensor<DTYPE> *data, int ba, int Dimension) 
 template<typename DTYPE> float Accuracy(Tensor<DTYPE> *pred, Tensor<DTYPE> *ans, int Batch) {
     // typedef typename Tensor<DTYPE>::TENSOR_DTYPE TENSOR_DTYPE;
 
-    float accuracy = 0.0;
+    float accuracy = 0.f;
 
     int pred_index = 0;
     int ans_index  = 0;
@@ -32,10 +32,10 @@ template<typename DTYPE> float Accuracy(Tensor<DTYPE> *pred, Tensor<DTYPE> *ans,
         ans_index  = Argmax(ans, ba, 10);
 
         if (pred_index == ans_index) {
-            accuracy += 1 / (float)Batch;
+            accuracy += 1.f;
         }
     }
 
-    return accuracy;
+    return accuracy / Batch;
 }
 }

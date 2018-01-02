@@ -8,8 +8,8 @@
 #include "..//Header//Temporary_method.h"
 #include "MNIST_Reader.h"
 //
-#define BATCH             100
-#define LOOP_FOR_TRAIN    20000
+#define BATCH             50
+#define LOOP_FOR_TRAIN    600
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
@@ -89,8 +89,8 @@ int main(int argc, char const *argv[]) {
         std::cout << "Loop : " << i << " ";
 
         std::cout << "Train Accuracy is : "
-        << (float)temp::Accuracy(add->GetResult(), label->GetResult(), BATCH)
-        << '\n';
+                  << temp::Accuracy(add->GetResult(), label->GetResult(), BATCH)
+                  << '\n';
 
         //// ======================= Backward=======================
         err->ComputeBackPropagate();
@@ -115,7 +115,9 @@ int main(int argc, char const *argv[]) {
         w2->ComputeBackPropagate();
         b1->ComputeBackPropagate();
         w1->ComputeBackPropagate();
-        //
+
+        // std::cout << b1->GetGradient() << '\n';
+
         //// ======================= Update=======================
         optimizer->UpdateVariable();
         // std::cout << label->GetResult() << '\n';
@@ -124,34 +126,36 @@ int main(int argc, char const *argv[]) {
         // HGUNN.Run(optimizer);
 
         // if ((i % 100) == 0) {
-        //     // std::cout << err->GetResult()->GetShape() << '\n';
-        //     // std::cout << add->GetResult()->GetShape() << '\n';
-        //     // std::cout << matmul->GetResult()->GetShape() << '\n';
-        //     // std::cout << flat->GetResult()->GetShape() << '\n';
-        //     // std::cout << act2->GetResult()->GetShape() << '\n';
-        //     // std::cout << add2->GetResult()->GetShape() << '\n';
-        //     // std::cout << conv2->GetResult()->GetShape() << '\n';
-        //     // std::cout << act1->GetResult()->GetShape() << '\n';
-        //     // std::cout << add1->GetResult()->GetShape() << '\n';
-        //     // std::cout << conv1->GetResult()->GetShape() << '\n';
-        //     // std::cout << res->GetResult()->GetShape() << '\n';
-        //     // std::cout << x->GetResult()->GetShape() << '\n';
+        //// std::cout << err->GetResult()->GetShape() << '\n';
+        //// std::cout << add->GetResult()->GetShape() << '\n';
+        //// std::cout << matmul->GetResult()->GetShape() << '\n';
+        //// std::cout << flat->GetResult()->GetShape() << '\n';
+        //// std::cout << act2->GetResult()->GetShape() << '\n';
+        //// std::cout << add2->GetResult()->GetShape() << '\n';
+        //// std::cout << conv2->GetResult()->GetShape() << '\n';
+        //// std::cout << act1->GetResult()->GetShape() << '\n';
+        //// std::cout << add1->GetResult()->GetShape() << '\n';
+        //// std::cout << conv1->GetResult()->GetShape() << '\n';
+        //// std::cout << res->GetResult()->GetShape() << '\n';
+        //// std::cout << x->GetResult()->GetShape() << '\n';
         //
-        //     std::cout << "Loop : " << i << " ";
+        // std::cout << "Loop : " << i << " ";
         //
-        //     std::cout << "Train Accuracy is : "
-        //               << (float)temp::Accuracy(add->GetResult(), label->GetResult(), BATCH)
-        //               << '\n';
+        // std::cout << "Train Accuracy is : "
+        // << (float)temp::Accuracy(add->GetResult(), label->GetResult(), BATCH)
+        // << '\n';
         // }
     }
 
     // ======================= Testing =======================
     double test_accuracy = 0.0;
 
+    std::cout << (int)LOOP_FOR_TEST << '\n';
+
     for (int i = 0; i < (int)LOOP_FOR_TEST; i++) {
         dataset->CreateTestDataPair(BATCH);
-        x->SetResult(dataset->GetTrainFeedImage());
-        label->SetResult(dataset->GetTrainFeedLabel());
+        x->SetResult(dataset->GetTestFeedImage());
+        label->SetResult(dataset->GetTestFeedLabel());
 
         // ======================= Forward=======================
         res->ComputeForwardPropagate();
@@ -159,10 +163,12 @@ int main(int argc, char const *argv[]) {
         conv1->ComputeForwardPropagate();
         add1->ComputeForwardPropagate();
         act1->ComputeForwardPropagate();
+        pool1->ComputeForwardPropagate();
 
         conv2->ComputeForwardPropagate();
         add2->ComputeForwardPropagate();
         act2->ComputeForwardPropagate();
+        pool2->ComputeForwardPropagate();
 
         flat->ComputeForwardPropagate();
         matmul->ComputeForwardPropagate();
@@ -171,7 +177,8 @@ int main(int argc, char const *argv[]) {
 
         // HGUNN.Run(err);
         // I'll implement flexibility about the situation that change of Batch size
-        test_accuracy += (float)temp::Accuracy(add->GetResult(), label->GetResult(), BATCH);
+        test_accuracy += temp::Accuracy(add->GetResult(), label->GetResult(), BATCH);
+        std::cout << temp::Accuracy(add->GetResult(), label->GetResult(), BATCH) << '\n';
     }
 
     std::cout << "Test Accuracy is : " << test_accuracy / (int)LOOP_FOR_TEST << '\n';
