@@ -8,7 +8,7 @@
 #include "..//Header//Temporary_method.h"
 #include "MNIST_Reader.h"
 //
-#define BATCH             50
+#define BATCH             100
 #define LOOP_FOR_TRAIN    600
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
@@ -20,35 +20,42 @@ int main(int argc, char const *argv[]) {
     Operator<float> *res   = new Reshape<float>(x, 1, BATCH, 1, 28, 28, "reshape");
 
     // ======================= layer 1=======================
-    Operator<float> *w1    = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 10, 1, 3, 3, 0.0, 0.1), "weight");
-    Operator<float> *b1    = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 10, 0.1), "bias");
+    Operator<float> *w1    = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 32, 1, 3, 3, 0.0, 0.1), "weight");
+    Operator<float> *b1    = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 32, 0.1), "bias");
     Operator<float> *conv1 = new Convolution4D<float>(res, w1, 1, 1, 1, 1, "convolution1");
     Operator<float> *add1  = new Addconv<float>(conv1, b1, "addconv1");
     Operator<float> *act1  = new Relu<float>(add1, "relu1");
     Operator<float> *pool1 = new Maxpooling4D<float>(act1, 2, 2, 2, 2, "maxpool1");
 
     // ======================= layer 2=======================
-    Operator<float> *w2    = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 10, 10, 3, 3, 0.0, 0.1), "weight");
-    Operator<float> *b2    = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 10, 0.1), "bias");
+    Operator<float> *w2    = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 64, 32, 3, 3, 0.0, 0.1), "weight");
+    Operator<float> *b2    = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 64, 0.1), "bias");
     Operator<float> *conv2 = new Convolution4D<float>(pool1, w2, 1, 1, 1, 1, "convolution1");
     Operator<float> *add2  = new Addconv<float>(conv2, b2, "addconv1");
     Operator<float> *act2  = new Relu<float>(add2, "relu2");
     Operator<float> *pool2 = new Maxpooling4D<float>(act2, 2, 2, 2, 2, "maxpool2");
 
     // ======================= layer 3=======================
-    Operator<float> *flat = new Reshape<float>(pool2, 1, BATCH, 1, 1, 6 * 6 * 10, "flat");
+    Operator<float> *flat = new Reshape<float>(pool2, 1, BATCH, 1, 1, 5 * 5 * 64, "flat");
 
-    Operator<float> *w_flat = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 6 * 6 * 10, 10, 0.0, 0.1), "w");
-    Operator<float> *b_flat = new Tensorholder<float>(Tensor<float>::Zeros(1, 1, 1, 1, 10), "b");
+    Operator<float> *w_flat1 = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 5 * 5 * 64, 1024, 0.0, 0.1), "w");
+    Operator<float> *b_flat1 = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 1024, 0.1), "b");
 
-    Operator<float> *matmul = new MatMul<float>(flat, w_flat, "matmul");
-    Operator<float> *add    = new Add<float>(matmul, b_flat, "add");
+    Operator<float> *matmul_flat1 = new MatMul<float>(flat, w_flat1, "matmul");
+    Operator<float> *add_flat1    = new Add<float>(matmul_flat1, b_flat1, "add");
+
+    // ======================= layer 3=======================
+    Operator<float> *w_flat2 = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 1024, 10, 0.0, 0.1), "w");
+    Operator<float> *b_flat2 = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 10, 0.1), "b");
+
+    Operator<float> *matmul_flat2 = new MatMul<float>(add_flat1, w_flat2, "matmul");
+    Operator<float> *add_flat2    = new Add<float>(matmul_flat2, b_flat2, "add");
 
     // ======================= Error=======================
-    Operator<float> *err = new SoftmaxCrossEntropy<float>(add, label, 0.002, "SCE");
+    Operator<float> *err = new SoftmaxCrossEntropy<float>(add_flat2, label, "SCE");
 
     // ======================= Optimizer=======================
-    Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE);
+    Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(err, 0.002, MINIMIZE);
 
     optimizer->AddTrainableData(w1->GetResult(),     w1->GetGradient());
     optimizer->AddTrainableData(b1->GetResult(),     b1->GetGradient());
@@ -56,8 +63,11 @@ int main(int argc, char const *argv[]) {
     optimizer->AddTrainableData(w2->GetResult(),     w2->GetGradient());
     optimizer->AddTrainableData(b2->GetResult(),     b2->GetGradient());
     //
-    optimizer->AddTrainableData(w_flat->GetResult(), w_flat->GetGradient());
-    optimizer->AddTrainableData(b_flat->GetResult(), b_flat->GetGradient());
+    optimizer->AddTrainableData(w_flat1->GetResult(), w_flat1->GetGradient());
+    optimizer->AddTrainableData(b_flat1->GetResult(), b_flat1->GetGradient());
+
+    optimizer->AddTrainableData(w_flat2->GetResult(), w_flat2->GetGradient());
+    optimizer->AddTrainableData(b_flat2->GetResult(), b_flat2->GetGradient());
     //
     //// ======================= Train=======================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
@@ -82,20 +92,30 @@ int main(int argc, char const *argv[]) {
         pool2->ComputeForwardPropagate();
 
         flat->ComputeForwardPropagate();
-        matmul->ComputeForwardPropagate();
-        add->ComputeForwardPropagate();
+
+        matmul_flat1->ComputeForwardPropagate();
+        add_flat1->ComputeForwardPropagate();
+
+        matmul_flat2->ComputeForwardPropagate();
+        add_flat2->ComputeForwardPropagate();
+
         err->ComputeForwardPropagate();
 
         std::cout << "Loop : " << i << " ";
 
         std::cout << "Train Accuracy is : "
-                  << temp::Accuracy(add->GetResult(), label->GetResult(), BATCH)
+                  << temp::Accuracy(add_flat2->GetResult(), label->GetResult(), BATCH)
                   << '\n';
 
         //// ======================= Backward=======================
         err->ComputeBackPropagate();
-        add->ComputeBackPropagate();
-        matmul->ComputeBackPropagate();
+
+        add_flat2->ComputeBackPropagate();
+        matmul_flat2->ComputeBackPropagate();
+
+        add_flat1->ComputeBackPropagate();
+        matmul_flat1->ComputeBackPropagate();
+
         flat->ComputeBackPropagate();
 
         pool2->ComputeBackPropagate();
@@ -109,14 +129,17 @@ int main(int argc, char const *argv[]) {
         conv1->ComputeBackPropagate();
         res->ComputeBackPropagate();
 
-        b_flat->ComputeBackPropagate();
-        w_flat->ComputeBackPropagate();
+        b_flat2->ComputeBackPropagate();
+        w_flat2->ComputeBackPropagate();
+        b_flat1->ComputeBackPropagate();
+        w_flat1->ComputeBackPropagate();
         b2->ComputeBackPropagate();
         w2->ComputeBackPropagate();
         b1->ComputeBackPropagate();
         w1->ComputeBackPropagate();
 
-        // std::cout << b1->GetGradient() << '\n';
+        // std::cout << b1->GetResult() << '\n';
+        // std::cout << err->GetResult() << '\n';
 
         //// ======================= Update=======================
         optimizer->UpdateVariable();
@@ -171,14 +194,19 @@ int main(int argc, char const *argv[]) {
         pool2->ComputeForwardPropagate();
 
         flat->ComputeForwardPropagate();
-        matmul->ComputeForwardPropagate();
-        add->ComputeForwardPropagate();
+
+        matmul_flat1->ComputeForwardPropagate();
+        add_flat1->ComputeForwardPropagate();
+
+        matmul_flat2->ComputeForwardPropagate();
+        add_flat2->ComputeForwardPropagate();
+
         err->ComputeForwardPropagate();
 
         // HGUNN.Run(err);
         // I'll implement flexibility about the situation that change of Batch size
-        test_accuracy += temp::Accuracy(add->GetResult(), label->GetResult(), BATCH);
-        std::cout << temp::Accuracy(add->GetResult(), label->GetResult(), BATCH) << '\n';
+        test_accuracy += temp::Accuracy(add_flat2->GetResult(), label->GetResult(), BATCH);
+        std::cout << temp::Accuracy(add_flat2->GetResult(), label->GetResult(), BATCH) << '\n';
     }
 
     std::cout << "Test Accuracy is : " << test_accuracy / (int)LOOP_FOR_TEST << '\n';

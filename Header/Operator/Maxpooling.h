@@ -149,7 +149,8 @@ public:
             for (int ch = 0; ch < channelsize; ch++) {  // Batchsize of weight kernel
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
-                        indexOfDelta                                      = Index4D(shapeOfDelta, ba, ch, ro, co);
+                        indexOfDelta = Index4D(shapeOfDelta, ba, ch, ro, co);
+
                         (*input_delta)[(*indexOfMaxInput)[indexOfDelta]] += (*this_delta)[indexOfDelta];
                     }
                 }
