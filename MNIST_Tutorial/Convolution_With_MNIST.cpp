@@ -36,16 +36,16 @@ int main(int argc, char const *argv[]) {
     Operator<float> *pool2 = new Maxpooling4D<float>(act2, 2, 2, 2, 2, "maxpool2");
 
     // ======================= layer 3=======================
-    Operator<float> *flat = new Reshape<float>(pool2, 1, BATCH, 1, 1, 6 * 6 * 10, "flat");
+    Operator<float> *flat = new Reshape<float>(pool2, 1, BATCH, 1, 1, 5 * 5 * 10, "flat");
 
-    Operator<float> *w_flat = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 6 * 6 * 10, 10, 0.0, 0.1), "w");
+    Operator<float> *w_flat = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 5 * 5 * 10, 10, 0.0, 0.1), "w");
     Operator<float> *b_flat = new Tensorholder<float>(Tensor<float>::Zeros(1, 1, 1, 1, 10), "b");
 
     Operator<float> *matmul = new MatMul<float>(flat, w_flat, "matmul");
     Operator<float> *add    = new Add<float>(matmul, b_flat, "add");
 
     // ======================= Error=======================
-    Operator<float> *err = new SoftmaxCrossEntropy<float>(add, label, 0.002, "SCE");
+    Operator<float> *err = new SoftmaxCrossEntropy<float>(add, label, 0.002, "SCE"); // 중요 조건일 가능성 있음
 
     // ======================= Optimizer=======================
     Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE);
