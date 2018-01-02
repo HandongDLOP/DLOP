@@ -39,20 +39,17 @@ public:
         int rowsize = 0;
         int colsize = 0;
 
-        rowsize = (*shapeOfInput)[3] / strideRow;
-        colsize = (*shapeOfInput)[4] / strideCol;
+        if ((*shapeOfInput)[3] % strideRow > 0) {
+            rowsize = (*shapeOfInput)[3] / strideRow + 1;
+        } else {
+            rowsize = (*shapeOfInput)[3] / strideRow;
+        }
 
-        // if ((*shapeOfInput)[3] % strideRow > 0) {
-        // rowsize = (*shapeOfInput)[3] / strideRow + 1;
-        // } else {
-        // rowsize = (*shapeOfInput)[3] / strideRow;
-        // }
-        //
-        // if ((*shapeOfInput)[4] % strideCol > 0) {
-        // colsize = (*shapeOfInput)[4] / strideCol + 1;
-        // } else {
-        // colsize = (*shapeOfInput)[4] / strideCol;
-        // }
+        if ((*shapeOfInput)[4] % strideCol > 0) {
+            colsize = (*shapeOfInput)[4] / strideCol + 1;
+        } else {
+            colsize = (*shapeOfInput)[4] / strideCol;
+        }
 
         this->SetResult(new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], rowsize, colsize));
         this->SetDelta(new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], rowsize, colsize));
@@ -70,8 +67,8 @@ public:
 
     //
     int ComputeForwardPropagate() {
-        Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
-        Shape *shapeOfInput  = input->GetShape();
+        Tensor<DTYPE> *input   = this->GetInput()[0]->GetResult();
+        Shape *shapeOfInput    = input->GetShape();
 
         Tensor<DTYPE> *result = this->GetResult();
         Shape *shapeOfResult  = result->GetShape();
@@ -113,10 +110,12 @@ public:
                                     (*result)[indexOfResult]          = max;
                                     (*indexOfMaxInput)[indexOfResult] = indexOfInput;
                                 } else {
-                                    if (max < (*input)[indexOfInput]) {
-                                        max                               = (*input)[indexOfInput];
-                                        (*result)[indexOfResult]          = max;
-                                        (*indexOfMaxInput)[indexOfResult] = indexOfInput;
+                                    if(temprow < rowsizeOfInput && tempcol < colsizeOfInput){
+                                        if (max < (*input)[indexOfInput]) {
+                                            max                               = (*input)[indexOfInput];
+                                            (*result)[indexOfResult]          = max;
+                                            (*indexOfMaxInput)[indexOfResult] = indexOfInput;
+                                        }
                                     }
                                 }
                             }
@@ -136,7 +135,7 @@ public:
         input_delta->Reset();
 
         Tensor<DTYPE> *this_delta = this->GetDelta();
-        Shape *shapeOfDelta       = this_delta->GetShape();
+        Shape *shapeOfDelta  = this_delta->GetShape();
 
         int batchsize   = (*shapeOfDelta)[1];
         int channelsize = (*shapeOfDelta)[2];  // == shapeOfWeight[1]
@@ -150,7 +149,6 @@ public:
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
                         indexOfDelta = Index4D(shapeOfDelta, ba, ch, ro, co);
-
                         (*input_delta)[(*indexOfMaxInput)[indexOfDelta]] += (*this_delta)[indexOfDelta];
                     }
                 }

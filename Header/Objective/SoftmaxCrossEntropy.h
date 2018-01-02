@@ -104,8 +104,6 @@ public:
                     (*softmaxresult)[i] = (exp((*input)[i] - max[ti][ba]) + m_epsilon) / sum[ti][ba];
 
                     (*result)[ti * batchsize + ba] += -(*label)[i] * log((*softmaxresult)[i] + m_epsilon) / capacity;
-                    // (*result)[ti * batchsize + ba] += -(*label)[i] * log((*softmaxresult)[i] + m_epsilon);
-
                 }
             }
         }
@@ -126,8 +124,6 @@ public:
 
         for (int i = 0; i < capacity; i++) {
             (*input_delta)[i] = ((*softmaxresult)[i] - (*label)[i]) / numOfOutputDim;
-            // (*input_delta)[i] = ((*softmaxresult)[i] - (*label)[i]);
-
         }
 
         return TRUE;
