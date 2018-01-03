@@ -9,11 +9,13 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     m_aaPlaceholder  = NULL;
     m_aaOperator     = NULL;
     m_aaTensorholder = NULL;
-    m_aOptimizer     = NULL;
 
     m_PlaceholderDegree  = 0;
     m_OperatorDegree     = 0;
     m_TensorholderDegree = 0;
+
+    m_aOptimizer          = NULL;
+    m_PosOfObjectOperator = 0;
 }
 
 template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
@@ -121,53 +123,74 @@ template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddTensorhol
 
 template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::SetOptimizer(Optimizer<DTYPE> *pOptimizer) {
     m_aOptimizer = pOptimizer;
-    return pOptimizer;
+
+    // for optimizer
+    for (int i = 0; i < m_TensorholderDegree; i++) {
+        m_aOptimizer->AddTrainableTensor(m_aaTensorholder[i]);
+    }
+
+    Operator<DTYPE> *objectoperator = m_aOptimizer->GetObjectOperator();
+
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        if (m_aaOperator[i] == objectoperator) {
+            m_PosOfObjectOperator = i;
+        }
+    }
+
+    return m_aOptimizer;
 }
 
 // ===========================================================================================
 
-// 주소에 따라 조절되는 알고리즘 추가 필요
-// forwardPropagate Algorithm 수정 필요
-// template<typename DTYPE>
-// int NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd) {
-// pEnd->ForwardPropagate();
-//
-// return TRUE;
-// }
-//
-// template<typename DTYPE>
-// int NeuralNetwork<DTYPE>::BackPropagate(Operator<DTYPE> *pStart, Optimizer<DTYPE> *pOptimizer) {
-//// ObjectOperator로부터 시작한다
-// pOptimizer->GetObjectOperator()->BackPropagate();
-//
-// return TRUE;
-// }
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate() {
 
-// ===========================================================================================
+    for(int i = 0; i <= m_PosOfObjectOperator; i++){
+        m_aaOperator[i]->ComputeForwardPropagate();
+    }
 
-template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Training(Operator<DTYPE> *pEnd) {
-    pEnd->ForwardPropagate();
-    return pEnd;
+    return TRUE;
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTYPE> *pEnd) {
+    return TRUE;
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd) {
+    return TRUE;
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
+    for(int i = m_PosOfObjectOperator; i >= 0; i--){
+        m_aaOperator[i]->ComputeBackPropagate();
+    }
+    return TRUE;
+}
+
+// =========
+
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Training() {
+    this->ForwardPropagate();
+    this->BackPropagate();
+    m_aOptimizer->UpdateVariable();
+
+    return m_aOptimizer->GetObjectOperator();
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Testing(Operator<DTYPE> *pEnd) {
-    pEnd->ForwardPropagate();
+    this->ForwardPropagate(pEnd);
+
     return pEnd;
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Testing(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd) {
-    pEnd->ForwardPropagate();
+    this->ForwardPropagate(pStart, pEnd);
+
     return pEnd;
 }
 
 // =========
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::CreateGraph() {
-    // for optimizer
-    for (int i = 0; i < m_TensorholderDegree; i++) {
-        m_aOptimizer->AddTrainableTensor(m_aaTensorholder[i]);
-    }
-
     // in this part, we can check dependency between operator
 
     return TRUE;

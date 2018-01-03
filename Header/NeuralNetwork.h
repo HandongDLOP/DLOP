@@ -26,11 +26,13 @@ private:
     Placeholder<DTYPE> **m_aaPlaceholder;
     Operator<DTYPE> **m_aaOperator;
     Tensorholder<DTYPE> **m_aaTensorholder;
-    Optimizer<DTYPE> *m_aOptimizer;
 
     int m_PlaceholderDegree;
     int m_OperatorDegree;
     int m_TensorholderDegree;
+
+    Optimizer<DTYPE> *m_aOptimizer;
+    int m_PosOfObjectOperator;
 
 public:
     NeuralNetwork();
@@ -52,13 +54,15 @@ public:
 
     // =======
 
+    Operator<DTYPE>* Training();
     Operator<DTYPE>* Training(Operator<DTYPE> *pEnd);
     Operator<DTYPE>* Testing(Operator<DTYPE> *pEnd);
     Operator<DTYPE>* Testing(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
 
     // =======
-
     int ForwardPropagate();
+    int ForwardPropagate(Operator<DTYPE> *pEnd);
+    int ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
     int BackPropagate();
 
     // =======
