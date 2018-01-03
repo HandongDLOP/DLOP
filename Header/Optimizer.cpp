@@ -41,6 +41,10 @@ template<typename DTYPE> int Optimizer<DTYPE>::Delete() {
 }
 
 template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableData(Tensorholder<DTYPE> *pTrainableTensor) {
+    return this->AddTrainableTensor(pTrainableTensor);
+}
+
+template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableTensor(Tensorholder<DTYPE> *pTrainableTensor) {
     try {
         Tensorholder<DTYPE> **temp = new Tensorholder<DTYPE> *[m_TrainableTensorDegree + 1];
 

@@ -32,6 +32,8 @@ public:
 
     int              AddTrainableData(Tensorholder<DTYPE> *pTrainableTensor);
 
+    int              AddTrainableTensor(Tensorholder<DTYPE> *pTrainableTensor);
+
     int              UpdateVariable();
 
     // virtual int UpdateVariable(Tensor<DTYPE> *Trainable, Tensor<DTYPE> *Gradient) = 0;

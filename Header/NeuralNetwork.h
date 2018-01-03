@@ -28,30 +28,33 @@ private:
     Tensorholder<DTYPE> **m_aaTensorholder;
     Optimizer<DTYPE> *m_aOptimizer;
 
-    int numOfPlaceholder;
-    int numOfOperator;
-    int numOfTensorholder;
+    int m_PlaceholderDegree;
+    int m_OperatorDegree;
+    int m_TensorholderDegree;
 
 public:
     NeuralNetwork();
     virtual ~NeuralNetwork();
 
-
-    int  Alloc();
+    // int  Alloc();
     void Delete();
 
     // =======
 
-    Operator<DTYPE>* AddPlaceholder(Placeholder<DTYPE> *pPlaceholder);
-    Operator<DTYPE>* AddOperator(Operator<DTYPE> *pOperator);
-    Operator<DTYPE>* AddTensorholder(Tensorholder<DTYPE> *pTensorholder);
-    Operator<DTYPE>* AddOptimizer(Optimizer<DTYPE> *pOptimizer);
+    // 추후 직접 변수를 만들지 않은 operator* + operator*의 변환 변수도 자동으로 할당될 수 있도록 Operator와 NN class를 수정해야 한다.
+    Placeholder<DTYPE> * AddPlaceholder(Placeholder<DTYPE> *pPlaceholder);
+    Operator<DTYPE>    * AddOperator(Operator<DTYPE> *pOperator);
+    Tensorholder<DTYPE>* AddTensorholder(Tensorholder<DTYPE> *pTensorholder);
 
     // =======
 
-    int Run(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
-    int Run(Operator<DTYPE> *pEnd);
-    int Run(Optimizer<DTYPE> *pOptimizer);
+    Optimizer<DTYPE>* SetOptimizer(Optimizer<DTYPE> *pOptimizer);
+
+    // =======
+
+    Operator<DTYPE>* Training(Operator<DTYPE> *pEnd);
+    Operator<DTYPE>* Testing(Operator<DTYPE> *pEnd);
+    Operator<DTYPE>* Testing(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
 
     // =======
 

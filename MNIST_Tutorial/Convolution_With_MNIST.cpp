@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 
-// #include "..//Header//NeuralNetwork.h"
-#include "..//Header//DLOP.h"
+#include "..//Header//NeuralNetwork.h"
+// #include "..//Header//DLOP.h"
 #include "..//Header//Temporary_method.h"
 #include "MNIST_Reader.h"
 //
@@ -50,7 +50,7 @@ int main(int argc, char const *argv[]) {
     // ======================= Optimizer=======================
     Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE);
 
-    optimizer->AddTrainableData(w1);
+    optimizer->AddTrainableTensor(w1);
     optimizer->AddTrainableData(b1);
     //
     optimizer->AddTrainableData(w2);
