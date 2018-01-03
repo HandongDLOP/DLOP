@@ -9,7 +9,7 @@
 #include "MNIST_Reader.h"
 //
 #define BATCH             100
-#define LOOP_FOR_TRAIN    1000
+#define LOOP_FOR_TRAIN    2350
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
@@ -45,7 +45,7 @@ int main(int argc, char const *argv[]) {
     Operator<float> *add    = new Add<float>(matmul, b_flat, "add");
 
     // ======================= Error=======================
-    Operator<float> *err = new SoftmaxCrossEntropy<float>(add, label, 0.002, "SCE"); // 중요 조건일 가능성 있음
+    Operator<float> *err = new SoftmaxCrossEntropy<float>(add, label, 0.000001, "SCE"); // 중요 조건일 가능성 있음
 
     // ======================= Optimizer=======================
     Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE);
