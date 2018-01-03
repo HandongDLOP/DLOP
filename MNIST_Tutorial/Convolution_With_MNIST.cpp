@@ -4,7 +4,6 @@
 #include <string>
 
 #include "..//Header//NeuralNetwork.h"
-// #include "..//Header//DLOP.h"
 #include "..//Header//Temporary_method.h"
 #include "MNIST_Reader.h"
 //

@@ -176,6 +176,12 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Training() {
     return m_aOptimizer->GetObjectOperator();
 }
 
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Testing() {
+    this->ForwardPropagate();
+
+    return m_aOptimizer->GetObjectOperator();
+}
+
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Testing(Operator<DTYPE> *pEnd) {
     this->ForwardPropagate(pEnd);
 

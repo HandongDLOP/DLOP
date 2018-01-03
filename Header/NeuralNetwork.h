@@ -56,6 +56,7 @@ public:
 
     Operator<DTYPE>* Training();
     Operator<DTYPE>* Training(Operator<DTYPE> *pEnd);
+    Operator<DTYPE>* Testing();
     Operator<DTYPE>* Testing(Operator<DTYPE> *pEnd);
     Operator<DTYPE>* Testing(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
 
