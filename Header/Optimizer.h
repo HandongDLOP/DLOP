@@ -1,7 +1,7 @@
 #ifndef OPTIMIZER_H_
 #define OPTIMIZER_H_    value
 
-#include "Tensor.h"
+#include "Operator//Tensorholder.h"
 
 template<typename DTYPE> class Operator;
 
@@ -11,111 +11,39 @@ enum OptimizeDirection {
 };
 
 template<typename DTYPE>
-struct TrainableData {
-    Tensor<DTYPE> *Data     = NULL;
-    Tensor<DTYPE> *Gradient = NULL;
-};
-
-template<typename DTYPE>
 class Optimizer {
 private:
-    Operator<DTYPE> *m_pObjectOperator = NULL;
+    Operator<DTYPE> *m_pObjectOperator;
 
-    float m_LearningRate    = 0.f;
-    int m_OptimizeDirection = 1;  // 1 or -1
+    float m_LearningRate;
+    int m_OptimizeDirection;  // 1 or -1
 
-    TrainableData<DTYPE> **m_aTrainableData = NULL;
-    int m_TrainableDataDegree               = 0;
+    Tensorholder<DTYPE> **m_apTrainableTensor;
+    int m_TrainableTensorDegree;
 
 public:
-    Optimizer(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
-        std::cout << "Optimizer::Optimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
+    Optimizer(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection);
 
-        Alloc(pObjectOperator, pLearningRate, pOptimizeDirection);
-    }
+    virtual ~Optimizer();
 
-    virtual ~Optimizer() {
-        std::cout << "Optimizer::~Optimizer()" << '\n';
+    int              Alloc(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection);
 
-        Delete();
-    }
+    int              Delete();
 
-    int Alloc(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
-        SetObjectOperator(pObjectOperator);
-        SetLearningRate(pLearningRate);
-        SetOptimizeDirection(pOptimizeDirection);
+    int              AddTrainableData(Tensorholder<DTYPE> *pTrainableTensor);
 
-        return TRUE;
-    }
-
-    int Delete() {
-        for (int i = 0; i < m_TrainableDataDegree; i++) {
-            delete m_aTrainableData[i];
-        }
-        delete m_aTrainableData;
-
-        return TRUE;
-    }
-
-    int AddTrainableData(Tensor<DTYPE> *pData, Tensor<DTYPE> *pWeight) {
-        if (m_TrainableDataDegree != 0) {
-            TrainableData<DTYPE> **temp = new TrainableData<DTYPE> *[m_TrainableDataDegree + 1];
-            std::copy(m_aTrainableData, m_aTrainableData + m_TrainableDataDegree, temp);
-
-            delete[] m_aTrainableData;
-
-            m_aTrainableData = temp;
-        } else {
-            m_aTrainableData = new TrainableData<DTYPE> *[m_TrainableDataDegree + 1];
-        }
-
-        TrainableData<DTYPE> *pTrainableData = new TrainableData<DTYPE>();
-        pTrainableData->Data     = pData;
-        pTrainableData->Gradient = pWeight;
-
-        m_aTrainableData[m_TrainableDataDegree] = pTrainableData;
-
-        m_TrainableDataDegree++;
-
-        return TRUE;
-    }
-
-    int UpdateVariable() {
-        for (int i = 0; i < m_TrainableDataDegree; i++) {
-            // UpdateVariable(m_aTrainableData[i]->Data, m_aTrainableData[i]->Gradient);
-            UpdateVariable(m_aTrainableData[i]);
-        }
-        return TRUE;
-    }
+    int              UpdateVariable();
 
     // virtual int UpdateVariable(Tensor<DTYPE> *Trainable, Tensor<DTYPE> *Gradient) = 0;
-    virtual int UpdateVariable(TrainableData<DTYPE> *pTrainableData) = 0;
+    virtual int      UpdateVariable(Tensorholder<DTYPE> *pTrainableTensor) = 0;
 
+    void             SetLearningRate(float pLearningRate);
 
-    void         SetObjectOperator(Operator<DTYPE> *pObjectOperator) {
-        m_pObjectOperator = pObjectOperator;
-    }
+    Operator<DTYPE>* GetObjectOperator() const;
 
-    void SetLearningRate(float pLearningRate) {
-        m_LearningRate = pLearningRate;
-    }
+    float            GetLearningRate() const;
 
-    void SetOptimizeDirection(OptimizeDirection pOptimizeDirection) {
-        if (pOptimizeDirection == MAXIMIZE) m_OptimizeDirection = 1;
-        else if (pOptimizeDirection == MINIMIZE) m_OptimizeDirection = -1;
-    }
-
-    Operator<DTYPE>* GetObjectOperator() const {
-        return m_pObjectOperator;
-    }
-
-    float GetLearningRate() const {
-        return m_LearningRate;
-    }
-
-    int GetOptimizeDirection() {
-        return m_OptimizeDirection;
-    }
+    int              GetOptimizeDirection() const;
 };
 
 #endif  // OPTIMIZER_H_

@@ -58,8 +58,8 @@ public:
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
         input_delta->Reset();
-        Tensor<DTYPE> *bias_delta = this->GetInput()[1]->GetDelta();
-        bias_delta->Reset();
+        Tensor<DTYPE> *bias_gradient = this->GetInput()[1]->GetGradient();
+        bias_gradient->Reset();
 
         int timesize    = input_delta->GetTimeSize();
         int batchsize   = input_delta->GetBatchSize();
@@ -67,7 +67,7 @@ public:
         int rowsize     = input_delta->GetRowSize();
         int count       = timesize * batchsize * channelsize * rowsize;
 
-        int bias_capacity = bias_delta->GetData()->GetCapacity();
+        int bias_capacity = bias_gradient->GetData()->GetCapacity();
 
         int index = 0;
 
@@ -76,7 +76,7 @@ public:
                 index = i * bias_capacity + j;
 
                 (*input_delta)[index] = (*this_delta)[index];
-                (*bias_delta)[j]     += (*this_delta)[index];
+                (*bias_gradient)[j]     += (*this_delta)[index];
             }
         }
 

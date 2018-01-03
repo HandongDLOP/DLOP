@@ -79,8 +79,8 @@ public:
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
         input_delta->Reset();
-        Tensor<DTYPE> *weight_delta = this->GetInput()[1]->GetDelta();
-        weight_delta->Reset();
+        Tensor<DTYPE> *weight_gradient = this->GetInput()[1]->GetGradient();
+        weight_gradient->Reset();
 
         int timesize    = this_delta->GetTimeSize();
         int batchsize   = this_delta->GetBatchSize();
@@ -104,7 +104,7 @@ public:
                         result_index = (i * rowsize + ro) * colsize + co;
 
                         (*input_delta)[input_index]   += (*weight)[weight_index] * (*this_delta)[result_index];
-                        (*weight_delta)[weight_index] += (*input)[input_index] * (*this_delta)[result_index];
+                        (*weight_gradient)[weight_index] += (*input)[input_index] * (*this_delta)[result_index];
                     }
                 }
             }

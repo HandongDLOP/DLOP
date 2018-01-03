@@ -91,9 +91,9 @@ public:
         input_delta->Reset();
 
         Tensor<DTYPE> *weight       = this->GetInput()[1]->GetResult();
-        Tensor<DTYPE> *weight_delta = this->GetInput()[1]->GetDelta();
+        Tensor<DTYPE> *weight_gradient = this->GetInput()[1]->GetGradient();
         Shape *shapeOfWeight        = weight->GetShape();
-        weight_delta->Reset();
+        weight_gradient->Reset();
 
         Tensor<DTYPE> *this_delta = this->GetDelta();
         Shape *shapeOfResult      = this_delta->GetShape();
@@ -128,7 +128,7 @@ public:
                                     (*input_delta)[input_index]
                                         += ((*weight)[weight_index]
                                             * (*this_delta)[result_index]);
-                                    (*weight_delta)[weight_index]
+                                    (*weight_gradient)[weight_index]
                                         += ((*input)[input_index]
                                             * (*this_delta)[result_index]);
 

@@ -18,3 +18,5 @@
 #include "Objective//MSE.h"
 // #include "Objective//CrossEntropy.h"
 #include "Objective//SoftmaxCrossEntropy.h"
+
+#include "Optimizer//GradientDescentOptimizer.h"

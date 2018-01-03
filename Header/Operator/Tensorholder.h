@@ -27,8 +27,8 @@ public:
             return FALSE;
         }
 
-        Shape *shapeOfDelta = new Shape(pTensor->GetShape());
-        this->SetDelta(new Tensor<DTYPE>(shapeOfDelta));
+        // Shape *shapeOfDelta = new Shape(pTensor->GetShape());
+        // this->SetDelta(new Tensor<DTYPE>(shapeOfDelta));
 
         Shape *shapeOfGradient = new Shape(pTensor->GetShape());
         this->SetGradient(new Tensor<DTYPE>(shapeOfGradient));
@@ -41,14 +41,14 @@ public:
     }
 
     int ComputeBackPropagate() {
-        int capacity = this->GetResult()->GetData()->GetCapacity();
-
-        Tensor<DTYPE> *delta    = this->GetDelta();
-        Tensor<DTYPE> *gradient = this->GetGradient();
-
-        for(int i = 0; i < capacity; i++){
-            (*gradient)[i] = (*delta)[i];
-        }
+// int capacity = this->GetResult()->GetData()->GetCapacity();
+//
+// Tensor<DTYPE> *delta    = this->GetDelta();
+// Tensor<DTYPE> *gradient = this->GetGradient();
+//
+// for(int i = 0; i < capacity; i++){
+// (*gradient)[i] = (*delta)[i];
+// }
 
         return TRUE;
     }

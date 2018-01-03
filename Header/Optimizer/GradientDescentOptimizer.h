@@ -15,10 +15,10 @@ public:
         std::cout << "GradientDescentOptimizer::~GradientDescentOptimizer()" << '\n';
     }
 
-    virtual int UpdateVariable(TrainableData<DTYPE> *pTrainableData) {
+    virtual int UpdateVariable(Tensorholder<DTYPE> *pTrainableTensor) {
 
-        Tensor<DTYPE> * trainable_data = pTrainableData->Data;
-        Tensor<DTYPE> * gradient       = pTrainableData->Gradient;
+        Tensor<DTYPE> * trainable_data = pTrainableTensor->GetResult();
+        Tensor<DTYPE> * gradient       = pTrainableTensor->GetGradient();
 
         // learning rate 부분 다시 구현할 필요 있음
         float learning_rate = this->GetOptimizeDirection() * this->GetLearningRate();

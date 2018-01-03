@@ -2,8 +2,8 @@
 #define OPERATOR_H_
 
 // #include "MetaParameter.h"
-#include "Optimizer//GradientDescentOptimizer.h"
-// #include "Tensor.h"
+// #include "Optimizer//GradientDescentOptimizer.h"
+#include "Tensor.h"
 
 template<typename DTYPE> class Operator {
 private:

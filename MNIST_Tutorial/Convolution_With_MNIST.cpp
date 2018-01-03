@@ -1,4 +1,4 @@
-/*g++ -g -o testing -std=c++11 Convolution_With_MNIST.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp*/
+/*g++ -g -o testing -std=c++11 Convolution_With_MNIST.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Optimizer.cpp*/
 
 #include <iostream>
 #include <string>
@@ -20,16 +20,16 @@ int main(int argc, char const *argv[]) {
     Operator<float> *res   = new Reshape<float>(x, 1, BATCH, 1, 28, 28, "reshape");
 
     // ======================= layer 1=======================
-    Operator<float> *w1    = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 10, 1, 3, 3, 0.0, 0.1), "weight");
-    Operator<float> *b1    = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 10, 0.1), "bias");
+    Tensorholder<float> *w1    = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 10, 1, 3, 3, 0.0, 0.1), "weight");
+    Tensorholder<float> *b1    = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 10, 0.1), "bias");
     Operator<float> *conv1 = new Convolution4D<float>(res, w1, 1, 1, 1, 1, "convolution1");
     Operator<float> *add1  = new Addconv<float>(conv1, b1, "addconv1");
     Operator<float> *act1  = new Relu<float>(add1, "relu1");
     Operator<float> *pool1 = new Maxpooling4D<float>(act1, 2, 2, 2, 2, "maxpool1");
 
     // ======================= layer 2=======================
-    Operator<float> *w2    = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 10, 10, 3, 3, 0.0, 0.1), "weight");
-    Operator<float> *b2    = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 10, 0.1), "bias");
+    Tensorholder<float> *w2    = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 10, 10, 3, 3, 0.0, 0.1), "weight");
+    Tensorholder<float> *b2    = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 10, 0.1), "bias");
     Operator<float> *conv2 = new Convolution4D<float>(pool1, w2, 1, 1, 1, 1, "convolution1");
     Operator<float> *add2  = new Addconv<float>(conv2, b2, "addconv1");
     Operator<float> *act2  = new Relu<float>(add2, "relu2");
@@ -38,8 +38,8 @@ int main(int argc, char const *argv[]) {
     // ======================= layer 3=======================
     Operator<float> *flat = new Reshape<float>(pool2, 1, BATCH, 1, 1, 5 * 5 * 10, "flat");
 
-    Operator<float> *w_flat = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 5 * 5 * 10, 10, 0.0, 0.1), "w");
-    Operator<float> *b_flat = new Tensorholder<float>(Tensor<float>::Zeros(1, 1, 1, 1, 10), "b");
+    Tensorholder<float> *w_flat = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 5 * 5 * 10, 10, 0.0, 0.1), "w");
+    Tensorholder<float> *b_flat = new Tensorholder<float>(Tensor<float>::Zeros(1, 1, 1, 1, 10), "b");
 
     Operator<float> *matmul = new MatMul<float>(flat, w_flat, "matmul");
     Operator<float> *add    = new Add<float>(matmul, b_flat, "add");
@@ -50,14 +50,14 @@ int main(int argc, char const *argv[]) {
     // ======================= Optimizer=======================
     Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE);
 
-    optimizer->AddTrainableData(w1->GetResult(),     w1->GetGradient());
-    optimizer->AddTrainableData(b1->GetResult(),     b1->GetGradient());
+    optimizer->AddTrainableData(w1);
+    optimizer->AddTrainableData(b1);
     //
-    optimizer->AddTrainableData(w2->GetResult(),     w2->GetGradient());
-    optimizer->AddTrainableData(b2->GetResult(),     b2->GetGradient());
+    optimizer->AddTrainableData(w2);
+    optimizer->AddTrainableData(b2);
     //
-    optimizer->AddTrainableData(w_flat->GetResult(), w_flat->GetGradient());
-    optimizer->AddTrainableData(b_flat->GetResult(), b_flat->GetGradient());
+    optimizer->AddTrainableData(w_flat);
+    optimizer->AddTrainableData(b_flat);
     //
     //// ======================= Train=======================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();

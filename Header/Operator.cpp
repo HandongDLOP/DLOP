@@ -249,6 +249,7 @@ template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate() {
 }
 
 template<typename DTYPE> int Operator<DTYPE>::ComputeForwardPropagate() {
+    std::cout << this->GetName() << '\n';
     return TRUE;
 }
 
@@ -270,6 +271,7 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagate() {
 }
 
 template<typename DTYPE> int Operator<DTYPE>::ComputeBackPropagate() {
+    std::cout << this->GetName() << '\n';
     return TRUE;
 }
 
