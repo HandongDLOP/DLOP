@@ -1,4 +1,4 @@
-/*g++ -g -o testing -std=c++11 Convolution_With_MNIST.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Optimizer.cpp*/
+/*g++ -g -o testing -std=c++11 Convolution_With_MNIST_NN.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Optimizer.cpp ../Header/NeuralNetwork.cpp*/
 
 #include <iostream>
 #include <string>
@@ -42,10 +42,10 @@ int main(int argc, char const *argv[]) {
     Tensorholder<float> *w_flat = HGUNN.AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 5 * 5 * 10, 10, 0.0, 0.1), "w"));
     Tensorholder<float> *b_flat = HGUNN.AddTensorholder(new Tensorholder<float>(Tensor<float>::Zeros(1, 1, 1, 1, 10), "b"));
     Operator<float>     *matmul = HGUNN.AddOperator(new MatMul<float>(flat, w_flat, "matmul"));
-    Operator<float>     *add    = HGUNN.AddOperator(new Add<float>(matmul, b_flat, "add"));
+    Operator<float>     *add    = HGUNN.AddOperator(new Addfc<float>(matmul, b_flat, "add"));
 
     // ======================= Error=======================
-    Operator<float> *err = HGUNN.AddOperator(new SoftmaxCrossEntropy<float>(add, label, 0.000001, "SCE"));  // 중요 조건일 가능성 있음
+    Operator<float> *err = HGUNN.AddOperator(new SoftmaxCrossEntropy<float>(add, label, 1e-50, "SCE"));  // 중요 조건일 가능성 있음
 
     // ======================= Optimizer=======================
     // Optimizer<float> *optimizer = HGUNN.SetOptimizer(new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE));

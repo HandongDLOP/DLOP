@@ -40,13 +40,13 @@ template<typename DTYPE> int Optimizer<DTYPE>::Delete() {
     return TRUE;
 }
 
-template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableData(Tensorholder<DTYPE> *pTrainableTensor) {
+template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableData(Operator<DTYPE> *pTrainableTensor) {
     return this->AddTrainableTensor(pTrainableTensor);
 }
 
-template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableTensor(Tensorholder<DTYPE> *pTrainableTensor) {
+template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableTensor(Operator<DTYPE> *pTrainableTensor) {
     try {
-        Tensorholder<DTYPE> **temp = new Tensorholder<DTYPE> *[m_TrainableTensorDegree + 1];
+        Operator<DTYPE> **temp = new Operator<DTYPE> *[m_TrainableTensorDegree + 1];
 
         for (int i = 0; i < m_TrainableTensorDegree; i++) temp[i] = m_apTrainableTensor[i];
         temp[m_TrainableTensorDegree] = pTrainableTensor;

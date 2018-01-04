@@ -15,7 +15,7 @@ public:
         std::cout << "GradientDescentOptimizer::~GradientDescentOptimizer()" << '\n';
     }
 
-    virtual int UpdateVariable(Tensorholder<DTYPE> *pTrainableTensor) {
+    virtual int UpdateVariable(Operator<DTYPE> *pTrainableTensor) {
 
         Tensor<DTYPE> * trainable_data = pTrainableTensor->GetResult();
         Tensor<DTYPE> * gradient       = pTrainableTensor->GetGradient();
