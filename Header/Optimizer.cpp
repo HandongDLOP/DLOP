@@ -18,7 +18,7 @@ template<typename DTYPE> Optimizer<DTYPE>::Optimizer(Operator<DTYPE> *pObjectOpe
 template<typename DTYPE> Optimizer<DTYPE>::~Optimizer() {
     std::cout << "Optimizer::~Optimizer()" << '\n';
 
-    Delete();
+    this->Delete();
 }
 
 template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
@@ -32,9 +32,6 @@ template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Operator<DTYPE> *pObjectOpe
 }
 
 template<typename DTYPE> int Optimizer<DTYPE>::Delete() {
-    for (int i = 0; i < m_TrainableTensorDegree; i++) {
-        delete m_apTrainableTensor[i];
-    }
     delete m_apTrainableTensor;
 
     return TRUE;

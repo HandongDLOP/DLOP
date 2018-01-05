@@ -1,10 +1,10 @@
-/*g++ -g -o testing -std=c++11 Convolution_With_MNIST.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp*/
+/*g++ -g -o testing -std=c++11 Convolution_With_MNIST_ver2.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Optimizer.cpp ../Header/NeuralNetwork.cpp*/
 
 #include <iostream>
 #include <string>
 
-// #include "..//Header//NeuralNetwork.h"
-#include "..//Header//DLOP.h"
+#include "..//Header//NeuralNetwork.h"
+// #include "..//Header//DLOP.h"
 #include "..//Header//Temporary_method.h"
 #include "MNIST_Reader.h"
 //
@@ -42,32 +42,32 @@ int main(int argc, char const *argv[]) {
     Operator<float> *b_flat1 = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 250, 0.1), "b");
 
     Operator<float> *matmul_flat1 = new MatMul<float>(flat, w_flat1, "matmul");
-    Operator<float> *add_flat1    = new Add<float>(matmul_flat1, b_flat1, "add");
+    Operator<float> *add_flat1    = new Addfc<float>(matmul_flat1, b_flat1, "add");
 
     // ======================= layer 3=======================
     Operator<float> *w_flat2 = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 250, 10, 0.0, 0.1), "w");
     Operator<float> *b_flat2 = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 10, 0.1), "b");
 
     Operator<float> *matmul_flat2 = new MatMul<float>(add_flat1, w_flat2, "matmul");
-    Operator<float> *add_flat2    = new Add<float>(matmul_flat2, b_flat2, "add");
+    Operator<float> *add_flat2    = new Addfc<float>(matmul_flat2, b_flat2, "add");
 
     // ======================= Error=======================
-    Operator<float> *err = new SoftmaxCrossEntropy<float>(add_flat2, label, 0.00000002, "SCE"); // 중요 조건일 가능성 있음
+    Operator<float> *err = new SoftmaxCrossEntropy<float>(add_flat2, label, 0.0000001, "SCE"); // 중요 조건일 가능성 있음
 
     // ======================= Optimizer=======================
-    Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE);
+    Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(err, 0.001, MINIMIZE);
 
-    optimizer->AddTrainableData(w1->GetResult(),     w1->GetGradient());
-    optimizer->AddTrainableData(b1->GetResult(),     b1->GetGradient());
+    optimizer->AddTrainableData(w1);
+    optimizer->AddTrainableData(b1);
     //
-    optimizer->AddTrainableData(w2->GetResult(),     w2->GetGradient());
-    optimizer->AddTrainableData(b2->GetResult(),     b2->GetGradient());
+    optimizer->AddTrainableData(w2);
+    optimizer->AddTrainableData(b2);
     //
-    optimizer->AddTrainableData(w_flat1->GetResult(), w_flat1->GetGradient());
-    optimizer->AddTrainableData(b_flat1->GetResult(), b_flat1->GetGradient());
+    optimizer->AddTrainableData(w_flat1);
+    optimizer->AddTrainableData(b_flat1);
 
-    optimizer->AddTrainableData(w_flat2->GetResult(), w_flat2->GetGradient());
-    optimizer->AddTrainableData(b_flat2->GetResult(), b_flat2->GetGradient());
+    optimizer->AddTrainableData(w_flat2);
+    optimizer->AddTrainableData(b_flat2);
     //
     //// ======================= Train=======================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();

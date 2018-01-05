@@ -1,4 +1,4 @@
-/*g++ -g -o testing -std=c++11 MLP_MSE_With_MNIST.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp*/
+/*g++ -g -o testing -std=c++11 MLP_MSE_With_MNIST.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Optimizer.cpp*/
 
 #include <iostream>
 #include <string>
@@ -23,14 +23,14 @@ int main(int argc, char const *argv[]) {
     Operator<double> *w1      = new Tensorholder<double>(Tensor<double>::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6), "w1");
     Operator<double> *b1      = new Tensorholder<double>(Tensor<double>::Constants(1, 1, 1, 1, 15, 1.0), "b1");
     Operator<double> *matmul1 = new MatMul<double>(x1, w1, "matmul1");
-    Operator<double> *add1    = new Add<double>(matmul1, b1, "add1");
+    Operator<double> *add1    = new Addfc<double>(matmul1, b1, "add1");
     Operator<double> *act1    = new Sigmoid<double>(add1, "sig1");
 
     // ======================= layer 2=======================
     Operator<double> *w2      = new Tensorholder<double>(Tensor<double>::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6), "w2");
     Operator<double> *b2      = new Tensorholder<double>(Tensor<double>::Constants(1, 1, 1, 1, 10, 1.0), "b2");
     Operator<double> *matmul2 = new MatMul<double>(act1, w2, "matmul2");
-    Operator<double> *add2    = new Add<double>(matmul2, b2, "add2");
+    Operator<double> *add2    = new Addfc<double>(matmul2, b2, "add2");
     Operator<double> *act2    = new Sigmoid<double>(add2, "sig2");
 
     // ======================= Error=======================
@@ -41,10 +41,10 @@ int main(int argc, char const *argv[]) {
 
     // ======================= Create Graph ======================
 
-    optimizer->AddTrainableData(w1->GetResult(), w1->GetGradient());
-    optimizer->AddTrainableData(b1->GetResult(), b1->GetGradient());
-    optimizer->AddTrainableData(w2->GetResult(), w2->GetGradient());
-    optimizer->AddTrainableData(b2->GetResult(), b2->GetGradient());
+    optimizer->AddTrainableData(w1);
+    optimizer->AddTrainableData(b1);
+    optimizer->AddTrainableData(w2);
+    optimizer->AddTrainableData(b2);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<double> *dataset = CreateMNISTDataSet<double>();

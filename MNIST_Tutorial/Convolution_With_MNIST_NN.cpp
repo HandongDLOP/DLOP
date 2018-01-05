@@ -8,7 +8,7 @@
 #include "MNIST_Reader.h"
 //
 #define BATCH             100
-#define LOOP_FOR_TRAIN    2350
+#define LOOP_FOR_TRAIN    7000
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
@@ -45,11 +45,11 @@ int main(int argc, char const *argv[]) {
     Operator<float>     *add    = HGUNN.AddOperator(new Addfc<float>(matmul, b_flat, "add"));
 
     // ======================= Error=======================
-    Operator<float> *err = HGUNN.AddOperator(new SoftmaxCrossEntropy<float>(add, label, 1e-50, "SCE"));  // 중요 조건일 가능성 있음
+    Operator<float> *err = HGUNN.AddOperator(new SoftmaxCrossEntropy<float>(add, label, 0.000001, "SCE"));  // 중요 조건일 가능성 있음
 
     // ======================= Optimizer=======================
     // Optimizer<float> *optimizer = HGUNN.SetOptimizer(new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE));
-    HGUNN.SetOptimizer(new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE));
+    HGUNN.SetOptimizer(new GradientDescentOptimizer<float>(err, 0.001, MINIMIZE));
 
     // ======================= CreateGraph=======================
     HGUNN.CreateGraph();
@@ -57,13 +57,11 @@ int main(int argc, char const *argv[]) {
     //// ======================= Train=======================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
 
-    //
     for (int i = 0; i < LOOP_FOR_TRAIN; i++) {
         dataset->CreateTrainDataPair(BATCH);
         x->SetResult(dataset->GetTrainFeedImage());
         label->SetResult(dataset->GetTrainFeedLabel());
 
-        // ======================= Forward=======================
         HGUNN.Training();
 
         std::cout << "Loop : " << i << " ";
@@ -90,6 +88,8 @@ int main(int argc, char const *argv[]) {
     }
 
     std::cout << "Test Accuracy is : " << test_accuracy / (int)LOOP_FOR_TEST << '\n';
+
+    delete dataset;
 
     return 0;
 }
