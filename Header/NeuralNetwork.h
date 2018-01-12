@@ -31,8 +31,9 @@ private:
     int m_OperatorDegree;
     int m_TensorholderDegree;
 
+    Objective<DTYPE> *m_aObjectiveFunction;
+
     Optimizer<DTYPE> *m_aOptimizer;
-    int m_PosOfObjectOperator;
 
 public:
     NeuralNetwork();
@@ -50,6 +51,7 @@ public:
 
     // =======
 
+    Objective<DTYPE>* SetObjectiveFunction(Objective<DTYPE> *pObjectiveFunction);
     Optimizer<DTYPE>* SetOptimizer(Optimizer<DTYPE> *pOptimizer);
 
     // =======

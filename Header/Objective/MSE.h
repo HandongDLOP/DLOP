@@ -1,12 +1,12 @@
 #ifndef MSE_H_
 #define MSE_H_    value
 
-#include "..//Operator.h"
+#include "..//Objective.h"
 
 template<typename DTYPE>
-class MSE : public Operator<DTYPE>{
+class MSE : public Objective<DTYPE>{
 public:
-    MSE(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, std::string pName) : Operator<DTYPE>(pInput, pLabel, pName) {
+    MSE(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, std::string pName) : Objective<DTYPE>(pInput, pLabel, pName) {
         std::cout << "MSE::MSE(Operator<DTYPE> *, MetaParameter *, std::string)" << '\n';
         this->Alloc(pInput, pLabel);
     }

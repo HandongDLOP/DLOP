@@ -1,26 +1,26 @@
 #ifndef SOFTMAXCROSSENTROPY_H_
 #define SOFTMAXCROSSENTROPY_H_    value
 
-#include "..//Operator.h"
+#include "..//Objective.h"
 
 template<typename DTYPE>
-class SoftmaxCrossEntropy : public Operator<DTYPE>{
+class SoftmaxCrossEntropy : public Objective<DTYPE>{
 private:
     Tensor<DTYPE> *m_aSoftmaxResult;
     DTYPE m_epsilon;  // for backprop
 
 public:
-    SoftmaxCrossEntropy(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, DTYPE epsilon = 1e-2) : Operator<DTYPE>(pInput, pLabel) {
+    SoftmaxCrossEntropy(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, DTYPE epsilon = 1e-2) : Objective<DTYPE>(pInput, pLabel) {
         std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
         Alloc(pInput, pLabel, epsilon);
     }
 
-    SoftmaxCrossEntropy(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, std::string pName) : Operator<DTYPE>(pInput, pLabel, pName) {
+    SoftmaxCrossEntropy(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, std::string pName) : Objective<DTYPE>(pInput, pLabel, pName) {
         std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
         Alloc(pInput, pLabel);
     }
 
-    SoftmaxCrossEntropy(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, DTYPE epsilon, std::string pName) : Operator<DTYPE>(pInput, pLabel, pName) {
+    SoftmaxCrossEntropy(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, DTYPE epsilon, std::string pName) : Objective<DTYPE>(pInput, pLabel, pName) {
         std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, int, std::string)" << '\n';
         Alloc(pInput, pLabel, epsilon);
     }

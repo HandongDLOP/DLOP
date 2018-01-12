@@ -1,7 +1,7 @@
 #ifndef OPTIMIZER_H_
 #define OPTIMIZER_H_    value
 
-#include "Operator.h"
+#include "Objective.h"
 
 template<typename DTYPE> class Operator;
 
@@ -12,7 +12,7 @@ enum OptimizeDirection {
 
 template<typename DTYPE> class Optimizer {
 private:
-    Operator<DTYPE> *m_pObjectOperator;
+    Objective<DTYPE> *m_pObjectOperator;
 
     float m_LearningRate;
     int m_OptimizeDirection;  // 1 or -1
@@ -21,13 +21,13 @@ private:
     int m_TrainableTensorDegree;
 
 public:
-    Optimizer(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection);
+    Optimizer(Objective<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection);
 
     virtual ~Optimizer();
 
     // ===============
 
-    int Alloc(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection);
+    int Alloc(Objective<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection);
 
     int Delete();
 
@@ -46,7 +46,7 @@ public:
 
     void             SetLearningRate(float pLearningRate);
 
-    Operator<DTYPE>* GetObjectOperator() const;
+    Objective<DTYPE>* GetObjectOperator() const;
 
     float            GetLearningRate() const;
 

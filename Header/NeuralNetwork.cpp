@@ -6,16 +6,15 @@ template class NeuralNetwork<double>;
 
 template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     std::cout << "NeuralNetwork<DTYPE>::NeuralNetwork()" << '\n';
-    m_aaPlaceholder  = NULL;
-    m_aaOperator     = NULL;
+    m_aaPlaceholder = NULL;
+    m_aaOperator = NULL;
     m_aaTensorholder = NULL;
 
-    m_PlaceholderDegree  = 0;
-    m_OperatorDegree     = 0;
+    m_PlaceholderDegree = 0;
+    m_OperatorDegree = 0;
     m_TensorholderDegree = 0;
 
-    m_aOptimizer          = NULL;
-    m_PosOfObjectOperator = 0;
+    m_aOptimizer = NULL;
 }
 
 template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
@@ -72,7 +71,6 @@ template<typename DTYPE> Placeholder<DTYPE> *NeuralNetwork<DTYPE>::AddPlaceholde
         printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return NULL;
     }
-
     m_PlaceholderDegree++;
     return pPlaceholder;
 }
@@ -94,7 +92,6 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Oper
         printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return NULL;
     }
-
     m_OperatorDegree++;
     return pOperator;
 }
@@ -116,9 +113,14 @@ template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddTensorhol
         printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return NULL;
     }
-
     m_TensorholderDegree++;
     return pTensorholder;
+}
+
+template<typename DTYPE> Objective<DTYPE> *NeuralNetwork<DTYPE>::SetObjectiveFunction(Objective<DTYPE> *pObjectiveFunction) {
+    m_aObjectiveFunction = pObjectiveFunction;
+
+    return m_aObjectiveFunction;
 }
 
 template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::SetOptimizer(Optimizer<DTYPE> *pOptimizer) {
@@ -129,24 +131,17 @@ template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::SetOptimizer(Op
         m_aOptimizer->AddTrainableTensor(m_aaTensorholder[i]);
     }
 
-    Operator<DTYPE> *objectoperator = m_aOptimizer->GetObjectOperator();
-
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        if (m_aaOperator[i] == objectoperator) {
-            m_PosOfObjectOperator = i;
-        }
-    }
-
     return m_aOptimizer;
 }
 
 // ===========================================================================================
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate() {
-
-    for(int i = 0; i <= m_PosOfObjectOperator; i++){
+    for (int i = 0; i < m_OperatorDegree; i++) {
         m_aaOperator[i]->ComputeForwardPropagate();
     }
+
+    m_aObjectiveFunction->ComputeForwardPropagate();
 
     return TRUE;
 }
@@ -160,7 +155,9 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTY
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
-    for(int i = m_PosOfObjectOperator; i >= 0; i--){
+    m_aObjectiveFunction->ComputeBackPropagate();
+
+    for (int i = m_OperatorDegree - 1; i >= 0; i--) {
         m_aaOperator[i]->ComputeBackPropagate();
     }
     return TRUE;
@@ -173,13 +170,13 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Training() {
     this->BackPropagate();
     m_aOptimizer->UpdateVariable();
 
-    return m_aOptimizer->GetObjectOperator();
+    return NULL;
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Testing() {
     this->ForwardPropagate();
 
-    return m_aOptimizer->GetObjectOperator();
+    return NULL;
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Testing(Operator<DTYPE> *pEnd) {

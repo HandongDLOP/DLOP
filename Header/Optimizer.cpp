@@ -4,7 +4,7 @@ template class Optimizer<int>;
 template class Optimizer<float>;
 template class Optimizer<double>;
 
-template<typename DTYPE> Optimizer<DTYPE>::Optimizer(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+template<typename DTYPE> Optimizer<DTYPE>::Optimizer(Objective<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
     std::cout << "Optimizer::Optimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
     m_pObjectOperator       = NULL;
     m_LearningRate          = 0.f;
@@ -21,7 +21,7 @@ template<typename DTYPE> Optimizer<DTYPE>::~Optimizer() {
     this->Delete();
 }
 
-template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Operator<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Objective<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
     m_pObjectOperator = pObjectOperator;
     m_LearningRate    = pLearningRate;
 
@@ -76,7 +76,7 @@ template<typename DTYPE> void Optimizer<DTYPE>::SetLearningRate(float pLearningR
     m_LearningRate = pLearningRate;
 }
 
-template<typename DTYPE> Operator<DTYPE> *Optimizer<DTYPE>::GetObjectOperator() const {
+template<typename DTYPE> Objective<DTYPE> *Optimizer<DTYPE>::GetObjectOperator() const {
     return m_pObjectOperator;
 }
 
