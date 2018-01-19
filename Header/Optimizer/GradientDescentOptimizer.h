@@ -3,8 +3,7 @@
 
 #include "..//Optimizer.h"
 
-template<typename DTYPE>
-class GradientDescentOptimizer : public Optimizer<DTYPE>{
+template<typename DTYPE> class GradientDescentOptimizer : public Optimizer<DTYPE>{
 
 public:
     GradientDescentOptimizer(Objective<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pObjectOperator, pLearningRate, pOptimizeDirection) {

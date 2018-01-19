@@ -1,4 +1,4 @@
-/*g++ -g -o testing -std=c++11 Convolution_With_MNIST_ver2_NN.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Optimizer.cpp ../Header/NeuralNetwork.cpp*/
+/*g++ -g -o testing -std=c++11 Convolution_With_MNIST_fc2.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Objective.cpp ../Header/Optimizer.cpp ../Header/NeuralNetwork.cpp*/
 
 #include <iostream>
 #include <string>
@@ -54,7 +54,7 @@ int main(int argc, char const *argv[]) {
     Operator<float> *add_flat2    = HGUNN.AddOperator(new Addfc<float>(matmul_flat2, b_flat2, "add"));
 
     // ======================= Error=======================
-    Operator<float> *err = HGUNN.AddOperator(new SoftmaxCrossEntropy<float>(add_flat2, label, 0.0000001, "SCE")); // 중요 조건일 가능성 있음
+    Objective<float> *err = HGUNN.SetObjectiveFunction(new SoftmaxCrossEntropy<float>(add_flat2, label, 0.0000001, "SCE")); // 중요 조건일 가능성 있음
 
     // ======================= Optimizer=======================
     HGUNN.SetOptimizer(new GradientDescentOptimizer<float>(err, 0.001, MINIMIZE));

@@ -14,6 +14,8 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     m_OperatorDegree = 0;
     m_TensorholderDegree = 0;
 
+    m_aObjectiveFunction = NULL;
+
     m_aOptimizer = NULL;
 }
 
@@ -21,11 +23,6 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
     std::cout << "NeuralNetwork<DTYPE>::~NeuralNetwork()" << '\n';
     this->Delete();
 }
-
-// template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
-// std::cout << "NeuralNetwork<DTYPE>::Alloc()" << '\n';
-// return TRUE;
-// }
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
     std::cout << "NeuralNetwork<DTYPE>::Delete()" << '\n';

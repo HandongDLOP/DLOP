@@ -1,9 +1,9 @@
-/*g++ -g -o testing -std=c++11 MLP_MSE_With_MNIST.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Optimizer.cpp*/
+/*g++ -g -o testing -std=c++11 MLP_MSE_With_MNIST.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Objective.cpp ../Header/Optimizer.cpp ../Header/NeuralNetwork.cpp*/
 
 #include <iostream>
 #include <string>
 
-#include "..//Header//DLOP.h"
+#include "..//Header//NeuralNetwork.h"
 #include "..//Header//Temporary_method.h"
 #include "MNIST_Reader.h"
 
@@ -13,41 +13,37 @@
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
 int main(int argc, char const *argv[]) {
-    std::cout << "---------------Start-----------------" << '\n';
+    NeuralNetwork<float> HGUNN;
 
     // create input, label data placeholder
-    Operator<double> *x1    = new Placeholder<double>(Tensor<double>::Constants(1, BATCH, 1, 1, 784, 1.0), "x1");
-    Operator<double> *label = new Placeholder<double>(Tensor<double>::Constants(1, BATCH, 1, 1, 10, 1.0), "label");
+    Operator<float> *x1    = HGUNN.AddPlaceholder(new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 1.0), "x1"));
+    Operator<float> *label = HGUNN.AddPlaceholder(new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.f), "label"));
 
     // ======================= layer 1======================
-    Operator<double> *w1      = new Tensorholder<double>(Tensor<double>::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6), "w1");
-    Operator<double> *b1      = new Tensorholder<double>(Tensor<double>::Constants(1, 1, 1, 1, 15, 1.0), "b1");
-    Operator<double> *matmul1 = new MatMul<double>(x1, w1, "matmul1");
-    Operator<double> *add1    = new Addfc<double>(matmul1, b1, "add1");
-    Operator<double> *act1    = new Sigmoid<double>(add1, "sig1");
+    Operator<float> *w1      = HGUNN.AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6), "w1"));
+    Operator<float> *b1      = HGUNN.AddTensorholder(new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 15, 1.0), "b1"));
+    Operator<float> *matmul1 = HGUNN.AddOperator(new MatMul<float>(x1, w1, "matmul1"));
+    Operator<float> *add1    = HGUNN.AddOperator(new Addfc<float>(matmul1, b1, "add1"));
+    Operator<float> *act1    = HGUNN.AddOperator(new Sigmoid<float>(add1, "relu1"));
 
     // ======================= layer 2=======================
-    Operator<double> *w2      = new Tensorholder<double>(Tensor<double>::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6), "w2");
-    Operator<double> *b2      = new Tensorholder<double>(Tensor<double>::Constants(1, 1, 1, 1, 10, 1.0), "b2");
-    Operator<double> *matmul2 = new MatMul<double>(act1, w2, "matmul2");
-    Operator<double> *add2    = new Addfc<double>(matmul2, b2, "add2");
-    Operator<double> *act2    = new Sigmoid<double>(add2, "sig2");
+    Operator<float> *w2      = HGUNN.AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6), "w2"));
+    Operator<float> *b2      = HGUNN.AddTensorholder(new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 10, 1.0), "b2"));
+    Operator<float> *matmul2 = HGUNN.AddOperator(new MatMul<float>(act1, w2, "matmul2"));
+    Operator<float> *add2    = HGUNN.AddOperator(new Addfc<float>(matmul2, b2, "add2"));
+    Operator<float> *act2    = HGUNN.AddOperator(new Sigmoid<float>(add2, "relu2"));
 
     // ======================= Error=======================
-    Operator<double> *err = new MSE<double>(act2, label, "MSE");
+    Objective<float> *err = HGUNN.SetObjectiveFunction(new MSE<float>(act2, label, "MSE"));
 
     // ======================= Optimizer=======================
-    Optimizer<double> *optimizer = new GradientDescentOptimizer<double>(err, 0.5, MINIMIZE);
+    HGUNN.SetOptimizer(new GradientDescentOptimizer<float>(err, 0.5, MINIMIZE));
 
     // ======================= Create Graph ======================
-
-    optimizer->AddTrainableData(w1);
-    optimizer->AddTrainableData(b1);
-    optimizer->AddTrainableData(w2);
-    optimizer->AddTrainableData(b2);
+    HGUNN.CreateGraph();
 
     // ======================= Prepare Data ===================
-    MNISTDataSet<double> *dataset = CreateMNISTDataSet<double>();
+    MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
 
     // ======================= Training =======================
     for (int i = 0; i < LOOP_FOR_TRAIN; i++) {
@@ -55,34 +51,13 @@ int main(int argc, char const *argv[]) {
         x1->SetResult(dataset->GetTrainFeedImage());
         label->SetResult(dataset->GetTrainFeedLabel());
 
-        // ForwardPropagate
-        matmul1->ComputeForwardPropagate();
-        add1->ComputeForwardPropagate();
-        act1->ComputeForwardPropagate();
-        matmul2->ComputeForwardPropagate();
-        add2->ComputeForwardPropagate();
-        act2->ComputeForwardPropagate();
-        err->ComputeForwardPropagate();
+        HGUNN.Training();
 
-        // BackPropagate
-        err->ComputeBackPropagate();
-        act2->ComputeBackPropagate();
-        add2->ComputeBackPropagate();
-        matmul2->ComputeBackPropagate();
-        act1->ComputeBackPropagate();
-        add1->ComputeBackPropagate();
-        matmul1->ComputeBackPropagate();
-        w1->ComputeBackPropagate();
-        b1->ComputeBackPropagate();
-        w2->ComputeBackPropagate();
-        b2->ComputeBackPropagate();
+        // std::cout << "Loop : " << i << " ";
 
-        // UpdateVariable
-        optimizer->UpdateVariable();
-
-        if ((i % 100) == 0) std::cout << "Train Accuracy is : "
-                                      << (float)temp::Accuracy(act2->GetResult(), label->GetResult(), BATCH)
-                                      << '\n';
+        if (i % 100 == 0) std::cout << "Train Accuracy is : "
+                                    << (float)temp::Accuracy(act2->GetResult(), label->GetResult(), BATCH)
+                                    << '\n';
     }
 
     // ======================= Testing =======================
@@ -93,14 +68,7 @@ int main(int argc, char const *argv[]) {
         x1->SetResult(dataset->GetTestFeedImage());
         label->SetResult(dataset->GetTestFeedLabel());
 
-        // ForwardPropagate
-        matmul1->ComputeForwardPropagate();
-        add1->ComputeForwardPropagate();
-        act1->ComputeForwardPropagate();
-        matmul2->ComputeForwardPropagate();
-        add2->ComputeForwardPropagate();
-        act2->ComputeForwardPropagate();
-        err->ComputeForwardPropagate();
+        HGUNN.Testing();
 
         // I'll implement flexibility about the situation that change of Batch size
         test_accuracy += (float)temp::Accuracy(act2->GetResult(), label->GetResult(), BATCH);
@@ -109,21 +77,6 @@ int main(int argc, char const *argv[]) {
     std::cout << "Test Accuracy is : " << test_accuracy / (int)LOOP_FOR_TEST << '\n';
 
     delete dataset;
-    // ~Operators
-    delete w1;
-    delete b1;
-    delete matmul1;
-    delete add1;
-    delete act1;
-    delete w2;
-    delete b2;
-    delete matmul2;
-    delete add2;
-    delete act2;
-    // ~Objectives
-    delete err;
-    // ~Optimizers
-    delete optimizer;
 
     return 0;
 }

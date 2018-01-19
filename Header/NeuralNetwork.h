@@ -20,8 +20,7 @@
 
 #include "Optimizer//GradientDescentOptimizer.h"
 
-template<typename DTYPE>
-class NeuralNetwork {
+template<typename DTYPE> class NeuralNetwork {
 private:
     Placeholder<DTYPE> **m_aaPlaceholder;
     Operator<DTYPE> **m_aaOperator;
@@ -71,6 +70,8 @@ public:
     // =======
 
     int CreateGraph();
+
+    // temporary
 };
 
 #endif  // NEURALNETWORK_H_
