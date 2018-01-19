@@ -24,14 +24,14 @@ int main(int argc, char const *argv[]) {
     Operator<float> *w1      = HGUNN.AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6), "w1"));
     Operator<float> *b1      = HGUNN.AddTensorholder(new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 15, 1.0), "b1"));
     Operator<float> *matmul1 = HGUNN.AddOperator(new MatMul<float>(x, w1, "matmul1"));
-    Operator<float> *add1    = HGUNN.AddOperator(new Addfc<float>(matmul1, b1, "add1"));
+    Operator<float> *add1    = HGUNN.AddOperator(new Add<float>(matmul1, b1, "add1"));
     Operator<float> *act1    = HGUNN.AddOperator(new Sigmoid<float>(add1, "relu1"));
 
     // ======================= layer 2=======================
     Operator<float> *w2      = HGUNN.AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6), "w2"));
     Operator<float> *b2      = HGUNN.AddTensorholder(new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 10, 1.0), "b2"));
     Operator<float> *matmul2 = HGUNN.AddOperator(new MatMul<float>(act1, w2, "matmul2"));
-    Operator<float> *add2    = HGUNN.AddOperator(new Addfc<float>(matmul2, b2, "add2"));
+    Operator<float> *add2    = HGUNN.AddOperator(new Add<float>(matmul2, b2, "add2"));
     Operator<float> *act2    = HGUNN.AddOperator(new Sigmoid<float>(add2, "relu2"));
 
     // ======================= Error=======================

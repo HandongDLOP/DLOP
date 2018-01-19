@@ -194,7 +194,6 @@ public:
         // cout << '\n';
 
         Test_image_feed = new Tensor<DTYPE>(image_data, image_shape, image_rank);
-
         Test_label_feed = new Tensor<DTYPE>(label_data, label_shape, label_rank);
     }
 
@@ -255,7 +254,6 @@ public:
 
         Train_image_feed = new Tensor<DTYPE>(image_data, image_shape, image_rank);
         Train_label_feed = new Tensor<DTYPE>(label_data, label_shape, label_rank);
-
     }
 
     void SetTestImage(DTYPE **pTest_image) {

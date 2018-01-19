@@ -1,22 +1,22 @@
-#ifndef ADDFC_H_
-#define ADDFC_H_    value
+#ifndef ADD_H_
+#define ADD_H_    value
 
 #include "..//Operator.h"
 
 template<typename DTYPE>
-class Addfc : public Operator<DTYPE>{
+class Add : public Operator<DTYPE>{
 public:
-    Addfc(Operator<DTYPE> *pInput, Operator<DTYPE> *pBias, std::string pName) : Operator<DTYPE>(pInput, pBias, pName) {
-        std::cout << "Addfc::Addfc(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
+    Add(Operator<DTYPE> *pInput, Operator<DTYPE> *pBias, std::string pName) : Operator<DTYPE>(pInput, pBias, pName) {
+        std::cout << "Add::Add(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
         this->Alloc(pInput, pBias);
     }
 
-    ~Addfc() {
-        std::cout << "Addfc::~Addfc()" << '\n';
+    ~Add() {
+        std::cout << "Add::~Add()" << '\n';
     }
 
     int Alloc(Operator<DTYPE> *pInput, Operator<DTYPE> *pBias) {
-        std::cout << "Addfc::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
+        std::cout << "Add::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
 
         Shape *shapeOfResult = new Shape(pInput->GetResult()->GetShape());
         this->SetResult(new Tensor<DTYPE>(shapeOfResult));
@@ -84,4 +84,4 @@ public:
     }
 };
 
-#endif  // ADDFC_H_
+#endif  // ADD_H_

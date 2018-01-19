@@ -9,9 +9,9 @@
 #include "Operator//Relu.h"
 #include "Operator//Sigmoid.h"
 
-#include "Operator//Addfc.h"
+#include "Operator//Add.h"
 #include "Operator//Addconv.h"
-#include "Operator//MatMulfc.h"
+#include "Operator//MatMul.h"
 #include "Operator//Convolution.h"
 #include "Operator//Maxpooling.h"
 
