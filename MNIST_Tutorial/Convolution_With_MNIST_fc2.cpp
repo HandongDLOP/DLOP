@@ -8,7 +8,8 @@
 #include "MNIST_Reader.h"
 //
 #define BATCH             100
-#define LOOP_FOR_TRAIN    2000
+#define EPOCH             30
+#define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
@@ -59,41 +60,48 @@ int main(int argc, char const *argv[]) {
     // ======================= Optimizer=======================
     HGUNN.SetOptimizer(new GradientDescentOptimizer<float>(err, 0.001, MINIMIZE));
 
-    //// ======================= Train=======================
+    // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
 
-    //
-    for (int i = 0; i < LOOP_FOR_TRAIN; i++) {
-        dataset->CreateTrainDataPair(BATCH);
-        x->SetResult(dataset->GetTrainFeedImage());
-        label->SetResult(dataset->GetTrainFeedLabel());
+    for (int i = 0; i < EPOCH; i++) {
+        std::cout << "EPOCH : " << i << '\n';
+        // ======================= Training =======================
+        double train_accuracy = 0.f;
 
-        HGUNN.Training();
+        for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
+            dataset->CreateTrainDataPair(BATCH);
+            x->SetResult(dataset->GetTrainFeedImage());
+            label->SetResult(dataset->GetTrainFeedLabel());
 
-        std::cout << "Loop : " << i << " ";
+            HGUNN.Training();
 
-        std::cout << "Train Accuracy is : "
-                  << temp::Accuracy(add_flat2->GetResult(), label->GetResult(), BATCH)
-                  << '\n';
+            train_accuracy += (float)temp::Accuracy(add_flat2->GetResult(), label->GetResult(), BATCH);
+            printf("\rcomplete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TRAIN, train_accuracy / (j + 1));
+            fflush(stdout);
+        }
+        std::cout << '\n';
+
+        // Caution!
+        // Actually, we need to split training set between two set for training set and validation set
+        // but in this example we do not above action.
+        // ======================= Testing ======================
+        double test_accuracy = 0.f;
+
+        for (int j = 0; j < (int)LOOP_FOR_TEST; j++) {
+            dataset->CreateTestDataPair(BATCH);
+            x->SetResult(dataset->GetTestFeedImage());
+            label->SetResult(dataset->GetTestFeedLabel());
+
+            HGUNN.Testing();
+
+            test_accuracy += (float)temp::Accuracy(add_flat2->GetResult(), label->GetResult(), BATCH);
+            printf("\rcomplete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TEST, test_accuracy / (j + 1));
+            fflush(stdout);
+        }
+        std::cout << '\n';
     }
+    // we need to save best weight and bias when occur best acc on test time
 
-    // ======================= Testing =======================
-    double test_accuracy = 0.0;
-
-    std::cout << (int)LOOP_FOR_TEST << '\n';
-
-    for (int i = 0; i < (int)LOOP_FOR_TEST; i++) {
-        dataset->CreateTestDataPair(BATCH);
-        x->SetResult(dataset->GetTestFeedImage());
-        label->SetResult(dataset->GetTestFeedLabel());
-
-        HGUNN.Testing();
-
-        test_accuracy += temp::Accuracy(add_flat2->GetResult(), label->GetResult(), BATCH);
-        std::cout << temp::Accuracy(add_flat2->GetResult(), label->GetResult(), BATCH) << '\n';
-    }
-
-    std::cout << "Test Accuracy is : " << test_accuracy / (int)LOOP_FOR_TEST << '\n';
 
     delete dataset;
 

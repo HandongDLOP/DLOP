@@ -36,24 +36,24 @@ template<typename DTYPE>
 class MNISTDataSet {
 private:
     // 직접 해제
-    DTYPE **Test_image  = NULL;
-    DTYPE **Test_label  = NULL;
+    DTYPE **Test_image = NULL;
+    DTYPE **Test_label = NULL;
     DTYPE **Train_image = NULL;
     DTYPE **Train_label = NULL;
 
     // 따로 해제
-    Tensor<DTYPE> *Test_image_feed  = NULL;
-    Tensor<DTYPE> *Test_label_feed  = NULL;
+    Tensor<DTYPE> *Test_image_feed = NULL;
+    Tensor<DTYPE> *Test_label_feed = NULL;
     Tensor<DTYPE> *Train_image_feed = NULL;
     Tensor<DTYPE> *Train_label_feed = NULL;
 
-    Tensor<DTYPE> *Test_Data_pair[2]  = { NULL, NULL };
+    Tensor<DTYPE> *Test_Data_pair[2] = { NULL, NULL };
     Tensor<DTYPE> *Train_Data_pair[2] = { NULL, NULL };
 
-    vector<int> *shuffled_list_for_test  = NULL;
+    vector<int> *shuffled_list_for_test = NULL;
     vector<int> *shuffled_list_for_train = NULL;
 
-    int Recallnum_of_test  = 0;
+    int Recallnum_of_test = 0;
     int Recallnum_of_train = 0;
 
 public:
@@ -97,7 +97,6 @@ public:
         }
         delete Train_image;
         delete Train_label;
-
     }
 
     // After we see test data at one time
@@ -141,10 +140,10 @@ public:
     }
 
     void CreateTestDataPair_STEP2(int batch_size) {
-        int number_of_data   = NUMBER_OF_TEST_DATA;
-        int Recallnum        = Recallnum_of_test;
-        int start_point      = 0;
-        int cur_point        = 0;
+        int number_of_data = NUMBER_OF_TEST_DATA;
+        int Recallnum = Recallnum_of_test;
+        int start_point = 0;
+        int cur_point = 0;
         DTYPE **origin_image = Test_image;
         DTYPE **origin_label = Test_label;
 
@@ -156,7 +155,7 @@ public:
         image_data[0] = new DTYPE * * *[batch_size];
 
         int *image_shape = new int[5] { 1, batch_size, 1, 1, DIMENSION_OF_MNIST_IMAGE };
-        int  image_rank  = 5;
+        int  image_rank = 5;
         // double **origin_image = ReshapeData(image_option);
 
         // create input label data
@@ -164,7 +163,7 @@ public:
         label_data[0] = new DTYPE * * *[batch_size];
 
         int *label_shape = new int[5] { 1, batch_size, 1, 1, 10 };
-        int  label_rank  = 5;
+        int  label_rank = 5;
 
         start_point = (Recallnum * batch_size) % number_of_data;
 
@@ -173,7 +172,7 @@ public:
 
             // cout << cur_point << ' ';
 
-            image_data[0][ba]    = new DTYPE * *[1];
+            image_data[0][ba] = new DTYPE * *[1];
             image_data[0][ba][0] = new DTYPE *[1];
             // image_data[0][ba][0][0] = origin_image[random];
             image_data[0][ba][0][0] = new DTYPE[DIMENSION_OF_MNIST_IMAGE];
@@ -184,8 +183,8 @@ public:
 
             // ---------------------------------------------------------------------
 
-            label_data[0][ba]       = new DTYPE * *[1];
-            label_data[0][ba][0]    = new DTYPE *[1];
+            label_data[0][ba] = new DTYPE * *[1];
+            label_data[0][ba][0] = new DTYPE *[1];
             label_data[0][ba][0][0] = new DTYPE[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             // cout << (int)origin_label[random][0] << '\n';
             label_data[0][ba][0][0][(int)origin_label[cur_point][0]] = 1.0;
@@ -194,22 +193,16 @@ public:
         }
         // cout << '\n';
 
-        Tensor<DTYPE> *image_Tensor = new Tensor<DTYPE>(image_data, image_shape, image_rank);
-        Tensor<DTYPE> *label_Tensor = new Tensor<DTYPE>(label_data, label_shape, label_rank);
+        Test_image_feed = new Tensor<DTYPE>(image_data, image_shape, image_rank);
 
-        if (Test_image_feed != NULL) delete Test_image_feed;
-
-        if (Test_label_feed != NULL) delete Test_label_feed;
-
-        Test_image_feed = image_Tensor;
-        Test_label_feed = label_Tensor;
+        Test_label_feed = new Tensor<DTYPE>(label_data, label_shape, label_rank);
     }
 
     void CreateTrainDataPair_STEP2(int batch_size) {
-        int number_of_data   = NUMBER_OF_TRAIN_DATA;
-        int Recallnum        = Recallnum_of_train;
-        int start_point      = 0;
-        int cur_point        = 0;
+        int number_of_data = NUMBER_OF_TRAIN_DATA;
+        int Recallnum = Recallnum_of_train;
+        int start_point = 0;
+        int cur_point = 0;
         DTYPE **origin_image = Train_image;
         DTYPE **origin_label = Train_label;
 
@@ -222,7 +215,7 @@ public:
         image_data[0] = new DTYPE * * *[batch_size];
 
         int *image_shape = new int[5] { 1, batch_size, 1, 1, DIMENSION_OF_MNIST_IMAGE };
-        int  image_rank  = 5;
+        int  image_rank = 5;
         // double **origin_image = ReshapeData(image_option);
 
         // create input label data
@@ -230,7 +223,7 @@ public:
         label_data[0] = new DTYPE * * *[batch_size];
 
         int *label_shape = new int[5] { 1, batch_size, 1, 1, 10 };
-        int  label_rank  = 5;
+        int  label_rank = 5;
 
         start_point = (Recallnum * batch_size) % number_of_data;
 
@@ -239,7 +232,7 @@ public:
 
             // cout << cur_point << ' ';
 
-            image_data[0][ba]    = new DTYPE * *[1];
+            image_data[0][ba] = new DTYPE * *[1];
             image_data[0][ba][0] = new DTYPE *[1];
             // image_data[0][ba][0][0] = origin_image[random];
             image_data[0][ba][0][0] = new DTYPE[DIMENSION_OF_MNIST_IMAGE];
@@ -250,8 +243,8 @@ public:
 
             // ---------------------------------------------------------------------
 
-            label_data[0][ba]       = new DTYPE * *[1];
-            label_data[0][ba][0]    = new DTYPE *[1];
+            label_data[0][ba] = new DTYPE * *[1];
+            label_data[0][ba][0] = new DTYPE *[1];
             label_data[0][ba][0][0] = new DTYPE[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             // cout << (int)origin_label[random][0] << '\n';
             label_data[0][ba][0][0][(int)origin_label[cur_point][0]] = 1.0;
@@ -260,15 +253,9 @@ public:
         }
         // cout << '\n';
 
-        Tensor<DTYPE> *image_Tensor = new Tensor<DTYPE>(image_data, image_shape, image_rank);
-        Tensor<DTYPE> *label_Tensor = new Tensor<DTYPE>(label_data, label_shape, label_rank);
+        Train_image_feed = new Tensor<DTYPE>(image_data, image_shape, image_rank);
+        Train_label_feed = new Tensor<DTYPE>(label_data, label_shape, label_rank);
 
-        if (Train_image_feed != NULL) delete Train_image_feed;
-
-        if (Train_label_feed != NULL) delete Train_label_feed;
-
-        Train_image_feed = image_Tensor;
-        Train_label_feed = label_Tensor;
     }
 
     void SetTestImage(DTYPE **pTest_image) {
@@ -322,21 +309,21 @@ void IMAGE_Reader(string DATAPATH, DTYPE **arr) {
     fin.open(DATAPATH, ios::binary);
 
     if (fin.is_open()) {
-        int magic_number     = 0;
+        int magic_number = 0;
         int number_of_images = 0;
-        int n_rows           = 0;
-        int n_cols           = 0;
+        int n_rows = 0;
+        int n_cols = 0;
 
-        fin.read((char *)&magic_number,     sizeof(magic_number));
+        fin.read((char *)&magic_number, sizeof(magic_number));
         magic_number = ReverseInt(magic_number);
 
         fin.read((char *)&number_of_images, sizeof(number_of_images));
         number_of_images = ReverseInt(number_of_images);
 
-        fin.read((char *)&n_rows,           sizeof(n_rows));
+        fin.read((char *)&n_rows, sizeof(n_rows));
         n_rows = ReverseInt(n_rows);
 
-        fin.read((char *)&n_cols,           sizeof(n_cols));
+        fin.read((char *)&n_cols, sizeof(n_cols));
         n_cols = ReverseInt(n_cols);
 
         int dim_of_image = n_rows * n_cols;
@@ -363,10 +350,10 @@ void LABEL_Reader(string DATAPATH, DTYPE **arr) {
     fin.open(DATAPATH, ios::binary);
 
     if (fin.is_open()) {
-        int magic_number     = 0;
+        int magic_number = 0;
         int number_of_labels = 0;
 
-        fin.read((char *)&magic_number,     sizeof(magic_number));
+        fin.read((char *)&magic_number, sizeof(magic_number));
         magic_number = ReverseInt(magic_number);
 
         fin.read((char *)&number_of_labels, sizeof(number_of_labels));

@@ -6,45 +6,45 @@ template class Operator<double>;
 
 template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    m_aResult             = NULL;
-    m_aGradient           = NULL;
-    m_aDelta              = NULL;
-    m_apOutput            = NULL;
-    m_apInput             = NULL;
-    m_OutputDegree        = 0;
-    m_InputDegree         = 0;
+    m_aResult = NULL;
+    m_aGradient = NULL;
+    m_aDelta = NULL;
+    m_apOutput = NULL;
+    m_apInput = NULL;
+    m_OutputDegree = 0;
+    m_InputDegree = 0;
     m_currentOutputDegree = 0;
-    m_currentInputDegree  = 0;
-    m_name                = pName;
+    m_currentInputDegree = 0;
+    m_name = pName;
 }
 
 template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std::string pName) {
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    m_aResult             = NULL;
-    m_aGradient           = NULL;
-    m_aDelta              = NULL;
-    m_apOutput            = NULL;
-    m_apInput             = NULL;
-    m_OutputDegree        = 0;
-    m_InputDegree         = 0;
+    m_aResult = NULL;
+    m_aGradient = NULL;
+    m_aDelta = NULL;
+    m_apOutput = NULL;
+    m_apInput = NULL;
+    m_OutputDegree = 0;
+    m_InputDegree = 0;
     m_currentOutputDegree = 0;
-    m_currentInputDegree  = 0;
-    m_name                = pName;
+    m_currentInputDegree = 0;
+    m_name = pName;
     Alloc(1, pInput);
 }
 
 template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) {
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    m_aResult             = NULL;
-    m_aGradient           = NULL;
-    m_aDelta              = NULL;
-    m_apOutput            = NULL;
-    m_apInput             = NULL;
-    m_OutputDegree        = 0;
-    m_InputDegree         = 0;
+    m_aResult = NULL;
+    m_aGradient = NULL;
+    m_aDelta = NULL;
+    m_apOutput = NULL;
+    m_apInput = NULL;
+    m_OutputDegree = 0;
+    m_InputDegree = 0;
     m_currentOutputDegree = 0;
-    m_currentInputDegree  = 0;
-    m_name                = pName;
+    m_currentInputDegree = 0;
+    m_name = pName;
     Alloc(2, pInput0, pInput1);
 }
 
@@ -111,14 +111,29 @@ template<typename DTYPE> void Operator<DTYPE>::Delete() {
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetResult(Tensor<DTYPE> *pTensor) {
+    if (m_aResult) {
+        delete m_aResult;
+        m_aResult = NULL;
+    }
+
     m_aResult = pTensor;
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetGradient(Tensor<DTYPE> *pTensor) {
+    if(m_aGradient){
+        delete m_aGradient;
+        m_aGradient = NULL;
+    }
+
     m_aGradient = pTensor;
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetDelta(Tensor<DTYPE> *pTensor) {
+    if(m_aDelta){
+        delete m_aDelta;
+        m_aDelta = NULL;
+    }
+
     m_aDelta = pTensor;
 }
 
@@ -188,7 +203,6 @@ template<typename DTYPE> int Operator<DTYPE>::_AddInputEdge(Operator<DTYPE> *pIn
         printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
     }
-
     m_InputDegree++;
 
     return TRUE;
@@ -211,7 +225,6 @@ template<typename DTYPE> int Operator<DTYPE>::_AddOutputEdge(Operator<DTYPE> *pO
         printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
     }
-
     m_OutputDegree++;
 
     return TRUE;
