@@ -59,7 +59,7 @@ int main(int argc, char const *argv[]) {
             HGUNN.Training();
 
             train_accuracy += (float)temp::Accuracy(act2->GetResult(), label->GetResult(), BATCH);
-            printf("\rcomplete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TRAIN, train_accuracy / (j + 1));
+            printf("\rTraining complete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TRAIN, train_accuracy / (j + 1));
             fflush(stdout);
         }
         std::cout << '\n';
@@ -78,7 +78,7 @@ int main(int argc, char const *argv[]) {
             HGUNN.Testing();
 
             test_accuracy += (float)temp::Accuracy(act2->GetResult(), label->GetResult(), BATCH);
-            printf("\rcomplete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TEST, test_accuracy / (j + 1));
+            printf("\rTesting complete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TEST, test_accuracy / (j + 1));
             fflush(stdout);
         }
         std::cout << '\n';
