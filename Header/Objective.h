@@ -20,6 +20,7 @@ public:
     Objective(std::string pName = "NO NAME");
     Objective(Operator<DTYPE> *pInput, std::string pName = "NO NAME");
     Objective(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName = "NO NAME");
+
     virtual ~Objective();
 
     virtual int       Alloc(int numInput, ...);

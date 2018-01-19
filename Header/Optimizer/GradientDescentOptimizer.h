@@ -10,6 +10,10 @@ public:
         std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Objective<DTYPE> *, float, OptimizeDirection)" << '\n';
     }
 
+    GradientDescentOptimizer(float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pLearningRate, pOptimizeDirection) {
+        std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Objective<DTYPE> *, float, OptimizeDirection)" << '\n';
+    }
+
     ~GradientDescentOptimizer() {
         std::cout << "GradientDescentOptimizer::~GradientDescentOptimizer()" << '\n';
     }

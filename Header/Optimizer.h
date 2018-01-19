@@ -15,19 +15,21 @@ private:
     Objective<DTYPE> *m_pObjectOperator;
 
     float m_LearningRate;
-    int m_OptimizeDirection;  // 1 or -1
+    int   m_OptimizeDirection; // 1 or -1
 
     Operator<DTYPE> **m_apTrainableTensor;
     int m_TrainableTensorDegree;
 
 public:
     Optimizer(Objective<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection);
+    Optimizer(float pLearningRate, OptimizeDirection pOptimizeDirection);
 
     virtual ~Optimizer();
 
     // ===============
 
     int Alloc(Objective<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection);
+    int Alloc(float pLearningRate, OptimizeDirection pOptimizeDirection);
 
     int Delete();
 
@@ -44,13 +46,13 @@ public:
 
     // ===============
 
-    void             SetLearningRate(float pLearningRate);
+    void              SetLearningRate(float pLearningRate);
 
     Objective<DTYPE>* GetObjectOperator() const;
 
-    float            GetLearningRate() const;
+    float             GetLearningRate() const;
 
-    int              GetOptimizeDirection() const;
+    int               GetOptimizeDirection() const;
 };
 
 #endif  // OPTIMIZER_H_

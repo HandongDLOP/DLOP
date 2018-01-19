@@ -25,8 +25,7 @@ private:
 
 public:
     MLP(Placeholder<float> *x, Placeholder<float> *label) {
-        Operator<float>  *out = NULL;
-        Objective<float> *err = NULL;
+        Operator<float> *out = NULL;
 
         AddPlaceholder(x);
         AddPlaceholder(label);
@@ -43,28 +42,30 @@ public:
 
         // ======================= Error=======================
         // 추후에는 NN과는 독립적으로 움직이도록 만들기
-        err = SetObjectiveFunction(new MSE<float>(out, label, "MSE"));
+        SetObjectiveFunction(new MSE<float>(out, label, "MSE"));
 
         // ======================= Optimizer=======================
         // 추후에는 NN과는 독립적으로 움직이도록 만들기
-        SetOptimizer(new GradientDescentOptimizer<float>(err, 0.5, MINIMIZE));
+        SetOptimizer(new GradientDescentOptimizer<float>(0.5, MINIMIZE));
     }
 
     virtual ~MLP() {}
 };
 
-
 int main(int argc, char const *argv[]) {
     // create input, label data placeholder
     Placeholder<float> *x = new Placeholder<float>(1, BATCH, 1, 1, 784, "x");
     Placeholder<float> *label = new Placeholder<float>(1, BATCH, 1, 1, 10, "label");
-    Operator<float>    *result = NULL; // Result of classification
+
+    // Result of classification
+    Operator<float> *result = NULL;
 
     MLP mlp(x, label);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
 
+    // pytorch check하기
     for (int i = 0; i < EPOCH; i++) {
         std::cout << "EPOCH : " << i << '\n';
         // ======================= Training =======================
