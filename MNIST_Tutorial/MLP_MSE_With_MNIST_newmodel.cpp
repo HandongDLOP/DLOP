@@ -56,8 +56,8 @@ public:
 
 int main(int argc, char const *argv[]) {
     // create input, label data placeholder
-    Placeholder<float> *x = new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 1.0), "x");
-    Placeholder<float> *label = new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.f), "label");
+    Placeholder<float> *x = new Placeholder<float>(1, BATCH, 1, 1, 784, "x");
+    Placeholder<float> *label = new Placeholder<float>(1, BATCH, 1, 1, 10, "label");
     Operator<float>    *result = NULL; // Result of classification
 
     MLP mlp(x, label);
