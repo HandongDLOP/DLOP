@@ -52,6 +52,7 @@ public:
 
     Objective<DTYPE>* SetObjectiveFunction(Objective<DTYPE> *pObjectiveFunction);
     Optimizer<DTYPE>* SetOptimizer(Optimizer<DTYPE> *pOptimizer);
+    int FeedData(int numOfTensorholder, ...);
 
     // =======
 

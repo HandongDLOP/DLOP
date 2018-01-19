@@ -131,6 +131,21 @@ template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::SetOptimizer(Op
     return m_aOptimizer;
 }
 
+template<typename DTYPE> int NeuralNetwork<DTYPE>::FeedData(int numOfPlaceholder, ...) {
+    va_list ap;
+
+    va_start(ap, numOfPlaceholder);
+
+    // need to check compare between pRank value and number of another parameter
+    for (int i = 0; i < numOfPlaceholder; i++) {
+        // need to check whether int or not
+        m_aaPlaceholder[i]->SetTensor(va_arg(ap, Tensor<DTYPE> *));
+    }
+    va_end(ap);
+
+    return TRUE;
+}
+
 // ===========================================================================================
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate() {
@@ -167,13 +182,13 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Training() {
     this->BackPropagate();
     m_aOptimizer->UpdateVariable();
 
-    return NULL;
+    return m_aaOperator[m_OperatorDegree - 1];
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Testing() {
     this->ForwardPropagate();
 
-    return NULL;
+    return m_aaOperator[m_OperatorDegree - 1];
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Testing(Operator<DTYPE> *pEnd) {

@@ -5,7 +5,7 @@
 // #include "Optimizer//GradientDescentOptimizer.h"
 #include "Operator.h"
 
-template<typename DTYPE> class Objective {
+template<typename DTYPE> class Objective : public Operator<DTYPE>{
 private:
     Tensor<DTYPE> *m_aResult;
 

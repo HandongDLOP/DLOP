@@ -15,50 +15,42 @@
 
 class MLP : public NeuralNetwork<float>{
 private:
-    Placeholder<float> *m_x;
-    Placeholder<float> *m_label;
+    // We need to modify kind this interface, after this time any kind of trainable tensor generated in operator(so all tensor will managed in operator)
+    // 나중에는 Operator class가 이걸 관리하도록 하여야 한다.
+    Operator<float> *w1 = AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6), "w1"));
+    Operator<float> *b1 = AddTensorholder(new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 15, 1.0), "b1"));
 
-    Operator<float> *result;
+    Operator<float> *w2 = AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6), "w2"));
+    Operator<float> *b2 = AddTensorholder(new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 10, 1.0), "b2"));
 
 public:
     MLP(Placeholder<float> *x, Placeholder<float> *label) {
-        m_x = this->AddPlaceholder(x);
-        m_label = this->AddPlaceholder(label);
+        Operator<float>  *out = NULL;
+        Objective<float> *err = NULL;
 
-        Operator<float> *w1 = this->AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6), "w1"));
-        Operator<float> *b1 = this->AddTensorholder(new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 15, 1.0), "b1"));
+        AddPlaceholder(x);
+        AddPlaceholder(label);
 
-        Operator<float> *w2 = this->AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 15, 10, 0.0, 0.6), "w2"));
-        Operator<float> *b2 = this->AddTensorholder(new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 10, 1.0), "b2"));
-
-        Operator<float> *out = NULL;
         // ======================= layer 1======================
-        out = this->AddOperator(new MatMul<float>(m_x, w1, "matmul1"));
-        out = this->AddOperator(new Add<float>(out, b1, "add1"));
-        out = this->AddOperator(new Sigmoid<float>(out, "relu1"));
+        out = AddOperator(new MatMul<float>(x, w1, "matmul1"));
+        out = AddOperator(new Add<float>(out, b1, "add1"));
+        out = AddOperator(new Sigmoid<float>(out, "relu1"));
 
         // ======================= layer 2=======================
-        out = this->AddOperator(new MatMul<float>(out, w2, "matmul2"));
-        out = this->AddOperator(new Add<float>(out, b2, "add2"));
-        result = this->AddOperator(new Sigmoid<float>(out, "relu2"));
+        out = AddOperator(new MatMul<float>(out, w2, "matmul2"));
+        out = AddOperator(new Add<float>(out, b2, "add2"));
+        out = AddOperator(new Sigmoid<float>(out, "relu2"));
 
         // ======================= Error=======================
-        Objective<float> *err = this->SetObjectiveFunction(new MSE<float>(result, m_label, "MSE"));
+        // 추후에는 NN과는 독립적으로 움직이도록 만들기
+        err = SetObjectiveFunction(new MSE<float>(out, label, "MSE"));
 
         // ======================= Optimizer=======================
-        this->SetOptimizer(new GradientDescentOptimizer<float>(err, 0.5, MINIMIZE));
+        // 추후에는 NN과는 독립적으로 움직이도록 만들기
+        SetOptimizer(new GradientDescentOptimizer<float>(err, 0.5, MINIMIZE));
     }
 
     virtual ~MLP() {}
-
-    void SetTensor(Tensor<float> *px, Tensor<float> *plabel) {
-        m_x->SetTensor(px);
-        m_label->SetTensor(plabel);
-    }
-
-    Operator<float>* GetClassificationResult() {
-        return result;
-    }
 };
 
 
@@ -66,10 +58,9 @@ int main(int argc, char const *argv[]) {
     // create input, label data placeholder
     Placeholder<float> *x = new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 1.0), "x");
     Placeholder<float> *label = new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.f), "label");
+    Operator<float>    *result = NULL; // Result of classification
 
     MLP mlp(x, label);
-
-    Operator<float> *result = mlp.GetClassificationResult();
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
@@ -81,9 +72,9 @@ int main(int argc, char const *argv[]) {
 
         for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
             dataset->CreateTrainDataPair(BATCH);
-            mlp.SetTensor(dataset->GetTrainFeedImage(), dataset->GetTrainFeedLabel());
+            mlp.FeedData(2, dataset->GetTrainFeedImage(), dataset->GetTrainFeedLabel());
 
-            mlp.Training();
+            result = mlp.Training();
 
             train_accuracy += (float)temp::Accuracy(result->GetResult(), label->GetResult(), BATCH);
             printf("\rTraining complete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TRAIN, train_accuracy / (j + 1));
@@ -99,9 +90,9 @@ int main(int argc, char const *argv[]) {
 
         for (int j = 0; j < (int)LOOP_FOR_TEST; j++) {
             dataset->CreateTestDataPair(BATCH);
-            mlp.SetTensor(dataset->GetTestFeedImage(), dataset->GetTestFeedLabel());
+            mlp.FeedData(2, dataset->GetTestFeedImage(), dataset->GetTestFeedLabel());
 
-            mlp.Testing();
+            result = mlp.Testing();
 
             test_accuracy += (float)temp::Accuracy(result->GetResult(), label->GetResult(), BATCH);
             printf("\rTesting complete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TEST, test_accuracy / (j + 1));

@@ -41,9 +41,9 @@ public:
     int               _AddOutputEdge(Operator<DTYPE> *pOutput);
     void              AddEdgebetweenOperators(Operator<DTYPE> *pInput);
 
-    Tensor<DTYPE>   * GetResult() const;
-    Tensor<DTYPE>   * GetGradient() const;
-    Tensor<DTYPE>   * GetDelta() const;
+    Tensor<DTYPE>*    GetResult() const;
+    Tensor<DTYPE>*    GetGradient() const;
+    Tensor<DTYPE>*    GetDelta() const;
     Operator<DTYPE>** GetInput() const;
     Operator<DTYPE>** GetOutput() const;
     int               GetOutputDegree() const;
