@@ -18,8 +18,8 @@ int main(int argc, char const *argv[]) {
     NeuralNetwork<double> HGUNN;
 
     // create input, label data placeholder, placeholder is always managed by NeuralNetwork
-    Operator<double> *x = HGUNN.AddPlaceholder(new Placeholder<double>(Tensor<double>::Constants(1, BATCH, 1, 1, 784, 0.0), "x"));
-    Operator<double> *label = HGUNN.AddPlaceholder(new Placeholder<double>(Tensor<double>::Constants(1, BATCH, 1, 1, 10, 0.0), "label"));
+    Placeholder<double> *x = HGUNN.AddPlaceholder(new Placeholder<double>(Tensor<double>::Constants(1, BATCH, 1, 1, 784, 0.0), "x"));
+    Placeholder<double> *label = HGUNN.AddPlaceholder(new Placeholder<double>(Tensor<double>::Constants(1, BATCH, 1, 1, 10, 0.0), "label"));
 
     Operator<double> *w = HGUNN.AddTensorholder(new Tensorholder<double>(Tensor<double>::Zeros(1, 1, 1, 784, 10), "w"));
     Operator<double> *b = HGUNN.AddTensorholder(new Tensorholder<double>(Tensor<double>::Zeros(1, 1, 1, 1, 10), "b"));
@@ -46,8 +46,8 @@ int main(int argc, char const *argv[]) {
 
         for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
             dataset->CreateTrainDataPair(BATCH);
-            x->SetResult(dataset->GetTrainFeedImage());
-            label->SetResult(dataset->GetTrainFeedLabel());
+            x->SetTensor(dataset->GetTrainFeedImage());
+            label->SetTensor(dataset->GetTrainFeedLabel());
 
             HGUNN.Training();
 
@@ -65,8 +65,8 @@ int main(int argc, char const *argv[]) {
 
         for (int j = 0; j < (int)LOOP_FOR_TEST; j++) {
             dataset->CreateTestDataPair(BATCH);
-            x->SetResult(dataset->GetTestFeedImage());
-            label->SetResult(dataset->GetTestFeedLabel());
+            x->SetTensor(dataset->GetTestFeedImage());
+            label->SetTensor(dataset->GetTestFeedLabel());
 
             HGUNN.Testing();
 

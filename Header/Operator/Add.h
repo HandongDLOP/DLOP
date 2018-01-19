@@ -3,8 +3,7 @@
 
 #include "..//Operator.h"
 
-template<typename DTYPE>
-class Add : public Operator<DTYPE>{
+template<typename DTYPE> class Add : public Operator<DTYPE>{
 public:
     Add(Operator<DTYPE> *pInput, Operator<DTYPE> *pBias, std::string pName) : Operator<DTYPE>(pInput, pBias, pName) {
         std::cout << "Add::Add(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';

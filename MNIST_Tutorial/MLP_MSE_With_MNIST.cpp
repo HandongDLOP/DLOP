@@ -17,8 +17,8 @@ int main(int argc, char const *argv[]) {
     NeuralNetwork<float> HGUNN;
 
     // create input, label data placeholder
-    Operator<float> *x    = HGUNN.AddPlaceholder(new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 1.0), "x"));
-    Operator<float> *label = HGUNN.AddPlaceholder(new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.f), "label"));
+    Placeholder<float> *x    = HGUNN.AddPlaceholder(new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 1.0), "x"));
+    Placeholder<float> *label = HGUNN.AddPlaceholder(new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.f), "label"));
 
     // ======================= layer 1======================
     Operator<float> *w1      = HGUNN.AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 784, 15, 0.0, 0.6), "w1"));
@@ -53,8 +53,8 @@ int main(int argc, char const *argv[]) {
 
         for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
             dataset->CreateTrainDataPair(BATCH);
-            x->SetResult(dataset->GetTrainFeedImage());
-            label->SetResult(dataset->GetTrainFeedLabel());
+            x->SetTensor(dataset->GetTrainFeedImage());
+            label->SetTensor(dataset->GetTrainFeedLabel());
 
             HGUNN.Training();
 
@@ -72,8 +72,8 @@ int main(int argc, char const *argv[]) {
 
         for (int j = 0; j < (int)LOOP_FOR_TEST; j++) {
             dataset->CreateTestDataPair(BATCH);
-            x->SetResult(dataset->GetTestFeedImage());
-            label->SetResult(dataset->GetTestFeedLabel());
+            x->SetTensor(dataset->GetTestFeedImage());
+            label->SetTensor(dataset->GetTestFeedLabel());
 
             HGUNN.Testing();
 

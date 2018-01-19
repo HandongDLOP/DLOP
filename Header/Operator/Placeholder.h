@@ -44,6 +44,9 @@ public:
         return TRUE;
     }
 
+    void SetTensor(Tensor<DTYPE> * pTensor){
+        this->SetResult(pTensor);
+    }
 
 };
 
