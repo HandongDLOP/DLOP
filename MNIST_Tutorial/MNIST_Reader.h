@@ -231,7 +231,7 @@ int ReverseInt(int i) {
 	return ((int)ch1 << 24) + ((int)ch2 << 16) + ((int)ch3 << 8) + ch4;
 }
 
-template<typename DTYPE> void IMAGE_Reader(string DATAPATH, DTYPE **arr) {
+template<typename DTYPE> void IMAGE_Reader(string DATAPATH, DTYPE **pImage) {
 	ifstream fin;
 
 	fin.open(DATAPATH, ios::binary);
@@ -257,12 +257,12 @@ template<typename DTYPE> void IMAGE_Reader(string DATAPATH, DTYPE **arr) {
 		int dimOfImage = n_rows * n_cols;
 
 		for (int i = 0; i < numOfImage; ++i) {
-			arr[i] = new DTYPE[dimOfImage];
+			pImage[i] = new DTYPE[dimOfImage];
 
-			for (int d = 0; d < dim_of_image; ++d) {
+			for (int d = 0; d < dimOfImage; ++d) {
 				unsigned char data = 0;
 				fin.read((char *)&data, sizeof(data));
-				arr[i][d] = (DTYPE)data / 255.0;
+				pImage[i][d] = (DTYPE)data / 255.0;
 			}
 		}
 	}
@@ -270,7 +270,7 @@ template<typename DTYPE> void IMAGE_Reader(string DATAPATH, DTYPE **arr) {
 }
 
 template<typename DTYPE>
-void LABEL_Reader(string DATAPATH, DTYPE **arr) {
+void LABEL_Reader(string DATAPATH, DTYPE **pLabel) {
 	ifstream fin;
 
 	fin.open(DATAPATH, ios::binary);
@@ -280,16 +280,16 @@ void LABEL_Reader(string DATAPATH, DTYPE **arr) {
 		int numOfLabels = 0;
 
 		fin.read((char *)&magicNumber, sizeof(magicNumber));
-		magicNumber = ReverseInt(magic_number);
+		magicNumber = ReverseInt(magicNumber);
 
 		fin.read((char *)&numOfLabels, sizeof(numOfLabels));
 		numOfLabels = ReverseInt(numOfLabels);
 
 		for (int i = 0; i < numOfLabels; ++i) {
-			arr[i] = new DTYPE[1];
+			pLabel[i] = new DTYPE[1];
 			unsigned char data = 0;
 			fin.read((char *)&data, sizeof(data));
-			arr[i][0] = (DTYPE)data;
+			pLabel[i][0] = (DTYPE)data;
 		}
 	}
 	fin.close();
