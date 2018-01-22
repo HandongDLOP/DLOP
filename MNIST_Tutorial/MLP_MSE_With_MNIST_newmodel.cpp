@@ -1,4 +1,4 @@
-/*g++ -g -o testing -std=c++11 MLP_MSE_With_MNIST_.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Objective.cpp ../Header/Optimizer.cpp ../Header/NeuralNetwork.cpp*/
+/*g++ -g -o testing -std=c++11 MLP_MSE_With_MNIST_newmodel.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Objective.cpp ../Header/Optimizer.cpp ../Header/NeuralNetwork.cpp*/
 
 #include <iostream>
 #include <string>
