@@ -71,15 +71,8 @@ int main(int argc, char const *argv[]) {
     }
 
     // we need to save best weight and bias when occur best acc on test time
-    if (dataset) {
-        delete dataset;
-        dataset = NULL;
-    }
-
-    if (model) {
-        delete model;
-        model = NULL;
-    }
+    delete dataset;
+    delete model;
 
     return 0;
 }
