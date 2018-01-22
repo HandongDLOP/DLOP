@@ -1,5 +1,6 @@
 #ifndef OPERATOR_H_
 #define OPERATOR_H_
+#define __CuDNN__
 
 // #include "MetaParameter.h"
 // #include "Optimizer//GradientDescentOptimizer.h"
