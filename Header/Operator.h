@@ -5,7 +5,7 @@
 #include <cuda.h>
 #include <cudnn.h>
 #include "error_util.h"
-#endif
+#endif //__CUDNN__
 // #include "MetaParameter.h"
 // #include "Optimizer//GradientDescentOptimizer.h"
 #include "Tensor.h"
