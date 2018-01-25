@@ -1,7 +1,11 @@
 #ifndef OPERATOR_H_
 #define OPERATOR_H_
-#define __CuDNN__
-
+#ifndef __CUDNN__
+#define __CUDNN__ TRUE
+#include <cuda.h>
+#include <cudnn.h>
+#include "error_util.h"
+#endif
 // #include "MetaParameter.h"
 // #include "Optimizer//GradientDescentOptimizer.h"
 #include "Tensor.h"
@@ -23,6 +27,13 @@ private:
     std::string m_name;
 
 public:
+#if __CUDNN__
+    cudnnHandle_t *m_pCudnnHandle;
+    
+    void SetCudnnHandle(cudnnHandle_t *pCudnnHandle);
+    cudnnHandle_t* GetCudennHandle();
+#endif
+    
     Operator(std::string pName = "NO NAME");
     Operator(Operator<DTYPE> *pInput, std::string pName = "NO NAME");
     Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName = "NO NAME");
