@@ -32,6 +32,7 @@ public:
     
     void SetCudnnHandle(cudnnHandle_t *pCudnnHandle);
     cudnnHandle_t* GetCudennHandle();
+    void cudnnResize(int size, float *data);
 #endif
     
     Operator(std::string pName = "NO NAME");
