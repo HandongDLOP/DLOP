@@ -37,7 +37,7 @@ public:
         stride[3] = stride3;
 
         return TRUE;
-    }
+    } 
 
     int ComputeForwardPropagate() {
         Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
