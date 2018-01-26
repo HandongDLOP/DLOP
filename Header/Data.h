@@ -26,6 +26,7 @@ public:
     int    GetCols();
     int    GetRows();
 
+    DTYPE& GetRawData();
     DTYPE& operator[](unsigned int index);
 };
 
