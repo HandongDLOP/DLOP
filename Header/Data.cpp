@@ -145,6 +145,9 @@ template<typename DTYPE> DTYPE& Data<DTYPE>::operator[](unsigned int index) {
     return m_aData[index / SIZEOFCOLS][index % SIZEOFCOLS];
 }
 
+template<typename DTYPE> DTYPE& Data<DTYPE>::GetRawData(){
+    return **m_aData;
+}
 // // example code
 // int main(int argc, char const *argv[]) {
 //     Data<int> *pData = new Data<int>(2048);
