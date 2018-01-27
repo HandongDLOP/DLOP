@@ -18,8 +18,6 @@ public:
     Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);  // For 5D-Tensor
     Tensor(Shape *pShape);
     Tensor(Tensor<DTYPE> *pTensor);  // Copy Constructor
-    // temporary
-    Tensor(DTYPE *****pData, int *pShape, int rank);
     virtual ~Tensor();
 
     int          Alloc(Shape *pShape);

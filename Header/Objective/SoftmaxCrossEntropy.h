@@ -27,10 +27,10 @@ public:
 
     ~SoftmaxCrossEntropy() {
         std::cout << "SoftmaxCrossEntropy::~SoftmaxCrossEntropy()" << '\n';
-        delete m_aSoftmaxResult;
+        Delete();
     }
 
-    virtual int Alloc(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, DTYPE epsilon = 1e-2) {
+    int Alloc(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, DTYPE epsilon = 1e-2) {
         std::cout << "SoftmaxCrossEntropy::Alloc(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
 
         int timesize  = pInput->GetResult()->GetTimeSize();
@@ -46,7 +46,14 @@ public:
         return TRUE;
     }
 
-    virtual int ComputeForwardPropagate() {
+    void Delete() {
+        if (m_aSoftmaxResult) {
+            delete m_aSoftmaxResult;
+            m_aSoftmaxResult = NULL;
+        }
+    }
+
+    int ComputeForwardPropagate() {
         Tensor<DTYPE> *input         = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *label         = this->GetInput()[1]->GetResult();
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
@@ -111,7 +118,7 @@ public:
         return TRUE;
     }
 
-    virtual int ComputeBackPropagate() {
+    int ComputeBackPropagate() {
         Tensor<DTYPE> *label         = this->GetInput()[1]->GetResult();
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
 

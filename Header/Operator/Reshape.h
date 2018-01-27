@@ -16,7 +16,8 @@ public:
 
     ~Reshape() {
         std::cout << "Reshape::~Reshape()" << '\n';
-        delete m_aRe;
+
+        Delete();
     }
 
     int Alloc(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
@@ -35,13 +36,20 @@ public:
         return TRUE;
     }
 
+    void Delete() {
+        if (m_aRe) {
+            delete m_aRe;
+            m_aRe = NULL;
+        }
+    }
+
     int ComputeForwardPropagate() {
-        Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
+        Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
         int capacity = result->GetData()->GetCapacity();
 
-        for(int i = 0; i < capacity; i++){
+        for (int i = 0; i < capacity; i++) {
             (*result)[i] = (*input)[i];
         }
 

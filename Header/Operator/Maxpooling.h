@@ -1,10 +1,10 @@
-#ifndef Maxpooling4D_H_
-#define Maxpooling4D_H_    value
+#ifndef MAXPOOLING_H_
+#define MAXPOOLING_H_    value
 
 #include "..//Operator.h"
 
 template<typename DTYPE>
-class Maxpooling4D : public Operator<DTYPE>{
+class Maxpooling2D : public Operator<DTYPE>{
 private:
     int stride[2] = { 0, };
     int mask[2]   = { 0, };
@@ -12,22 +12,23 @@ private:
     Tensor<int> *indexOfMaxInput;
 
 public:
-    Maxpooling4D(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol) : Operator<DTYPE>(pInput) {
-        std::cout << "Maxpooling4D::Maxpooling4D(Operator<DTYPE> *, int, int)" << '\n';
+    Maxpooling2D(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol) : Operator<DTYPE>(pInput) {
+        std::cout << "Maxpooling2D::Maxpooling2D(Operator<DTYPE> *, int, int)" << '\n';
         this->Alloc(pInput, strideRow, strideCol, maskRow, maskCol);
     }
 
-    Maxpooling4D(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol, std::string pName) : Operator<DTYPE>(pInput, pName) {
-        std::cout << "Maxpooling4D::Maxpooling4D(Operator<DTYPE> *, int, int, std::string)" << '\n';
+    Maxpooling2D(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol, std::string pName) : Operator<DTYPE>(pInput, pName) {
+        std::cout << "Maxpooling2D::Maxpooling2D(Operator<DTYPE> *, int, int, std::string)" << '\n';
         this->Alloc(pInput, strideRow, strideCol, maskRow, maskCol);
     }
 
-    ~Maxpooling4D() {
-        std::cout << "Maxpooling4D::~Maxpooling4D()" << '\n';
+    ~Maxpooling2D() {
+        std::cout << "Maxpooling2D::~Maxpooling2D()" << '\n';
+        Delete();
     }
 
     int Alloc(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol) {
-        std::cout << "Maxpooling4D::Alloc(Operator<DTYPE> *, int, int)" << '\n';
+        std::cout << "Maxpooling2D::Alloc(Operator<DTYPE> *, int, int)" << '\n';
 
         Shape *shapeOfInput = pInput->GetResult()->GetShape();
 
@@ -42,18 +43,6 @@ public:
         rowsize = (*shapeOfInput)[3] / strideRow;
         colsize = (*shapeOfInput)[4] / strideCol;
 
-        // if ((*shapeOfInput)[3] % strideRow > 0) {
-        // rowsize = (*shapeOfInput)[3] / strideRow + 1;
-        // } else {
-        // rowsize = (*shapeOfInput)[3] / strideRow;
-        // }
-        //
-        // if ((*shapeOfInput)[4] % strideCol > 0) {
-        // colsize = (*shapeOfInput)[4] / strideCol + 1;
-        // } else {
-        // colsize = (*shapeOfInput)[4] / strideCol;
-        // }
-
         this->SetResult(new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], rowsize, colsize));
         this->SetDelta(new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], rowsize, colsize));
 
@@ -66,6 +55,13 @@ public:
         indexOfMaxInput = new Tensor<int>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], rowsize, colsize);
 
         return TRUE;
+    }
+
+    void Delete() {
+        if (indexOfMaxInput) {
+            delete indexOfMaxInput;
+            indexOfMaxInput = NULL;
+        }
     }
 
     //
@@ -160,4 +156,4 @@ public:
     }
 };
 //
-#endif  // Maxpooling4D_H_
+#endif  // MAXPOOLING_H_
