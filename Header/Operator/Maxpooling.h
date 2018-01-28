@@ -1,34 +1,33 @@
-#ifndef MAXPOOLING_H_
-#define MAXPOOLING_H_    value
+#ifndef Maxpooling4D_H_
+#define Maxpooling4D_H_    value
 
 #include "..//Operator.h"
 
 template<typename DTYPE>
-class Maxpooling2D : public Operator<DTYPE>{
+class Maxpooling4D : public Operator<DTYPE>{
 private:
-    int stride[2] = { 0, };
-    int mask[2]   = { 0, };
+    int m_stride[2] = { 0, };
+    int m_mask[2]   = { 0, };
 
     Tensor<int> *indexOfMaxInput;
 
 public:
-    Maxpooling2D(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol) : Operator<DTYPE>(pInput) {
-        std::cout << "Maxpooling2D::Maxpooling2D(Operator<DTYPE> *, int, int)" << '\n';
+    Maxpooling4D(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol) : Operator<DTYPE>(pInput) {
+        std::cout << "Maxpooling4D::Maxpooling4D(Operator<DTYPE> *, int, int)" << '\n';
         this->Alloc(pInput, strideRow, strideCol, maskRow, maskCol);
     }
 
-    Maxpooling2D(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol, std::string pName) : Operator<DTYPE>(pInput, pName) {
-        std::cout << "Maxpooling2D::Maxpooling2D(Operator<DTYPE> *, int, int, std::string)" << '\n';
+    Maxpooling4D(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol, std::string pName) : Operator<DTYPE>(pInput, pName) {
+        std::cout << "Maxpooling4D::Maxpooling4D(Operator<DTYPE> *, int, int, std::string)" << '\n';
         this->Alloc(pInput, strideRow, strideCol, maskRow, maskCol);
     }
 
-    ~Maxpooling2D() {
-        std::cout << "Maxpooling2D::~Maxpooling2D()" << '\n';
-        Delete();
+    ~Maxpooling4D() {
+        std::cout << "Maxpooling4D::~Maxpooling4D()" << '\n';
     }
 
     int Alloc(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol) {
-        std::cout << "Maxpooling2D::Alloc(Operator<DTYPE> *, int, int)" << '\n';
+        std::cout << "Maxpooling4D::Alloc(Operator<DTYPE> *, int, int)" << '\n';
 
         Shape *shapeOfInput = pInput->GetResult()->GetShape();
 
@@ -43,25 +42,30 @@ public:
         rowsize = (*shapeOfInput)[3] / strideRow;
         colsize = (*shapeOfInput)[4] / strideCol;
 
+        // if ((*shapeOfInput)[3] % strideRow > 0) {
+        // rowsize = (*shapeOfInput)[3] / strideRow + 1;
+        // } else {
+        // rowsize = (*shapeOfInput)[3] / strideRow;
+        // }
+        //
+        // if ((*shapeOfInput)[4] % strideCol > 0) {
+        // colsize = (*shapeOfInput)[4] / strideCol + 1;
+        // } else {
+        // colsize = (*shapeOfInput)[4] / strideCol;
+        // }
+
         this->SetResult(new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], rowsize, colsize));
         this->SetDelta(new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], rowsize, colsize));
 
-        stride[0] = strideRow;
-        stride[1] = strideCol;
+        m_stride[0] = strideRow;
+        m_stride[1] = strideCol;
 
-        mask[0] = maskRow;
-        mask[1] = maskCol;
+        m_mask[0] = maskRow;
+        m_mask[1] = maskCol;
 
         indexOfMaxInput = new Tensor<int>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], rowsize, colsize);
 
         return TRUE;
-    }
-
-    void Delete() {
-        if (indexOfMaxInput) {
-            delete indexOfMaxInput;
-            indexOfMaxInput = NULL;
-        }
     }
 
     //
@@ -81,8 +85,8 @@ public:
         int rowsizeOfInput = (*shapeOfInput)[3];
         int colsizeOfInput = (*shapeOfInput)[4];
 
-        int rowsizeOfMask = mask[0];
-        int colsizeOfMask = mask[1];
+        int rowsizeOfMask = m_mask[0];
+        int colsizeOfMask = m_mask[1];
 
         DTYPE max = 0.f;
 
@@ -98,8 +102,8 @@ public:
                     for (int co = 0; co < colsize; co++) {
                         for (int mro = 0; mro < rowsizeOfMask; mro++) {
                             for (int mco = 0; mco < colsizeOfMask; mco++) {
-                                temprow = stride[0] * ro + mro;
-                                tempcol = stride[1] * co + mco;
+                                temprow = m_stride[0] * ro + mro;
+                                tempcol = m_stride[1] * co + mco;
 
                                 indexOfResult = Index4D(shapeOfResult, ba, ch, ro, co);
                                 indexOfInput  = Index4D(shapeOfInput, ba, ch, temprow, tempcol);
@@ -156,4 +160,4 @@ public:
     }
 };
 //
-#endif  // MAXPOOLING_H_
+#endif  // Maxpooling4D_H_
