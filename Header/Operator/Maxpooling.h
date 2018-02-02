@@ -6,8 +6,8 @@
 template<typename DTYPE>
 class Maxpooling2D : public Operator<DTYPE>{
 private:
-    int stride[2] = { 0, };
-    int mask[2]   = { 0, };
+    int m_stride[2] = { 0, };
+    int m_mask[2]   = { 0, };
 
     Tensor<int> *indexOfMaxInput;
 
@@ -57,11 +57,11 @@ public:
         this->SetResult(new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], rowsize, colsize));
         this->SetDelta(new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], rowsize, colsize));
 
-        stride[0] = strideRow;
-        stride[1] = strideCol;
+        m_stride[0] = strideRow;
+        m_stride[1] = strideCol;
 
-        mask[0] = maskRow;
-        mask[1] = maskCol;
+        m_mask[0] = maskRow;
+        m_mask[1] = maskCol;
 
         indexOfMaxInput = new Tensor<int>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], rowsize, colsize);
 
@@ -85,8 +85,8 @@ public:
         int rowsizeOfInput = (*shapeOfInput)[3];
         int colsizeOfInput = (*shapeOfInput)[4];
 
-        int rowsizeOfMask = mask[0];
-        int colsizeOfMask = mask[1];
+        int rowsizeOfMask = m_mask[0];
+        int colsizeOfMask = m_mask[1];
 
         DTYPE max = 0.f;
 
@@ -102,8 +102,8 @@ public:
                     for (int co = 0; co < colsize; co++) {
                         for (int mro = 0; mro < rowsizeOfMask; mro++) {
                             for (int mco = 0; mco < colsizeOfMask; mco++) {
-                                temprow = stride[0] * ro + mro;
-                                tempcol = stride[1] * co + mco;
+                                temprow = m_stride[0] * ro + mro;
+                                tempcol = m_stride[1] * co + mco;
 
                                 indexOfResult = Index4D(shapeOfResult, ba, ch, ro, co);
                                 indexOfInput  = Index4D(shapeOfInput, ba, ch, temprow, tempcol);
