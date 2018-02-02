@@ -25,8 +25,8 @@ int main(int argc, char const *argv[]) {
 
     // ======================= Select model ===================
     NeuralNetwork<float> *model = NULL;
-    model = new CNN(x, label, BATCH);
-    // model = new NN(x, label);
+    // model = new CNN(x, label, BATCH);
+    model = new NN(x, label);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
