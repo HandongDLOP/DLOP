@@ -3,14 +3,14 @@
 #include <iostream>
 #include <string>
 
-// #include "model//CNN.h"
+#include "model//CNN.h"
 #include "model//NN.h"
 
 #include "..//Header//Temporary_method.h"
 #include "MNIST_Reader.h"
 
 #define BATCH             100
-#define EPOCH             30
+#define EPOCH             50
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
@@ -30,7 +30,8 @@ int main(int argc, char const *argv[]) {
     Optimizer<float> *optimizer = NULL;
     // model = new CNN(x, label, BATCH);
     // model = new NN(x, label);
-    model = new NN(x);
+    model = new CNN(x, BATCH);
+    // model = new NN(x);
     objective = new SoftmaxCrossEntropy<float>(model, 0.0000001, "SCE");
     optimizer = model->GetOptimizer();
 

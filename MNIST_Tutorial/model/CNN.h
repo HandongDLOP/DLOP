@@ -1,12 +1,12 @@
 #include <iostream>
 #include <string>
 
-#include "..//..//Header//NeuralNetwork.h"
+#include "..//..//Header//Objective//SoftmaxCrossEntropy.h"
 
 class CNN : public NeuralNetwork<float>{
 private:
 public:
-    CNN(Placeholder<float> *x, Placeholder<float> *label, int batch_size) {
+    CNN(Placeholder<float> *x, int batch_size) {
         Operator<float> *out = NULL;
 
         // AddPlaceholder(x);
@@ -29,7 +29,7 @@ public:
 
         // ======================= Error=======================
         // 추후에는 NN과는 독립적으로 움직이도록 만들기
-        SetObjectiveFunction(new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE"));  // 중요 조건일 가능성 있음
+        // SetObjectiveFunction(new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE"));  // 중요 조건일 가능성 있음
 
         // ======================= Optimizer=======================
         // 추후에는 NN과는 독립적으로 움직이도록 만들기
