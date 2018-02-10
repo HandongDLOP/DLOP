@@ -1,52 +1,43 @@
 #ifndef Objective_H_
 #define Objective_H_
 
-// #include "MetaParameter.h"
-// #include "Optimizer//GradientDescentOptimizer.h"
-#include "Operator.h"
+#include "NeuralNetwork.h"
 
-template<typename DTYPE> class Objective : public Operator<DTYPE>{
+template<typename DTYPE> class Objective{
 private:
     Tensor<DTYPE> *m_aResult;
+    Tensor<DTYPE> *m_aGradient;
 
-    Operator<DTYPE> **m_apInput;
-
-    int m_InputDegree;
-    int m_currentInputDegree;
+    NeuralNetwork<DTYPE> *m_pInputNeuralNetwork;
+    Operator<DTYPE> *m_pInputOperator;
+    Tensor<DTYPE> *m_pInputTensor;
 
     std::string m_name;
 
 public:
     Objective(std::string pName = "NO NAME");
-    Objective(Operator<DTYPE> *pInput, std::string pName = "NO NAME");
-    Objective(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName = "NO NAME");
+    Objective(NeuralNetwork<DTYPE>* pNeuralNetwork, std::string pName = "NO NAME");
 
     virtual ~Objective();
 
-    virtual int       Alloc(int numInput, ...);
+    virtual int       Alloc(NeuralNetwork<DTYPE>* pNeuralNetwork);
     virtual void      Delete();
 
     void              SetResult(Tensor<DTYPE> *pTensor);
+    void              SetGradient(Tensor<DTYPE> *pTensor);
 
-    void              IncreaseCurrentOutputDegree();
-    void              IncreaseCurrentInputDegree();
-
-    int               _AddInputEdge(Operator<DTYPE> *pInput);
-    void              AddEdgebetweenObjectives(Operator<DTYPE> *pInput);
-
-    Tensor<DTYPE>   * GetResult() const;
-    Operator<DTYPE>** GetInput() const;
-    int               GetInputDegree() const;
-    int               GetCurrentInputDegree() const;
-    std::string       GetName() const;
+    Tensor<DTYPE>*        GetResult() const;
+    Tensor<DTYPE>*        GetGradient() const;
+    NeuralNetwork<DTYPE>* GetNeuralNetwork() const;
+    Operator<DTYPE>*      GetOperator() const;
+    Tensor<DTYPE>*        GetTensor() const;
+    std::string           GetName() const;
 
     // For Propagate
-    int               ForwardPropagate();
-    virtual int       ComputeForwardPropagate();
+    virtual Tensor<DTYPE>* ForwardPropagate(Operator<DTYPE> *pLabel);
 
     // For BackPropagate
-    int               BackPropagate();
-    virtual int       ComputeBackPropagate();
+    virtual Tensor<DTYPE>* BackPropagate();
 };
 
 #endif  // Objective_H_

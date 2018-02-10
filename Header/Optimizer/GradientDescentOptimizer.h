@@ -6,10 +6,6 @@
 template<typename DTYPE> class GradientDescentOptimizer : public Optimizer<DTYPE>{
 
 public:
-    GradientDescentOptimizer(Objective<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pObjectOperator, pLearningRate, pOptimizeDirection) {
-        std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Objective<DTYPE> *, float, OptimizeDirection)" << '\n';
-    }
-
     GradientDescentOptimizer(float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pLearningRate, pOptimizeDirection) {
         std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Objective<DTYPE> *, float, OptimizeDirection)" << '\n';
     }

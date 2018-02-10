@@ -1,12 +1,11 @@
 #include <iostream>
-#include <string>
 
-#include "..//..//Header//NeuralNetwork.h"
+#include "..//..//Header//Objective//SoftmaxCrossEntropy.h"
 
 class NN : public NeuralNetwork<float>{
 private:
 public:
-    NN(Placeholder<float> *x, Placeholder<float> *label) {
+    NN(Placeholder<float> *x, Placeholder<float> *label = NULL) {
         SLP(x, label);
         // MLP(x, label);
     }
@@ -19,7 +18,7 @@ public:
 
         // ======================= Error=======================
         // 추후에는 NN과는 독립적으로 움직이도록 만들기
-        SetObjectiveFunction(new SoftmaxCrossEntropy<float>(out, label, 1e-50, "SCE"));
+        // SetObjectiveFunction(new SoftmaxCrossEntropy<float>(out, label, 1e-50, "SCE"));
 
         // ======================= Optimizer=======================
         // 추후에는 NN과는 독립적으로 움직이도록 만들기
@@ -37,7 +36,7 @@ public:
 
         // ======================= Error=======================
         // 추후에는 NN과는 독립적으로 움직이도록 만들기
-        SetObjectiveFunction(new MSE<float>(out, label, "MSE"));
+        // SetObjectiveFunction(new MSE<float>(out, label, "MSE"));
 
         // ======================= Optimizer=======================
         // 추후에는 NN과는 독립적으로 움직이도록 만들기

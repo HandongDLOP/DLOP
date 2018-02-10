@@ -12,7 +12,7 @@ template<typename DTYPE> Tensor<DTYPE>::Tensor() {
 }
 
 template<typename DTYPE> Tensor<DTYPE>::Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
-    std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
+    // std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
     m_aShape = NULL;
     m_aData  = NULL;
     Alloc(new Shape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize));

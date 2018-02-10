@@ -4,20 +4,8 @@ template class Optimizer<int>;
 template class Optimizer<float>;
 template class Optimizer<double>;
 
-template<typename DTYPE> Optimizer<DTYPE>::Optimizer(Objective<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
-    std::cout << "Optimizer::Optimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
-    m_pObjectOperator       = NULL;
-    m_LearningRate          = 0.f;
-    m_OptimizeDirection     = 1;
-    m_apTrainableTensor     = NULL;
-    m_TrainableTensorDegree = 0;
-
-    Alloc(pObjectOperator, pLearningRate, pOptimizeDirection);
-}
-
 template<typename DTYPE> Optimizer<DTYPE>::Optimizer(float pLearningRate, OptimizeDirection pOptimizeDirection) {
     std::cout << "Optimizer::Optimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
-    m_pObjectOperator       = NULL;
     m_LearningRate          = 0.f;
     m_OptimizeDirection     = 1;
     m_apTrainableTensor     = NULL;
@@ -30,16 +18,6 @@ template<typename DTYPE> Optimizer<DTYPE>::~Optimizer() {
     std::cout << "Optimizer::~Optimizer()" << '\n';
 
     this->Delete();
-}
-
-template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Objective<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
-    m_pObjectOperator = pObjectOperator;
-    m_LearningRate    = pLearningRate;
-
-    if (pOptimizeDirection == MAXIMIZE) m_OptimizeDirection = 1;
-    else if (pOptimizeDirection == MINIMIZE) m_OptimizeDirection = -1;
-
-    return TRUE;
 }
 
 template<typename DTYPE> int Optimizer<DTYPE>::Alloc(float pLearningRate, OptimizeDirection pOptimizeDirection) {
@@ -94,10 +72,6 @@ template<typename DTYPE> int Optimizer<DTYPE>::UpdateVariable() {
 
 template<typename DTYPE> void Optimizer<DTYPE>::SetLearningRate(float pLearningRate) {
     m_LearningRate = pLearningRate;
-}
-
-template<typename DTYPE> Objective<DTYPE> *Optimizer<DTYPE>::GetObjectOperator() const {
-    return m_pObjectOperator;
 }
 
 template<typename DTYPE> float Optimizer<DTYPE>::GetLearningRate()  const {

@@ -14,8 +14,6 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     m_OperatorDegree = 0;
     m_TensorholderDegree = 0;
 
-    m_aObjectiveFunction = NULL;
-
     m_aOptimizer = NULL;
 }
 
@@ -114,12 +112,6 @@ template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddTensorhol
     return pTensorholder;
 }
 
-template<typename DTYPE> Objective<DTYPE> *NeuralNetwork<DTYPE>::SetObjectiveFunction(Objective<DTYPE> *pObjectiveFunction) {
-    m_aObjectiveFunction = pObjectiveFunction;
-
-    return m_aObjectiveFunction;
-}
-
 template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::SetOptimizer(Optimizer<DTYPE> *pOptimizer) {
     m_aOptimizer = pOptimizer;
 
@@ -146,16 +138,22 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::FeedData(int numOfPlaceholder
     return TRUE;
 }
 
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::GetResultOperator() {
+    return m_aaOperator[m_OperatorDegree - 1];
+}
+
+template<typename DTYPE> Optimizer<DTYPE>* NeuralNetwork<DTYPE>::GetOptimizer() {
+    return m_aOptimizer;
+}
+
 // ===========================================================================================
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate() {
+template<typename DTYPE> Operator<DTYPE>* NeuralNetwork<DTYPE>::ForwardPropagate() {
     for (int i = 0; i < m_OperatorDegree; i++) {
         m_aaOperator[i]->ComputeForwardPropagate();
     }
 
-    m_aObjectiveFunction->ComputeForwardPropagate();
-
-    return TRUE;
+    return m_aaOperator[m_OperatorDegree - 1];
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTYPE> *pEnd) {
@@ -167,8 +165,6 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTY
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
-    m_aObjectiveFunction->ComputeBackPropagate();
-
     for (int i = m_OperatorDegree - 1; i >= 0; i--) {
         m_aaOperator[i]->ComputeBackPropagate();
     }

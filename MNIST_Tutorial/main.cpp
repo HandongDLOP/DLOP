@@ -1,9 +1,9 @@
-/*g++ -g -o testing -std=c++11 main.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Objective.cpp ../Header/Optimizer.cpp ../Header/NeuralNetwork.cpp*/
+/*g++ -g -o testing -std=c++11 main.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Objective_.cpp ../Header/Optimizer.cpp ../Header/NeuralNetwork_.cpp*/
 
 #include <iostream>
 #include <string>
 
-#include "model//CNN.h"
+// #include "model//CNN.h"
 #include "model//NN.h"
 
 #include "..//Header//Temporary_method.h"
@@ -22,11 +22,17 @@ int main(int argc, char const *argv[]) {
 
     // Result of classification
     Operator<float> *result = NULL;
+    Tensor<float> *loss = NULL;
 
     // ======================= Select model ===================
     NeuralNetwork<float> *model = NULL;
+    Objective<float> *objective = NULL;
+    Optimizer<float> *optimizer = NULL;
     // model = new CNN(x, label, BATCH);
-    model = new NN(x, label);
+    // model = new NN(x, label);
+    model = new NN(x);
+    objective = new SoftmaxCrossEntropy<float>(model, 0.0000001, "SCE");
+    optimizer = model->GetOptimizer();
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
@@ -42,7 +48,11 @@ int main(int argc, char const *argv[]) {
             x->SetTensor(dataset->GetTrainFeedImage());
             label->SetTensor(dataset->GetTrainFeedLabel());
 
-            result = model->Training();
+            result = model->ForwardPropagate();
+            loss = objective->ForwardPropagate(label);
+            objective->BackPropagate();
+            model->BackPropagate();
+            optimizer->UpdateVariable();
 
             train_accuracy += (float)temp::Accuracy(result->GetResult(), label->GetResult(), BATCH);
             printf("\rTraining complete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TRAIN, train_accuracy / (j + 1));
@@ -61,7 +71,7 @@ int main(int argc, char const *argv[]) {
             x->SetTensor(dataset->GetTestFeedImage());
             label->SetTensor(dataset->GetTestFeedLabel());
 
-            result = model->Testing();
+            result = model->ForwardPropagate();
 
             test_accuracy += (float)temp::Accuracy(result->GetResult(), label->GetResult(), BATCH);
             printf("\rTesting complete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TEST, test_accuracy / (j + 1));
@@ -73,6 +83,7 @@ int main(int argc, char const *argv[]) {
     // we need to save best weight and bias when occur best acc on test time
     delete dataset;
     delete model;
+    delete objective;
 
     return 0;
 }

@@ -10,19 +10,9 @@ private:
     DTYPE m_epsilon;  // for backprop
 
 public:
-    SoftmaxCrossEntropy(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, DTYPE epsilon = 1e-2) : Objective<DTYPE>(pInput, pLabel) {
+    SoftmaxCrossEntropy(NeuralNetwork<DTYPE> *pNeuralNetwork, DTYPE epsilon = 1e-2, std::string pName = "NO NAME") : Objective<DTYPE>(pNeuralNetwork, pName) {
         std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
-        Alloc(pInput, pLabel, epsilon);
-    }
-
-    SoftmaxCrossEntropy(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, std::string pName) : Objective<DTYPE>(pInput, pLabel, pName) {
-        std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
-        Alloc(pInput, pLabel);
-    }
-
-    SoftmaxCrossEntropy(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, DTYPE epsilon, std::string pName) : Objective<DTYPE>(pInput, pLabel, pName) {
-        std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, int, std::string)" << '\n';
-        Alloc(pInput, pLabel, epsilon);
+        Alloc(pNeuralNetwork, epsilon);
     }
 
     ~SoftmaxCrossEntropy() {
@@ -30,8 +20,10 @@ public:
         delete m_aSoftmaxResult;
     }
 
-    virtual int Alloc(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, DTYPE epsilon = 1e-2) {
+    virtual int Alloc(NeuralNetwork<DTYPE> *pNeuralNetwork, DTYPE epsilon) {
         std::cout << "SoftmaxCrossEntropy::Alloc(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
+
+        Operator<DTYPE> *pInput = pNeuralNetwork->GetResultOperator();
 
         int timesize  = pInput->GetResult()->GetTimeSize();
         int batchsize = pInput->GetResult()->GetBatchSize();
@@ -39,6 +31,9 @@ public:
         this->SetResult(new Tensor<DTYPE>(timesize, batchsize, 1, 1, 1));
 
         Shape *shapeOfSoftmaxResult = new Shape(pInput->GetResult()->GetShape());
+
+        this->SetGradient(new Tensor<DTYPE>(shapeOfSoftmaxResult));
+
         m_aSoftmaxResult = new Tensor<DTYPE>(shapeOfSoftmaxResult);
 
         m_epsilon = epsilon;
@@ -46,13 +41,16 @@ public:
         return TRUE;
     }
 
-    virtual int ComputeForwardPropagate() {
-        Tensor<DTYPE> *input         = this->GetInput()[0]->GetResult();
-        Tensor<DTYPE> *label         = this->GetInput()[1]->GetResult();
+    virtual Tensor<DTYPE> *ForwardPropagate(Operator<DTYPE> *pLabel) {
+        // 추가로  backprop을 계속해서 구성해나가게 되면, 진행하는 것이 가능하다. label 값을 따로 저장하는 작업이 필요가 없어진다.
+
+        Tensor<DTYPE> *input         = this->GetTensor();
+        Tensor<DTYPE> *label         = pLabel->GetResult();
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
-        // softmaxresult->Reset();
         Tensor<DTYPE> *result = this->GetResult();
+        Tensor<DTYPE> *gradient = this->GetGradient();
         result->Reset();
+        gradient->Reset();
 
         int timesize    = input->GetTimeSize();
         int batchsize   = input->GetBatchSize();
@@ -104,29 +102,33 @@ public:
                     (*softmaxresult)[i] = (exp((*input)[i] - max[ti][ba]) + m_epsilon) / sum[ti][ba];
 
                     (*result)[ti * batchsize + ba] += -(*label)[i] * log((*softmaxresult)[i] + m_epsilon);
+
+                    (*gradient)[i] = (*softmaxresult)[i] - (*label)[i];
                 }
+
+
             }
         }
 
-        return TRUE;
+
+
+        return result;
     }
 
-    virtual int ComputeBackPropagate() {
-        Tensor<DTYPE> *label         = this->GetInput()[1]->GetResult();
+    virtual Tensor<DTYPE> *BackPropagate() {
+        Tensor<DTYPE> *gradient       = this->GetGradient();
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
 
-        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
+        Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
         input_delta->Reset();
 
         int capacity = input_delta->GetData()->GetCapacity();
 
-        int numOfOutputDim = label->GetColSize();
-
         for (int i = 0; i < capacity; i++) {
-            (*input_delta)[i] = ((*softmaxresult)[i] - (*label)[i]);
+            (*input_delta)[i] = (*gradient)[i];
         }
 
-        return TRUE;
+        return NULL;
     }
 
     DTYPE Max(Tensor<DTYPE> *input, int start, int end) {

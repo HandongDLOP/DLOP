@@ -1,22 +1,19 @@
 #ifndef NEURALNETWORK_H_
 #define NEURALNETWORK_H_
 
-#include "Operator//Placeholder.h"
-#include "Operator//Tensorholder.h"
-
-#include "Operator//Reshape.h"
-
-#include "Operator//Relu.h"
-#include "Operator//Sigmoid.h"
-
-#include "Operator//Add.h"
-#include "Operator//Addconv.h"
-#include "Operator//MatMul.h"
-#include "Operator//Convolution.h"
-#include "Operator//Maxpooling.h"
-
-#include "Objective//MSE.h"
-#include "Objective//SoftmaxCrossEntropy.h"
+// #include "Operator//Placeholder.h"
+// #include "Operator//Tensorholder.h"
+//
+// #include "Operator//Reshape.h"
+//
+// #include "Operator//Relu.h"
+// #include "Operator//Sigmoid.h"
+//
+// #include "Operator//Add.h"
+// #include "Operator//Addconv.h"
+// #include "Operator//MatMul.h"
+// #include "Operator//Convolution.h"
+// #include "Operator//Maxpooling.h"
 
 #include "Optimizer//GradientDescentOptimizer.h"
 
@@ -29,8 +26,6 @@ private:
     int m_PlaceholderDegree;
     int m_OperatorDegree;
     int m_TensorholderDegree;
-
-    Objective<DTYPE> *m_aObjectiveFunction;
 
     Optimizer<DTYPE> *m_aOptimizer;
 
@@ -50,9 +45,11 @@ public:
 
     // =======
 
-    Objective<DTYPE>* SetObjectiveFunction(Objective<DTYPE> *pObjectiveFunction);
     Optimizer<DTYPE>* SetOptimizer(Optimizer<DTYPE> *pOptimizer);
     int FeedData(int numOfTensorholder, ...);
+
+    Operator<DTYPE>* GetResultOperator();
+    Optimizer<DTYPE>* GetOptimizer();
 
     // =======
 
@@ -63,7 +60,7 @@ public:
     Operator<DTYPE>* Testing(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
 
     // =======
-    int ForwardPropagate();
+    Operator<DTYPE>* ForwardPropagate();
     int ForwardPropagate(Operator<DTYPE> *pEnd);
     int ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
     int BackPropagate();
