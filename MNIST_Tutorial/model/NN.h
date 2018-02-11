@@ -2,45 +2,34 @@
 
 #include "..//..//Header//Optimizer//GradientDescentOptimizer.h"
 
+enum MODEL_OPTION{
+    isSLP,
+    isMLP
+};
+
 class NN : public NeuralNetwork<float>{
 private:
 public:
-    NN(Placeholder<float> *x, Placeholder<float> *label = NULL) {
-        // SLP(x, label);
-        MLP(x, label);
+    NN(Placeholder<float> *x, MODEL_OPTION pOption) {
+        if (pOption == isSLP) SLP(x);
+        else if (pOption == isMLP) MLP(x);
     }
 
-    void SLP(Placeholder<float> *x, Placeholder<float> *label) {
-        Operator<float> *out = NULL;
-
+    void SLP(Placeholder<float> *x) {
         // ======================= layer 1======================
-        out = AddFullyConnectedLayer(x, 784, 10, FALSE, "1");
+        AddFullyConnectedLayer(x, 784, 10, FALSE, "1");
 
-        // ======================= Error=======================
-        // 추후에는 NN과는 독립적으로 움직이도록 만들기
-        // SetObjectiveFunction(new SoftmaxCrossEntropy<float>(out, label, 1e-50, "SCE"));
-
-        // ======================= Optimizer=======================
-        // 추후에는 NN과는 독립적으로 움직이도록 만들기
-        // SetOptimizer(new GradientDescentOptimizer<float>(0.01, MINIMIZE));
     }
 
-    void MLP(Placeholder<float> *x, Placeholder<float> *label) {
+    void MLP(Placeholder<float> *x) {
         Operator<float> *out = NULL;
 
         // ======================= layer 1======================
         out = AddFullyConnectedLayer(x, 784, 15, TRUE, "1");
 
         // ======================= layer 2=======================
-        out = AddFullyConnectedLayer(out, 15, 10, TRUE, "2");
+        AddFullyConnectedLayer(out, 15, 10, TRUE, "2");
 
-        // ======================= Error=======================
-        // 추후에는 NN과는 독립적으로 움직이도록 만들기
-        // SetObjectiveFunction(new MSE<float>(out, label, "MSE"));
-
-        // ======================= Optimizer=======================
-        // SetOptimizer(new GradientDescentOptimizer<float>(0.5, MINIMIZE));
-        // 추후에는 NN과는 독립적으로 움직이도록 만들기
     }
 
     Operator<float>* AddFullyConnectedLayer(Operator<float> *pInput, int pColSize_in, int pColSize_out, int pActivation, std::string pLayernum) {

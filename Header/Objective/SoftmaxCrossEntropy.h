@@ -10,7 +10,7 @@ private:
     DTYPE m_epsilon;  // for backprop
 
 public:
-    SoftmaxCrossEntropy(NeuralNetwork<DTYPE> *pNeuralNetwork, DTYPE epsilon = 1e-2, std::string pName = "NO NAME") : Objective<DTYPE>(pNeuralNetwork, pName) {
+    SoftmaxCrossEntropy(NeuralNetwork<DTYPE> *pNeuralNetwork, Operator<DTYPE> *pLabel, DTYPE epsilon = 1e-2, std::string pName = "NO NAME") : Objective<DTYPE>(pNeuralNetwork, pLabel, pName) {
         std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
         Alloc(pNeuralNetwork, epsilon);
     }
@@ -25,7 +25,7 @@ public:
 
         Operator<DTYPE> *pInput = pNeuralNetwork->GetResultOperator();
 
-        int timesize  = pInput->GetResult()->GetTimeSize();
+        int timesize = pInput->GetResult()->GetTimeSize();
         int batchsize = pInput->GetResult()->GetBatchSize();
 
         this->SetResult(new Tensor<DTYPE>(timesize, batchsize, 1, 1, 1));
@@ -41,38 +41,38 @@ public:
         return TRUE;
     }
 
-    virtual Tensor<DTYPE> *ForwardPropagate(Operator<DTYPE> *pLabel) {
+    virtual Tensor<DTYPE>* ForwardPropagate() {
         // 추가로  backprop을 계속해서 구성해나가게 되면, 진행하는 것이 가능하다. label 값을 따로 저장하는 작업이 필요가 없어진다.
 
-        Tensor<DTYPE> *input         = this->GetTensor();
-        Tensor<DTYPE> *label         = pLabel->GetResult();
+        Tensor<DTYPE> *input = this->GetTensor();
+        Tensor<DTYPE> *label = this->GetLabel()->GetResult();
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
         Tensor<DTYPE> *result = this->GetResult();
         Tensor<DTYPE> *gradient = this->GetGradient();
         result->Reset();
         gradient->Reset();
 
-        int timesize    = input->GetTimeSize();
-        int batchsize   = input->GetBatchSize();
+        int timesize = input->GetTimeSize();
+        int batchsize = input->GetBatchSize();
         int channelsize = input->GetChannelSize();
-        int rowsize     = input->GetRowSize();
-        int colsize     = input->GetColSize();
+        int rowsize = input->GetRowSize();
+        int colsize = input->GetColSize();
 
         DTYPE sum[timesize][batchsize] = { 0.f, };
         DTYPE max[timesize][batchsize] = { 0.f, };
-        int   numOfOutputDim           = 0;
+        int   numOfOutputDim = 0;
 
-        int count    = timesize * batchsize;
+        int count = timesize * batchsize;
         int capacity = colsize;
 
 
         int start = 0;
-        int end   = 0;
+        int end = 0;
 
         for (int ti = 0; ti < timesize; ti++) {
             for (int ba = 0; ba < batchsize; ba++) {
                 start = (ti * batchsize + ba) * capacity;
-                end   = start + capacity;
+                end = start + capacity;
 
                 max[ti][ba] = Max(input, start, end);
             }
@@ -83,20 +83,20 @@ public:
         for (int ti = 0; ti < timesize; ti++) {
             for (int ba = 0; ba < batchsize; ba++) {
                 start = (ti * batchsize + ba) * capacity;
-                end   = start + capacity;
+                end = start + capacity;
 
                 for (int i = start; i < end; i++) {
                     temp += (exp((*input)[i] - max[ti][ba]) + m_epsilon);
                 }
                 sum[ti][ba] = temp;
-                temp        = 0.f;
+                temp = 0.f;
             }
         }
 
         for (int ti = 0; ti < timesize; ti++) {
             for (int ba = 0; ba < batchsize; ba++) {
                 start = (ti * batchsize + ba) * capacity;
-                end   = start + capacity;
+                end = start + capacity;
 
                 for (int i = start; i < end; i++) {
                     (*softmaxresult)[i] = (exp((*input)[i] - max[ti][ba]) + m_epsilon) / sum[ti][ba];
@@ -105,18 +105,15 @@ public:
 
                     (*gradient)[i] = (*softmaxresult)[i] - (*label)[i];
                 }
-
-
             }
         }
-
 
 
         return result;
     }
 
-    virtual Tensor<DTYPE> *BackPropagate() {
-        Tensor<DTYPE> *gradient       = this->GetGradient();
+    virtual Tensor<DTYPE>* BackPropagate() {
+        Tensor<DTYPE> *gradient = this->GetGradient();
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
 
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();

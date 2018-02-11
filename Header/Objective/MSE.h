@@ -6,7 +6,7 @@
 template<typename DTYPE>
 class MSE : public Objective<DTYPE>{
 public:
-    MSE(NeuralNetwork<DTYPE> *pNeuralNetwork, std::string pName) : Objective<DTYPE>(pNeuralNetwork, pName) {
+    MSE(NeuralNetwork<DTYPE> *pNeuralNetwork, Operator<DTYPE> *pLabel, std::string pName) : Objective<DTYPE>(pNeuralNetwork, pLabel, pName) {
         std::cout << "MSE::MSE(Operator<DTYPE> *, MetaParameter *, std::string)" << '\n';
         this->Alloc(pNeuralNetwork);
     }
@@ -32,9 +32,9 @@ public:
         return TRUE;
     }
 
-    virtual Tensor<DTYPE>* ForwardPropagate(Operator<DTYPE> *pLabel) {
+    virtual Tensor<DTYPE>* ForwardPropagate() {
         Tensor<DTYPE> *input = this->GetTensor();
-        Tensor<DTYPE> *label = pLabel->GetResult();
+        Tensor<DTYPE> *label = this->GetLabel()->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
         Tensor<DTYPE> *gradient = this->GetGradient();
         result->Reset();

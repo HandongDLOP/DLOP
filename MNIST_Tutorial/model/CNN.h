@@ -6,11 +6,13 @@
 class CNN : public NeuralNetwork<float>{
 private:
 public:
-    CNN(Placeholder<float> *x, int batch_size) {
+    CNN(Placeholder<float> *x) {
         Operator<float> *out = NULL;
 
         // AddPlaceholder(x);
         // AddPlaceholder(label);
+
+        int batch_size = x->GetResult()->GetBatchSize();
 
         out = AddOperator(new Reshape<float>(x, 1, batch_size, 1, 28, 28, "reshape"));
 
@@ -22,18 +24,10 @@ public:
         out = AddOperator(new Reshape<float>(out, 1, batch_size, 1, 1, 5 * 5 * 10, "flat"));
 
         // ======================= layer 3=======================
-        out = AddFullyConnectedLayer(out, 5 * 5 * 10, 10, "3");
+        AddFullyConnectedLayer(out, 5 * 5 * 10, 10, "3");
 
         // ======================= layer 4=======================
         // out = AddFullyConnectedLayer(out, 250, 10, "4");
-
-        // ======================= Error=======================
-        // 추후에는 NN과는 독립적으로 움직이도록 만들기
-        // SetObjectiveFunction(new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE"));  // 중요 조건일 가능성 있음
-
-        // ======================= Optimizer=======================
-        // 추후에는 NN과는 독립적으로 움직이도록 만들기
-        SetOptimizer(new GradientDescentOptimizer<float>(0.001, MINIMIZE));
     }
 
     Operator<float>* AddConvLayer(Operator<float> *pInput, int pChannelSize_out, std::string pLayernum) {

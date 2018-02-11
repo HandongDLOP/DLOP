@@ -3,20 +3,20 @@
 #include <iostream>
 #include <string>
 
-// #include "model//CNN.h"
+#include "model//CNN.h"
 #include "model//NN.h"
 
 #include "..//Header//Temporary_method.h"
 #include "MNIST_Reader.h"
 
 #define BATCH             100
-#define EPOCH             50
+#define EPOCH             100
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
 int main(int argc, char const *argv[]) {
-    // create input, label data placeholder
+    // create input, label data placeholder -> Tensorholder
     Placeholder<float> *x = new Placeholder<float>(1, BATCH, 1, 1, 784, "x");
     Placeholder<float> *label = new Placeholder<float>(1, BATCH, 1, 1, 10, "label");
 
@@ -25,15 +25,16 @@ int main(int argc, char const *argv[]) {
     Tensor<float> *loss = NULL;
 
     // ======================= Select model ===================
-    // NeuralNetwork<float> *model = new CNN(x, BATCH);
-    NeuralNetwork<float> *model = new NN(x);
+    NeuralNetwork<float> *model = new CNN(x);
+    // NeuralNetwork<float> *model = new NN(x, isSLP);
+    // NeuralNetwork<float> *model = new NN(x, isMLP);
 
     // ======================= Select Objective Function ===================
-    // Objective<float> *objective = new SoftmaxCrossEntropy<float>(model, 0.0000001, "SCE");
-    Objective<float> *objective = new MSE<float>(model, "MSE");
+    Objective<float> *objective = new SoftmaxCrossEntropy<float>(model, label, 0.0000001, "SCE");
+    // Objective<float> *objective = new MSE<float>(model, label, "MSE");
 
     // ======================= Select Optimizer ===================
-    Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(objective, 0.01, MINIMIZE);
+    Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(objective, 0.001, MINIMIZE);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
@@ -50,9 +51,11 @@ int main(int argc, char const *argv[]) {
             label->SetTensor(dataset->GetTrainFeedLabel());
 
             result = model->ForwardPropagate();
-            loss = objective->ForwardPropagate(label);
+            loss = objective->ForwardPropagate();
+
             objective->BackPropagate();
             model->BackPropagate();
+
             optimizer->UpdateVariable();
 
             float avg_loss = 0;
@@ -78,7 +81,7 @@ int main(int argc, char const *argv[]) {
             label->SetTensor(dataset->GetTestFeedLabel());
 
             result = model->ForwardPropagate();
-            loss = objective->ForwardPropagate(label);
+            loss = objective->ForwardPropagate();
 
             float avg_loss = 0;
             for(int k = 0; k < BATCH; k++){
@@ -86,7 +89,7 @@ int main(int argc, char const *argv[]) {
             }
 
             test_accuracy += (float)temp::Accuracy(result->GetResult(), label->GetResult(), BATCH);
-            printf("\rTesting complete percentage is %d / %d -> loss : %f, acc : %f", j + 1, LOOP_FOR_TRAIN, avg_loss, test_accuracy / (j + 1));
+            printf("\rTesting complete percentage is %d / %d -> loss : %f, acc : %f", j + 1, LOOP_FOR_TEST, avg_loss, test_accuracy / (j + 1));
             fflush(stdout);
         }
         std::cout << '\n';
@@ -96,6 +99,7 @@ int main(int argc, char const *argv[]) {
     delete dataset;
     delete model;
     delete objective;
+    delete optimizer; // 추후에는 이것만 지우면 될 수 있도록 만들기
 
     return 0;
 }

@@ -11,18 +11,20 @@ template<typename DTYPE> Objective<DTYPE>::Objective(std::string pName) {
     m_pInputNeuralNetwork = NULL;
     m_pInputOperator = NULL;
     m_pInputTensor = NULL;
+    m_pLabel = NULL;
     m_name = pName;
 }
 
-template<typename DTYPE> Objective<DTYPE>::Objective(NeuralNetwork<DTYPE> *pNeuralNetwork, std::string pName) {
+template<typename DTYPE> Objective<DTYPE>::Objective(NeuralNetwork<DTYPE> *pNeuralNetwork, Operator<DTYPE> *pLabel, std::string pName) {
     std::cout << "Objective<DTYPE>::Objective()" << '\n';
     m_aResult = NULL;
     m_aGradient = NULL;
     m_pInputNeuralNetwork = NULL;
     m_pInputOperator = NULL;
     m_pInputTensor = NULL;
+    m_pLabel = NULL;
     m_name = pName;
-    Alloc(pNeuralNetwork);
+    Alloc(pNeuralNetwork, pLabel);
 }
 
 template<typename DTYPE> Objective<DTYPE>::~Objective() {
@@ -30,13 +32,14 @@ template<typename DTYPE> Objective<DTYPE>::~Objective() {
     this->Delete();
 }
 
-template<typename DTYPE> int Objective<DTYPE>::Alloc(NeuralNetwork<DTYPE> *pNeuralNetwork) {
+template<typename DTYPE> int Objective<DTYPE>::Alloc(NeuralNetwork<DTYPE> *pNeuralNetwork, Operator<DTYPE> *pLabel) {
     std::cout << "Objective<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
 
     m_pInputNeuralNetwork = pNeuralNetwork;
     m_pInputOperator = m_pInputNeuralNetwork->GetResultOperator();
     m_pInputTensor = m_pInputOperator->GetResult();
 
+    m_pLabel = pLabel;
     return TRUE;
 }
 
@@ -80,11 +83,15 @@ template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::GetTensor() const {
     return m_pInputTensor;
 }
 
+template<typename DTYPE> Operator<DTYPE> *Objective<DTYPE>::GetLabel() const {
+    return m_pLabel;
+}
+
 template<typename DTYPE> std::string Objective<DTYPE>::GetName() const {
     return m_name;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::ForwardPropagate(Operator<DTYPE> *pLabel) {
+template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::ForwardPropagate() {
     std::cout << this->GetName() << '\n';
     return NULL;
 }
