@@ -1,19 +1,8 @@
 #ifndef OPTIMIZER_H_
 #define OPTIMIZER_H_    value
 
-#include "Operator//Placeholder.h"
-#include "Operator//Tensorholder.h"
-
-#include "Operator//Reshape.h"
-
-#include "Operator//Relu.h"
-#include "Operator//Sigmoid.h"
-
-#include "Operator//Add.h"
-#include "Operator//Addconv.h"
-#include "Operator//MatMul.h"
-#include "Operator//Convolution.h"
-#include "Operator//Maxpooling.h"
+#include "Objective//SoftmaxCrossEntropy.h"
+#include "Objective//MSE.h"
 
 template<typename DTYPE> class Operator;
 
@@ -24,6 +13,8 @@ enum OptimizeDirection {
 
 template<typename DTYPE> class Optimizer {
 private:
+    Objective<DTYPE> * m_pObjective;
+
     float m_LearningRate;
     int   m_OptimizeDirection; // 1 or -1
 
@@ -31,20 +22,18 @@ private:
     int m_TrainableTensorDegree;
 
 public:
-    Optimizer(float pLearningRate, OptimizeDirection pOptimizeDirection);
+    Optimizer(Objective<DTYPE> *pObjective, float pLearningRate, OptimizeDirection pOptimizeDirection);
 
     virtual ~Optimizer();
 
     // ===============
 
-    int Alloc(float pLearningRate, OptimizeDirection pOptimizeDirection);
+    int Alloc(Objective<DTYPE> *pObjective, float pLearningRate, OptimizeDirection pOptimizeDirection);
 
     int Delete();
 
-    int AddTrainableData(Operator<DTYPE> *pTrainableTensor);
-
+    int AddTrainableTensor(Objective<DTYPE> *pObjective);
     int AddTrainableTensor(Operator<DTYPE> *pTrainableTensor);
-
 
     // ===============
     int         UpdateVariable();

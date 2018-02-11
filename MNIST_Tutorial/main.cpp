@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "model//CNN.h"
+// #include "model//CNN.h"
 #include "model//NN.h"
 
 #include "..//Header//Temporary_method.h"
@@ -25,15 +25,15 @@ int main(int argc, char const *argv[]) {
     Tensor<float> *loss = NULL;
 
     // ======================= Select model ===================
-    NeuralNetwork<float> *model = NULL;
-    Objective<float> *objective = NULL;
-    Optimizer<float> *optimizer = NULL;
-    // model = new CNN(x, label, BATCH);
-    // model = new NN(x, label);
-    model = new CNN(x, BATCH);
-    // model = new NN(x);
-    objective = new SoftmaxCrossEntropy<float>(model, 0.0000001, "SCE");
-    optimizer = model->GetOptimizer();
+    // NeuralNetwork<float> *model = new CNN(x, BATCH);
+    NeuralNetwork<float> *model = new NN(x);
+
+    // ======================= Select Objective Function ===================
+    // Objective<float> *objective = new SoftmaxCrossEntropy<float>(model, 0.0000001, "SCE");
+    Objective<float> *objective = new MSE<float>(model, "MSE");
+
+    // ======================= Select Optimizer ===================
+    Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(objective, 0.01, MINIMIZE);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
@@ -55,8 +55,13 @@ int main(int argc, char const *argv[]) {
             model->BackPropagate();
             optimizer->UpdateVariable();
 
+            float avg_loss = 0;
+            for(int k = 0; k < BATCH; k++){
+                avg_loss += (*loss)[k] / BATCH;
+            }
+
             train_accuracy += (float)temp::Accuracy(result->GetResult(), label->GetResult(), BATCH);
-            printf("\rTraining complete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TRAIN, train_accuracy / (j + 1));
+            printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f", j + 1, LOOP_FOR_TRAIN, avg_loss, train_accuracy / (j + 1));
             fflush(stdout);
         }
         std::cout << '\n';
@@ -73,9 +78,15 @@ int main(int argc, char const *argv[]) {
             label->SetTensor(dataset->GetTestFeedLabel());
 
             result = model->ForwardPropagate();
+            loss = objective->ForwardPropagate(label);
+
+            float avg_loss = 0;
+            for(int k = 0; k < BATCH; k++){
+                avg_loss += (*loss)[k] / BATCH;
+            }
 
             test_accuracy += (float)temp::Accuracy(result->GetResult(), label->GetResult(), BATCH);
-            printf("\rTesting complete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TEST, test_accuracy / (j + 1));
+            printf("\rTesting complete percentage is %d / %d -> loss : %f, acc : %f", j + 1, LOOP_FOR_TRAIN, avg_loss, test_accuracy / (j + 1));
             fflush(stdout);
         }
         std::cout << '\n';

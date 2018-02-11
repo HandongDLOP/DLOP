@@ -14,7 +14,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     m_OperatorDegree = 0;
     m_TensorholderDegree = 0;
 
-    m_aOptimizer = NULL;
+    // m_aOptimizer = NULL;
 }
 
 template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
@@ -46,7 +46,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         delete[] m_aaTensorholder;
     }
 
-    delete m_aOptimizer;
+    // delete m_aOptimizer;
 }
 
 template<typename DTYPE> Placeholder<DTYPE> *NeuralNetwork<DTYPE>::AddPlaceholder(Placeholder<DTYPE> *pPlaceholder) {
@@ -112,16 +112,16 @@ template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddTensorhol
     return pTensorholder;
 }
 
-template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::SetOptimizer(Optimizer<DTYPE> *pOptimizer) {
-    m_aOptimizer = pOptimizer;
-
-    // for optimizer
-    for (int i = 0; i < m_TensorholderDegree; i++) {
-        m_aOptimizer->AddTrainableTensor(m_aaTensorholder[i]);
-    }
-
-    return m_aOptimizer;
-}
+// template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::SetOptimizer(Optimizer<DTYPE> *pOptimizer) {
+// m_aOptimizer = pOptimizer;
+//
+// // for optimizer
+// for (int i = 0; i < m_TensorholderDegree; i++) {
+// m_aOptimizer->AddTrainableTensor(m_aaTensorholder[i]);
+// }
+//
+// return m_aOptimizer;
+// }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::FeedData(int numOfPlaceholder, ...) {
     va_list ap;
@@ -142,9 +142,17 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::GetResultOperato
     return m_aaOperator[m_OperatorDegree - 1];
 }
 
-template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::GetOptimizer() {
-    return m_aOptimizer;
+template<typename DTYPE> Tensorholder<DTYPE> **NeuralNetwork<DTYPE>::GetTensorholder() {
+    return m_aaTensorholder;
 }
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::GetTensorholderDegree() {
+    return m_TensorholderDegree;
+}
+
+// template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::GetOptimizer() {
+// return m_aOptimizer;
+// }
 
 // ===========================================================================================
 
@@ -176,7 +184,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Training() {
     this->ForwardPropagate();
     this->BackPropagate();
-    m_aOptimizer->UpdateVariable();
+    // m_aOptimizer->UpdateVariable();
 
     return m_aaOperator[m_OperatorDegree - 1];
 }

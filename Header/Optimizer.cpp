@@ -4,14 +4,14 @@ template class Optimizer<int>;
 template class Optimizer<float>;
 template class Optimizer<double>;
 
-template<typename DTYPE> Optimizer<DTYPE>::Optimizer(float pLearningRate, OptimizeDirection pOptimizeDirection) {
+template<typename DTYPE> Optimizer<DTYPE>::Optimizer(Objective<DTYPE> *pObjective, float pLearningRate, OptimizeDirection pOptimizeDirection) {
     std::cout << "Optimizer::Optimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
     m_LearningRate = 0.f;
     m_OptimizeDirection = 1;
     m_apTrainableTensor = NULL;
     m_TrainableTensorDegree = 0;
 
-    Alloc(pLearningRate, pOptimizeDirection);
+    Alloc(pObjective, pLearningRate, pOptimizeDirection);
 }
 
 template<typename DTYPE> Optimizer<DTYPE>::~Optimizer() {
@@ -20,7 +20,11 @@ template<typename DTYPE> Optimizer<DTYPE>::~Optimizer() {
     this->Delete();
 }
 
-template<typename DTYPE> int Optimizer<DTYPE>::Alloc(float pLearningRate, OptimizeDirection pOptimizeDirection) {
+template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Objective<DTYPE> *pObjective, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+    m_pObjective = pObjective;
+
+    this->AddTrainableTensor(pObjective);
+
     m_LearningRate = pLearningRate;
 
     if (pOptimizeDirection == MAXIMIZE) m_OptimizeDirection = 1;
@@ -35,8 +39,16 @@ template<typename DTYPE> int Optimizer<DTYPE>::Delete() {
     return TRUE;
 }
 
-template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableData(Operator<DTYPE> *pTrainableTensor) {
-    return this->AddTrainableTensor(pTrainableTensor);
+template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableTensor(Objective<DTYPE> *pObjective) {
+    NeuralNetwork<DTYPE> * pNeuralNetwork = pObjective->GetNeuralNetwork();
+    Tensorholder<DTYPE> ** pTensorholders = pNeuralNetwork->GetTensorholder();
+    int pTensorholderDegree = pNeuralNetwork->GetTensorholderDegree();
+
+    for (int i = 0; i < pTensorholderDegree; i++) {
+        this->AddTrainableTensor(pTensorholders[i]);
+    }
+
+    return TRUE;
 }
 
 template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableTensor(Operator<DTYPE> *pTrainableTensor) {

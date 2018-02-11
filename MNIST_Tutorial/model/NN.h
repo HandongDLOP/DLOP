@@ -1,13 +1,13 @@
 #include <iostream>
 
-#include "..//..//Header//Objective//SoftmaxCrossEntropy.h"
+#include "..//..//Header//Optimizer//GradientDescentOptimizer.h"
 
 class NN : public NeuralNetwork<float>{
 private:
 public:
     NN(Placeholder<float> *x, Placeholder<float> *label = NULL) {
-        SLP(x, label);
-        // MLP(x, label);
+        // SLP(x, label);
+        MLP(x, label);
     }
 
     void SLP(Placeholder<float> *x, Placeholder<float> *label) {
@@ -22,7 +22,7 @@ public:
 
         // ======================= Optimizer=======================
         // 추후에는 NN과는 독립적으로 움직이도록 만들기
-        SetOptimizer(new GradientDescentOptimizer<float>(0.01, MINIMIZE));
+        // SetOptimizer(new GradientDescentOptimizer<float>(0.01, MINIMIZE));
     }
 
     void MLP(Placeholder<float> *x, Placeholder<float> *label) {
@@ -39,8 +39,8 @@ public:
         // SetObjectiveFunction(new MSE<float>(out, label, "MSE"));
 
         // ======================= Optimizer=======================
+        // SetOptimizer(new GradientDescentOptimizer<float>(0.5, MINIMIZE));
         // 추후에는 NN과는 독립적으로 움직이도록 만들기
-        SetOptimizer(new GradientDescentOptimizer<float>(0.5, MINIMIZE));
     }
 
     Operator<float>* AddFullyConnectedLayer(Operator<float> *pInput, int pColSize_in, int pColSize_out, int pActivation, std::string pLayernum) {

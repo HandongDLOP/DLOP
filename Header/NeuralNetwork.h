@@ -1,21 +1,21 @@
 #ifndef NEURALNETWORK_H_
 #define NEURALNETWORK_H_
 
-// #include "Operator//Placeholder.h"
-// #include "Operator//Tensorholder.h"
-//
-// #include "Operator//Reshape.h"
-//
-// #include "Operator//Relu.h"
-// #include "Operator//Sigmoid.h"
-//
-// #include "Operator//Add.h"
-// #include "Operator//Addconv.h"
-// #include "Operator//MatMul.h"
-// #include "Operator//Convolution.h"
-// #include "Operator//Maxpooling.h"
+#include "Operator//Placeholder.h"
+#include "Operator//Tensorholder.h"
 
-#include "Optimizer//GradientDescentOptimizer.h"
+#include "Operator//Reshape.h"
+
+#include "Operator//Relu.h"
+#include "Operator//Sigmoid.h"
+
+#include "Operator//Add.h"
+#include "Operator//Addconv.h"
+#include "Operator//MatMul.h"
+#include "Operator//Convolution.h"
+#include "Operator//Maxpooling.h"
+
+// #include "Optimizer//GradientDescentOptimizer.h"
 
 template<typename DTYPE> class NeuralNetwork {
 private:
@@ -27,7 +27,7 @@ private:
     int m_OperatorDegree;
     int m_TensorholderDegree;
 
-    Optimizer<DTYPE> *m_aOptimizer;
+    // Optimizer<DTYPE> *m_aOptimizer;
 
 public:
     NeuralNetwork();
@@ -45,11 +45,12 @@ public:
 
     // =======
 
-    Optimizer<DTYPE>* SetOptimizer(Optimizer<DTYPE> *pOptimizer);
-    int               FeedData(int numOfTensorholder, ...);
+    // Optimizer<DTYPE>* SetOptimizer(Optimizer<DTYPE> *pOptimizer);
+    int                   FeedData(int numOfTensorholder, ...);
 
-    Operator<DTYPE>*  GetResultOperator();
-    Optimizer<DTYPE>* GetOptimizer();
+    Operator<DTYPE>*      GetResultOperator();
+    Tensorholder<DTYPE>** GetTensorholder();
+    int                   GetTensorholderDegree();
 
     // =======
 

@@ -6,72 +6,74 @@
 template<typename DTYPE>
 class MSE : public Objective<DTYPE>{
 public:
-    MSE(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel, std::string pName) : Objective<DTYPE>(pInput, pLabel, pName) {
+    MSE(NeuralNetwork<DTYPE> *pNeuralNetwork, std::string pName) : Objective<DTYPE>(pNeuralNetwork, pName) {
         std::cout << "MSE::MSE(Operator<DTYPE> *, MetaParameter *, std::string)" << '\n';
-        this->Alloc(pInput, pLabel);
+        this->Alloc(pNeuralNetwork);
     }
 
     ~MSE() {
         std::cout << "MSE::~MSE()" << '\n';
     }
 
-    int Alloc(Operator<DTYPE> *pInput, Operator<DTYPE> *pLabel) {
+    virtual int Alloc(NeuralNetwork<DTYPE> *pNeuralNetwork) {
         std::cout << "MSE::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
 
-        int timesize  = pInput->GetResult()->GetTimeSize();
+        Operator<DTYPE> *pInput = pNeuralNetwork->GetResultOperator();
+
+        int timesize = pInput->GetResult()->GetTimeSize();
         int batchsize = pInput->GetResult()->GetBatchSize();
 
         this->SetResult(new Tensor<DTYPE>(timesize, batchsize, 1, 1, 1));
 
+        Shape *shapeOfGradient = new Shape(pInput->GetResult()->GetShape());
+
+        this->SetGradient(new Tensor<DTYPE>(shapeOfGradient));
+
         return TRUE;
     }
 
-    int ComputeForwardPropagate() {
-        Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
-        Tensor<DTYPE> *label  = this->GetInput()[1]->GetResult();
+    virtual Tensor<DTYPE>* ForwardPropagate(Operator<DTYPE> *pLabel) {
+        Tensor<DTYPE> *input = this->GetTensor();
+        Tensor<DTYPE> *label = pLabel->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
+        Tensor<DTYPE> *gradient = this->GetGradient();
         result->Reset();
+        gradient->Reset();
 
-        int timesize  = input->GetTimeSize();
+        int timesize = input->GetTimeSize();
         int batchsize = input->GetBatchSize();
-        int count     = timesize * batchsize;
+        int count = timesize * batchsize;
 
         int channelsize = input->GetChannelSize();
-        int rowsize     = input->GetRowSize();
-        int colsize     = input->GetColSize();
-        int capacity    = channelsize * rowsize * colsize;
+        int rowsize = input->GetRowSize();
+        int colsize = input->GetColSize();
+        int capacity = channelsize * rowsize * colsize;
 
         int index = 0;
 
         for (int i = 0; i < count; i++) {
             for (int j = 0; j < capacity; j++) {
                 index = i * capacity + j;
-
                 (*result)[i] += Error((*input)[index], (*label)[index], capacity);
+                (*gradient)[index] = ((*input)[index] - (*label)[index]);
             }
         }
 
-        return TRUE;
+        return result;
     }
 
-    int ComputeBackPropagate() {
-        Tensor<DTYPE> *input       = this->GetInput()[0]->GetResult();
-        Tensor<DTYPE> *label       = this->GetInput()[1]->GetResult();
-        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
+    virtual Tensor<DTYPE>* BackPropagate() {
+        Tensor<DTYPE> *gradient = this->GetGradient();
+        Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
         input_delta->Reset();
 
         int capacity = input_delta->GetData()->GetCapacity();
 
-        int channelsize    = input->GetChannelSize();
-        int rowsize        = input->GetRowSize();
-        int colsize        = input->GetColSize();
-        int numOfOutputDim = channelsize * rowsize * colsize;
-
         for (int i = 0; i < capacity; i++) {
-            (*input_delta)[i] += ((*input)[i] - (*label)[i]) / numOfOutputDim;
+            (*input_delta)[i] += (*gradient)[i];
         }
 
-        return TRUE;
+        return NULL;
     }
 
     inline DTYPE Error(DTYPE pred, DTYPE ans, int numOfOutputDim) {
