@@ -120,7 +120,7 @@ template<typename DTYPE> void Operator<DTYPE>::SetResult(Tensor<DTYPE> *pTensor)
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetGradient(Tensor<DTYPE> *pTensor) {
-    if(m_aGradient){
+    if (m_aGradient) {
         delete m_aGradient;
         m_aGradient = NULL;
     }
@@ -129,7 +129,7 @@ template<typename DTYPE> void Operator<DTYPE>::SetGradient(Tensor<DTYPE> *pTenso
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetDelta(Tensor<DTYPE> *pTensor) {
-    if(m_aDelta){
+    if (m_aDelta) {
         delete m_aDelta;
         m_aDelta = NULL;
     }

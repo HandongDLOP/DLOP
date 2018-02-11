@@ -54,11 +54,11 @@ public:
 
     // ===============
 
-    void              SetLearningRate(float pLearningRate);
+    void  SetLearningRate(float pLearningRate);
 
-    float             GetLearningRate() const;
+    float GetLearningRate() const;
 
-    int               GetOptimizeDirection() const;
+    int   GetOptimizeDirection() const;
 };
 
 #endif  // OPTIMIZER_H_

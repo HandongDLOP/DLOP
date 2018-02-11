@@ -14,7 +14,7 @@ template<typename DTYPE> Objective<DTYPE>::Objective(std::string pName) {
     m_name = pName;
 }
 
-template<typename DTYPE> Objective<DTYPE>::Objective(NeuralNetwork<DTYPE>* pNeuralNetwork, std::string pName) {
+template<typename DTYPE> Objective<DTYPE>::Objective(NeuralNetwork<DTYPE> *pNeuralNetwork, std::string pName) {
     std::cout << "Objective<DTYPE>::Objective()" << '\n';
     m_aResult = NULL;
     m_aGradient = NULL;
@@ -84,12 +84,12 @@ template<typename DTYPE> std::string Objective<DTYPE>::GetName() const {
     return m_name;
 }
 
-template<typename DTYPE> Tensor<DTYPE>* Objective<DTYPE>::ForwardPropagate(Operator<DTYPE> *pLabel) {
+template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::ForwardPropagate(Operator<DTYPE> *pLabel) {
     std::cout << this->GetName() << '\n';
     return NULL;
 }
 
-template<typename DTYPE> Tensor<DTYPE>* Objective<DTYPE>::BackPropagate() {
+template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::BackPropagate() {
     std::cout << this->GetName() << '\n';
     return NULL;
 }

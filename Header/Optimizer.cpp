@@ -6,9 +6,9 @@ template class Optimizer<double>;
 
 template<typename DTYPE> Optimizer<DTYPE>::Optimizer(float pLearningRate, OptimizeDirection pOptimizeDirection) {
     std::cout << "Optimizer::Optimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
-    m_LearningRate          = 0.f;
-    m_OptimizeDirection     = 1;
-    m_apTrainableTensor     = NULL;
+    m_LearningRate = 0.f;
+    m_OptimizeDirection = 1;
+    m_apTrainableTensor = NULL;
     m_TrainableTensorDegree = 0;
 
     Alloc(pLearningRate, pOptimizeDirection);
@@ -21,7 +21,7 @@ template<typename DTYPE> Optimizer<DTYPE>::~Optimizer() {
 }
 
 template<typename DTYPE> int Optimizer<DTYPE>::Alloc(float pLearningRate, OptimizeDirection pOptimizeDirection) {
-    m_LearningRate    = pLearningRate;
+    m_LearningRate = pLearningRate;
 
     if (pOptimizeDirection == MAXIMIZE) m_OptimizeDirection = 1;
     else if (pOptimizeDirection == MINIMIZE) m_OptimizeDirection = -1;
@@ -56,7 +56,6 @@ template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableTensor(Operator<DTYPE
         printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
     }
-
     m_TrainableTensorDegree++;
 
     return TRUE;

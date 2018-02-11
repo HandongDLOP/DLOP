@@ -19,8 +19,8 @@
 
 template<typename DTYPE> class NeuralNetwork {
 private:
-    Placeholder<DTYPE> **m_aaPlaceholder;
-    Operator<DTYPE> **m_aaOperator;
+    Placeholder<DTYPE>  **m_aaPlaceholder;
+    Operator<DTYPE>     **m_aaOperator;
     Tensorholder<DTYPE> **m_aaTensorholder;
 
     int m_PlaceholderDegree;
@@ -39,16 +39,16 @@ public:
     // =======
 
     // 추후 직접 변수를 만들지 않은 operator* + operator*의 변환 변수도 자동으로 할당될 수 있도록 Operator와 NN class를 수정해야 한다.
-    Placeholder<DTYPE> * AddPlaceholder(Placeholder<DTYPE> *pPlaceholder);
-    Operator<DTYPE>    * AddOperator(Operator<DTYPE> *pOperator);
+    Placeholder<DTYPE>*  AddPlaceholder(Placeholder<DTYPE> *pPlaceholder);
+    Operator<DTYPE>*     AddOperator(Operator<DTYPE> *pOperator);
     Tensorholder<DTYPE>* AddTensorholder(Tensorholder<DTYPE> *pTensorholder);
 
     // =======
 
     Optimizer<DTYPE>* SetOptimizer(Optimizer<DTYPE> *pOptimizer);
-    int FeedData(int numOfTensorholder, ...);
+    int               FeedData(int numOfTensorholder, ...);
 
-    Operator<DTYPE>* GetResultOperator();
+    Operator<DTYPE>*  GetResultOperator();
     Optimizer<DTYPE>* GetOptimizer();
 
     // =======
@@ -61,9 +61,9 @@ public:
 
     // =======
     Operator<DTYPE>* ForwardPropagate();
-    int ForwardPropagate(Operator<DTYPE> *pEnd);
-    int ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
-    int BackPropagate();
+    int              ForwardPropagate(Operator<DTYPE> *pEnd);
+    int              ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
+    int              BackPropagate();
 
     // =======
 

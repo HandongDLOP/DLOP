@@ -142,13 +142,13 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::GetResultOperato
     return m_aaOperator[m_OperatorDegree - 1];
 }
 
-template<typename DTYPE> Optimizer<DTYPE>* NeuralNetwork<DTYPE>::GetOptimizer() {
+template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::GetOptimizer() {
     return m_aOptimizer;
 }
 
 // ===========================================================================================
 
-template<typename DTYPE> Operator<DTYPE>* NeuralNetwork<DTYPE>::ForwardPropagate() {
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::ForwardPropagate() {
     for (int i = 0; i < m_OperatorDegree; i++) {
         m_aaOperator[i]->ComputeForwardPropagate();
     }
