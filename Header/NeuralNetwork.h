@@ -49,6 +49,7 @@ public:
     int                   FeedData(int numOfTensorholder, ...);
 
     Operator<DTYPE>*      GetResultOperator();
+
     Tensorholder<DTYPE>** GetTensorholder();
     int                   GetTensorholderDegree();
 
@@ -61,7 +62,7 @@ public:
     Operator<DTYPE>* Testing(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
 
     // =======
-    Operator<DTYPE>* ForwardPropagate();
+    Tensor<DTYPE>*   ForwardPropagate();
     int              ForwardPropagate(Operator<DTYPE> *pEnd);
     int              ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
     int              BackPropagate();

@@ -156,12 +156,12 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::GetTensorholderDegree() {
 
 // ===========================================================================================
 
-template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::ForwardPropagate() {
+template<typename DTYPE> Tensor<DTYPE> *NeuralNetwork<DTYPE>::ForwardPropagate() {
     for (int i = 0; i < m_OperatorDegree; i++) {
         m_aaOperator[i]->ComputeForwardPropagate();
     }
 
-    return m_aaOperator[m_OperatorDegree - 1];
+    return m_aaOperator[m_OperatorDegree - 1]->GetResult();
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTYPE> *pEnd) {

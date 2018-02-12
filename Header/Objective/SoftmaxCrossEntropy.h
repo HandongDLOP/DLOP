@@ -15,9 +15,9 @@ public:
         Alloc(pNeuralNetwork, epsilon);
     }
 
-    ~SoftmaxCrossEntropy() {
+    virtual ~SoftmaxCrossEntropy() {
         std::cout << "SoftmaxCrossEntropy::~SoftmaxCrossEntropy()" << '\n';
-        delete m_aSoftmaxResult;
+        Delete();
     }
 
     virtual int Alloc(NeuralNetwork<DTYPE> *pNeuralNetwork, DTYPE epsilon) {
@@ -32,13 +32,24 @@ public:
 
         Shape *shapeOfSoftmaxResult = new Shape(pInput->GetResult()->GetShape());
 
-        this->SetGradient(new Tensor<DTYPE>(shapeOfSoftmaxResult));
-
         m_aSoftmaxResult = new Tensor<DTYPE>(shapeOfSoftmaxResult);
+
+        Shape *shapeOfGradient = new Shape(pInput->GetResult()->GetShape());
+
+        this->SetGradient(new Tensor<DTYPE>(shapeOfGradient));
 
         m_epsilon = epsilon;
 
         return TRUE;
+    }
+
+    virtual void Delete(){
+
+        if (m_aSoftmaxResult){
+            delete m_aSoftmaxResult;
+            m_aSoftmaxResult = NULL;
+        }
+
     }
 
     virtual Tensor<DTYPE>* ForwardPropagate() {
@@ -124,6 +135,7 @@ public:
         for (int i = 0; i < capacity; i++) {
             (*input_delta)[i] = (*gradient)[i];
         }
+
 
         return NULL;
     }

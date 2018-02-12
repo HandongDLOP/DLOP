@@ -11,7 +11,7 @@ public:
         this->Alloc(pNeuralNetwork);
     }
 
-    ~MSE() {
+    virtual ~MSE() {
         std::cout << "MSE::~MSE()" << '\n';
     }
 

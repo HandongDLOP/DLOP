@@ -24,10 +24,10 @@ public:
         out = AddOperator(new Reshape<float>(out, 1, batch_size, 1, 1, 5 * 5 * 10, "flat"));
 
         // ======================= layer 3=======================
-        AddFullyConnectedLayer(out, 5 * 5 * 10, 10, "3");
+        out = AddFullyConnectedLayer(out, 5 * 5 * 10, 250, "3");
 
         // ======================= layer 4=======================
-        // out = AddFullyConnectedLayer(out, 250, 10, "4");
+        out = AddFullyConnectedLayer(out, 250, 10, "4");
     }
 
     Operator<float>* AddConvLayer(Operator<float> *pInput, int pChannelSize_out, std::string pLayernum) {

@@ -50,7 +50,7 @@ template<typename DTYPE> void Objective<DTYPE>::Delete() {
     }
 
     if (m_aGradient) {
-        delete[] m_aGradient;
+        delete m_aGradient;
         m_aGradient = NULL;
     }
 }

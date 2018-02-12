@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 
-#include "model//CNN.h"
-#include "model//NN.h"
+#include "net//CNN.h"
+#include "net//NN.h"
 
 #include "..//Header//Temporary_method.h"
 #include "MNIST_Reader.h"
@@ -21,17 +21,18 @@ int main(int argc, char const *argv[]) {
     Placeholder<float> *label = new Placeholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // Result of classification
-    Operator<float> *result = NULL;
+    Tensor<float> *result = NULL;
     Tensor<float> *loss = NULL;
 
-    // ======================= Select model ===================
-    NeuralNetwork<float> *model = new CNN(x);
-    // NeuralNetwork<float> *model = new NN(x, isSLP);
-    // NeuralNetwork<float> *model = new NN(x, isMLP);
+    // ======================= Select net ===================
+    NeuralNetwork<float> *net = new CNN(x);
+    // NeuralNetwork<float> *net = new NN(x, isSLP);
+    // NeuralNetwork<float> *net = new NN(x, isMLP);
 
     // ======================= Select Objective Function ===================
-    Objective<float> *objective = new SoftmaxCrossEntropy<float>(model, label, 0.0000001, "SCE");
-    // Objective<float> *objective = new MSE<float>(model, label, "MSE");
+    // Objective<float> *objective = new Objective<float>(net, label,"SCE");
+    Objective<float> *objective = new SoftmaxCrossEntropy<float>(net, label, 0.0000001, "SCE");
+    // Objective<float> *objective = new MSE<float>(net, label, "MSE");
 
     // ======================= Select Optimizer ===================
     Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(objective, 0.001, MINIMIZE);
@@ -50,20 +51,21 @@ int main(int argc, char const *argv[]) {
             x->SetTensor(dataset->GetTrainFeedImage());
             label->SetTensor(dataset->GetTrainFeedLabel());
 
-            result = model->ForwardPropagate();
+            result = net->ForwardPropagate();
             loss = objective->ForwardPropagate();
 
             objective->BackPropagate();
-            model->BackPropagate();
+            net->BackPropagate();
 
             optimizer->UpdateVariable();
 
             float avg_loss = 0;
-            for(int k = 0; k < BATCH; k++){
+
+            for (int k = 0; k < BATCH; k++) {
                 avg_loss += (*loss)[k] / BATCH;
             }
 
-            train_accuracy += (float)temp::Accuracy(result->GetResult(), label->GetResult(), BATCH);
+            train_accuracy += (float)temp::Accuracy(result, label->GetResult(), BATCH);
             printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f", j + 1, LOOP_FOR_TRAIN, avg_loss, train_accuracy / (j + 1));
             fflush(stdout);
         }
@@ -80,15 +82,16 @@ int main(int argc, char const *argv[]) {
             x->SetTensor(dataset->GetTestFeedImage());
             label->SetTensor(dataset->GetTestFeedLabel());
 
-            result = model->ForwardPropagate();
+            result = net->ForwardPropagate();
             loss = objective->ForwardPropagate();
 
             float avg_loss = 0;
-            for(int k = 0; k < BATCH; k++){
+
+            for (int k = 0; k < BATCH; k++) {
                 avg_loss += (*loss)[k] / BATCH;
             }
 
-            test_accuracy += (float)temp::Accuracy(result->GetResult(), label->GetResult(), BATCH);
+            test_accuracy += (float)temp::Accuracy(result, label->GetResult(), BATCH);
             printf("\rTesting complete percentage is %d / %d -> loss : %f, acc : %f", j + 1, LOOP_FOR_TEST, avg_loss, test_accuracy / (j + 1));
             fflush(stdout);
         }
@@ -97,9 +100,9 @@ int main(int argc, char const *argv[]) {
 
     // we need to save best weight and bias when occur best acc on test time
     delete dataset;
-    delete model;
+    delete net;
     delete objective;
-    delete optimizer; // 추후에는 이것만 지우면 될 수 있도록 만들기
+    delete optimizer;  // 추후에는 이것만 지우면 될 수 있도록 만들기
 
     return 0;
 }
