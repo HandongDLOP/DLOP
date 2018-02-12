@@ -6,7 +6,7 @@
 template<typename DTYPE> class GradientDescentOptimizer : public Optimizer<DTYPE>{
 
 public:
-    GradientDescentOptimizer(Objective<DTYPE> *pObjective, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pObjective, pLearningRate, pOptimizeDirection) {
+    GradientDescentOptimizer(NeuralNetwork<DTYPE> *pNeuralNetwork, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pNeuralNetwork, pLearningRate, pOptimizeDirection) {
         std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Objective<DTYPE> *, float, OptimizeDirection)" << '\n';
     }
 

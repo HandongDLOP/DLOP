@@ -6,19 +6,19 @@
 template<typename DTYPE>
 class MSE : public Objective<DTYPE>{
 public:
-    MSE(NeuralNetwork<DTYPE> *pNeuralNetwork, Operator<DTYPE> *pLabel, std::string pName) : Objective<DTYPE>(pNeuralNetwork, pLabel, pName) {
+    MSE(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName) : Objective<DTYPE>(pOperator, pLabel, pName) {
         std::cout << "MSE::MSE(Operator<DTYPE> *, MetaParameter *, std::string)" << '\n';
-        this->Alloc(pNeuralNetwork);
+        this->Alloc(pOperator);
     }
 
     virtual ~MSE() {
         std::cout << "MSE::~MSE()" << '\n';
     }
 
-    virtual int Alloc(NeuralNetwork<DTYPE> *pNeuralNetwork) {
+    virtual int Alloc(Operator<DTYPE> *pOperator) {
         std::cout << "MSE::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
 
-        Operator<DTYPE> *pInput = pNeuralNetwork->GetResultOperator();
+        Operator<DTYPE> *pInput = pOperator;
 
         int timesize = pInput->GetResult()->GetTimeSize();
         int batchsize = pInput->GetResult()->GetBatchSize();

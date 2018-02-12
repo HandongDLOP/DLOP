@@ -13,7 +13,7 @@ enum OptimizeDirection {
 
 template<typename DTYPE> class Optimizer {
 private:
-    Objective<DTYPE> * m_pObjective;
+    NeuralNetwork<DTYPE> *m_pNeuralNetwork;
 
     float m_LearningRate;
     int   m_OptimizeDirection; // 1 or -1
@@ -22,17 +22,17 @@ private:
     int m_TrainableTensorDegree;
 
 public:
-    Optimizer(Objective<DTYPE> *pObjective, float pLearningRate, OptimizeDirection pOptimizeDirection);
+    Optimizer(NeuralNetwork<DTYPE> *pNeuralNetwork, float pLearningRate, OptimizeDirection pOptimizeDirection);
 
     virtual ~Optimizer();
 
     // ===============
 
-    int Alloc(Objective<DTYPE> *pObjective, float pLearningRate, OptimizeDirection pOptimizeDirection);
+    int Alloc(NeuralNetwork<DTYPE> *pNeuralNetwork, float pLearningRate, OptimizeDirection pOptimizeDirection);
 
     int Delete();
 
-    int AddTrainableTensor(Objective<DTYPE> *pObjective);
+    int AddTrainableTensor(NeuralNetwork<DTYPE> *pNeuralNetwork);
     int AddTrainableTensor(Operator<DTYPE> *pTrainableTensor);
 
     // ===============

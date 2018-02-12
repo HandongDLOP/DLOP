@@ -10,9 +10,9 @@ private:
     DTYPE m_epsilon;  // for backprop
 
 public:
-    SoftmaxCrossEntropy(NeuralNetwork<DTYPE> *pNeuralNetwork, Operator<DTYPE> *pLabel, DTYPE epsilon = 1e-2, std::string pName = "NO NAME") : Objective<DTYPE>(pNeuralNetwork, pLabel, pName) {
+    SoftmaxCrossEntropy(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, DTYPE epsilon = 1e-2, std::string pName = "NO NAME") : Objective<DTYPE>(pOperator, pLabel, pName) {
         std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
-        Alloc(pNeuralNetwork, epsilon);
+        Alloc(pOperator, epsilon);
     }
 
     virtual ~SoftmaxCrossEntropy() {
@@ -20,10 +20,10 @@ public:
         Delete();
     }
 
-    virtual int Alloc(NeuralNetwork<DTYPE> *pNeuralNetwork, DTYPE epsilon) {
+    virtual int Alloc(Operator<DTYPE> *pOperator, DTYPE epsilon) {
         std::cout << "SoftmaxCrossEntropy::Alloc(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
 
-        Operator<DTYPE> *pInput = pNeuralNetwork->GetResultOperator();
+        Operator<DTYPE> *pInput = pOperator;
 
         int timesize = pInput->GetResult()->GetTimeSize();
         int batchsize = pInput->GetResult()->GetBatchSize();

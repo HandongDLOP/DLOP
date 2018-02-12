@@ -8,23 +8,21 @@ template<typename DTYPE> Objective<DTYPE>::Objective(std::string pName) {
     std::cout << "Objective<DTYPE>::Objective()" << '\n';
     m_aResult = NULL;
     m_aGradient = NULL;
-    m_pInputNeuralNetwork = NULL;
     m_pInputOperator = NULL;
     m_pInputTensor = NULL;
     m_pLabel = NULL;
     m_name = pName;
 }
 
-template<typename DTYPE> Objective<DTYPE>::Objective(NeuralNetwork<DTYPE> *pNeuralNetwork, Operator<DTYPE> *pLabel, std::string pName) {
+template<typename DTYPE> Objective<DTYPE>::Objective(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName) {
     std::cout << "Objective<DTYPE>::Objective()" << '\n';
     m_aResult = NULL;
     m_aGradient = NULL;
-    m_pInputNeuralNetwork = NULL;
     m_pInputOperator = NULL;
     m_pInputTensor = NULL;
     m_pLabel = NULL;
     m_name = pName;
-    Alloc(pNeuralNetwork, pLabel);
+    Alloc(pOperator, pLabel);
 }
 
 template<typename DTYPE> Objective<DTYPE>::~Objective() {
@@ -32,11 +30,10 @@ template<typename DTYPE> Objective<DTYPE>::~Objective() {
     this->Delete();
 }
 
-template<typename DTYPE> int Objective<DTYPE>::Alloc(NeuralNetwork<DTYPE> *pNeuralNetwork, Operator<DTYPE> *pLabel) {
+template<typename DTYPE> int Objective<DTYPE>::Alloc(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel) {
     std::cout << "Objective<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
 
-    m_pInputNeuralNetwork = pNeuralNetwork;
-    m_pInputOperator = m_pInputNeuralNetwork->GetResultOperator();
+    m_pInputOperator = pOperator;
     m_pInputTensor = m_pInputOperator->GetResult();
 
     m_pLabel = pLabel;
@@ -71,10 +68,6 @@ template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::GetGradient() const {
     return m_aGradient;
 }
 
-template<typename DTYPE> NeuralNetwork<DTYPE> *Objective<DTYPE>::GetNeuralNetwork() const {
-    return m_pInputNeuralNetwork;
-}
-
 template<typename DTYPE> Operator<DTYPE> *Objective<DTYPE>::GetOperator() const {
     return m_pInputOperator;
 }
@@ -99,6 +92,10 @@ template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::ForwardPropagate() {
 template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::BackPropagate() {
     std::cout << this->GetName() << '\n';
     return NULL;
+}
+
+template<typename DTYPE> DTYPE& Objective<DTYPE>::operator[](unsigned int index) {
+    return (*m_aResult)[index];
 }
 
 // int main(int argc, char const *argv[]) {

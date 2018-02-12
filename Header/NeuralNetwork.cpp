@@ -142,6 +142,10 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::GetResultOperato
     return m_aaOperator[m_OperatorDegree - 1];
 }
 
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::GetResult() {
+    return m_aaOperator[m_OperatorDegree - 1];
+}
+
 template<typename DTYPE> Tensorholder<DTYPE> **NeuralNetwork<DTYPE>::GetTensorholder() {
     return m_aaTensorholder;
 }
@@ -156,12 +160,12 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::GetTensorholderDegree() {
 
 // ===========================================================================================
 
-template<typename DTYPE> Tensor<DTYPE> *NeuralNetwork<DTYPE>::ForwardPropagate() {
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::ForwardPropagate() {
     for (int i = 0; i < m_OperatorDegree; i++) {
         m_aaOperator[i]->ComputeForwardPropagate();
     }
 
-    return m_aaOperator[m_OperatorDegree - 1]->GetResult();
+    return m_aaOperator[m_OperatorDegree - 1];
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTYPE> *pEnd) {
@@ -177,34 +181,6 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
         m_aaOperator[i]->ComputeBackPropagate();
     }
     return TRUE;
-}
-
-// =========
-
-template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Training() {
-    this->ForwardPropagate();
-    this->BackPropagate();
-    // m_aOptimizer->UpdateVariable();
-
-    return m_aaOperator[m_OperatorDegree - 1];
-}
-
-template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Testing() {
-    this->ForwardPropagate();
-
-    return m_aaOperator[m_OperatorDegree - 1];
-}
-
-template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Testing(Operator<DTYPE> *pEnd) {
-    this->ForwardPropagate(pEnd);
-
-    return pEnd;
-}
-
-template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::Testing(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd) {
-    this->ForwardPropagate(pStart, pEnd);
-
-    return pEnd;
 }
 
 // =========

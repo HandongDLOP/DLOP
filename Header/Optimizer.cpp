@@ -4,14 +4,15 @@ template class Optimizer<int>;
 template class Optimizer<float>;
 template class Optimizer<double>;
 
-template<typename DTYPE> Optimizer<DTYPE>::Optimizer(Objective<DTYPE> *pObjective, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+template<typename DTYPE> Optimizer<DTYPE>::Optimizer(NeuralNetwork<DTYPE> *pNeuralNetwork, float pLearningRate, OptimizeDirection pOptimizeDirection) {
     std::cout << "Optimizer::Optimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
+    m_pNeuralNetwork = NULL;
     m_LearningRate = 0.f;
     m_OptimizeDirection = 1;
     m_apTrainableTensor = NULL;
     m_TrainableTensorDegree = 0;
 
-    Alloc(pObjective, pLearningRate, pOptimizeDirection);
+    Alloc(pNeuralNetwork, pLearningRate, pOptimizeDirection);
 }
 
 template<typename DTYPE> Optimizer<DTYPE>::~Optimizer() {
@@ -20,10 +21,10 @@ template<typename DTYPE> Optimizer<DTYPE>::~Optimizer() {
     this->Delete();
 }
 
-template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Objective<DTYPE> *pObjective, float pLearningRate, OptimizeDirection pOptimizeDirection) {
-    m_pObjective = pObjective;
+template<typename DTYPE> int Optimizer<DTYPE>::Alloc(NeuralNetwork<DTYPE> *pNeuralNetwork, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+    m_pNeuralNetwork = pNeuralNetwork;
 
-    this->AddTrainableTensor(pObjective);
+    this->AddTrainableTensor(pNeuralNetwork);
 
     m_LearningRate = pLearningRate;
 
@@ -39,8 +40,7 @@ template<typename DTYPE> int Optimizer<DTYPE>::Delete() {
     return TRUE;
 }
 
-template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableTensor(Objective<DTYPE> *pObjective) {
-    NeuralNetwork<DTYPE> * pNeuralNetwork = pObjective->GetNeuralNetwork();
+template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableTensor(NeuralNetwork<DTYPE> *pNeuralNetwork) {
     Tensorholder<DTYPE> ** pTensorholders = pNeuralNetwork->GetTensorholder();
     int pTensorholderDegree = pNeuralNetwork->GetTensorholderDegree();
 

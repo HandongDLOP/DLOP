@@ -15,8 +15,6 @@
 #include "Operator//Convolution.h"
 #include "Operator//Maxpooling.h"
 
-// #include "Optimizer//GradientDescentOptimizer.h"
-
 template<typename DTYPE> class NeuralNetwork {
 private:
     Placeholder<DTYPE>  **m_aaPlaceholder;
@@ -49,20 +47,13 @@ public:
     int                   FeedData(int numOfTensorholder, ...);
 
     Operator<DTYPE>*      GetResultOperator();
+    Operator<DTYPE>*      GetResult();
 
     Tensorholder<DTYPE>** GetTensorholder();
     int                   GetTensorholderDegree();
 
     // =======
-
-    Operator<DTYPE>* Training();
-    Operator<DTYPE>* Training(Operator<DTYPE> *pEnd);
-    Operator<DTYPE>* Testing();
-    Operator<DTYPE>* Testing(Operator<DTYPE> *pEnd);
-    Operator<DTYPE>* Testing(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
-
-    // =======
-    Tensor<DTYPE>*   ForwardPropagate();
+    Operator<DTYPE>*   ForwardPropagate();
     int              ForwardPropagate(Operator<DTYPE> *pEnd);
     int              ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
     int              BackPropagate();

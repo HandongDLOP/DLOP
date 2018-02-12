@@ -1,12 +1,12 @@
 #include <iostream>
 #include <string>
 
-#include "..//..//Header//Objective//SoftmaxCrossEntropy.h"
+#include "..//..//Header//Model.h"
 
-class CNN : public NeuralNetwork<float>{
+class my_CNN : public NeuralNetwork<float>{
 private:
 public:
-    CNN(Placeholder<float> *x) {
+    my_CNN(Placeholder<float> *x) {
         Operator<float> *out = NULL;
 
         // AddPlaceholder(x);
@@ -56,5 +56,5 @@ public:
         return out;
     }
 
-    virtual ~CNN() {}
+    virtual ~my_CNN() {}
 };

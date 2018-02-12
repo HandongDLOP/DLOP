@@ -8,7 +8,6 @@ private:
     Tensor<DTYPE> *m_aResult;
     Tensor<DTYPE> *m_aGradient;
 
-    NeuralNetwork<DTYPE> *m_pInputNeuralNetwork;
     Operator<DTYPE> *m_pInputOperator;
     Tensor<DTYPE>   *m_pInputTensor;
 
@@ -18,11 +17,11 @@ private:
 
 public:
     Objective(std::string pName = "NO NAME");
-    Objective(NeuralNetwork<DTYPE> *pNeuralNetwork, Operator<DTYPE> *pLabel, std::string pName = "NO NAME");
+    Objective(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName = "NO NAME");
 
     virtual ~Objective();
 
-    virtual int            Alloc(NeuralNetwork<DTYPE> *pNeuralNetwork, Operator<DTYPE> *pLabel);
+    virtual int            Alloc(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel);
     virtual void           Delete();
 
     void                   SetResult(Tensor<DTYPE> *pTensor);
@@ -30,7 +29,6 @@ public:
 
     Tensor<DTYPE>*         GetResult() const;
     Tensor<DTYPE>*         GetGradient() const;
-    NeuralNetwork<DTYPE>*  GetNeuralNetwork() const;
     Operator<DTYPE>*       GetOperator() const;
     Tensor<DTYPE>*         GetTensor() const;
     Operator<DTYPE>*       GetLabel() const;
@@ -41,6 +39,8 @@ public:
 
     // For BackPropagate
     virtual Tensor<DTYPE>* BackPropagate();
+
+    DTYPE& operator[](unsigned int index);
 };
 
 #endif  // Objective_H_

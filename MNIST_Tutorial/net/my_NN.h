@@ -1,16 +1,16 @@
 #include <iostream>
 
-#include "..//..//Header//Optimizer//GradientDescentOptimizer.h"
+#include "..//..//Header//Model.h"
 
 enum MODEL_OPTION{
     isSLP,
     isMLP
 };
 
-class NN : public NeuralNetwork<float>{
+class my_NN : public NeuralNetwork<float>{
 private:
 public:
-    NN(Placeholder<float> *x, MODEL_OPTION pOption) {
+    my_NN(Placeholder<float> *x, MODEL_OPTION pOption) {
         if (pOption == isSLP) SLP(x);
         else if (pOption == isMLP) MLP(x);
     }
@@ -48,5 +48,5 @@ public:
         return out;
     }
 
-    virtual ~NN() {}
+    virtual ~my_NN() {}
 };
