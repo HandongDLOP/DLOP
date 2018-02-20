@@ -127,63 +127,63 @@ public:
     {
         Tensor< DTYPE>* input= this-> GetInput( )[ 0]-> GetResult( );
 
-	int batchSize= input-> GetBatchSize( );
+        int batchSize= input-> GetBatchSize( );
         int rowSize= input-> GetRowSize( );
         int colSize= input-> GetColSize( );
 
-	Shape* meanShape= m_aMean-> GetShape( );
-	int meanTimeSize= ( * meanShape)[ 0];
+        Shape* meanShape= m_aMean-> GetShape( );
+        int meanTimeSize= ( * meanShape)[ 0];
         int meanChannelSize= ( * meanShape)[ 2];
         int meanRowSize= ( * meanShape)[ 3];
         int meanColSize= ( * meanShape)[ 4];
 
-	int effMeanTimeSize= 0;
-	int effBatchSize= 0;
-	int unbiasEstimator= 0;
+        int effMeanTimeSize= 0;
+        int effBatchSize= 0;
+        int unbiasEstimator= 0;
 
-	int meanIndex= 0;
-	int fixedMeanIndex= 0;
+        int meanIndex= 0;
+        int fixedMeanIndex= 0;
 
-	if( ! m_mti)
-	    return;
-	else if( m_mti< meanTimeSize)
-	    effMeanTimeSize= m_mti;
-	else
-	    effMeanTimeSize= meanTimeSize;
+        if( ! m_mti)
+            return;
+        else if( m_mti< meanTimeSize)
+            effMeanTimeSize= m_mti;
+        else
+            effMeanTimeSize= meanTimeSize;
 
-	m_aFixedMean-> Reset( );
-	m_aFixedVariance-> Reset( );
+        m_aFixedMean-> Reset( );
+        m_aFixedVariance-> Reset( );
 
-	for( int mti= 0; mti< effMeanTimeSize; mti++)
-	    for( int mch= 0; mch< meanChannelSize; mch++)
-		for( int mro= 0; mro< meanRowSize; mro++)
-		    for( int mco= 0; mco< meanColSize; mco++)
-		    {
-	                meanIndex= Index5D( meanShape, mti, 0, mch, mro, mco);
-	    	        fixedMeanIndex= Index4D( meanShape, 0, mch, mro, mco);
+        for( int mti= 0; mti< effMeanTimeSize; mti++)
+            for( int mch= 0; mch< meanChannelSize; mch++)
+                for( int mro= 0; mro< meanRowSize; mro++)
+                    for( int mco= 0; mco< meanColSize; mco++)
+                    {
+                        meanIndex= Index5D( meanShape, mti, 0, mch, mro, mco);
+                        fixedMeanIndex= Index4D( meanShape, 0, mch, mro, mco);
 
-		        ( * m_aFixedMean)[ fixedMeanIndex]+= ( * m_aMean)[ meanIndex];
-		        ( * m_aFixedVariance)[ fixedMeanIndex]+= ( * m_aVariance)[ meanIndex];
-		    }
-	if( m_isConv)
-	    effBatchSize= batchSize* rowSize* colSize;
-	else
-	    effBatchSize= batchSize;
-	unbiasEstimator= effMeanTimeSize* ( effBatchSize- 1)/ effBatchSize;
-	if( ! unbiasEstimator)
-	    unbiasEstimator= effMeanTimeSize;
+                        ( * m_aFixedMean)[ fixedMeanIndex]+= ( * m_aMean)[ meanIndex];
+                        ( * m_aFixedVariance)[ fixedMeanIndex]+= ( * m_aVariance)[ meanIndex];
+                    }
+        if( m_isConv)
+            effBatchSize= batchSize* rowSize* colSize;
+        else
+            effBatchSize= batchSize;
+        unbiasEstimator= effMeanTimeSize* ( effBatchSize- 1)/ effBatchSize;
+        if( ! unbiasEstimator)
+            unbiasEstimator= effMeanTimeSize;
 
-	for( int mch= 0; mch< meanChannelSize; mch++)
-	    for( int mro= 0; mro< meanRowSize; mro++)
-	        for( int mco= 0; mco< meanColSize; mco++)
-		{
-	            fixedMeanIndex= Index4D( meanShape, 0, mch, mro, mco);
+        for( int mch= 0; mch< meanChannelSize; mch++)
+            for( int mro= 0; mro< meanRowSize; mro++)
+                for( int mco= 0; mco< meanColSize; mco++)
+                {
+                    fixedMeanIndex= Index4D( meanShape, 0, mch, mro, mco);
 
-	            ( * m_aFixedMean)[ fixedMeanIndex]/= effMeanTimeSize;
-	            ( * m_aFixedVariance)[ fixedMeanIndex]/= unbiasEstimator;
-		}
-	m_isFixed= TRUE;
-	m_tti= 0;
+                    ( * m_aFixedMean)[ fixedMeanIndex]/= effMeanTimeSize;
+                    ( * m_aFixedVariance)[ fixedMeanIndex]/= unbiasEstimator;
+                }
+        m_isFixed= TRUE;
+        m_tti= 0;
     }
 
     int ComputeForwardPropagate( )
@@ -193,8 +193,8 @@ public:
         Tensor< DTYPE>* shift= this-> GetInput( )[ 2]-> GetResult( );
 
         Tensor< DTYPE>* result= this-> GetResult( );
-	Tensor< DTYPE>* mean= NULL;
-	Tensor< DTYPE>* variance= NULL;
+        Tensor< DTYPE>* mean= NULL;
+        Tensor< DTYPE>* variance= NULL;
 
         Shape* inputShape= input-> GetShape( );
         int batchSize= ( * inputShape)[ 1];
@@ -202,113 +202,113 @@ public:
         int rowSize= ( * inputShape)[ 3];
         int colSize= ( * inputShape)[ 4];
 
-	Shape* meanShape= m_aMean-> GetShape( );
-	int meanTimeSize= ( * meanShape)[ 0];
+        Shape* meanShape= m_aMean-> GetShape( );
+        int meanTimeSize= ( * meanShape)[ 0];
         int meanRowSize= ( * meanShape)[ 3];
         int meanColSize= ( * meanShape)[ 4];
 
-	int effBatchSize= 0;
+        int effBatchSize= 0;
 
-	int mti= m_mti% meanTimeSize;
-	int mro= 0;
-	int mco= 0;
+        int mti= m_mti% meanTimeSize;
+        int mro= 0;
+        int mco= 0;
 
-	int index= 0;
-	int meanIndex= 0;
-	int fixedMeanIndex= 0;
+        int index= 0;
+        int meanIndex= 0;
+        int fixedMeanIndex= 0;
 
-	float value= 0;
-	float meanValue= 0;
-	float normalValue= 0;
+        float value= 0;
+        float meanValue= 0;
+        float normalValue= 0;
 
-	if( m_isConv)
-	    effBatchSize= batchSize* rowSize* colSize;
-	else
-	    effBatchSize= batchSize;
+        if( m_isConv)
+            effBatchSize= batchSize* rowSize* colSize;
+        else
+            effBatchSize= batchSize;
 
-	if( m_isFixed)
-	{
-	    m_tti++;
-	    if( m_tti== m_testTimeSize)
-		this-> Unfix( );
+        if( m_isFixed)
+        {
+            m_tti++;
+            if( m_tti== m_testTimeSize)
+                this-> Unfix( );
 
-	    mean= m_aFixedMean;
-	    variance= m_aFixedVariance;
-	}
-	else
-	{
-	    mro= 0;
-	    mco= 0;
-
-	    for( int ba= 0; ba< batchSize; ba++)
-		for( int ch= 0; ch< channelSize; ch++)
-		    for( int ro= 0; ro< rowSize; ro++)
-			for( int co= 0; co< colSize; co++)
-		        {
-			    value= ( * input)[ Index4D(inputShape, ba, ch, ro, co)];
-
-			    if( ! m_isConv)
-			    {
-				mro= ro;
-				mco= co;
-			    }
-			    meanIndex= Index5D(meanShape, mti, 0, ch, mro, mco);
-
-			    ( * m_aMean)[ meanIndex]+= value;
-			    ( * m_aVariance)[ meanIndex]+= value* value; 
-			}
-	    for( int ch= 0; ch< channelSize; ch++)
-	        for( mro= 0; mro< meanRowSize; mro++)
-	            for( mco= 0; mco< meanColSize; mco++)
-		    {
-	                meanIndex= Index5D(meanShape, mti, 0, ch, mro, mco);
-			meanValue= ( * m_aMean)[ meanIndex]/ effBatchSize;
-
-			( * m_aMean)[ meanIndex]= meanValue;
-	                ( * m_aVariance)[ meanIndex]= ( ( * m_aVariance)[ meanIndex]/ effBatchSize)- meanValue* meanValue;
-		    }
-	    if( mti+ 1== meanTimeSize)
-	        this-> Fix( );
-
-	    mean= m_aMean;
-	    variance= m_aVariance;
+            mean= m_aFixedMean;
+            variance= m_aFixedVariance;
         }
-	mro= 0;
-	mco= 0;
+        else
+        {
+            mro= 0;
+            mco= 0;
 
-	for( int ba= 0; ba< batchSize; ba++)
-	    for( int ch= 0; ch< channelSize; ch++)
-		for( int ro= 0; ro< rowSize; ro++)
-		    for( int co= 0; co< colSize; co++)
-		    {
-		        index= Index4D( inputShape, ba, ch, ro, co);
+            for( int ba= 0; ba< batchSize; ba++)
+                for( int ch= 0; ch< channelSize; ch++)
+                    for( int ro= 0; ro< rowSize; ro++)
+                        for( int co= 0; co< colSize; co++)
+                        {
+                            value= ( * input)[ Index4D(inputShape, ba, ch, ro, co)];
 
-			if( ! m_isConv)
-			{
-			    mro= ro;
-			    mco= co;
-		 	}
-			fixedMeanIndex= Index4D( meanShape, 0, ch, mro, mco);
-			if( m_isFixed)
-			    meanIndex= fixedMeanIndex;
-			else
-			    meanIndex= Index5D( meanShape, mti, 0, ch, mro, mco);
-			    
-			normalValue= ( ( * input)[ index]- ( * mean)[ meanIndex])/ std:: sqrt( ( * variance)[ meanIndex]+ FLT_EPSILON); 
+                            if( ! m_isConv)
+                            {
+                                mro= ro;
+                                mco= co;
+                            }
+                            meanIndex= Index5D(meanShape, mti, 0, ch, mro, mco);
 
-			( * m_aNormalized)[ index]= normalValue;
-			( * result)[ index]= ( ( * scale)[ fixedMeanIndex]* normalValue)+ ( * shift)[ fixedMeanIndex]; 
+                            ( * m_aMean)[ meanIndex]+= value;
+                            ( * m_aVariance)[ meanIndex]+= value* value;
+                        }
+            for( int ch= 0; ch< channelSize; ch++)
+                for( mro= 0; mro< meanRowSize; mro++)
+                    for( mco= 0; mco< meanColSize; mco++)
+                    {
+                        meanIndex= Index5D(meanShape, mti, 0, ch, mro, mco);
+                        meanValue= ( * m_aMean)[ meanIndex]/ effBatchSize;
+
+                        ( * m_aMean)[ meanIndex]= meanValue;
+                        ( * m_aVariance)[ meanIndex]= ( ( * m_aVariance)[ meanIndex]/ effBatchSize)- meanValue* meanValue;
+                    }
+            if( mti+ 1== meanTimeSize)
+                this-> Fix( );
+
+            mean= m_aMean;
+            variance= m_aVariance;
+        }
+        mro= 0;
+        mco= 0;
+
+        for( int ba= 0; ba< batchSize; ba++)
+            for( int ch= 0; ch< channelSize; ch++)
+                for( int ro= 0; ro< rowSize; ro++)
+                    for( int co= 0; co< colSize; co++)
+                    {
+                        index= Index4D( inputShape, ba, ch, ro, co);
+
+                        if( ! m_isConv)
+                        {
+                            mro= ro;
+                            mco= co;
+                        }
+                        fixedMeanIndex= Index4D( meanShape, 0, ch, mro, mco);
+                        if( m_isFixed)
+                            meanIndex= fixedMeanIndex;
+                        else
+                            meanIndex= Index5D( meanShape, mti, 0, ch, mro, mco);
+                        
+                        normalValue= ( ( * input)[ index]- ( * mean)[ meanIndex])/ std:: sqrt( ( * variance)[ meanIndex]+ FLT_EPSILON);
+
+                        ( * m_aNormalized)[ index]= normalValue;
+                        ( * result)[ index]= ( ( * scale)[ fixedMeanIndex]* normalValue)+ ( * shift)[ fixedMeanIndex];
 		    }
         return TRUE;
     }
 
     int ComputeBackPropagate( )
     {
-	Tensor< DTYPE>* dResult= this-> GetDelta( );
+        Tensor< DTYPE>* dResult= this-> GetDelta( );
 
-	Tensor< DTYPE>* dInput= this-> GetInput( )[ 0]-> GetDelta( );
-	Tensor< DTYPE>* dScale= this-> GetInput( )[ 1]-> GetGradient( );
-	Tensor< DTYPE>* dShift= this-> GetInput( )[ 2]-> GetGradient( );
+        Tensor< DTYPE>* dInput= this-> GetInput( )[ 0]-> GetDelta( );
+        Tensor< DTYPE>* dScale= this-> GetInput( )[ 1]-> GetGradient( );
+        Tensor< DTYPE>* dShift= this-> GetInput( )[ 2]-> GetGradient( );
 
         Tensor< DTYPE>* input= this-> GetInput( )[ 0]-> GetResult( );
         Tensor< DTYPE>* scale= this-> GetInput( )[ 1]-> GetResult( );
@@ -319,109 +319,109 @@ public:
         int rowSize= ( * inputShape)[ 3];
         int colSize= ( * inputShape)[ 4];
 
-	Shape* meanShape= m_aMean-> GetShape( );
-	int meanTimeSize= ( * meanShape)[ 0];
+        Shape* meanShape= m_aMean-> GetShape( );
+        int meanTimeSize= ( * meanShape)[ 0];
+        
+        int effBatchSize= 0;
+        
+        int mti= m_mti% meanTimeSize;
+        int mro= 0;
+        int mco= 0;
 
-	int effBatchSize= 0;
+        int index= 0;
+        int meanIndex= 0;
+        int fixedMeanIndex= 0;
 
-	int mti= m_mti% meanTimeSize;
-	int mro= 0;
-	int mco= 0;
+        float dValue= 0;
+        float dNormalValue= 0;
+        float varianceValue= 0;
+        float stddevValue= 0;
+        float dInputValue= 0;
 
-	int index= 0;
-	int meanIndex= 0;
-	int fixedMeanIndex= 0;
+        dInput-> Reset( );
+        dScale-> Reset( );
+        dShift-> Reset( );
+        m_aDMean-> Reset( );
+        m_aDVariance-> Reset( );
 
-	float dValue= 0;
-	float dNormalValue= 0;
-	float varianceValue= 0;
-	float stddevValue= 0;
-	float dInputValue= 0;
+        mro= 0;
+        mco= 0;
 
-	dInput-> Reset( );
-	dScale-> Reset( );
-	dShift-> Reset( );
-	m_aDMean-> Reset( );
-	m_aDVariance-> Reset( );
+        for( int ba= 0; ba< batchSize; ba++)
+            for( int ch= 0; ch< channelSize; ch++)
+                for( int ro= 0; ro< rowSize; ro++)
+                    for( int co= 0; co< colSize; co++)
+                    {
+                        index= Index4D( inputShape, ba, ch, ro, co);
+                        dValue= ( * dResult)[ index];
 
-	mro= 0;
-	mco= 0;
+                        if( ! m_isConv)
+                        {
+                            mro= ro;
+                            mco= co;
+                        }
+                        meanIndex= Index5D( meanShape, mti, 0, ch, mro, mco);
+                        fixedMeanIndex= Index4D( meanShape, 0, ch, mro, mco);
 
-	for( int ba= 0; ba< batchSize; ba++)
+                        ( * dShift)[ fixedMeanIndex]+= dValue;
+                        ( * dScale)[ fixedMeanIndex]+= dValue* ( * m_aNormalized)[ index];
+
+                        ( * m_aDNormalized)[ index]= dValue* ( * scale)[ fixedMeanIndex];
+                    }
+        mro= 0;
+        mco= 0;
+
+        for( int ba= 0; ba< batchSize; ba++)
+            for( int ch= 0; ch< channelSize; ch++)
+                for( int ro= 0; ro< rowSize; ro++)
+                    for( int co= 0; co< colSize; co++)
+                    {
+                        index= Index4D( inputShape, ba, ch, ro, co);
+                        dNormalValue= ( * m_aDNormalized)[ index];
+
+                        if( ! m_isConv)
+                        {
+                            mro= ro;
+                            mco= co;
+                        }
+                        meanIndex= Index5D( meanShape, mti, 0, ch, mro, mco);
+                        fixedMeanIndex= Index4D( meanShape, 0, ch, mro, mco);
+
+                        varianceValue= ( * m_aVariance)[ meanIndex]+ FLT_EPSILON;
+                        stddevValue= std:: sqrt( varianceValue);
+                        dInputValue= dNormalValue/ stddevValue;
+
+                        ( * dInput)[ index]= dInputValue;
+
+                        ( * m_aDMean)[ fixedMeanIndex]-= dInputValue;
+                        ( * m_aDVariance)[ fixedMeanIndex]+= dNormalValue* ( ( * input)[ index]- ( * m_aMean)[ meanIndex])* ( - .5f)/ ( varianceValue* stddevValue);
+                    }
+        mro= 0;
+        mco= 0;
+
+        if( m_isConv)
+            effBatchSize= batchSize* rowSize* colSize;
+        else
+            effBatchSize= batchSize;
+
 	    for( int ch= 0; ch< channelSize; ch++)
-		for( int ro= 0; ro< rowSize; ro++)
-		    for( int co= 0; co< colSize; co++)
-		    {
-			index= Index4D( inputShape, ba, ch, ro, co);
-			dValue= ( * dResult)[ index];
+            for( int ro= 0; ro< rowSize; ro++)
+                for( int co= 0; co< colSize; co++)
+                    for( int ba= 0; ba< batchSize; ba++)
+                    {
+                        index= Index4D( inputShape, ba, ch, ro, co);
+                        
+                        if( ! m_isConv)
+                        {
+                            mro= ro;
+                            mco= co;
+                        }
+                        meanIndex= Index5D( meanShape, mti, 0, ch, mro, mco);
+                        fixedMeanIndex= Index4D( meanShape, 0, ch, mro, mco);
 
-			if( ! m_isConv)
-			{
-			    mro= ro;
-			    mco= co;
-		 	}
-			meanIndex= Index5D( meanShape, mti, 0, ch, mro, mco);
-			fixedMeanIndex= Index4D( meanShape, 0, ch, mro, mco);
-
-			( * dShift)[ fixedMeanIndex]+= dValue;
-			( * dScale)[ fixedMeanIndex]+= dValue* ( * m_aNormalized)[ index];
-
-			( * m_aDNormalized)[ index]= dValue* ( * scale)[ fixedMeanIndex];
-		    }
-	mro= 0;
-	mco= 0;
-
-	for( int ba= 0; ba< batchSize; ba++)
-	    for( int ch= 0; ch< channelSize; ch++)
-		for( int ro= 0; ro< rowSize; ro++)
-		    for( int co= 0; co< colSize; co++)
-		    {
-			index= Index4D( inputShape, ba, ch, ro, co);
-			dNormalValue= ( * m_aDNormalized)[ index];
-
-			if( ! m_isConv)
-			{
-			    mro= ro;
-			    mco= co;
-		 	}
-			meanIndex= Index5D( meanShape, mti, 0, ch, mro, mco);
-			fixedMeanIndex= Index4D( meanShape, 0, ch, mro, mco);
-
-			varianceValue= ( * m_aVariance)[ meanIndex]+ FLT_EPSILON;
-			stddevValue= std:: sqrt( varianceValue);
-			dInputValue= dNormalValue/ stddevValue;
-
-			( * dInput)[ index]= dInputValue;
-
-			( * m_aDMean)[ fixedMeanIndex]-= dInputValue;
-			( * m_aDVariance)[ fixedMeanIndex]+= dNormalValue* ( ( * input)[ index]- ( * m_aMean)[ meanIndex])* ( - .5f)/ ( varianceValue* stddevValue);
-		    }
-	mro= 0;
-	mco= 0;
-
-	if( m_isConv)
-	    effBatchSize= batchSize* rowSize* colSize;
-	else
-	    effBatchSize= batchSize;
-
-	    for( int ch= 0; ch< channelSize; ch++)
-		for( int ro= 0; ro< rowSize; ro++)
-		    for( int co= 0; co< colSize; co++)
-	for( int ba= 0; ba< batchSize; ba++)
-		    {
-			index= Index4D( inputShape, ba, ch, ro, co);
-
-			if( ! m_isConv)
-			{
-			    mro= ro;
-			    mco= co;
-		 	}
-			meanIndex= Index5D( meanShape, mti, 0, ch, mro, mco);
-			fixedMeanIndex= Index4D( meanShape, 0, ch, mro, mco);
-
-			( * dInput)[ index]+= ( ( * m_aDMean)[ fixedMeanIndex]+ ( * m_aDVariance)[ fixedMeanIndex]* 2* ( ( * input)[ index]- ( * m_aMean)[ meanIndex]))/ effBatchSize;
-		    }
-	m_mti++;
+                        ( * dInput)[ index]+= ( ( * m_aDMean)[ fixedMeanIndex]+ ( * m_aDVariance)[ fixedMeanIndex]* 2* ( ( * input)[ index]- ( * m_aMean)[ meanIndex]))/ effBatchSize;
+                    }
+        m_mti++;
 
         return TRUE;
     }
