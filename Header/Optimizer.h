@@ -4,8 +4,6 @@
 #include "Objective//SoftmaxCrossEntropy.h"
 #include "Objective//MSE.h"
 
-template<typename DTYPE> class Operator;
-
 enum OptimizeDirection {
     MAXIMIZE,
     MINIMIZE
@@ -13,37 +11,39 @@ enum OptimizeDirection {
 
 template<typename DTYPE> class Optimizer {
 private:
-    NeuralNetwork<DTYPE> *m_pNeuralNetwork;
-
     float m_LearningRate;
-    int   m_OptimizeDirection; // 1 or -1
+    int m_OptimizeDirection;  // 1 or -1
 
-    Operator<DTYPE> **m_apTrainableTensor;
+    Tensorholder<DTYPE> **m_ppTrainableTensors;
     int m_TrainableTensorDegree;
 
 public:
-    Optimizer(NeuralNetwork<DTYPE> *pNeuralNetwork, float pLearningRate, OptimizeDirection pOptimizeDirection);
+    Optimizer(Operator<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection);
+    Optimizer(Tensorholder<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection);
+
 
     virtual ~Optimizer();
 
     // ===============
 
-    int Alloc(NeuralNetwork<DTYPE> *pNeuralNetwork, float pLearningRate, OptimizeDirection pOptimizeDirection);
+    int Alloc(Tensorholder<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection);
 
     int Delete();
 
-    int AddTrainableTensor(NeuralNetwork<DTYPE> *pNeuralNetwork);
-    int AddTrainableTensor(Operator<DTYPE> *pTrainableTensor);
+    // int AddTrainableTensor(Operator<DTYPE> **pTrainableTensors);
+    // int AddTrainableTensor(Operator<DTYPE> *pTrainableTensor);
 
     // ===============
     int         UpdateVariable();
 
     // virtual int UpdateVariable(Tensor<DTYPE> *Trainable, Tensor<DTYPE> *Gradient) = 0;
-    virtual int UpdateVariable(Operator<DTYPE> *pTrainableTensor) = 0;
+    virtual int UpdateVariable(Tensorholder<DTYPE> *pTrainableTensor) = 0;
 
     // ===============
 
     void  SetLearningRate(float pLearningRate);
+
+    void  SetTrainableTensorDegree(int pTrainableTensorDegree);
 
     float GetLearningRate() const;
 

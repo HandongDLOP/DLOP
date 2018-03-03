@@ -6,7 +6,7 @@
 template<typename DTYPE> class GradientDescentOptimizer : public Optimizer<DTYPE>{
 
 public:
-    GradientDescentOptimizer(NeuralNetwork<DTYPE> *pNeuralNetwork, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pNeuralNetwork, pLearningRate, pOptimizeDirection) {
+    GradientDescentOptimizer(Tensorholder<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pTrainableTensors, pLearningRate, pOptimizeDirection) {
         std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Objective<DTYPE> *, float, OptimizeDirection)" << '\n';
     }
 
@@ -14,7 +14,7 @@ public:
         std::cout << "GradientDescentOptimizer::~GradientDescentOptimizer()" << '\n';
     }
 
-    virtual int UpdateVariable(Operator<DTYPE> *pTrainableTensor) {
+    virtual int UpdateVariable(Tensorholder<DTYPE> *pTrainableTensor) {
 
         Tensor<DTYPE> * trainable_data = pTrainableTensor->GetResult();
         Tensor<DTYPE> * gradient       = pTrainableTensor->GetGradient();

@@ -1,7 +1,19 @@
 #ifndef Objective_H_
 #define Objective_H_
 
-#include "NeuralNetwork.h"
+#include "Operator//Placeholder.h"
+#include "Operator//Tensorholder.h"
+
+#include "Operator//Reshape.h"
+
+#include "Operator//Relu.h"
+#include "Operator//Sigmoid.h"
+
+#include "Operator//Add.h"
+#include "Operator//Addconv.h"
+#include "Operator//MatMul.h"
+#include "Operator//Convolution.h"
+#include "Operator//Maxpooling.h"
 
 template<typename DTYPE> class Objective {
 private:

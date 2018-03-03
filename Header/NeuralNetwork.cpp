@@ -6,15 +6,16 @@ template class NeuralNetwork<double>;
 
 template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     std::cout << "NeuralNetwork<DTYPE>::NeuralNetwork()" << '\n';
-    m_aaPlaceholder = NULL;
-    m_aaOperator = NULL;
+    m_aaPlaceholder  = NULL;
+    m_aaOperator     = NULL;
     m_aaTensorholder = NULL;
 
-    m_PlaceholderDegree = 0;
-    m_OperatorDegree = 0;
+    m_PlaceholderDegree  = 0;
+    m_OperatorDegree     = 0;
     m_TensorholderDegree = 0;
 
-    // m_aOptimizer = NULL;
+    m_aObjective = NULL;
+    m_aOptimizer = NULL;
 }
 
 template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
@@ -46,7 +47,15 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         delete[] m_aaTensorholder;
     }
 
-    // delete m_aOptimizer;
+    if(m_aObjective){
+        delete m_aObjective;
+        m_aObjective = NULL;
+    }
+
+    if(m_aOptimizer){
+        delete m_aOptimizer;
+        m_aOptimizer = NULL;
+    }
 }
 
 template<typename DTYPE> Placeholder<DTYPE> *NeuralNetwork<DTYPE>::AddPlaceholder(Placeholder<DTYPE> *pPlaceholder) {
@@ -112,16 +121,16 @@ template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddTensorhol
     return pTensorholder;
 }
 
-// template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::SetOptimizer(Optimizer<DTYPE> *pOptimizer) {
-// m_aOptimizer = pOptimizer;
-//
-// // for optimizer
-// for (int i = 0; i < m_TensorholderDegree; i++) {
-// m_aOptimizer->AddTrainableTensor(m_aaTensorholder[i]);
-// }
-//
-// return m_aOptimizer;
-// }
+template<typename DTYPE> Objective<DTYPE> *NeuralNetwork<DTYPE>::SetObjective(Objective<DTYPE> *pObjective) {
+    m_aObjective = pObjective;
+    return pObjective;
+}
+
+template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::SetOptimizer(Optimizer<DTYPE> *pOptimizer) {
+    m_aOptimizer = pOptimizer;
+    m_aOptimizer->SetTrainableTensorDegree(m_TensorholderDegree);
+    return pOptimizer;
+}
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::FeedData(int numOfPlaceholder, ...) {
     va_list ap;
@@ -154,9 +163,35 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::GetTensorholderDegree() {
     return m_TensorholderDegree;
 }
 
-// template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::GetOptimizer() {
-// return m_aOptimizer;
-// }
+template<typename DTYPE> Objective<DTYPE> *NeuralNetwork<DTYPE>::GetObjective() {
+    return m_aObjective;
+}
+
+template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::GetOptimizer() {
+    return m_aOptimizer;
+}
+
+template<typename DTYPE> float NeuralNetwork<DTYPE>::GetAccuracy() {
+    Operator<DTYPE> *result
+        = GetResultOperator();
+    Operator<DTYPE> *label = m_aObjective->GetLabel();
+
+    int batch = label->GetResult()->GetBatchSize();
+
+    return (float)temp::Accuracy(result->GetResult(), label->GetResult(), batch);
+}
+
+template<typename DTYPE> float NeuralNetwork<DTYPE>::GetLoss() {
+    float avg_loss = 0.f;
+
+    int batch = m_aObjective->GetResult()->GetBatchSize();
+
+    for (int k = 0; k < batch; k++) {
+        avg_loss += (*m_aObjective)[k] / batch;
+    }
+
+    return avg_loss;
+}
 
 // ===========================================================================================
 
@@ -180,6 +215,27 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
     for (int i = m_OperatorDegree - 1; i >= 0; i--) {
         m_aaOperator[i]->ComputeBackPropagate();
     }
+    return TRUE;
+}
+
+// =========
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::Training() {
+    ForwardPropagate();
+    m_aObjective->ForwardPropagate();
+
+    m_aObjective->BackPropagate();
+    BackPropagate();
+
+    m_aOptimizer->UpdateVariable();
+
+    return TRUE;
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::Testing() {
+    ForwardPropagate();
+    m_aObjective->ForwardPropagate();
+
     return TRUE;
 }
 

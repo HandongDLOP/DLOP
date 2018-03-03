@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "..//..//Header//Model.h"
+#include "..//..//Header//NeuralNetwork.h"
 
 enum MODEL_OPTION{
     isSLP,

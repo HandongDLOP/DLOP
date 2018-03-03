@@ -8,7 +8,7 @@
 #include "MNIST_Reader.h"
 
 #define BATCH             100
-#define EPOCH             1
+#define EPOCH             100
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
@@ -29,13 +29,11 @@ int main(int argc, char const *argv[]) {
     // Objective<float> *objective = new MSE<float>(net, label, "MSE");
 
     // ======================= Select Optimizer ===================
-    Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(net, 0.001, MINIMIZE);
+    Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(net->GetTensorholder(), 0.001, MINIMIZE);
 
     // ======================= Set Model ===================
-    Model<float> *model = new Model<float>();
-    model->AddNeuralNetwork(net);
-    model->SetObjective(objective);
-    model->SetOptimizer(optimizer);
+    net->SetObjective(objective);
+    net->SetOptimizer(optimizer);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
@@ -52,9 +50,9 @@ int main(int argc, char const *argv[]) {
             x->SetTensor(dataset->GetTrainFeedImage());
             label->SetTensor(dataset->GetTrainFeedLabel());
 
-            model->Training();
-            train_accuracy += model->GetAccuracy();
-            train_avg_loss += model->GetLoss();
+            net->Training();
+            train_accuracy += net->GetAccuracy();
+            train_avg_loss += net->GetLoss();
 
             printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f",
                    j + 1, LOOP_FOR_TRAIN,
@@ -76,9 +74,9 @@ int main(int argc, char const *argv[]) {
             x->SetTensor(dataset->GetTestFeedImage());
             label->SetTensor(dataset->GetTestFeedLabel());
 
-            model->Testing();
-            test_accuracy += model->GetAccuracy();
-            test_avg_loss += model->GetLoss();
+            net->Testing();
+            test_accuracy += net->GetAccuracy();
+            test_avg_loss += net->GetLoss();
 
             printf("\rTesting complete percentage is %d / %d -> loss : %f, acc : %f",
                    j + 1, LOOP_FOR_TEST,
@@ -92,8 +90,6 @@ int main(int argc, char const *argv[]) {
     // we need to save best weight and bias when occur best acc on test time
     delete dataset;
     delete net;
-    delete objective;
-    delete optimizer;  // 추후에는 이것만 지우면 될 수 있도록 만들기
 
     return 0;
 }
