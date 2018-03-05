@@ -14,6 +14,7 @@
 #include "Operator//MatMul.h"
 #include "Operator//Convolution.h"
 #include "Operator//Maxpooling.h"
+#include "Operator/BatchNormalize.h"
 
 #include "Objective//MSE.h"
 #include "Objective//SoftmaxCrossEntropy.h"
