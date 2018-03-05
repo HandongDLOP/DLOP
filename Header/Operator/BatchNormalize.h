@@ -1,430 +1,441 @@
-#ifndef BATCHNORMALIZE_H_
-#define BATCHNORMALIZE_H_    value
+#ifndef __BATCH_NORMALIZE__
+#define __BATCH_NORMALIZE__	value
 
-#include "..//Operator.h"
+#include "../Operator.h"
 
 #include <cmath>
-#include <cfloat>
 
 template< typename DTYPE>
-
 class BatchNormalize: public Operator< DTYPE>{
-
-private:
-
-    Tensor< DTYPE>* m_aMean;
-    Tensor< DTYPE>* m_aDMean;
-    Tensor< DTYPE>* m_aVariance;
-    Tensor< DTYPE>* m_aDVariance;
-    Tensor< DTYPE>* m_aNormalized;
-    Tensor< DTYPE>* m_aDNormalized;
-
-    Tensor< DTYPE>* m_aFixedMean;
-    Tensor< DTYPE>* m_aFixedVariance;
-
-    int m_mti;
-    int m_isConv;
-    int m_isFixed;
-
-    int m_testTimeSize;
-    int m_tti;
-
 public:
+	enum class Mode;
 
-    BatchNormalize( Operator< DTYPE>* pInput, Operator< DTYPE>* pScale, Operator< DTYPE>* pShift, int pMeanTimeSize, int pTestTimeSize, int pIsConv, std:: string pName): Operator< DTYPE>( pName)
-    {
-        std:: cout<< "BatchNormalize:: BatchNormalize( Operator< DTYPE>*, Operator< DTYPE>*, Operator< DTYPE>*, int, int, std:: string)"<< '\n';
+	BatchNormalize( Operator< DTYPE>* pInput, Operator< DTYPE>* pScale, Operator< DTYPE>* pShift, int pIsChannelwise, std:: string pName): Operator< DTYPE>( pName){
+		std:: cout<< "BatchNormalize:: BatchNormalize( Operator< DTYPE>*, Operator< DTYPE>*, Operator< DTYPE>*, int, std:: string)"<< '\n';
 
-	m_mti= 0;
-	m_isConv= pIsConv;
-	m_isFixed= FALSE;
+		Allocate( pInput, pScale, pShift, pIsChannelwise);
+	}
+	~ BatchNormalize( ){
+		std:: cout<< "BatchNormalize:: ~ BatchNormalize()"<< '\n';
 
-	m_testTimeSize= pTestTimeSize;
-	m_tti= 0;
+		delete m_aBatchSummaryShape;
+
+		delete m_aTenNormalizedInput;
 	
-        this-> Alloc( pInput, pScale, pShift, pMeanTimeSize);
+		delete m_aTenBatchMean;
+		delete m_aTenBatchStandardDeviation;
 
-	m_aMean-> Reset( );
-	m_aDMean-> Reset( );
-	m_aVariance-> Reset( );
-	m_aDVariance-> Reset( );
-	m_aNormalized-> Reset( );
-	m_aDNormalized-> Reset( );
+		delete m_aTenDerBatchMean;
+		delete m_aTenDerBatchStandardDeviation;
 
-	m_aFixedMean-> Reset( );
-	m_aFixedVariance-> Reset( );
-    }
-
-    ~ BatchNormalize( )
-    {
-        std:: cout<< "BatchNormalize:: ~ BatchNormalize()"<< '\n';
-	
-	delete m_aMean;
-	delete m_aDMean;
-	delete m_aVariance;
-	delete m_aDVariance;
-	delete m_aNormalized;
-	delete m_aDNormalized;
-
-	delete m_aFixedMean;
-	delete m_aFixedVariance;
-    }
-
-    int Alloc( Operator< DTYPE>* pInput, Operator< DTYPE>* pScale, Operator< DTYPE>* pShift, int pMeanTimeSize)
-    {
-        std:: cout << "BatchNormalize:: Alloc( Operator< DTYPE>*, Operator< DTYPE>*, Operator< DTYPE>*, int)"<< '\n';
-
-        Shape* inputShape= pInput-> GetResult( )-> GetShape( );
-        int channelSize= ( * inputShape)[ 2];
-        int rowSize= ( * inputShape)[ 3];
-        int colSize= ( * inputShape)[ 4];
-	int meanTimeSize= 0;
-	int meanRowSize= 0;
-	int meanColSize= 0;
-
-	Operator< DTYPE>::Alloc( 3, pInput, pScale, pShift);
-
-        this-> SetResult( new Tensor< DTYPE>( new Shape( inputShape)));
-        this-> SetDelta( new Tensor< DTYPE>( new Shape( inputShape)));
-
-	if( pMeanTimeSize> 0)
-	    meanTimeSize= pMeanTimeSize;
-	else
-	    meanTimeSize= 1;
-
-	if( m_isConv)
-	{
-	    meanRowSize= 1;
-	    meanColSize= 1;
+		delete m_aTenTotalMean;
+		delete m_aTenTotalStandardDeviation;
 	}
-	else
-	{
-	    meanRowSize= rowSize;
-	    meanColSize= colSize;
-	}
-	m_aMean= new Tensor< DTYPE>( meanTimeSize, 1, channelSize, meanRowSize, meanColSize);
-	m_aDMean= new Tensor< DTYPE>( 1, 1, channelSize, meanRowSize, meanColSize);
-	m_aVariance= new Tensor< DTYPE>( meanTimeSize, 1, channelSize, meanRowSize, meanColSize);
-	m_aDVariance= new Tensor< DTYPE>( 1, 1, channelSize, meanRowSize, meanColSize);
-	m_aNormalized= new Tensor< DTYPE>( new Shape( inputShape));
-	m_aDNormalized= new Tensor< DTYPE>( new Shape( inputShape));
-
-	m_aFixedMean= new Tensor< DTYPE>( 1, 1, channelSize, meanRowSize, meanColSize);
-	m_aFixedVariance= new Tensor< DTYPE>( 1, 1, channelSize, meanRowSize, meanColSize);
-
-        return TRUE;
-    }
-
-    void Unfix( )
-    {
-	m_aMean-> Reset( );
-	m_aVariance-> Reset( );
-
-	m_isFixed= FALSE;
-    }
-
-    void Fix( )
-    {
-        Tensor< DTYPE>* input= this-> GetInput( )[ 0]-> GetResult( );
-
-	int batchSize= input-> GetBatchSize( );
-        int rowSize= input-> GetRowSize( );
-        int colSize= input-> GetColSize( );
-
-	Shape* meanShape= m_aMean-> GetShape( );
-	int meanTimeSize= ( * meanShape)[ 0];
-        int meanChannelSize= ( * meanShape)[ 2];
-        int meanRowSize= ( * meanShape)[ 3];
-        int meanColSize= ( * meanShape)[ 4];
-
-	int effMeanTimeSize= 0;
-	int effBatchSize= 0;
-	int unbiasEstimator= 0;
-
-	int meanIndex= 0;
-	int fixedMeanIndex= 0;
-
-	if( ! m_mti)
-	    return;
-	else if( m_mti< meanTimeSize)
-	    effMeanTimeSize= m_mti;
-	else
-	    effMeanTimeSize= meanTimeSize;
-
-	m_aFixedMean-> Reset( );
-	m_aFixedVariance-> Reset( );
-
-	for( int mti= 0; mti< effMeanTimeSize; mti++)
-	    for( int mch= 0; mch< meanChannelSize; mch++)
-		for( int mro= 0; mro< meanRowSize; mro++)
-		    for( int mco= 0; mco< meanColSize; mco++)
-		    {
-	                meanIndex= Index5D( meanShape, mti, 0, mch, mro, mco);
-	    	        fixedMeanIndex= Index4D( meanShape, 0, mch, mro, mco);
-
-		        ( * m_aFixedMean)[ fixedMeanIndex]+= ( * m_aMean)[ meanIndex];
-		        ( * m_aFixedVariance)[ fixedMeanIndex]+= ( * m_aVariance)[ meanIndex];
-		    }
-	if( m_isConv)
-	    effBatchSize= batchSize* rowSize* colSize;
-	else
-	    effBatchSize= batchSize;
-	unbiasEstimator= effMeanTimeSize* ( effBatchSize- 1)/ effBatchSize;
-	if( ! unbiasEstimator)
-	    unbiasEstimator= effMeanTimeSize;
-
-	for( int mch= 0; mch< meanChannelSize; mch++)
-	    for( int mro= 0; mro< meanRowSize; mro++)
-	        for( int mco= 0; mco< meanColSize; mco++)
-		{
-	            fixedMeanIndex= Index4D( meanShape, 0, mch, mro, mco);
-
-	            ( * m_aFixedMean)[ fixedMeanIndex]/= effMeanTimeSize;
-	            ( * m_aFixedVariance)[ fixedMeanIndex]/= unbiasEstimator;
-		}
-	m_isFixed= TRUE;
-	m_tti= 0;
-    }
-
-    int ComputeForwardPropagate( )
-    {
-        Tensor< DTYPE>* input= this-> GetInput( )[ 0]-> GetResult( );
-        Tensor< DTYPE>* scale= this-> GetInput( )[ 1]-> GetResult( );
-        Tensor< DTYPE>* shift= this-> GetInput( )[ 2]-> GetResult( );
-
-        Tensor< DTYPE>* result= this-> GetResult( );
-	Tensor< DTYPE>* mean= NULL;
-	Tensor< DTYPE>* variance= NULL;
-
-        Shape* inputShape= input-> GetShape( );
-        int batchSize= ( * inputShape)[ 1];
-        int channelSize= ( * inputShape)[ 2];
-        int rowSize= ( * inputShape)[ 3];
-        int colSize= ( * inputShape)[ 4];
-
-	Shape* meanShape= m_aMean-> GetShape( );
-	int meanTimeSize= ( * meanShape)[ 0];
-        int meanRowSize= ( * meanShape)[ 3];
-        int meanColSize= ( * meanShape)[ 4];
-
-	int effBatchSize= 0;
-
-	int mti= m_mti% meanTimeSize;
-	int mro= 0;
-	int mco= 0;
-
-	int index= 0;
-	int meanIndex= 0;
-	int fixedMeanIndex= 0;
-
-	float value= 0;
-	float meanValue= 0;
-	float normalValue= 0;
-
-	if( m_isConv)
-	    effBatchSize= batchSize* rowSize* colSize;
-	else
-	    effBatchSize= batchSize;
-
-	if( m_isFixed)
-	{
-	    m_tti++;
-	    if( m_tti== m_testTimeSize)
-		this-> Unfix( );
-
-	    mean= m_aFixedMean;
-	    variance= m_aFixedVariance;
-	}
-	else
-	{
-	    mro= 0;
-	    mco= 0;
-
-	    for( int ba= 0; ba< batchSize; ba++)
-		for( int ch= 0; ch< channelSize; ch++)
-		    for( int ro= 0; ro< rowSize; ro++)
-			for( int co= 0; co< colSize; co++)
-		        {
-			    value= ( * input)[ Index4D(inputShape, ba, ch, ro, co)];
-
-			    if( ! m_isConv)
-			    {
-				mro= ro;
-				mco= co;
-			    }
-			    meanIndex= Index5D(meanShape, mti, 0, ch, mro, mco);
-
-			    ( * m_aMean)[ meanIndex]+= value;
-			    ( * m_aVariance)[ meanIndex]+= value* value; 
+	int ComputeForwardPropagate( ){
+		if( m_mode== Mode:: INFERENCING){
+			Transform( m_pTenInput);
+		}else{
+			ComputeBatchSummary( );
+			if( m_mode== Mode:: ACCUMULATING){
+				Accumulate( );
 			}
-	    for( int ch= 0; ch< channelSize; ch++)
-	        for( mro= 0; mro< meanRowSize; mro++)
-	            for( mco= 0; mco< meanColSize; mco++)
-		    {
-	                meanIndex= Index5D(meanShape, mti, 0, ch, mro, mco);
-			meanValue= ( * m_aMean)[ meanIndex]/ effBatchSize;
+			Normalize( );
+			Transform( m_aTenNormalizedInput);
+		}
+		return TRUE;
+	}
+	int ComputeBackPropagate( )
+	{
+		unsigned int inputIndex= 0;
+		unsigned int batchSummaryIndex= 0;
 
-			( * m_aMean)[ meanIndex]= meanValue;
-	                ( * m_aVariance)[ meanIndex]= ( ( * m_aVariance)[ meanIndex]/ effBatchSize)- meanValue* meanValue;
-		    }
-	    if( mti+ 1== meanTimeSize)
-	        this-> Fix( );
+		float normalizedInputValue= 0.f;
+		float standardDeviationValue= 0.f;
 
-	    mean= m_aMean;
-	    variance= m_aVariance;
-        }
-	mro= 0;
-	mco= 0;
+		float derResultValue= 0.f;
+		float derNormalizedInputValue= 0.f;
+		float derInputValue= 0.f;
 
-	for( int ba= 0; ba< batchSize; ba++)
-	    for( int ch= 0; ch< channelSize; ch++)
-		for( int ro= 0; ro< rowSize; ro++)
-		    for( int co= 0; co< colSize; co++)
-		    {
-		        index= Index4D( inputShape, ba, ch, ro, co);
+		m_pTenDerScale-> Reset( );
+		m_pTenDerShift-> Reset( );
 
-			if( ! m_isConv)
-			{
-			    mro= ro;
-			    mco= co;
-		 	}
-			fixedMeanIndex= Index4D( meanShape, 0, ch, mro, mco);
-			if( m_isFixed)
-			    meanIndex= fixedMeanIndex;
-			else
-			    meanIndex= Index5D( meanShape, mti, 0, ch, mro, mco);
-			    
-			normalValue= ( ( * input)[ index]- ( * mean)[ meanIndex])/ std:: sqrt( ( * variance)[ meanIndex]+ FLT_EPSILON); 
+		m_aTenDerBatchMean-> Reset( );
+		m_aTenDerBatchStandardDeviation-> Reset( );
 
-			( * m_aNormalized)[ index]= normalValue;
-			( * result)[ index]= ( ( * scale)[ fixedMeanIndex]* normalValue)+ ( * shift)[ fixedMeanIndex]; 
-		    }
-        return TRUE;
-    }
+		for( int example= 0; example< m_inputBatchSize; example++){
+			for( int channel= 0; channel< m_numChannel; channel++){
+				for( int inputRow= 0; inputRow< m_numInputRow; inputRow++){
+					for( int inputColumn= 0; inputColumn< m_numInputColumn; inputColumn++){
+						inputIndex= Index4D( m_pInputShape, example, channel, inputRow, inputColumn);
+						batchSummaryIndex= GetBatchSummaryIndex( channel, inputRow, inputColumn);
 
-    int ComputeBackPropagate( )
-    {
-	Tensor< DTYPE>* dResult= this-> GetDelta( );
+						derResultValue= ( * m_pTenDerResult)[ inputIndex];
+						normalizedInputValue= ( * m_aTenNormalizedInput)[ inputIndex];
 
-	Tensor< DTYPE>* dInput= this-> GetInput( )[ 0]-> GetDelta( );
-	Tensor< DTYPE>* dScale= this-> GetInput( )[ 1]-> GetGradient( );
-	Tensor< DTYPE>* dShift= this-> GetInput( )[ 2]-> GetGradient( );
+						( * m_pTenDerScale)[ batchSummaryIndex]+= derResultValue* normalizedInputValue;
+						( * m_pTenDerShift)[ batchSummaryIndex]+= derResultValue;
 
-        Tensor< DTYPE>* input= this-> GetInput( )[ 0]-> GetResult( );
-        Tensor< DTYPE>* scale= this-> GetInput( )[ 1]-> GetResult( );
+						derNormalizedInputValue= derResultValue* ( * m_pTenScale)[ batchSummaryIndex];
+						derInputValue= derNormalizedInputValue/ ( * m_aTenBatchStandardDeviation)[ batchSummaryIndex];
 
-        Shape* inputShape= input-> GetShape( );
-        int batchSize= ( * inputShape)[ 1];
-        int channelSize= ( * inputShape)[ 2];
-        int rowSize= ( * inputShape)[ 3];
-        int colSize= ( * inputShape)[ 4];
+						( * m_pTenDerInput)[ inputIndex]= derInputValue;
+						( * m_aTenDerBatchMean)[ batchSummaryIndex]-= derInputValue;
+						( * m_aTenDerBatchStandardDeviation)[ batchSummaryIndex]+= derInputValue* normalizedInputValue;
+					}
+				}
+			}
+		}
+		for( int example= 0; example< m_inputBatchSize; example++){
+			for( int channel= 0; channel< m_numChannel; channel++){
+				for( int inputRow= 0; inputRow< m_numInputRow; inputRow++){
+					for( int inputColumn= 0; inputColumn< m_numInputColumn; inputColumn++){
+						inputIndex= Index4D( m_pInputShape, example, channel, inputRow, inputColumn);
+						batchSummaryIndex= GetBatchSummaryIndex( channel, inputRow, inputColumn);
 
-	Shape* meanShape= m_aMean-> GetShape( );
-	int meanTimeSize= ( * meanShape)[ 0];
+						( * m_pTenDerInput)[ inputIndex]+= ( ( * m_aTenDerBatchMean)[ batchSummaryIndex]+ ( * m_aTenDerBatchStandardDeviation)[ batchSummaryIndex]* ( * m_aTenNormalizedInput)[ inputIndex])/ m_effectiveBatchSize;
+					}
+				}
+			}
+		}
+		return TRUE;
+	}
+	void SetModeTraining( ){
+		if( m_mode== Mode:: ACCUMULATING){
+			;
+		}else if( m_mode== Mode:: INFERENCING){
+			RestoreTransform( );
+		}else{
+			return;
+		}
+		m_mode= Mode:: TRAINING;
+	}
+	void SetModeAccumulating( ){
+		if( m_mode== Mode:: TRAINING){
+			m_numBatch= 0;
 
-	int effBatchSize= 0;
+			m_aTenTotalMean-> Reset( );
+			m_aTenTotalStandardDeviation-> Reset( );
+		}else if( m_mode== Mode:: INFERENCING){
+			RestoreTransform( );
+			RestoreAccumulation( );
+		}else{
+			return;
+		}
+		m_mode= Mode:: ACCUMULATING;
+	}
+	void SetModeInferencing( ){
+		if( ( m_mode== Mode:: ACCUMULATING)&& ( m_numBatch> 0)){
+			ComputeTotalSummary( );
+			ReplaceTransform( );
+		}else{
+			return;
+		}
+		m_mode= Mode:: INFERENCING;
+	}
+	enum class Mode{
+		TRAINING,
+		ACCUMULATING,
+		INFERENCING
+	};
+private:
+	Tensor< DTYPE>* m_pTenInput;
+	Tensor< DTYPE>* m_pTenScale;
+	Tensor< DTYPE>* m_pTenShift;
+	Tensor< DTYPE>* m_pTenResult;
 
-	int mti= m_mti% meanTimeSize;
-	int mro= 0;
-	int mco= 0;
+	Tensor< DTYPE>* m_pTenDerInput;
+	Tensor< DTYPE>* m_pTenDerScale;
+	Tensor< DTYPE>* m_pTenDerShift;
+	Tensor< DTYPE>* m_pTenDerResult;
 
-	int index= 0;
-	int meanIndex= 0;
-	int fixedMeanIndex= 0;
+	Shape* m_pInputShape;
+	int m_inputBatchSize;
+	int m_numChannel;
+	int m_numInputRow;
+	int m_numInputColumn;
 
-	float dValue= 0;
-	float dNormalValue= 0;
-	float varianceValue= 0;
-	float stddevValue= 0;
-	float dInputValue= 0;
+	int m_isChannelwise;
+	int m_effectiveBatchSize;
+	int m_numBatchSummaryRow;
+	int m_numBatchSummaryColumn;
+	Shape* m_aBatchSummaryShape;
 
-	dInput-> Reset( );
-	dScale-> Reset( );
-	dShift-> Reset( );
-	m_aDMean-> Reset( );
-	m_aDVariance-> Reset( );
+	Tensor< DTYPE>* m_aTenNormalizedInput;
 
-	mro= 0;
-	mco= 0;
+	Tensor< DTYPE>* m_aTenBatchMean;
+	Tensor< DTYPE>* m_aTenBatchStandardDeviation;
 
-	for( int ba= 0; ba< batchSize; ba++)
-	    for( int ch= 0; ch< channelSize; ch++)
-		for( int ro= 0; ro< rowSize; ro++)
-		    for( int co= 0; co< colSize; co++)
-		    {
-			index= Index4D( inputShape, ba, ch, ro, co);
-			dValue= ( * dResult)[ index];
+	Tensor< DTYPE>* m_aTenDerBatchMean;
+	Tensor< DTYPE>* m_aTenDerBatchStandardDeviation;
 
-			if( ! m_isConv)
-			{
-			    mro= ro;
-			    mco= co;
-		 	}
-			meanIndex= Index5D( meanShape, mti, 0, ch, mro, mco);
-			fixedMeanIndex= Index4D( meanShape, 0, ch, mro, mco);
+	Tensor< DTYPE>* m_aTenTotalMean;
+	Tensor< DTYPE>* m_aTenTotalStandardDeviation;
 
-			( * dShift)[ fixedMeanIndex]+= dValue;
-			( * dScale)[ fixedMeanIndex]+= dValue* ( * m_aNormalized)[ index];
+	Mode m_mode;
+	int m_numBatch;
 
-			( * m_aDNormalized)[ index]= dValue* ( * scale)[ fixedMeanIndex];
-		    }
-	mro= 0;
-	mco= 0;
+	void Allocate( Operator< DTYPE>* pInput, Operator< DTYPE>* pScale, Operator< DTYPE>* pShift, int pIsChannelwise){
+		Operator< DTYPE>:: Alloc( 3, pInput, pScale, pShift);
 
-	for( int ba= 0; ba< batchSize; ba++)
-	    for( int ch= 0; ch< channelSize; ch++)
-		for( int ro= 0; ro< rowSize; ro++)
-		    for( int co= 0; co< colSize; co++)
-		    {
-			index= Index4D( inputShape, ba, ch, ro, co);
-			dNormalValue= ( * m_aDNormalized)[ index];
+		std:: cout << "BatchNormalize:: Allocate( Operator< DTYPE>*, Operator< DTYPE>*, Operator< DTYPE>*, int)"<< '\n';
 
-			if( ! m_isConv)
-			{
-			    mro= ro;
-			    mco= co;
-		 	}
-			meanIndex= Index5D( meanShape, mti, 0, ch, mro, mco);
-			fixedMeanIndex= Index4D( meanShape, 0, ch, mro, mco);
+		m_pTenInput= pInput-> GetResult( );
+		m_pTenScale= pScale-> GetResult( );
+		m_pTenShift= pShift-> GetResult( );
 
-			varianceValue= ( * m_aVariance)[ meanIndex]+ FLT_EPSILON;
-			stddevValue= std:: sqrt( varianceValue);
-			dInputValue= dNormalValue/ stddevValue;
+		m_pTenDerInput= pInput-> GetDelta( );
+		m_pTenDerScale= pScale-> GetGradient( );
+		m_pTenDerShift= pShift-> GetGradient( );
 
-			( * dInput)[ index]= dInputValue;
+		m_pInputShape= m_pTenInput-> GetShape( );
+		m_inputBatchSize= m_pTenInput-> GetBatchSize( );
+		m_numChannel= m_pTenInput-> GetChannelSize( );
+		m_numInputRow= m_pTenInput-> GetRowSize( );
+		m_numInputColumn= m_pTenInput-> GetColSize( );
 
-			( * m_aDMean)[ fixedMeanIndex]-= dInputValue;
-			( * m_aDVariance)[ fixedMeanIndex]+= dNormalValue* ( ( * input)[ index]- ( * m_aMean)[ meanIndex])* ( - .5f)/ ( varianceValue* stddevValue);
-		    }
-	mro= 0;
-	mco= 0;
+		m_isChannelwise= pIsChannelwise;
 
-	if( m_isConv)
-	    effBatchSize= batchSize* rowSize* colSize;
-	else
-	    effBatchSize= batchSize;
+		if( pIsChannelwise){
+			m_effectiveBatchSize= m_inputBatchSize* m_numInputRow* m_numInputColumn;
 
-	for( int ba= 0; ba< batchSize; ba++)
-	    for( int ch= 0; ch< channelSize; ch++)
-		for( int ro= 0; ro< rowSize; ro++)
-		    for( int co= 0; co< colSize; co++)
-		    {
-			index= Index4D( inputShape, ba, ch, ro, co);
+			m_numBatchSummaryRow= 1;
+			m_numBatchSummaryColumn= 1;
 
-			if( ! m_isConv)
-			{
-			    mro= ro;
-			    mco= co;
-		 	}
-			meanIndex= Index5D( meanShape, mti, 0, ch, mro, mco);
-			fixedMeanIndex= Index4D( meanShape, 0, ch, mro, mco);
+		}else{
+			m_effectiveBatchSize= m_inputBatchSize;
 
-			( * dInput)[ index]+= ( ( * m_aDMean)[ fixedMeanIndex]+ ( * m_aDVariance)[ fixedMeanIndex]* 2* ( ( * input)[ index]- ( * m_aMean)[ meanIndex]))/ effBatchSize;
-		    }
-	m_mti++;
+			m_numBatchSummaryRow= m_numInputRow;
+			m_numBatchSummaryColumn= m_numInputColumn;
+		}
+		m_aBatchSummaryShape= new Shape( 1, 1, m_numChannel, m_numBatchSummaryRow, m_numBatchSummaryColumn); 
 
-        return TRUE;
-    }
+		this-> SetResult( new Tensor< DTYPE>( new Shape( m_pInputShape)));
+		this-> SetDelta( new Tensor< DTYPE>( new Shape( m_pInputShape)));
+		m_pTenResult= this-> GetResult( );
+		m_pTenDerResult= this-> GetDelta( );
+
+		m_aTenNormalizedInput= new Tensor< DTYPE>( new Shape( m_pInputShape));
+
+		m_aTenBatchMean= new Tensor< DTYPE>( new Shape( m_aBatchSummaryShape));
+		m_aTenBatchStandardDeviation= new Tensor< DTYPE>( new Shape( m_aBatchSummaryShape));
+
+		m_aTenDerBatchMean= new Tensor< DTYPE>( new Shape( m_aBatchSummaryShape));
+		m_aTenDerBatchStandardDeviation= new Tensor< DTYPE>( new Shape( m_aBatchSummaryShape));
+
+		m_aTenTotalMean= new Tensor< DTYPE>( new Shape( m_aBatchSummaryShape));
+		m_aTenTotalStandardDeviation= new Tensor< DTYPE>( new Shape( m_aBatchSummaryShape));
+
+		m_aTenNormalizedInput-> Reset( );
+
+		m_aTenBatchMean-> Reset( );
+		m_aTenBatchStandardDeviation-> Reset( );
+
+		m_aTenDerBatchMean-> Reset( );
+		m_aTenDerBatchStandardDeviation-> Reset( );
+
+		m_aTenTotalMean-> Reset( );
+		m_aTenTotalStandardDeviation-> Reset( );
+
+		m_mode= Mode:: TRAINING;
+		m_numBatch= 0;
+	}
+	void ComputeBatchSummary( ){
+		unsigned int batchSummaryIndex= 0;
+
+		float inputValue= 0.f;
+		float meanValue= 0.f;
+		float standardDeviationValue= 0.f;
+
+		m_aTenBatchMean-> Reset( );
+		m_aTenBatchStandardDeviation-> Reset( );
+
+		for( int example= 0; example< m_inputBatchSize; example++){
+			for( int channel= 0; channel< m_numChannel; channel++){
+				for( int inputRow= 0; inputRow< m_numInputRow; inputRow++){
+					for( int inputColumn= 0; inputColumn< m_numInputColumn; inputColumn++){
+						batchSummaryIndex= GetBatchSummaryIndex( channel, inputRow, inputColumn);
+
+						inputValue= ( * m_pTenInput)[ Index4D( m_pInputShape, example, channel, inputRow, inputColumn)];
+
+						( * m_aTenBatchMean)[ batchSummaryIndex]+= inputValue;
+						( * m_aTenBatchStandardDeviation)[ batchSummaryIndex]+= inputValue* inputValue; 
+					}
+				}
+			}
+		}
+		for( int channel= 0; channel< m_numChannel; channel++){
+			for( int batchSummaryRow= 0; batchSummaryRow< m_numBatchSummaryRow; batchSummaryRow++){
+				for( int batchSummaryColumn= 0; batchSummaryColumn< m_numBatchSummaryColumn; batchSummaryColumn++){
+					batchSummaryIndex= Index4D( m_aBatchSummaryShape, 0, channel, batchSummaryRow, batchSummaryColumn);
+
+					meanValue= ( * m_aTenBatchMean)[ batchSummaryIndex]/ m_effectiveBatchSize;
+					standardDeviationValue= SqrtStable( ( ( * m_aTenBatchStandardDeviation)[ batchSummaryIndex]/ m_effectiveBatchSize)- ( meanValue* meanValue));
+
+					( * m_aTenBatchMean)[ batchSummaryIndex]= meanValue;
+					( * m_aTenBatchStandardDeviation)[ batchSummaryIndex]= standardDeviationValue;
+				}
+			}
+		}
+	}
+	void Accumulate( ){
+		unsigned int batchSummaryIndex= 0;
+
+		float standardDeviationValue= 0.f;
+
+		for( int channel= 0; channel< m_numChannel; channel++){
+			for( int batchSummaryRow= 0; batchSummaryRow< m_numBatchSummaryRow; batchSummaryRow++){
+				for( int batchSummaryColumn= 0; batchSummaryColumn< m_numBatchSummaryColumn; batchSummaryColumn++){
+					batchSummaryIndex= Index4D( m_aBatchSummaryShape, 0, channel, batchSummaryRow, batchSummaryColumn);
+
+					standardDeviationValue= ( * m_aTenBatchStandardDeviation)[ batchSummaryIndex];
+
+					( * m_aTenTotalMean)[ batchSummaryIndex]+= ( * m_aTenBatchMean)[ batchSummaryIndex];
+					( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]+= standardDeviationValue* standardDeviationValue;
+				}
+			}
+		}
+		m_numBatch++;
+	}
+	void Normalize( ){
+		unsigned int inputIndex= 0;
+		unsigned int batchSummaryIndex= 0;
+
+		float deviationValue= 0.f;
+
+		for( int example= 0; example< m_inputBatchSize; example++){
+			for( int channel= 0; channel< m_numChannel; channel++){
+				for( int inputRow= 0; inputRow< m_numInputRow; inputRow++){
+					for( int inputColumn= 0; inputColumn< m_numInputColumn; inputColumn++){
+						inputIndex= Index4D( m_pInputShape, example, channel, inputRow, inputColumn);
+						batchSummaryIndex= GetBatchSummaryIndex( channel, inputRow, inputColumn);
+
+						deviationValue= ( * m_pTenInput)[ inputIndex]- ( * m_aTenBatchMean)[ batchSummaryIndex];
+
+						( * m_aTenNormalizedInput)[ inputIndex]= deviationValue/ ( * m_aTenBatchStandardDeviation)[ batchSummaryIndex];
+					}
+				}
+			}
+		}
+	}
+	void Transform( Tensor< DTYPE>* pTenInput){
+		unsigned int inputIndex= 0;
+		unsigned int batchSummaryIndex= 0;
+
+		for( int example= 0; example< m_inputBatchSize; example++){
+			for( int channel= 0; channel< m_numChannel; channel++){
+				for( int inputRow= 0; inputRow< m_numInputRow; inputRow++){
+					for( int inputColumn= 0; inputColumn< m_numInputColumn; inputColumn++){
+						inputIndex= Index4D( m_pInputShape, example, channel, inputRow, inputColumn);
+						batchSummaryIndex= GetBatchSummaryIndex( channel, inputRow, inputColumn);
+
+						( * m_pTenResult)[ inputIndex]= ( ( * m_pTenScale)[ batchSummaryIndex]* ( * pTenInput)[ inputIndex])+ ( * m_pTenShift)[ batchSummaryIndex]; 
+					}
+				}
+			}
+		}
+	}
+	void ComputeTotalSummary( ){
+		unsigned int batchSummaryIndex= 0;
+
+		float varianceValue= 0.f;
+
+		float varianceBias= GetVarianceBias( );
+std:: cout<< std:: fixed<< "nB, ch, ro, co, sdx, tme1, tva1, tme2, tva2, bi"<< std:: endl;
+
+		for( int channel= 0; channel< m_numChannel; channel++){
+			for( int batchSummaryRow= 0; batchSummaryRow< m_numBatchSummaryRow; batchSummaryRow++){
+				for( int batchSummaryColumn= 0; batchSummaryColumn< m_numBatchSummaryColumn; batchSummaryColumn++){
+					batchSummaryIndex= Index4D( m_aBatchSummaryShape, 0, channel, batchSummaryRow, batchSummaryColumn);
+
+					varianceValue= ( ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]/ m_numBatch)/ varianceBias;
+std:: cout<< std:: fixed<< m_numBatch<< ", "<< channel<< ", "<< batchSummaryRow<< ", "<< batchSummaryColumn<< ", "<< batchSummaryIndex<< ", "<< ( * m_aTenTotalMean)[ batchSummaryIndex]<< ", "<< ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]<< ", "; 
+
+					( * m_aTenTotalMean)[ batchSummaryIndex]/= m_numBatch;
+					( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]= SqrtStable( varianceValue);
+std:: cout<< std:: fixed<< ( * m_aTenTotalMean)[ batchSummaryIndex]<< ", "<< ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]<< ", "<< varianceBias<< ", "<< std:: endl;
+				}
+			}
+		}
+	}
+	void ReplaceTransform( ){
+std:: cout<< std:: fixed<< "nB, ch, ro, co, sdx, tme, tva, g1, b1, g2, b2 "<< std:: endl;
+		unsigned int batchSummaryIndex= 0;
+
+		float scaleValue= 0.f;
+
+		for( int channel= 0; channel< m_numChannel; channel++){
+			for( int batchSummaryRow= 0; batchSummaryRow< m_numBatchSummaryRow; batchSummaryRow++){
+				for( int batchSummaryColumn= 0; batchSummaryColumn< m_numBatchSummaryColumn; batchSummaryColumn++){
+					batchSummaryIndex= Index4D( m_aBatchSummaryShape, 0, channel, batchSummaryRow, batchSummaryColumn);
+
+					scaleValue= ( * m_pTenScale)[ batchSummaryIndex]/ ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]; 
+std:: cout<< std:: fixed<< m_numBatch<< ", "<< channel<< ", "<< batchSummaryRow<< ", "<< batchSummaryColumn<< ", "<< batchSummaryIndex<< ", "<< ( * m_aTenTotalMean)[ batchSummaryIndex]<< ", "<< ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]<< ", "<< ( * m_pTenScale)[ batchSummaryIndex]<< ", "<< ( * m_pTenShift)[ batchSummaryIndex]<< ", ";
+
+					( * m_pTenScale)[ batchSummaryIndex]= scaleValue;
+					( * m_pTenShift)[ batchSummaryIndex]-= scaleValue* ( * m_aTenTotalMean)[ batchSummaryIndex];
+std:: cout<< std:: fixed<< ( * m_pTenScale)[ batchSummaryIndex]<< ", "<< ( * m_pTenShift)[ batchSummaryIndex]<< ", "<< std:: endl;
+				}
+			}
+		}
+	}
+	void RestoreTransform( ){
+std:: cout<< std:: fixed<< "nB, ch, ro, co, sdx, tme, tva, g1, b1, g2, b2 "<< std:: endl;
+		unsigned int batchSummaryIndex= 0;
+
+		float scaleValue= 0.f;
+
+		for( int channel= 0; channel< m_numChannel; channel++){
+			for( int batchSummaryRow= 0; batchSummaryRow< m_numBatchSummaryRow; batchSummaryRow++){
+				for( int batchSummaryColumn= 0; batchSummaryColumn< m_numBatchSummaryColumn; batchSummaryColumn++){
+					batchSummaryIndex= Index4D( m_aBatchSummaryShape, 0, channel, batchSummaryRow, batchSummaryColumn);
+
+					scaleValue= ( * m_pTenScale)[ batchSummaryIndex]; 
+std:: cout<< std:: fixed<< m_numBatch<< ", "<< channel<< ", "<< batchSummaryRow<< ", "<< batchSummaryColumn<< ", "<< batchSummaryIndex<< ", "<< ( * m_aTenTotalMean)[ batchSummaryIndex]<< ", "<< ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]<< ", "<< ( * m_pTenScale)[ batchSummaryIndex]<< ", "<< ( * m_pTenShift)[ batchSummaryIndex]<< ", ";
+
+					( * m_pTenScale)[ batchSummaryIndex]= scaleValue* ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex];
+					( * m_pTenShift)[ batchSummaryIndex]+= scaleValue* ( * m_aTenTotalMean)[ batchSummaryIndex];
+std:: cout<< std:: fixed<< ( * m_pTenScale)[ batchSummaryIndex]<< ", "<< ( * m_pTenShift)[ batchSummaryIndex]<< ", "<< std:: endl;
+				}
+			}
+		}
+	}
+	void RestoreAccumulation( ){
+		unsigned int batchSummaryIndex= 0;
+
+		float standardDeviationValue= 0.f;
+
+		float varianceBias= GetVarianceBias( );
+
+		for( int channel= 0; channel< m_numChannel; channel++){
+			for( int batchSummaryRow= 0; batchSummaryRow< m_numBatchSummaryRow; batchSummaryRow++){
+				for( int batchSummaryColumn= 0; batchSummaryColumn< m_numBatchSummaryColumn; batchSummaryColumn++){
+					batchSummaryIndex= Index4D( m_aBatchSummaryShape, 0, channel, batchSummaryRow, batchSummaryColumn);
+
+					standardDeviationValue= ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex];
+
+					( * m_aTenTotalMean)[ batchSummaryIndex]*= m_numBatch;
+					( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]= standardDeviationValue* standardDeviationValue* m_numBatch* varianceBias;
+				}
+			}
+		}
+	}
+	unsigned int GetBatchSummaryIndex(int pChannel, int pInputRow, int pInputColumn){
+		if( m_isChannelwise){
+			return Index4D( m_aBatchSummaryShape, 0, pChannel, 0, 0);
+		}else{
+			return Index4D( m_aBatchSummaryShape, 0, pChannel, pInputRow, pInputColumn);
+		}
+	}
+	float GetVarianceBias( ){
+		if( m_effectiveBatchSize> 1){
+			return ( m_effectiveBatchSize- 1.f)/ m_effectiveBatchSize;
+		}else{
+			return 1.f;
+		}
+	}
+	float SqrtStable( float base){
+		return std:: sqrt( base+ 1e-6f);
+	}
 };
 
-#endif  // BATCHNORMALIZE_H_
+#endif  // __BATCH_NORMALIZE__
