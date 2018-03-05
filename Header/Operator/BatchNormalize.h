@@ -340,7 +340,6 @@ private:
 		float varianceValue= 0.f;
 
 		float varianceBias= GetVarianceBias( );
-std:: cout<< std:: fixed<< "nB, ch, ro, co, sdx, tme1, tva1, tme2, tva2, bi"<< std:: endl;
 
 		for( int channel= 0; channel< m_numChannel; channel++){
 			for( int batchSummaryRow= 0; batchSummaryRow< m_numBatchSummaryRow; batchSummaryRow++){
@@ -348,17 +347,14 @@ std:: cout<< std:: fixed<< "nB, ch, ro, co, sdx, tme1, tva1, tme2, tva2, bi"<< s
 					batchSummaryIndex= Index4D( m_aBatchSummaryShape, 0, channel, batchSummaryRow, batchSummaryColumn);
 
 					varianceValue= ( ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]/ m_numBatch)/ varianceBias;
-std:: cout<< std:: fixed<< m_numBatch<< ", "<< channel<< ", "<< batchSummaryRow<< ", "<< batchSummaryColumn<< ", "<< batchSummaryIndex<< ", "<< ( * m_aTenTotalMean)[ batchSummaryIndex]<< ", "<< ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]<< ", "; 
 
 					( * m_aTenTotalMean)[ batchSummaryIndex]/= m_numBatch;
 					( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]= SqrtStable( varianceValue);
-std:: cout<< std:: fixed<< ( * m_aTenTotalMean)[ batchSummaryIndex]<< ", "<< ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]<< ", "<< varianceBias<< ", "<< std:: endl;
 				}
 			}
 		}
 	}
 	void ReplaceTransform( ){
-std:: cout<< std:: fixed<< "nB, ch, ro, co, sdx, tme, tva, g1, b1, g2, b2 "<< std:: endl;
 		unsigned int batchSummaryIndex= 0;
 
 		float scaleValue= 0.f;
@@ -369,17 +365,14 @@ std:: cout<< std:: fixed<< "nB, ch, ro, co, sdx, tme, tva, g1, b1, g2, b2 "<< st
 					batchSummaryIndex= Index4D( m_aBatchSummaryShape, 0, channel, batchSummaryRow, batchSummaryColumn);
 
 					scaleValue= ( * m_pTenScale)[ batchSummaryIndex]/ ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]; 
-std:: cout<< std:: fixed<< m_numBatch<< ", "<< channel<< ", "<< batchSummaryRow<< ", "<< batchSummaryColumn<< ", "<< batchSummaryIndex<< ", "<< ( * m_aTenTotalMean)[ batchSummaryIndex]<< ", "<< ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]<< ", "<< ( * m_pTenScale)[ batchSummaryIndex]<< ", "<< ( * m_pTenShift)[ batchSummaryIndex]<< ", ";
 
 					( * m_pTenScale)[ batchSummaryIndex]= scaleValue;
 					( * m_pTenShift)[ batchSummaryIndex]-= scaleValue* ( * m_aTenTotalMean)[ batchSummaryIndex];
-std:: cout<< std:: fixed<< ( * m_pTenScale)[ batchSummaryIndex]<< ", "<< ( * m_pTenShift)[ batchSummaryIndex]<< ", "<< std:: endl;
 				}
 			}
 		}
 	}
 	void RestoreTransform( ){
-std:: cout<< std:: fixed<< "nB, ch, ro, co, sdx, tme, tva, g1, b1, g2, b2 "<< std:: endl;
 		unsigned int batchSummaryIndex= 0;
 
 		float scaleValue= 0.f;
@@ -390,11 +383,9 @@ std:: cout<< std:: fixed<< "nB, ch, ro, co, sdx, tme, tva, g1, b1, g2, b2 "<< st
 					batchSummaryIndex= Index4D( m_aBatchSummaryShape, 0, channel, batchSummaryRow, batchSummaryColumn);
 
 					scaleValue= ( * m_pTenScale)[ batchSummaryIndex]; 
-std:: cout<< std:: fixed<< m_numBatch<< ", "<< channel<< ", "<< batchSummaryRow<< ", "<< batchSummaryColumn<< ", "<< batchSummaryIndex<< ", "<< ( * m_aTenTotalMean)[ batchSummaryIndex]<< ", "<< ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex]<< ", "<< ( * m_pTenScale)[ batchSummaryIndex]<< ", "<< ( * m_pTenShift)[ batchSummaryIndex]<< ", ";
 
 					( * m_pTenScale)[ batchSummaryIndex]= scaleValue* ( * m_aTenTotalStandardDeviation)[ batchSummaryIndex];
 					( * m_pTenShift)[ batchSummaryIndex]+= scaleValue* ( * m_aTenTotalMean)[ batchSummaryIndex];
-std:: cout<< std:: fixed<< ( * m_pTenScale)[ batchSummaryIndex]<< ", "<< ( * m_pTenShift)[ batchSummaryIndex]<< ", "<< std:: endl;
 				}
 			}
 		}
