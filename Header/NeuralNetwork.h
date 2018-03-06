@@ -14,6 +14,8 @@
 #include "Operator//MatMul.h"
 #include "Operator//Convolution.h"
 #include "Operator//Maxpooling.h"
+// #include "Operator//BatchNormalize.h"
+// #include "Operator//DenseBlock.h"
 
 #include "Objective//MSE.h"
 #include "Objective//SoftmaxCrossEntropy.h"
@@ -22,6 +24,10 @@
 
 template<typename DTYPE> class NeuralNetwork {
 private:
+#if __CUDNN__
+    cudnnHandle_t m_cudnnHandle;
+    float *devTensor;
+#endif
     Placeholder<DTYPE> **m_aaPlaceholder;
     Operator<DTYPE> **m_aaOperator;
     Tensorholder<DTYPE> **m_aaTensorholder;
@@ -41,6 +47,9 @@ public:
     // int  Alloc();
     void Delete();
 
+#if 0
+    int CuDNN_DevTensorAlloc(Operator<DTYPE> *pHostTensor);
+#endif
     // =======
 
     // 추후 직접 변수를 만들지 않은 operator* + operator*의 변환 변수도 자동으로 할당될 수 있도록 Operator와 NN class를 수정해야 한다.

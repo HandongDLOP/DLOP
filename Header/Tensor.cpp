@@ -12,7 +12,7 @@ template<typename DTYPE> Tensor<DTYPE>::Tensor() {
 }
 
 template<typename DTYPE> Tensor<DTYPE>::Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
-    // std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
+    std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
     m_aShape = NULL;
     m_aData  = NULL;
     Alloc(new Shape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize));
@@ -162,6 +162,14 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pTimeSize, int pBatchSiz
 
     return TRUE;
 }
+
+template<typename DTYPE> void Tensor<DTYPE>::ConvertTo1D(DTYPE *dst) {
+  int capacity = m_aData->GetCapacity();
+  for(int i = 0; i < capacity; i++){
+    dst[i] = (*m_aData)[i];
+  }
+}
+
 
 template<typename DTYPE> void Tensor<DTYPE>::Reset() {
     int capacity = m_aData->GetCapacity();

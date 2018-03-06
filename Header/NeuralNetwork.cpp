@@ -26,6 +26,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
 template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
     std::cout << "NeuralNetwork<DTYPE>::~NeuralNetwork()" << '\n';
 #if __CUDNN__
+    checkCudaErrors(cudaDeviceSynchronize());
     checkCUDNN(cudnnDestroy(m_cudnnHandle));
 #endif
     this->Delete();
@@ -106,11 +107,9 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Oper
         }
 
         m_aaOperator = temp;
-        
 #if __CUDNN__
-	pOperator->SetCudnnHandle(&m_cudnnHandle);
+	pOperator->SetCudnnHandle(m_cudnnHandle);
 #endif
-        
     } catch (...) {
         printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return NULL;
