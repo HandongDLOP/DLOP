@@ -43,7 +43,7 @@ template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Objective<DTYPE> *pObjectOp
 }
 
 template<typename DTYPE> int Optimizer<DTYPE>::Alloc(float pLearningRate, OptimizeDirection pOptimizeDirection) {
-    m_LearningRate    = pLearningRate;
+    m_LearningRate = pLearningRate;
 
     if (pOptimizeDirection == MAXIMIZE) m_OptimizeDirection = 1;
     else if (pOptimizeDirection == MINIMIZE) m_OptimizeDirection = -1;

@@ -75,7 +75,7 @@ public:
                 index = i * bias_capacity + j;
 
                 (*input_delta)[index] = (*this_delta)[index];
-                (*bias_gradient)[j]     += (*this_delta)[index];
+                (*bias_gradient)[j]  += (*this_delta)[index];
             }
         }
 

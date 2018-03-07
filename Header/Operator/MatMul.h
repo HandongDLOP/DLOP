@@ -103,7 +103,7 @@ public:
                         weight_index = hid * colsize + co;
                         result_index = (i * rowsize + ro) * colsize + co;
 
-                        (*input_delta)[input_index]   += (*weight)[weight_index] * (*this_delta)[result_index];
+                        (*input_delta)[input_index]      += (*weight)[weight_index] * (*this_delta)[result_index];
                         (*weight_gradient)[weight_index] += (*input)[input_index] * (*this_delta)[result_index];
                     }
                 }

@@ -14,6 +14,8 @@
 #include "Operator//MatMul.h"
 #include "Operator//Convolution.h"
 #include "Operator//Maxpooling.h"
+// #include "Operator//BatchNormalize.h"
+// #include "Operator//DenseBlock.h"
 
 #include "Objective//MSE.h"
 #include "Objective//SoftmaxCrossEntropy.h"
@@ -22,6 +24,10 @@
 
 template<typename DTYPE> class NeuralNetwork {
 private:
+#if __CUDNN__
+    cudnnHandle_t m_cudnnHandle;
+    float *devTensor;
+#endif // if __CUDNN__
     Placeholder<DTYPE> **m_aaPlaceholder;
     Operator<DTYPE> **m_aaOperator;
     Tensorholder<DTYPE> **m_aaTensorholder;
@@ -41,6 +47,9 @@ public:
     // int  Alloc();
     void Delete();
 
+#if 0
+    int  CuDNN_DevTensorAlloc(Operator<DTYPE> *pHostTensor);
+#endif // if 0
     // =======
 
     // 추후 직접 변수를 만들지 않은 operator* + operator*의 변환 변수도 자동으로 할당될 수 있도록 Operator와 NN class를 수정해야 한다.
@@ -52,7 +61,7 @@ public:
 
     Objective<DTYPE>* SetObjectiveFunction(Objective<DTYPE> *pObjectiveFunction);
     Optimizer<DTYPE>* SetOptimizer(Optimizer<DTYPE> *pOptimizer);
-    int FeedData(int numOfTensorholder, ...);
+    int               FeedData(int numOfTensorholder, ...);
 
     // =======
 
@@ -63,10 +72,10 @@ public:
     Operator<DTYPE>* Testing(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
 
     // =======
-    int ForwardPropagate();
-    int ForwardPropagate(Operator<DTYPE> *pEnd);
-    int ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
-    int BackPropagate();
+    int              ForwardPropagate();
+    int              ForwardPropagate(Operator<DTYPE> *pEnd);
+    int              ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
+    int              BackPropagate();
 
     // =======
 

@@ -18,14 +18,14 @@ int main(int argc, char const *argv[]) {
     NeuralNetwork<double> HGUNN;
 
     // create input, label data placeholder, placeholder is always managed by NeuralNetwork
-    Placeholder<double> *x = HGUNN.AddPlaceholder(new Placeholder<double>(Tensor<double>::Constants(1, BATCH, 1, 1, 784, 0.0), "x"));
+    Placeholder<double> *x     = HGUNN.AddPlaceholder(new Placeholder<double>(Tensor<double>::Constants(1, BATCH, 1, 1, 784, 0.0), "x"));
     Placeholder<double> *label = HGUNN.AddPlaceholder(new Placeholder<double>(Tensor<double>::Constants(1, BATCH, 1, 1, 10, 0.0), "label"));
 
     Operator<double> *w = HGUNN.AddTensorholder(new Tensorholder<double>(Tensor<double>::Zeros(1, 1, 1, 784, 10), "w"));
     Operator<double> *b = HGUNN.AddTensorholder(new Tensorholder<double>(Tensor<double>::Zeros(1, 1, 1, 1, 10), "b"));
 
     Operator<double> *matmul = HGUNN.AddOperator(new MatMul<double>(x, w, "matmul"));
-    Operator<double> *add = HGUNN.AddOperator(new Add<double>(matmul, b, "add"));
+    Operator<double> *add    = HGUNN.AddOperator(new Add<double>(matmul, b, "add"));
 
     // ======================= Error=======================
     Objective<double> *err = HGUNN.SetObjectiveFunction(new SoftmaxCrossEntropy<double>(add, label, 1e-50, "SCE"));

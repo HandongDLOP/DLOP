@@ -6,45 +6,45 @@ template class Operator<double>;
 
 template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    m_aResult = NULL;
-    m_aGradient = NULL;
-    m_aDelta = NULL;
-    m_apOutput = NULL;
-    m_apInput = NULL;
-    m_OutputDegree = 0;
-    m_InputDegree = 0;
+    m_aResult             = NULL;
+    m_aGradient           = NULL;
+    m_aDelta              = NULL;
+    m_apOutput            = NULL;
+    m_apInput             = NULL;
+    m_OutputDegree        = 0;
+    m_InputDegree         = 0;
     m_currentOutputDegree = 0;
-    m_currentInputDegree = 0;
-    m_name = pName;
+    m_currentInputDegree  = 0;
+    m_name                = pName;
 }
 
 template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std::string pName) {
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    m_aResult = NULL;
-    m_aGradient = NULL;
-    m_aDelta = NULL;
-    m_apOutput = NULL;
-    m_apInput = NULL;
-    m_OutputDegree = 0;
-    m_InputDegree = 0;
+    m_aResult             = NULL;
+    m_aGradient           = NULL;
+    m_aDelta              = NULL;
+    m_apOutput            = NULL;
+    m_apInput             = NULL;
+    m_OutputDegree        = 0;
+    m_InputDegree         = 0;
     m_currentOutputDegree = 0;
-    m_currentInputDegree = 0;
-    m_name = pName;
+    m_currentInputDegree  = 0;
+    m_name                = pName;
     Alloc(1, pInput);
 }
 
 template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) {
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    m_aResult = NULL;
-    m_aGradient = NULL;
-    m_aDelta = NULL;
-    m_apOutput = NULL;
-    m_apInput = NULL;
-    m_OutputDegree = 0;
-    m_InputDegree = 0;
+    m_aResult             = NULL;
+    m_aGradient           = NULL;
+    m_aDelta              = NULL;
+    m_apOutput            = NULL;
+    m_apInput             = NULL;
+    m_OutputDegree        = 0;
+    m_InputDegree         = 0;
     m_currentOutputDegree = 0;
-    m_currentInputDegree = 0;
-    m_name = pName;
+    m_currentInputDegree  = 0;
+    m_name                = pName;
     Alloc(2, pInput0, pInput1);
 }
 
@@ -110,6 +110,20 @@ template<typename DTYPE> void Operator<DTYPE>::Delete() {
     }
 }
 
+#if __CUDNN__
+template<typename DTYPE> void Operator<DTYPE>::SetCudnnHandle(cudnnHandle_t& pCudnnHandle) {
+    m_pCudnnHandle = pCudnnHandle;
+}
+
+void cudnnResize(int size, float *data) {
+    if (data == NULL) {
+        checkCudaErrors(cudaFree(data));
+    }
+    checkCudaErrors(cudaMalloc(&data, size * sizeof(float)));
+}
+
+#endif // if __CUDNN__
+
 template<typename DTYPE> void Operator<DTYPE>::SetResult(Tensor<DTYPE> *pTensor) {
     if (m_aResult) {
         delete m_aResult;
@@ -120,7 +134,7 @@ template<typename DTYPE> void Operator<DTYPE>::SetResult(Tensor<DTYPE> *pTensor)
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetGradient(Tensor<DTYPE> *pTensor) {
-    if(m_aGradient){
+    if (m_aGradient) {
         delete m_aGradient;
         m_aGradient = NULL;
     }
@@ -129,7 +143,7 @@ template<typename DTYPE> void Operator<DTYPE>::SetGradient(Tensor<DTYPE> *pTenso
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetDelta(Tensor<DTYPE> *pTensor) {
-    if(m_aDelta){
+    if (m_aDelta) {
         delete m_aDelta;
         m_aDelta = NULL;
     }
@@ -144,6 +158,14 @@ template<typename DTYPE> void Operator<DTYPE>::IncreaseCurrentOutputDegree() {
 template<typename DTYPE> void Operator<DTYPE>::IncreaseCurrentInputDegree() {
     m_currentInputDegree++;
 }
+
+#if __CUDNN__
+template<typename DTYPE> cudnnHandle_t& Operator<DTYPE>::GetCudnnHandle() {
+    // return this->m_pCudnnHandle;
+    return m_pCudnnHandle;
+}
+
+#endif // if __CUDNN__
 
 template<typename DTYPE> Tensor<DTYPE> *Operator<DTYPE>::GetResult() const {
     return m_aResult;
@@ -286,6 +308,79 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagate() {
 template<typename DTYPE> int Operator<DTYPE>::ComputeBackPropagate() {
     std::cout << this->GetName() << '\n';
     return TRUE;
+}
+
+template<typename DTYPE> Operator<DTYPE> *Operator<DTYPE>::Concatenate(Operator<DTYPE> *src, Operator<DTYPE> *dst, int axis) {
+    switch (axis) {
+        case 0: return Concatenate0(src, dst); // break;
+        case 1: return Concatenate1(src, dst); // break;
+        case 2: return Concatenate2(src, dst); // break;
+        default:
+            printf("Receive invalid axis value in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
+            return FALSE;
+    }
+}
+
+template<typename DTYPE> int IsSameDim(Operator<DTYPE> *src, Operator<DTYPE> *dst) {
+    if ((src->GetResult()->GetTimeSize() != dst->GetResult()->GetTimeSize()) // src->GetResult()->GetChannelSize() != dst->GetResult()->GetChannelSize() ||
+        || (src->GetResult()->GetRowSize() != dst->GetResult()->GetRowSize()) || (src->GetResult()->GetColSize() != dst->GetResult()->GetColSize())) {
+        printf("Receive invalid tensor in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+// \sigma(n_i) * ch_1 * h * w
+template<typename DTYPE> Operator<DTYPE>* Concatenate0(Operator<DTYPE> *src, Operator<DTYPE> *dst) {
+    if (IsSameDim(src, dst)) {
+        int batch = src->GetResult()->GetBatchSize();
+    }
+}
+
+// n_1 * \sigma(ch_i) * h * w
+template<typename DTYPE> Operator<DTYPE>* Concatenate1(Operator<DTYPE> *src, Operator<DTYPE> *dst) {
+    if (IsSameDim(src, dst)) {}
+}
+
+//
+template<typename DTYPE> Operator<DTYPE>* Concatenate2(Operator<DTYPE> *src1, Operator<DTYPE> *src2) {
+    if (IsSameDim(src1, src2)) {
+        Operator<DTYPE> *concat = new Operator<DTYPE>("concat");
+
+        Tensor<DTYPE> *srcTensor1 = src1->GetResult();
+        Tensor<DTYPE> *srcTensor2 = src2->GetResult();
+        Tensor<DTYPE> *srcDelta1  = src1->GetDelta();
+        Tensor<DTYPE> *srcDelta2  = src2->GetDelta();
+
+        int t          = srcTensor1->GetTimeSize();
+        int b          = srcTensor1->GetBatchSize();
+        int newChannel = srcTensor1->GetChannelSize() + srcTensor2->GetChannelSize();
+        int r          = srcTensor1->GetRowSize();
+        int c          = srcTensor1->GetColSize();
+
+        Tensor<DTYPE> *newTensor = new Tensor<DTYPE>(t, b, newChannel, r, c);
+        Tensor<DTYPE> *newDelta  = new Tensor<DTYPE>(t, b, newChannel, r, c);
+
+        int i            = 0;
+        int srcCapacity1 = src1->GetResult()->GetData()->GetCapacity();
+        int newCapacity  = newTensor->GetData()->GetCapacity();
+
+        for (i = 0; i < srcCapacity1; i++) {
+            (*newTensor)[i] = (*srcTensor1)[i];
+            (*newDelta)[i]  = (*srcDelta1)[i];
+        }
+
+        for (i = srcCapacity1; i < newCapacity; i++) {
+            (*newTensor)[i] = (*srcTensor2)[i - srcCapacity1];
+            (*newDelta)[i]  = (*srcDelta2)[i - srcCapacity1];
+        }
+
+        concat->SetResult(newTensor);
+        concat->SetDelta(newDelta);
+
+        return concat;
+    }
 }
 
 // int main(int argc, char const *argv[]) {
