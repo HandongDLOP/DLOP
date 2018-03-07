@@ -122,7 +122,7 @@ void cudnnResize(int size, float *data) {
     checkCudaErrors(cudaMalloc(&data, size * sizeof(float)));
 }
 
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
 
 template<typename DTYPE> void Operator<DTYPE>::SetResult(Tensor<DTYPE> *pTensor) {
     if (m_aResult) {
@@ -165,7 +165,7 @@ template<typename DTYPE> cudnnHandle_t& Operator<DTYPE>::GetCudnnHandle() {
     return m_pCudnnHandle;
 }
 
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
 
 template<typename DTYPE> Tensor<DTYPE> *Operator<DTYPE>::GetResult() const {
     return m_aResult;
@@ -312,9 +312,9 @@ template<typename DTYPE> int Operator<DTYPE>::ComputeBackPropagate() {
 
 template<typename DTYPE> Operator<DTYPE> *Operator<DTYPE>::Concatenate(Operator<DTYPE> *src, Operator<DTYPE> *dst, int axis) {
     switch (axis) {
-        case 0: return Concatenate0(src, dst); // break;
-        case 1: return Concatenate1(src, dst); // break;
-        case 2: return Concatenate2(src, dst); // break;
+        case 0: return Concatenate0(src, dst);  // break;
+        case 1: return Concatenate1(src, dst);  // break;
+        case 2: return Concatenate2(src, dst);  // break;
         default:
             printf("Receive invalid axis value in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
             return FALSE;
@@ -322,7 +322,7 @@ template<typename DTYPE> Operator<DTYPE> *Operator<DTYPE>::Concatenate(Operator<
 }
 
 template<typename DTYPE> int IsSameDim(Operator<DTYPE> *src, Operator<DTYPE> *dst) {
-    if ((src->GetResult()->GetTimeSize() != dst->GetResult()->GetTimeSize()) // src->GetResult()->GetChannelSize() != dst->GetResult()->GetChannelSize() ||
+    if ((src->GetResult()->GetTimeSize() != dst->GetResult()->GetTimeSize())  // src->GetResult()->GetChannelSize() != dst->GetResult()->GetChannelSize() ||
         || (src->GetResult()->GetRowSize() != dst->GetResult()->GetRowSize()) || (src->GetResult()->GetColSize() != dst->GetResult()->GetColSize())) {
         printf("Receive invalid tensor in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;

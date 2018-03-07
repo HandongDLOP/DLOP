@@ -45,10 +45,10 @@
 #elif defined(__INTEL_COMPILER)
 # define COMPILER_NAME       "ICC"
 # define COMPILER_VER        TOSTR(__INTEL_COMPILER) "." TOSTR(__INTEL_COMPILER_BUILD_DATE)
-#else // if defined(__GNUC__)
+#else  // if defined(__GNUC__)
 # define COMPILER_NAME       "unknown"
 # define COMPILER_VER        "???"
-#endif // if defined(__GNUC__)
+#endif  // if defined(__GNUC__)
 
 #define CUDNN_VERSION_STR    TOSTR(CUDNN_MAJOR) "." TOSTR(CUDNN_MINOR) "." TOSTR(CUDNN_PATCHLEVEL)
 
@@ -119,7 +119,7 @@ static void showDevices(void) {
 # ifndef STRNCASECMP
 #  define STRNCASECMP    strncasecmp
 # endif // ifndef STRNCASECMP
-#endif // if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
+#endif  // if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
 inline int stringRemoveDelimiter(char delimiter, const char *string) {
     int string_start = 0;
 

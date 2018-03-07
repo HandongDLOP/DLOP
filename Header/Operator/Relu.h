@@ -14,7 +14,7 @@ private:
     float *pDevOutput;
     float *pDevDelta;
     float *pDevInputDelta;
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
 
 public:
     Relu(Operator<DTYPE> *pInput, std::string pName) : Operator<DTYPE>(pInput, pName) {
@@ -26,7 +26,7 @@ public:
         std::cout << "Relu::~Relu()" << '\n';
 #if __CUDNN__
         destroyHandles();
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
     }
 
     int Alloc(Operator<DTYPE> *pInput) {
@@ -37,7 +37,7 @@ public:
         pDevOutput     = NULL;
         pDevDelta      = NULL;
         pDevInputDelta = NULL;
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
         Shape *shapeOfResult = new Shape(pInput->GetResult()->GetShape());
         this->SetResult(new Tensor<DTYPE>(shapeOfResult));
 
@@ -64,7 +64,7 @@ public:
         checkCUDNN(cudnnDestroyActivationDescriptor(actDesc));
     }
 
-    #endif // if __CUDNN__
+    #endif  // if __CUDNN__
 
       #define mexPrintf    printf
 
@@ -141,12 +141,12 @@ public:
         checkCudaErrors(cudaFree(pDevInput));
         pDevInput = NULL;
 
-#else // if __CUDNN__
+#else  // if __CUDNN__
 
         for (int i = 0; i < inputCapacity; i++) {
             (*result)[i] = this->MAX((*input)[i], 0.f);
         }
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
         return TRUE;
     }
 
@@ -223,13 +223,13 @@ public:
         checkCudaErrors(cudaFree(pDevDelta));
         checkCudaErrors(cudaFree(pDevInputDelta));
 
-#else // if __CUDNN__
+#else  // if __CUDNN__
 
         for (int i = 0; i < capacity; i++) {
             if ((*result)[i] > 0.0) (*input_delta)[i] = (*this_delta)[i];
             else (*input_delta)[i] = 0;
         }
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
         return TRUE;
     }
 

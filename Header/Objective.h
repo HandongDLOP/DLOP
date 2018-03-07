@@ -23,7 +23,7 @@ private:
     Tensor<DTYPE> *m_aGradient;
 
     Operator<DTYPE> *m_pInputOperator;
-    Tensor<DTYPE>   *m_pInputTensor;
+    Tensor<DTYPE> *m_pInputTensor;
 
     Operator<DTYPE> *m_pLabel;
 
@@ -41,11 +41,11 @@ public:
     void                   SetResult(Tensor<DTYPE> *pTensor);
     void                   SetGradient(Tensor<DTYPE> *pTensor);
 
-    Tensor<DTYPE>*         GetResult() const;
-    Tensor<DTYPE>*         GetGradient() const;
-    Operator<DTYPE>*       GetOperator() const;
-    Tensor<DTYPE>*         GetTensor() const;
-    Operator<DTYPE>*       GetLabel() const;
+    Tensor<DTYPE>        * GetResult() const;
+    Tensor<DTYPE>        * GetGradient() const;
+    Operator<DTYPE>      * GetOperator() const;
+    Tensor<DTYPE>        * GetTensor() const;
+    Operator<DTYPE>      * GetLabel() const;
     std::string            GetName() const;
 
     // For Propagate
@@ -54,7 +54,7 @@ public:
     // For BackPropagate
     virtual Tensor<DTYPE>* BackPropagate();
 
-    DTYPE& operator[](unsigned int index);
+    DTYPE                & operator[](unsigned int index);
 };
 
 #endif  // Objective_H_

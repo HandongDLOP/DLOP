@@ -13,7 +13,7 @@ public:
         std::cout << "Sequential::Sequential(Operator<DTYPE> *)" << '\n';
 
         m_listOfOperator = NULL;
-        m_numOfOperator = 0;
+        m_numOfOperator  = 0;
 
         va_list ap;
         va_start(ap, numOfOperator);
@@ -31,7 +31,7 @@ public:
         std::cout << "Sequential::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
 
         m_listOfOperator = new Operator<DTYPE> *[numOfOperator];
-        m_numOfOperator = numOfOperator;
+        m_numOfOperator  = numOfOperator;
 
         for (int i = 0; i < numOfOperator; i++) {
             m_listOfOperator[i] = va_arg(*ap, Operator<DTYPE> *);

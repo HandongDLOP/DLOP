@@ -9,7 +9,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
 #if __CUDNN__
     checkCUDNN(cudnnCreate(&m_cudnnHandle));
     devTensor = NULL;
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
     m_aaPlaceholder  = NULL;
     m_aaOperator     = NULL;
     m_aaTensorholder = NULL;
@@ -27,7 +27,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
 #if __CUDNN__
     checkCudaErrors(cudaDeviceSynchronize());
     checkCUDNN(cudnnDestroy(m_cudnnHandle));
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
     this->Delete();
 }
 
@@ -46,7 +46,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::CuDNN_DevTensorAlloc(Operator
     return TRUE;
 }
 
-#endif // if 0
+#endif  // if 0
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
     std::cout << "NeuralNetwork<DTYPE>::Delete()" << '\n';
@@ -72,12 +72,12 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         delete[] m_aaTensorholder;
     }
 
-    if(m_aObjective){
+    if (m_aObjective) {
         delete m_aObjective;
         m_aObjective = NULL;
     }
 
-    if(m_aOptimizer){
+    if (m_aOptimizer) {
         delete m_aOptimizer;
         m_aOptimizer = NULL;
     }
@@ -119,7 +119,7 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Oper
         m_aaOperator = temp;
 #if __CUDNN__
         pOperator->SetCudnnHandle(m_cudnnHandle);
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
     } catch (...) {
         printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return NULL;

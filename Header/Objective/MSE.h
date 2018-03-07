@@ -20,7 +20,7 @@ public:
 
         Operator<DTYPE> *pInput = pOperator;
 
-        int timesize = pInput->GetResult()->GetTimeSize();
+        int timesize  = pInput->GetResult()->GetTimeSize();
         int batchsize = pInput->GetResult()->GetBatchSize();
 
         this->SetResult(new Tensor<DTYPE>(timesize, batchsize, 1, 1, 1));
@@ -33,28 +33,28 @@ public:
     }
 
     virtual Tensor<DTYPE>* ForwardPropagate() {
-        Tensor<DTYPE> *input = this->GetTensor();
-        Tensor<DTYPE> *label = this->GetLabel()->GetResult();
-        Tensor<DTYPE> *result = this->GetResult();
+        Tensor<DTYPE> *input    = this->GetTensor();
+        Tensor<DTYPE> *label    = this->GetLabel()->GetResult();
+        Tensor<DTYPE> *result   = this->GetResult();
         Tensor<DTYPE> *gradient = this->GetGradient();
         result->Reset();
         gradient->Reset();
 
-        int timesize = input->GetTimeSize();
+        int timesize  = input->GetTimeSize();
         int batchsize = input->GetBatchSize();
-        int count = timesize * batchsize;
+        int count     = timesize * batchsize;
 
         int channelsize = input->GetChannelSize();
-        int rowsize = input->GetRowSize();
-        int colsize = input->GetColSize();
-        int capacity = channelsize * rowsize * colsize;
+        int rowsize     = input->GetRowSize();
+        int colsize     = input->GetColSize();
+        int capacity    = channelsize * rowsize * colsize;
 
         int index = 0;
 
         for (int i = 0; i < count; i++) {
             for (int j = 0; j < capacity; j++) {
-                index = i * capacity + j;
-                (*result)[i] += Error((*input)[index], (*label)[index], capacity);
+                index              = i * capacity + j;
+                (*result)[i]      += Error((*input)[index], (*label)[index], capacity);
                 (*gradient)[index] = ((*input)[index] - (*label)[index]);
             }
         }
@@ -63,7 +63,7 @@ public:
     }
 
     virtual Tensor<DTYPE>* BackPropagate() {
-        Tensor<DTYPE> *gradient = this->GetGradient();
+        Tensor<DTYPE> *gradient    = this->GetGradient();
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
         input_delta->Reset();
 

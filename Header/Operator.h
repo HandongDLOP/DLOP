@@ -5,7 +5,7 @@
 # include <cuda.h>
 # include <cudnn.h>
 # include "error_util.h"
-#endif // ifndef __CUDNN__
+#endif  // ifndef __CUDNN__
 // #include "MetaParameter.h"
 // #include "Optimizer//GradientDescentOptimizer.h"
 #include "Tensor.h"
@@ -34,7 +34,7 @@ public:
     cudnnHandle_t& GetCudnnHandle();
     void           SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
     void           cudnnResize(int size, float *data);
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
 
     Operator(std::string pName = "NO NAME");
     Operator(Operator<DTYPE> *pInput, std::string pName = "NO NAME");

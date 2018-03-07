@@ -6,22 +6,22 @@ template class Objective<double>;
 
 template<typename DTYPE> Objective<DTYPE>::Objective(std::string pName) {
     std::cout << "Objective<DTYPE>::Objective()" << '\n';
-    m_aResult = NULL;
-    m_aGradient = NULL;
+    m_aResult        = NULL;
+    m_aGradient      = NULL;
     m_pInputOperator = NULL;
-    m_pInputTensor = NULL;
-    m_pLabel = NULL;
-    m_name = pName;
+    m_pInputTensor   = NULL;
+    m_pLabel         = NULL;
+    m_name           = pName;
 }
 
 template<typename DTYPE> Objective<DTYPE>::Objective(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName) {
     std::cout << "Objective<DTYPE>::Objective()" << '\n';
-    m_aResult = NULL;
-    m_aGradient = NULL;
+    m_aResult        = NULL;
+    m_aGradient      = NULL;
     m_pInputOperator = NULL;
-    m_pInputTensor = NULL;
-    m_pLabel = NULL;
-    m_name = pName;
+    m_pInputTensor   = NULL;
+    m_pLabel         = NULL;
+    m_name           = pName;
     Alloc(pOperator, pLabel);
 }
 
@@ -34,7 +34,7 @@ template<typename DTYPE> int Objective<DTYPE>::Alloc(Operator<DTYPE> *pOperator,
     std::cout << "Objective<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
 
     m_pInputOperator = pOperator;
-    m_pInputTensor = m_pInputOperator->GetResult();
+    m_pInputTensor   = m_pInputOperator->GetResult();
 
     m_pLabel = pLabel;
     return TRUE;
