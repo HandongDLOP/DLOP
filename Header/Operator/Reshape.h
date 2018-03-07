@@ -36,12 +36,12 @@ public:
     }
 
     int ComputeForwardPropagate() {
-        Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
+        Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
         int capacity = result->GetData()->GetCapacity();
 
-        for(int i = 0; i < capacity; i++){
+        for (int i = 0; i < capacity; i++) {
             (*result)[i] = (*input)[i];
         }
 

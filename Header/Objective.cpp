@@ -6,30 +6,30 @@ template class Objective<double>;
 
 template<typename DTYPE> Objective<DTYPE>::Objective(std::string pName) {
     std::cout << "Objective<DTYPE>::Objective()" << '\n';
-    m_aResult = NULL;
-    m_apInput = NULL;
-    m_InputDegree = 0;
+    m_aResult            = NULL;
+    m_apInput            = NULL;
+    m_InputDegree        = 0;
     m_currentInputDegree = 0;
-    m_name = pName;
+    m_name               = pName;
 }
 
 template<typename DTYPE> Objective<DTYPE>::Objective(Operator<DTYPE> *pInput, std::string pName) {
     std::cout << "Objective<DTYPE>::Objective()" << '\n';
-    m_aResult = NULL;
-    m_apInput = NULL;
-    m_InputDegree = 0;
+    m_aResult            = NULL;
+    m_apInput            = NULL;
+    m_InputDegree        = 0;
     m_currentInputDegree = 0;
-    m_name = pName;
+    m_name               = pName;
     Alloc(1, pInput);
 }
 
 template<typename DTYPE> Objective<DTYPE>::Objective(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) {
     std::cout << "Objective<DTYPE>::Objective()" << '\n';
-    m_aResult = NULL;
-    m_apInput = NULL;
-    m_InputDegree = 0;
+    m_aResult            = NULL;
+    m_apInput            = NULL;
+    m_InputDegree        = 0;
     m_currentInputDegree = 0;
-    m_name = pName;
+    m_name               = pName;
     Alloc(2, pInput0, pInput1);
 }
 

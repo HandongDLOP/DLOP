@@ -83,7 +83,7 @@ public:
                     index = i * channelsize * planesize + ch * planesize + j;
 
                     (*input_delta)[index] = (*this_delta)[index];
-                    (*bias_gradient)[ch]    += (*this_delta)[index];
+                    (*bias_gradient)[ch] += (*this_delta)[index];
                 }
             }
         }

@@ -5,7 +5,6 @@
 
 template<typename DTYPE> class Placeholder : public Operator<DTYPE>{
 private:
-
 public:
     Placeholder(Tensor<DTYPE> *pTensor, std::string pName) : Operator<DTYPE>(pName) {
         std::cout << "Placeholder<DTYPE>::Placeholder(Tensor *, std::string)" << '\n';
@@ -13,7 +12,7 @@ public:
         this->Alloc(pTensor);
     }
 
-    Placeholder(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pName){
+    Placeholder(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pName) {
         std::cout << "Placeholder<DTYPE>::Placeholder(int, int, int, int, int, std::string)" << '\n';
 
         this->Alloc(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
@@ -25,6 +24,7 @@ public:
 
     int Alloc(Tensor<DTYPE> *pTensor) {
         std::cout << "Placeholder<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
+
         if (pTensor) {
             this->SetResult(pTensor);
         } else {
@@ -68,10 +68,9 @@ public:
         return TRUE;
     }
 
-    void SetTensor(Tensor<DTYPE> * pTensor){
+    void SetTensor(Tensor<DTYPE> *pTensor) {
         this->SetResult(pTensor);
     }
-
 };
 
 

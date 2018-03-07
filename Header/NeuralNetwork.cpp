@@ -9,13 +9,13 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
 #if __CUDNN__
     checkCUDNN(cudnnCreate(&m_cudnnHandle));
     devTensor = NULL;
-#endif
-    m_aaPlaceholder = NULL;
-    m_aaOperator = NULL;
+#endif // if __CUDNN__
+    m_aaPlaceholder  = NULL;
+    m_aaOperator     = NULL;
     m_aaTensorholder = NULL;
 
-    m_PlaceholderDegree = 0;
-    m_OperatorDegree = 0;
+    m_PlaceholderDegree  = 0;
+    m_OperatorDegree     = 0;
     m_TensorholderDegree = 0;
 
     m_aObjectiveFunction = NULL;
@@ -28,23 +28,26 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
 #if __CUDNN__
     checkCudaErrors(cudaDeviceSynchronize());
     checkCUDNN(cudnnDestroy(m_cudnnHandle));
-#endif
+#endif // if __CUDNN__
     this->Delete();
 }
 
 #if 0
-template<typename DTYPE> int NeuralNetwork<DTYPE>::CuDNN_DevTensorAlloc(Operator<DTYPE> *pHostTensor){
-  int h = pHostTensor->GetResult()->GetRowSize();
-  int w = pHostTensor->GetResult()->GetColSize();
-  checkCudaErrors(cudaMalloc(&devTensor, h*w*sizeof(float)));
-  if(devTensor == NULL){
-    printf("Failed to allocate DEVICE memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
-    return FALSE;
-  }
-  checkCudaErrors(cudaMemcpy(devTensor, pHostTensor->GetResult()->GetData(), h*w*sizeof(float), cudaMemcpyHostToDevice));
-  return TRUE;
+template<typename DTYPE> int NeuralNetwork<DTYPE>::CuDNN_DevTensorAlloc(Operator<DTYPE> *pHostTensor) {
+    int h = pHostTensor->GetResult()->GetRowSize();
+    int w = pHostTensor->GetResult()->GetColSize();
+
+    checkCudaErrors(cudaMalloc(&devTensor, h * w * sizeof(float)));
+
+    if (devTensor == NULL) {
+        printf("Failed to allocate DEVICE memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
+        return FALSE;
+    }
+    checkCudaErrors(cudaMemcpy(devTensor, pHostTensor->GetResult()->GetData(), h * w * sizeof(float), cudaMemcpyHostToDevice));
+    return TRUE;
 }
-#endif
+
+#endif // if 0
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
     std::cout << "NeuralNetwork<DTYPE>::Delete()" << '\n';
@@ -108,8 +111,8 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Oper
 
         m_aaOperator = temp;
 #if __CUDNN__
-	pOperator->SetCudnnHandle(m_cudnnHandle);
-#endif
+        pOperator->SetCudnnHandle(m_cudnnHandle);
+#endif // if __CUDNN__
     } catch (...) {
         printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return NULL;

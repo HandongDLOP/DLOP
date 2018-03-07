@@ -15,7 +15,7 @@ private:
     Objective<DTYPE> *m_pObjectOperator;
 
     float m_LearningRate;
-    int   m_OptimizeDirection; // 1 or -1
+    int m_OptimizeDirection;  // 1 or -1
 
     Operator<DTYPE> **m_apTrainableTensor;
     int m_TrainableTensorDegree;

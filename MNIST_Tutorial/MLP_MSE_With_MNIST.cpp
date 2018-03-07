@@ -17,7 +17,7 @@ int main(int argc, char const *argv[]) {
     NeuralNetwork<float> HGUNN;
 
     // create input, label data placeholder
-    Placeholder<float> *x    = HGUNN.AddPlaceholder(new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 1.0), "x"));
+    Placeholder<float> *x     = HGUNN.AddPlaceholder(new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 1.0), "x"));
     Placeholder<float> *label = HGUNN.AddPlaceholder(new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.f), "label"));
 
     // ======================= layer 1======================

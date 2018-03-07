@@ -1,16 +1,16 @@
 #ifndef OPERATOR_H_
 #define OPERATOR_H_
 #ifndef __CUDNN__
-#define __CUDNN__ TRUE
-#include <cuda.h>
-#include <cudnn.h>
-#include "error_util.h"
-#endif
+# define __CUDNN__    TRUE
+# include <cuda.h>
+# include <cudnn.h>
+# include "error_util.h"
+#endif // ifndef __CUDNN__
 // #include "MetaParameter.h"
 // #include "Optimizer//GradientDescentOptimizer.h"
 #include "Tensor.h"
-#define VALID 0
-#define SAME 1
+#define VALID    0
+#define SAME     1
 
 template<typename DTYPE> class Operator {
 private:
@@ -32,9 +32,9 @@ public:
 #if __CUDNN__
     cudnnHandle_t m_pCudnnHandle;
     cudnnHandle_t& GetCudnnHandle();
-    void SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
-    void cudnnResize(int size, float *data);
-#endif
+    void           SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
+    void           cudnnResize(int size, float *data);
+#endif // if __CUDNN__
 
     Operator(std::string pName = "NO NAME");
     Operator(Operator<DTYPE> *pInput, std::string pName = "NO NAME");
@@ -55,9 +55,9 @@ public:
     int               _AddOutputEdge(Operator<DTYPE> *pOutput);
     void              AddEdgebetweenOperators(Operator<DTYPE> *pInput);
 
-    Tensor<DTYPE>*    GetResult() const;
-    Tensor<DTYPE>*    GetGradient() const;
-    Tensor<DTYPE>*    GetDelta() const;
+    Tensor<DTYPE>   * GetResult() const;
+    Tensor<DTYPE>   * GetGradient() const;
+    Tensor<DTYPE>   * GetDelta() const;
     Operator<DTYPE>** GetInput() const;
     Operator<DTYPE>** GetOutput() const;
     int               GetOutputDegree() const;
@@ -66,7 +66,7 @@ public:
     int               GetCurrentInputDegree() const;
     std::string       GetName() const;
 
-    Operator<DTYPE>* Concatenate(Operator<DTYPE> *src, Operator<DTYPE> *dst, int axis=0);
+    Operator<DTYPE> * Concatenate(Operator<DTYPE> *src, Operator<DTYPE> *dst, int axis = 0);
 
     // For Propagate
     int               ForwardPropagate();

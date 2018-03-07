@@ -14,13 +14,12 @@
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
 int main(int argc, char const *argv[]) {
-
     NeuralNetwork<float> HGUNN;
 
     // create input, label data placeholder, placeholder is always managed by NeuralNetwork
     Placeholder<float> *x     = HGUNN.AddPlaceholder(new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 784, 1.0), "x"));
     Placeholder<float> *label = HGUNN.AddPlaceholder(new Placeholder<float>(Tensor<float>::Constants(1, BATCH, 1, 1, 10, 0.0), "label"));
-    Operator<float> *res   = HGUNN.AddOperator(new Reshape<float>(x, 1, BATCH, 1, 28, 28, "reshape"));
+    Operator<float>    *res   = HGUNN.AddOperator(new Reshape<float>(x, 1, BATCH, 1, 28, 28, "reshape"));
 
     // ======================= layer 1=======================
     Operator<float> *w1    = HGUNN.AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 10, 1, 3, 3, 0.0, 0.1), "weight"));
@@ -55,7 +54,7 @@ int main(int argc, char const *argv[]) {
     Operator<float> *add_flat2    = HGUNN.AddOperator(new Add<float>(matmul_flat2, b_flat2, "add"));
 
     // ======================= Error=======================
-    Objective<float> *err = HGUNN.SetObjectiveFunction(new SoftmaxCrossEntropy<float>(add_flat2, label, 0.0000001, "SCE")); // 중요 조건일 가능성 있음
+    Objective<float> *err = HGUNN.SetObjectiveFunction(new SoftmaxCrossEntropy<float>(add_flat2, label, 0.0000001, "SCE"));  // 중요 조건일 가능성 있음
 
     // ======================= Optimizer=======================
     HGUNN.SetOptimizer(new GradientDescentOptimizer<float>(err, 0.001, MINIMIZE));

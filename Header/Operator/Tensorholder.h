@@ -41,14 +41,14 @@ public:
     }
 
     int ComputeBackPropagate() {
-// int capacity = this->GetResult()->GetData()->GetCapacity();
-//
-// Tensor<DTYPE> *delta    = this->GetDelta();
-// Tensor<DTYPE> *gradient = this->GetGradient();
-//
-// for(int i = 0; i < capacity; i++){
-// (*gradient)[i] = (*delta)[i];
-// }
+        // int capacity = this->GetResult()->GetData()->GetCapacity();
+        //
+        // Tensor<DTYPE> *delta    = this->GetDelta();
+        // Tensor<DTYPE> *gradient = this->GetGradient();
+        //
+        // for(int i = 0; i < capacity; i++){
+        // (*gradient)[i] = (*delta)[i];
+        // }
 
         return TRUE;
     }

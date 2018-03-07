@@ -54,7 +54,7 @@ public:
 
 int main(int argc, char const *argv[]) {
     // create input, label data placeholder
-    Placeholder<float> *x = new Placeholder<float>(1, BATCH, 1, 1, 784, "x");
+    Placeholder<float> *x     = new Placeholder<float>(1, BATCH, 1, 1, 784, "x");
     Placeholder<float> *label = new Placeholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // Result of classification
