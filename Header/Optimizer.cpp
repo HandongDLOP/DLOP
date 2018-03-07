@@ -4,26 +4,14 @@ template class Optimizer<int>;
 template class Optimizer<float>;
 template class Optimizer<double>;
 
-template<typename DTYPE> Optimizer<DTYPE>::Optimizer(Objective<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+template<typename DTYPE> Optimizer<DTYPE>::Optimizer(Tensorholder<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection) {
     std::cout << "Optimizer::Optimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
-    m_pObjectOperator       = NULL;
     m_LearningRate          = 0.f;
     m_OptimizeDirection     = 1;
-    m_apTrainableTensor     = NULL;
+    m_ppTrainableTensors    = NULL;
     m_TrainableTensorDegree = 0;
 
-    Alloc(pObjectOperator, pLearningRate, pOptimizeDirection);
-}
-
-template<typename DTYPE> Optimizer<DTYPE>::Optimizer(float pLearningRate, OptimizeDirection pOptimizeDirection) {
-    std::cout << "Optimizer::Optimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
-    m_pObjectOperator       = NULL;
-    m_LearningRate          = 0.f;
-    m_OptimizeDirection     = 1;
-    m_apTrainableTensor     = NULL;
-    m_TrainableTensorDegree = 0;
-
-    Alloc(pLearningRate, pOptimizeDirection);
+    Alloc(pTrainableTensors, pLearningRate, pOptimizeDirection);
 }
 
 template<typename DTYPE> Optimizer<DTYPE>::~Optimizer() {
@@ -32,17 +20,9 @@ template<typename DTYPE> Optimizer<DTYPE>::~Optimizer() {
     this->Delete();
 }
 
-template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Objective<DTYPE> *pObjectOperator, float pLearningRate, OptimizeDirection pOptimizeDirection) {
-    m_pObjectOperator = pObjectOperator;
-    m_LearningRate    = pLearningRate;
+template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Tensorholder<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+    m_ppTrainableTensors = pTrainableTensors;
 
-    if (pOptimizeDirection == MAXIMIZE) m_OptimizeDirection = 1;
-    else if (pOptimizeDirection == MINIMIZE) m_OptimizeDirection = -1;
-
-    return TRUE;
-}
-
-template<typename DTYPE> int Optimizer<DTYPE>::Alloc(float pLearningRate, OptimizeDirection pOptimizeDirection) {
     m_LearningRate = pLearningRate;
 
     if (pOptimizeDirection == MAXIMIZE) m_OptimizeDirection = 1;
@@ -52,34 +32,7 @@ template<typename DTYPE> int Optimizer<DTYPE>::Alloc(float pLearningRate, Optimi
 }
 
 template<typename DTYPE> int Optimizer<DTYPE>::Delete() {
-    delete m_apTrainableTensor;
-
-    return TRUE;
-}
-
-template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableData(Operator<DTYPE> *pTrainableTensor) {
-    return this->AddTrainableTensor(pTrainableTensor);
-}
-
-template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableTensor(Operator<DTYPE> *pTrainableTensor) {
-    try {
-        Operator<DTYPE> **temp = new Operator<DTYPE> *[m_TrainableTensorDegree + 1];
-
-        for (int i = 0; i < m_TrainableTensorDegree; i++) temp[i] = m_apTrainableTensor[i];
-        temp[m_TrainableTensorDegree] = pTrainableTensor;
-
-        if (m_apTrainableTensor) {
-            delete[] m_apTrainableTensor;
-            m_apTrainableTensor = NULL;
-        }
-
-        m_apTrainableTensor = temp;
-    } catch (...) {
-        printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
-        return FALSE;
-    }
-
-    m_TrainableTensorDegree++;
+    // delete m_ppTrainableTensors;
 
     return TRUE;
 }
@@ -87,7 +40,7 @@ template<typename DTYPE> int Optimizer<DTYPE>::AddTrainableTensor(Operator<DTYPE
 template<typename DTYPE> int Optimizer<DTYPE>::UpdateVariable() {
     for (int i = 0; i < m_TrainableTensorDegree; i++) {
         // UpdateVariable(m_aTrainableData[i]->Data, m_aTrainableData[i]->Gradient);
-        UpdateVariable(m_apTrainableTensor[i]);
+        UpdateVariable(m_ppTrainableTensors[i]);
     }
     return TRUE;
 }
@@ -96,8 +49,8 @@ template<typename DTYPE> void Optimizer<DTYPE>::SetLearningRate(float pLearningR
     m_LearningRate = pLearningRate;
 }
 
-template<typename DTYPE> Objective<DTYPE> *Optimizer<DTYPE>::GetObjectOperator() const {
-    return m_pObjectOperator;
+template<typename DTYPE> void Optimizer<DTYPE>::SetTrainableTensorDegree(int pTrainableTensorDegree) {
+    m_TrainableTensorDegree = pTrainableTensorDegree;
 }
 
 template<typename DTYPE> float Optimizer<DTYPE>::GetLearningRate()  const {

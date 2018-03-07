@@ -4,7 +4,6 @@
 #include <string>
 
 #include "..//Header//NeuralNetwork.h"
-#include "..//Header//Temporary_method.h"
 #include "MNIST_Reader.h"
 //
 #define BATCH             100
@@ -51,22 +50,21 @@ int main(int argc, char const *argv[]) {
     Operator<float>     *add    = HGUNN.AddOperator(new Add<float>(matmul, b_flat, "add"));
 
     // ======================= Error=======================
-    Objective<float> *err = HGUNN.SetObjectiveFunction(new SoftmaxCrossEntropy<float>(add, label, 0.000001, "SCE"));  // 중요 조건일 가능성 있음
+    Objective<float> *err = HGUNN.SetObjective(new SoftmaxCrossEntropy<float>(HGUNN.GetResult(), label, 0.000001, "SCE"));  // 중요 조건일 가능성 있음
 
     // ======================= Optimizer=======================
     // Optimizer<float> *optimizer = HGUNN.SetOptimizer(new GradientDescentOptimizer<float>(err, 0.01, MINIMIZE));
-    HGUNN.SetOptimizer(new GradientDescentOptimizer<float>(err, 0.001, MINIMIZE));
-
-    // ======================= CreateGraph=======================
-    HGUNN.CreateGraph();
+    HGUNN.SetOptimizer(new GradientDescentOptimizer<float>(HGUNN.GetTensorholder(), 0.001, MINIMIZE));
 
     //// ======================= Train=======================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
 
+    // pytorch check하기
     for (int i = 0; i < EPOCH; i++) {
         std::cout << "EPOCH : " << i << '\n';
         // ======================= Training =======================
-        double train_accuracy = 0.f;
+        float train_accuracy = 0.f;
+        float train_avg_loss = 0.f;
 
         for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
             dataset->CreateTrainDataPair(BATCH);
@@ -74,9 +72,13 @@ int main(int argc, char const *argv[]) {
             label->SetTensor(dataset->GetTrainFeedLabel());
 
             HGUNN.Training();
+            train_accuracy += HGUNN.GetAccuracy();
+            train_avg_loss += HGUNN.GetLoss();
 
-            train_accuracy += (float)temp::Accuracy(add->GetResult(), label->GetResult(), BATCH);
-            printf("\rTraining complete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TRAIN, train_accuracy / (j + 1));
+            printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f",
+                   j + 1, LOOP_FOR_TRAIN,
+                   train_avg_loss / (j + 1),
+                   train_accuracy / (j + 1));
             fflush(stdout);
         }
         std::cout << '\n';
@@ -85,7 +87,8 @@ int main(int argc, char const *argv[]) {
         // Actually, we need to split training set between two set for training set and validation set
         // but in this example we do not above action.
         // ======================= Testing ======================
-        double test_accuracy = 0.f;
+        float test_accuracy = 0.f;
+        float test_avg_loss = 0.f;
 
         for (int j = 0; j < (int)LOOP_FOR_TEST; j++) {
             dataset->CreateTestDataPair(BATCH);
@@ -93,14 +96,19 @@ int main(int argc, char const *argv[]) {
             label->SetTensor(dataset->GetTestFeedLabel());
 
             HGUNN.Testing();
+            test_accuracy += HGUNN.GetAccuracy();
+            test_avg_loss += HGUNN.GetLoss();
 
-            test_accuracy += (float)temp::Accuracy(add->GetResult(), label->GetResult(), BATCH);
-            printf("\rTesting complete percentage is %d / %d -> acc : %f", j + 1, LOOP_FOR_TEST, test_accuracy / (j + 1));
+            printf("\rTesting complete percentage is %d / %d -> loss : %f, acc : %f",
+                   j + 1, LOOP_FOR_TEST,
+                   test_avg_loss / (j + 1),
+                   test_accuracy / (j + 1));
             fflush(stdout);
         }
         std::cout << '\n';
     }
 
+    // we need to save best weight and bias when occur best acc on test time
     delete dataset;
 
     return 0;

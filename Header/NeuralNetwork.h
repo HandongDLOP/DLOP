@@ -1,27 +1,8 @@
 #ifndef NEURALNETWORK_H_
 #define NEURALNETWORK_H_
 
-#include "Operator//Placeholder.h"
-#include "Operator//Tensorholder.h"
-
-#include "Operator//Reshape.h"
-
-#include "Operator//Relu.h"
-#include "Operator//Sigmoid.h"
-
-#include "Operator//Add.h"
-#include "Operator//Addconv.h"
-#include "Operator//MatMul.h"
-#include "Operator//Convolution.h"
-#include "Operator//Maxpooling.h"
-#include "Operator//BatchNormalize.h"
-// #include "Operator//DenseBlock.h"
-
-
-#include "Objective//MSE.h"
-#include "Objective//SoftmaxCrossEntropy.h"
-
 #include "Optimizer//GradientDescentOptimizer.h"
+#include "Temporary_method.h"
 
 template<typename DTYPE> class NeuralNetwork {
 private:
@@ -37,9 +18,10 @@ private:
     int m_OperatorDegree;
     int m_TensorholderDegree;
 
-    Objective<DTYPE> *m_aObjectiveFunction;
-
+    Objective<DTYPE> *m_aObjective;
     Optimizer<DTYPE> *m_aOptimizer;
+
+    // Optimizer<DTYPE> *m_aOptimizer;
 
 public:
     NeuralNetwork();
@@ -58,25 +40,36 @@ public:
     Operator<DTYPE>    * AddOperator(Operator<DTYPE> *pOperator);
     Tensorholder<DTYPE>* AddTensorholder(Tensorholder<DTYPE> *pTensorholder);
 
-    // =======
-
-    Objective<DTYPE>* SetObjectiveFunction(Objective<DTYPE> *pObjectiveFunction);
-    Optimizer<DTYPE>* SetOptimizer(Optimizer<DTYPE> *pOptimizer);
-    int               FeedData(int numOfTensorholder, ...);
+    Objective<DTYPE>   * SetObjective(Objective<DTYPE> *pObjective);
+    Optimizer<DTYPE>   * SetOptimizer(Optimizer<DTYPE> *pOptimizer);
 
     // =======
 
-    Operator<DTYPE>* Training();
-    Operator<DTYPE>* Training(Operator<DTYPE> *pEnd);
-    Operator<DTYPE>* Testing();
-    Operator<DTYPE>* Testing(Operator<DTYPE> *pEnd);
-    Operator<DTYPE>* Testing(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
+    // Optimizer<DTYPE>* SetOptimizer(Optimizer<DTYPE> *pOptimizer);
+    int                   FeedData(int numOfTensorholder, ...);
+
+    Operator<DTYPE>     * GetResultOperator();
+    Operator<DTYPE>     * GetResult();
+
+    Tensorholder<DTYPE>** GetTensorholder();
+    int                   GetTensorholderDegree();
+
+    Objective<DTYPE>    * GetObjective();
+    Optimizer<DTYPE>    * GetOptimizer();
 
     // =======
-    int              ForwardPropagate();
-    int              ForwardPropagate(Operator<DTYPE> *pEnd);
-    int              ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
-    int              BackPropagate();
+    float                 GetAccuracy();
+    float                 GetLoss();
+
+    // =======
+    Operator<DTYPE>     * ForwardPropagate();
+    int                   ForwardPropagate(Operator<DTYPE> *pEnd);
+    int                   ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
+    int                   BackPropagate();
+
+    // =======
+    int                   Training();
+    int                   Testing();
 
     // =======
 
