@@ -15,7 +15,7 @@
 #include "Operator//Convolution.h"
 #include "Operator//Maxpooling.h"
 #include "Operator//BatchNormalize.h"
-#include "Operator//DenseBlock.h"
+// #include "Operator//DenseBlock.h"
 
 
 #include "Objective//MSE.h"
