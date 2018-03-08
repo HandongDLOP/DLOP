@@ -10,24 +10,42 @@ enum MODEL_OPTION {
 class my_NN : public NeuralNetwork<float>{
 private:
 public:
-    my_NN(Placeholder<float> *x, MODEL_OPTION pOption) {
-        if (pOption == isSLP) SLP(x);
-        else if (pOption == isMLP) MLP(x);
+    my_NN(Placeholder<float> *x, Placeholder<float> *label, MODEL_OPTION pOption) {
+        if (pOption == isSLP) SLP(x, label);
+        else if (pOption == isMLP) MLP(x, label);
     }
 
-    void SLP(Placeholder<float> *x) {
+    void SLP(Placeholder<float> *x, Placeholder<float> *label) {
+        Operator<float> *out = NULL;
+
         // ======================= layer 1======================
-        AddFullyConnectedLayer(x, 784, 10, FALSE, "1");
+        out = AddFullyConnectedLayer(x, 784, 10, FALSE, "1");
+
+        // ======================= Select Objective Function ===================
+        // Objective<float> *objective = new Objective<float>(net, label,"SCE");
+        Objective<float> *objective = new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE");
+        // Objective<float> *objective = new MSE<float>(net, label, "MSE");
+
+        // ======================= Select Optimizer ===================
+        Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE);
     }
 
-    void MLP(Placeholder<float> *x) {
+    void MLP(Placeholder<float> *x, Placeholder<float> *label) {
         Operator<float> *out = NULL;
 
         // ======================= layer 1======================
         out = AddFullyConnectedLayer(x, 784, 15, TRUE, "1");
 
         // ======================= layer 2=======================
-        AddFullyConnectedLayer(out, 15, 10, TRUE, "2");
+        out = AddFullyConnectedLayer(out, 15, 10, TRUE, "2");
+
+        // ======================= Select Objective Function ===================
+        // Objective<float> *objective = new Objective<float>(net, label,"SCE");
+        Objective<float> *objective = new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE");
+        // Objective<float> *objective = new MSE<float>(net, label, "MSE");
+
+        // ======================= Select Optimizer ===================
+        Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE);
     }
 
     Operator<float>* AddFullyConnectedLayer(Operator<float> *pInput, int pColSize_in, int pColSize_out, int pActivation, std::string pLayernum) {

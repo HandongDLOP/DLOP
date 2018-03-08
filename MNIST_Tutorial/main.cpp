@@ -19,21 +19,9 @@ int main(int argc, char const *argv[]) {
     Placeholder<float> *label = new Placeholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // ======================= Select net ===================
-    NeuralNetwork<float> *net = new my_CNN(x);
-    // NeuralNetwork<float> *net = new my_NN(x, isSLP);
-    // NeuralNetwork<float> *net = new my_NN(x, isMLP);
-
-    // ======================= Select Objective Function ===================
-    // Objective<float> *objective = new Objective<float>(net, label,"SCE");
-    Objective<float> *objective = new SoftmaxCrossEntropy<float>(net->GetResult(), label, 0.0000001, "SCE");
-    // Objective<float> *objective = new MSE<float>(net, label, "MSE");
-
-    // ======================= Select Optimizer ===================
-    Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(net->GetTensorholder(), 0.001, MINIMIZE);
-
-    // ======================= Set Model ===================
-    net->SetObjective(objective);
-    net->SetOptimizer(optimizer);
+    NeuralNetwork<float> *net = new my_CNN(x, label);
+    // NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
+    // NeuralNetwork<float> *net = new my_NN(x, label, isMLP);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();

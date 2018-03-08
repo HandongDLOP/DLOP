@@ -6,7 +6,7 @@
 class my_CNN : public NeuralNetwork<float>{
 private:
 public:
-    my_CNN(Placeholder<float> *x) {
+    my_CNN(Placeholder<float> *x, Placeholder<float> *label) {
         Operator<float> *out = NULL;
 
         // AddPlaceholder(x);
@@ -17,17 +17,29 @@ public:
         out = AddOperator(new Reshape<float>(x, 1, batch_size, 1, 28, 28, "reshape"));
 
         // ======================= layer 1=======================
-        out = AddConvLayer(out, 1, 10, "1");
+        out = AddConvLayer(out, 1, 32, "1");
 
         // ======================= layer 2=======================
-        out = AddConvLayer(out, 10, 10, "2");
-        out = AddOperator(new Reshape<float>(out, 1, batch_size, 1, 1, 5 * 5 * 10, "flat"));
+        out = AddConvLayer(out, 32, 64, "2");
+        out = AddOperator(new Reshape<float>(out, 1, batch_size, 1, 1, 5 * 5 * 64, "flat"));
 
         // ======================= layer 3=======================
-        out = AddFullyConnectedLayer(out, 5 * 5 * 10, 250, "3");
+        out = AddFullyConnectedLayer(out, 5 * 5 * 64, 256, "3");
 
         // ======================= layer 4=======================
-        out = AddFullyConnectedLayer(out, 250, 10, "4");
+        out = AddFullyConnectedLayer(out, 256, 10, "4");
+
+        // ======================= Select Objective Function ===================
+        // Objective<float> *objective = new Objective<float>(net, label,"SCE");
+        Objective<float> *objective = new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE");
+        // Objective<float> *objective = new MSE<float>(net, label, "MSE");
+
+        SetObjective(objective);
+
+        // ======================= Select Optimizer ===================
+        Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE);
+
+        SetOptimizer(optimizer);
     }
 
     Operator<float>* AddConvLayer(Operator<float> *pInput, int pChannelSize_in, int pChannelSize_out, std::string pLayernum) {
