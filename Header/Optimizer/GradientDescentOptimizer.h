@@ -22,7 +22,7 @@ public:
         // learning rate 부분 다시 구현할 필요 있음
         float learning_rate = this->GetOptimizeDirection() * this->GetLearningRate();
 
-        int capacity = trainable_data->GetData()->GetCapacity();
+        int capacity = trainable_data->GetCapacity();
 
         for(int i = 0 ; i < capacity; i++){
             (*trainable_data)[i] += learning_rate * (*gradient)[i];

@@ -41,7 +41,7 @@ public:
     }
 
     int ComputeBackPropagate() {
-        // int capacity = this->GetResult()->GetData()->GetCapacity();
+        // int capacity = this->GetResult()->GetCapacity();
         //
         // Tensor<DTYPE> *delta    = this->GetDelta();
         // Tensor<DTYPE> *gradient = this->GetGradient();

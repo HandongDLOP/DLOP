@@ -67,7 +67,7 @@ public:
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
         input_delta->Reset();
 
-        int capacity = input_delta->GetData()->GetCapacity();
+        int capacity = input_delta->GetCapacity();
 
         for (int i = 0; i < capacity; i++) {
             (*input_delta)[i] += (*gradient)[i];

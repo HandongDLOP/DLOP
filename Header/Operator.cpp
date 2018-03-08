@@ -363,8 +363,8 @@ template<typename DTYPE> Operator<DTYPE>* Concatenate2(Operator<DTYPE> *src1, Op
         Tensor<DTYPE> *newDelta  = new Tensor<DTYPE>(t, b, newChannel, r, c);
 
         int i            = 0;
-        int srcCapacity1 = src1->GetResult()->GetData()->GetCapacity();
-        int newCapacity  = newTensor->GetData()->GetCapacity();
+        int srcCapacity1 = src1->GetResult()->GetCapacity();
+        int newCapacity  = newTensor->GetCapacity();
 
         for (i = 0; i < srcCapacity1; i++) {
             (*newTensor)[i] = (*srcTensor1)[i];

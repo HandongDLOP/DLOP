@@ -137,7 +137,7 @@ public:
             Tensor<DTYPE> *input_delta  = concat->GetDelta();
             Tensor<DTYPE> *output       = m_apInput[i + 1]->GetResult();
             Tensor<DTYPE> *output_delta = m_apInput[i + 1]->GetDelta();
-            int outputCapacity          = output->GetData()->GetCapacity();
+            int outputCapacity          = output->GetCapacity();
 
             for (int i = 0; i < outputCapacity; i++) {
                 (*output)[i]       = (*input)[i];
@@ -154,7 +154,7 @@ public:
 
         Tensor<DTYPE> *output       = this->GetResult();
         Tensor<DTYPE> *output_delta = this->GetDelta();
-        int outputCapacity          = output->GetData()->GetCapacity();
+        int outputCapacity          = output->GetCapacity();
 
         for (int i = 0; i < outputCapacity; i++) {
             (*output)[i]       = (*input)[i];
@@ -175,8 +175,8 @@ public:
     // concatCapacity : input capacity before concatenation.
     int ComputeBackPropagate() {
         int lastLayerNum   = m_nBlockLayer - 1;
-        int outputCapacity = this->GetResult()->GetData()->GetCapacity();
-        int concatCapacity = m_apInput[lastLayerNum]->GetResult()->GetData()->GetCapacity();
+        int outputCapacity = this->GetResult()->GetCapacity();
+        int concatCapacity = m_apInput[lastLayerNum]->GetResult()->GetCapacity();
         int k              = outputCapacity - concatCapacity;
 
         // k-feature maps
@@ -197,8 +197,8 @@ public:
         }
 
         for (int i = lastLayerNum - 1; i > 0; i--) {
-            int outputCapacity = m_apConv_Relu[i]->GetResult()->GetData()->GetCapacity();
-            int concatCapacity = m_apInput[i]->GetResult()->GetData()->GetCapacity();
+            int outputCapacity = m_apConv_Relu[i]->GetResult()->GetCapacity();
+            int concatCapacity = m_apInput[i]->GetResult()->GetCapacity();
             int k              = outputCapacity - concatCapacity;
 
             // k-feature maps

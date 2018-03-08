@@ -202,8 +202,8 @@ public:
         int f_n = (*shapeOfWeight)[1];
         int f_h = (*shapeOfWeight)[3]; int f_w = (*shapeOfWeight)[4];
 
-        int inputCapacity  = input->GetData()->GetCapacity();
-        int filterCapacity = weight->GetData()->GetCapacity();
+        int inputCapacity  = input->GetCapacity();
+        int filterCapacity = weight->GetCapacity();
 
         float *hostInput  = new float[inputCapacity];
         float *hostFilter = new float[filterCapacity];
@@ -275,7 +275,7 @@ public:
 
         float  alpha          = 1;
         float  beta           = 0;
-        int    outputCapacity = result->GetData()->GetCapacity();
+        int    outputCapacity = result->GetCapacity();
         float *hostOutput     = new float[outputCapacity];
 
         if (hostOutput == NULL) {
@@ -371,8 +371,8 @@ public:
         float alpha = 1;
         float beta  = 0;
 
-        int inputCapacity  = input->GetData()->GetCapacity();
-        int filterCapacity = weight->GetData()->GetCapacity();
+        int inputCapacity  = input->GetCapacity();
+        int filterCapacity = weight->GetCapacity();
 
         float *hostInput  = new float[inputCapacity];
         float *hostFilter = new float[filterCapacity];
@@ -460,8 +460,8 @@ public:
         }
 
 
-        int inputDeltaCapacity = input->GetData()->GetCapacity();
-        int deltaCapacity      = this_delta->GetData()->GetCapacity();
+        int inputDeltaCapacity = input->GetCapacity();
+        int deltaCapacity      = this_delta->GetCapacity();
 
         float *hostInputDelta = new float[inputDeltaCapacity];
         float *hostDelta      = new float[deltaCapacity];

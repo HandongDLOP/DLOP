@@ -30,7 +30,7 @@ public:
     int ComputeForwardPropagate() {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
-        int capacity          = input->GetData()->GetCapacity();
+        int capacity          = input->GetCapacity();
 
         for (int i = 0; i < capacity; i++) {
             (*result)[i] = this->SIGMOID((*input)[i]);
@@ -43,7 +43,7 @@ public:
         Tensor<DTYPE> *result      = this->GetResult();
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-        int capacity               = result->GetData()->GetCapacity();
+        int capacity               = result->GetCapacity();
 
         for (int i = 0; i < capacity; i++) {
             (*input_delta)[i] = (*result)[i] * (1 - (*result)[i]) * (*this_delta)[i];

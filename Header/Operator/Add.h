@@ -38,7 +38,7 @@ public:
         int rowsize     = input->GetRowSize();
         int count       = timesize * batchsize * channelsize * rowsize;
 
-        int bias_capacity = bias->GetData()->GetCapacity();
+        int bias_capacity = bias->GetCapacity();
 
         int index = 0;
 
@@ -66,7 +66,7 @@ public:
         int rowsize     = input_delta->GetRowSize();
         int count       = timesize * batchsize * channelsize * rowsize;
 
-        int bias_capacity = bias_gradient->GetData()->GetCapacity();
+        int bias_capacity = bias_gradient->GetCapacity();
 
         int index = 0;
 

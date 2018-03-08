@@ -116,10 +116,26 @@ template<typename DTYPE> int Tensor<DTYPE>::GetColSize() {
     return (*m_aShape)[4];
 }
 
+template<typename DTYPE> int Tensor<DTYPE>::GetCapacity() {
+    return m_aData->GetCapacity();
+}
+
+template<typename DTYPE> int Tensor<DTYPE>::GetCols() {
+    return m_aData->GetCols();
+}
+
+template<typename DTYPE> int Tensor<DTYPE>::GetRows() {
+    return m_aData->GetRows();
+}
+
+template<typename DTYPE> DTYPE& Tensor<DTYPE>::GetRawData() {
+    return m_aData->GetRawData();
+}
+
 //////////////////////////////////////////////////////////////////
 
 template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
-    int cur_capacity = m_aData->GetCapacity();
+    int cur_capacity = GetCapacity();
     int new_capacity = pTimeSize * pBatchSize * pChannelSize * pRowSize * pColSize;
 
     if (cur_capacity != new_capacity) {
@@ -137,7 +153,7 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pTimeSize, int pBatchSiz
 }
 
 template<typename DTYPE> void Tensor<DTYPE>::ConvertTo1D(DTYPE *dst) {
-    int capacity = m_aData->GetCapacity();
+    int capacity = GetCapacity();
 
     for (int i = 0; i < capacity; i++) {
         dst[i] = (*m_aData)[i];
@@ -145,7 +161,7 @@ template<typename DTYPE> void Tensor<DTYPE>::ConvertTo1D(DTYPE *dst) {
 }
 
 template<typename DTYPE> void Tensor<DTYPE>::Reset() {
-    int capacity = m_aData->GetCapacity();
+    int capacity = GetCapacity();
 
     for (int i = 0; i < capacity; i++) {
         (*m_aData)[i] = 0;
@@ -169,7 +185,7 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTim
 
     Tensor<DTYPE> *temp = new Tensor<DTYPE>(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
 
-    int capacity = temp->GetData()->GetCapacity();
+    int capacity = temp->GetCapacity();
 
     for (int i = 0; i < capacity; i++) {
         (*temp)[i] = rand(gen);
@@ -189,7 +205,7 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pTimeSize, 
 
     Tensor<DTYPE> *temp = new Tensor<DTYPE>(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
 
-    int capacity = temp->GetData()->GetCapacity();
+    int capacity = temp->GetCapacity();
 
     for (int i = 0; i < capacity; i++) {
         (*temp)[i] = constant;

@@ -99,7 +99,7 @@ public:
     int ComputeForwardPropagate() {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
-        int inputCapacity     = input->GetData()->GetCapacity();
+        int inputCapacity     = input->GetCapacity();
 
 #if __CUDNN__
         float  alpha = 1;
@@ -156,17 +156,17 @@ public:
         Tensor<DTYPE> *result      = this->GetResult();
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-        int capacity               = result->GetData()->GetCapacity();
+        int capacity               = result->GetCapacity();
 
 
 #if __CUDNN__
         Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
         Shape *shapeOfInput  = input->GetShape();
 
-        int   inputCapacity      = input->GetData()->GetCapacity();
-        int   outputCapacity     = result->GetData()->GetCapacity();
-        int   deltaCapacity      = this_delta->GetData()->GetCapacity();
-        int   inputDeltaCapacity = input_delta->GetData()->GetCapacity();
+        int   inputCapacity      = input->GetCapacity();
+        int   outputCapacity     = result->GetCapacity();
+        int   deltaCapacity      = this_delta->GetCapacity();
+        int   inputDeltaCapacity = input_delta->GetCapacity();
         float alpha              = 1;
         float beta               = 0;
 

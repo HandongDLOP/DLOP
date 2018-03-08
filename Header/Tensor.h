@@ -34,6 +34,12 @@ public:
     int          GetRowSize();
     int          GetColSize();
 
+    int          GetCapacity();
+    int          GetCols();
+    int          GetRows();
+
+    DTYPE      & GetRawData();
+
     ///////////////////////////////////////////////////////////////////
 
     int  Reshape(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);

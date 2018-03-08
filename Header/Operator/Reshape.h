@@ -47,7 +47,7 @@ public:
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
-        int capacity = result->GetData()->GetCapacity();
+        int capacity = result->GetCapacity();
 
         for (int i = 0; i < capacity; i++) {
             (*result)[i] = (*input)[i];
@@ -57,7 +57,7 @@ public:
     }
 
     int ComputeBackPropagate() {
-        int capacity = this->GetDelta()->GetData()->GetCapacity();
+        int capacity = this->GetDelta()->GetCapacity();
 
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();

@@ -159,8 +159,8 @@ public:
         int   n = (*shapeOfInput)[1]; int h = (*shapeOfInput)[3];
         int   c = (*shapeOfInput)[2]; int w = (*shapeOfInput)[4];
         float alpha = 1; float beta = 0;
-        int   inputCapacity  = input->GetData()->GetCapacity();
-        int   outputCapacity = result->GetData()->GetCapacity();
+        int   inputCapacity  = input->GetCapacity();
+        int   outputCapacity = result->GetCapacity();
 
         float *hostInput  = new float[inputCapacity];
         float *hostOutput = new float[outputCapacity];
@@ -295,9 +295,9 @@ public:
         int out_c  = (*shapeOfResult)[4];
 
         float alpha = 1; float beta = 0;
-        int   inputCapacity      = input->GetData()->GetCapacity();
-        int   outputCapacity     = result->GetData()->GetCapacity();
-        int   deltaCapacity      = this_delta->GetData()->GetCapacity();
+        int   inputCapacity      = input->GetCapacity();
+        int   outputCapacity     = result->GetCapacity();
+        int   deltaCapacity      = this_delta->GetCapacity();
         int   inputDeltaCapacity = inputCapacity;
 
         float *hostInput      = new float[inputCapacity];
