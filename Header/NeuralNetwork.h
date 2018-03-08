@@ -2,7 +2,7 @@
 #define NEURALNETWORK_H_
 
 #include "Optimizer//GradientDescentOptimizer.h"
-#include "Temporary_method.h"
+// #include "Temporary_method.h"
 
 template<typename DTYPE> class NeuralNetwork {
 private:
@@ -58,6 +58,7 @@ public:
 
     // =======
     float                 GetAccuracy();
+    int                   GetMaxIndex(Tensor<DTYPE> *data, int ba, int numOfClass);
     float                 GetLoss();
 
     // =======

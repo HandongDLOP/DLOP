@@ -186,13 +186,45 @@ template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::GetOptimizer() 
 }
 
 template<typename DTYPE> float NeuralNetwork<DTYPE>::GetAccuracy() {
-    Operator<DTYPE> *result
-        = GetResultOperator();
-    Operator<DTYPE> *label = m_aObjective->GetLabel();
+    Operator<DTYPE> *result = GetResultOperator();
+    Operator<DTYPE> *label  = m_aObjective->GetLabel();
 
     int batch = label->GetResult()->GetBatchSize();
 
-    return (float)temp::Accuracy(result->GetResult(), label->GetResult(), batch);
+    Tensor<DTYPE> *pred = result->GetResult();
+    Tensor<DTYPE> *ans  = label->GetResult();
+
+    float accuracy = 0.f;
+
+    int pred_index = 0;
+    int ans_index  = 0;
+
+    for (int ba = 0; ba < batch; ba++) {
+        pred_index = GetMaxIndex(pred, ba, 10);
+        ans_index  = GetMaxIndex(ans, ba, 10);
+
+        if (pred_index == ans_index) {
+            accuracy += 1.f;
+        }
+    }
+
+    return (float)(accuracy / batch);
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::GetMaxIndex(Tensor<DTYPE> *data, int ba, int numOfClass) {
+    int   index = 0;
+    DTYPE max   = (*data)[ba * numOfClass];
+    int   start = ba * numOfClass;
+    int   end   = ba * numOfClass + numOfClass;
+
+    for (int dim = start + 1; dim < end; dim++) {
+        if ((*data)[dim] > max) {
+            max   = (*data)[dim];
+            index = dim - start;
+        }
+    }
+
+    return index;
 }
 
 template<typename DTYPE> float NeuralNetwork<DTYPE>::GetLoss() {
