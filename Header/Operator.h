@@ -1,13 +1,13 @@
 #ifndef OPERATOR_H_
 #define OPERATOR_H_
+
 #ifndef __CUDNN__
-# define __CUDNN__    TRUE
-# include <cuda.h>
-# include <cudnn.h>
-# include "error_util.h"
+    # define __CUDNN__    TRUE
+        # include "cuda.h"
+        # include "cudnn.h"
+        # include "error_util.h"
 #endif  // ifndef __CUDNN__
-// #include "MetaParameter.h"
-// #include "Optimizer//GradientDescentOptimizer.h"
+
 #include "Tensor.h"
 #define VALID    0
 #define SAME     1
@@ -29,6 +29,7 @@ private:
     std::string m_name;
 
 public:
+
 #if __CUDNN__
     cudnnHandle_t m_pCudnnHandle;
     cudnnHandle_t& GetCudnnHandle();

@@ -8,7 +8,6 @@ template<typename DTYPE> class NeuralNetwork {
 private:
 #if __CUDNN__
     cudnnHandle_t m_cudnnHandle;
-    float *devTensor;
 #endif  // if __CUDNN__
     Placeholder<DTYPE> **m_aaPlaceholder;
     Operator<DTYPE> **m_aaOperator;

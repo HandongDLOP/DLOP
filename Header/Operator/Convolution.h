@@ -23,14 +23,14 @@ public:
     Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride0, int stride1, int stride2, int stride3, std::string pName) : Operator<DTYPE>(pInput, pWeight, pName) {
     #if __CUDNN__
         createHandles();
-    #endif // if __CUDNN__
+    #endif  // if __CUDNN__
         Alloc(pInput, pWeight, stride0, stride1, stride2, stride3);
     }
 
     Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride0, int stride1, int stride2, int stride3, int padding, std::string pName) : Operator<DTYPE>(pInput, pWeight, pName) {
     #if __CUDNN__
         createHandles();
-    #endif // if __CUDNN__
+    #endif  // if __CUDNN__
         Alloc(pInput, pWeight, stride0, stride1, stride2, stride3, padding);
     }
 
@@ -38,7 +38,7 @@ public:
         std::cout << "Convolution2D::~Convolution2D()" << '\n';
     #if __CUDNN__
         destroyHandles();
-    #endif // if __CUDNN__
+    #endif  // if __CUDNN__
     }
 
     int Alloc(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride0, int stride1, int stride2, int stride3, int padding) {
@@ -80,7 +80,7 @@ public:
         pDevOutput     = NULL;
         pDevInputDelta = NULL;
         pDevDelta      = NULL;
-    #endif // if __CUDNN__
+    #endif  // if __CUDNN__
 
         return TRUE;
     }
@@ -111,7 +111,7 @@ public:
         pDevOutput     = NULL;
         pDevInputDelta = NULL;
         pDevDelta      = NULL;
-    #endif // if __CUDNN__
+    #endif  // if __CUDNN__
 
         return TRUE;
     }
@@ -137,11 +137,7 @@ public:
         checkCUDNN(cudnnDestroyFilterDescriptor(filterDeltaDesc));
     }
 
-#endif // if __CUDNN__
-
-
-  #define mexPrintf    printf
-
+# define mexPrintf    printf
     inline void gpuAssert(cudaError_t code, char *file, int line, bool abort = true) {
         if (code != cudaSuccess) {
             mexPrintf("GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
@@ -150,7 +146,7 @@ public:
         }
     }
 
- #define gpuErrchk(ans)    { gpuAssert((ans), __FILE__, __LINE__); }
+# define gpuErrchk(ans)    { gpuAssert((ans), __FILE__, __LINE__); }
     inline void gpuMemReport(size_t *avail, size_t *total,
                              const char *title = 0, const size_t *free = 0, const bool sense = true) {
         char tstring[32] = { '\0' };
@@ -168,6 +164,8 @@ public:
             mexPrintf("Memory avaliable: Free: %zu, Total: %zu\n", *avail, *total);
         }
     }
+
+#endif  // if __CUDNN__
 
     int ComputeForwardPropagate() {
         Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
@@ -313,7 +311,7 @@ public:
         pDevOutput = NULL;
 
 
-#else // if __CUDNN__
+#else  // if __CUDNN__ is undefined
 
         for (int ba = 0; ba < batchsize; ba++) {
             for (int ch = 0; ch < channelsize; ch++) {  // Batchsize of weight kernel
@@ -333,6 +331,7 @@ public:
             }
         }
 #endif  // __CUDNN__
+
         return TRUE;
     }
 
@@ -514,7 +513,7 @@ public:
         delete[] hostInputDelta;
         delete[] hostDelta;
 
-#else // if __CUDNN__
+#else  // if __CUDNN__
 
         for (int ba = 0; ba < batchsize; ba++) {
             for (int ch = 0; ch < channelsize; ch++) {  // Batchsize of weight kernel
@@ -544,7 +543,7 @@ public:
             }
         }
 
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
 
         return TRUE;
     }

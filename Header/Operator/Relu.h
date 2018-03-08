@@ -47,7 +47,7 @@ public:
         return TRUE;
     }
 
-    #if __CUDNN__
+#if __CUDNN__
     void createHandles() {
         checkCUDNN(cudnnCreateTensorDescriptor(&inputTensorDesc));
         checkCUDNN(cudnnCreateTensorDescriptor(&outputTensorDesc));
@@ -64,9 +64,7 @@ public:
         checkCUDNN(cudnnDestroyActivationDescriptor(actDesc));
     }
 
-    #endif  // if __CUDNN__
-
-      #define mexPrintf    printf
+# define mexPrintf    printf
 
     inline void gpuAssert(cudaError_t code, char *file, int line, bool abort = true) {
         if (code != cudaSuccess) {
@@ -76,7 +74,8 @@ public:
         }
     }
 
-     #define gpuErrchk(ans)    { gpuAssert((ans), __FILE__, __LINE__); }
+# define gpuErrchk(ans)    { gpuAssert((ans), __FILE__, __LINE__); }
+
     inline void gpuMemReport(size_t *avail, size_t *total,
                              const char *title = 0, const size_t *free = 0, const bool sense = true) {
         char tstring[32] = { '\0' };
@@ -94,6 +93,8 @@ public:
             mexPrintf("Memory available: Free: %zu, Total: %zu\n", *avail, *total);
         }
     }
+
+    #endif  // if __CUDNN__
 
     int ComputeForwardPropagate() {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
@@ -146,6 +147,7 @@ public:
         for (int i = 0; i < inputCapacity; i++) {
             (*result)[i] = this->MAX((*input)[i], 0.f);
         }
+
 #endif  // if __CUDNN__
         return TRUE;
     }
@@ -223,13 +225,15 @@ public:
         checkCudaErrors(cudaFree(pDevDelta));
         checkCudaErrors(cudaFree(pDevInputDelta));
 
-#else  // if __CUDNN__
+#else  // if __CUDNN__ is undefined
 
         for (int i = 0; i < capacity; i++) {
             if ((*result)[i] > 0.0) (*input_delta)[i] = (*this_delta)[i];
             else (*input_delta)[i] = 0;
         }
+
 #endif  // if __CUDNN__
+
         return TRUE;
     }
 
