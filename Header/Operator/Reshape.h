@@ -6,7 +6,6 @@
 template<typename DTYPE>
 class Reshape : public Operator<DTYPE>{
 private:
-    Shape *m_aRe;
 
 public:
     Reshape(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
@@ -23,24 +22,18 @@ public:
     int Alloc(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
         std::cout << "Reshape::Alloc(Operator *, Operator *)" << '\n';
 
-        m_aRe = new Shape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
-
         Tensor<DTYPE> *result = new Tensor<DTYPE>(pInput->GetResult());
-        result->Reshape((*m_aRe)[0], (*m_aRe)[1], (*m_aRe)[2], (*m_aRe)[3], (*m_aRe)[4]);
+        result->Reshape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
 
         this->SetResult(result);  // copy data
 
-        Shape *shapeOfDelta = new Shape(m_aRe);
-        this->SetDelta(new Tensor<DTYPE>(shapeOfDelta));
+        this->SetDelta(new Tensor<DTYPE>(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize));
 
         return TRUE;
     }
 
     void Delete() {
-        if (m_aRe) {
-            delete m_aRe;
-            m_aRe = NULL;
-        }
+
     }
 
     int ComputeForwardPropagate() {

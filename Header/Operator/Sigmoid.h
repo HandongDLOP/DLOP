@@ -18,11 +18,15 @@ public:
     int Alloc(Operator<DTYPE> *pInput) {
         std::cout << "Sigmoid::Alloc(Operator *, Operator *)" << '\n';
 
-        Shape *shapeOfResult = new Shape(pInput->GetResult()->GetShape());
-        this->SetResult(new Tensor<DTYPE>(shapeOfResult));
+        int timesize    = pInput->GetResult()->GetTimeSize();
+        int batchsize   = pInput->GetResult()->GetBatchSize();
+        int channelsize = pInput->GetResult()->GetChannelSize();
+        int rowsize     = pInput->GetResult()->GetRowSize();
+        int colsize     = pInput->GetResult()->GetColSize();
 
-        Shape *shapeOfDelta = new Shape(pInput->GetResult()->GetShape());
-        this->SetDelta(new Tensor<DTYPE>(shapeOfDelta));
+        this->SetResult(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
+
+        this->SetDelta(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
 
         return TRUE;
     }

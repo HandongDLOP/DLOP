@@ -38,11 +38,16 @@ public:
         pDevDelta      = NULL;
         pDevInputDelta = NULL;
 #endif  // if __CUDNN__
-        Shape *shapeOfResult = new Shape(pInput->GetResult()->GetShape());
-        this->SetResult(new Tensor<DTYPE>(shapeOfResult));
 
-        Shape *shapeOfDelta = new Shape(pInput->GetResult()->GetShape());
-        this->SetDelta(new Tensor<DTYPE>(shapeOfDelta));
+        int timesize    = pInput->GetResult()->GetTimeSize();
+        int batchsize   = pInput->GetResult()->GetBatchSize();
+        int channelsize = pInput->GetResult()->GetChannelSize();
+        int rowsize     = pInput->GetResult()->GetRowSize();
+        int colsize     = pInput->GetResult()->GetColSize();
+
+        this->SetResult(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
+
+        this->SetDelta(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
 
         return TRUE;
     }

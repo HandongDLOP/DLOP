@@ -25,18 +25,17 @@ public:
 
         Operator<DTYPE> *pInput = pOperator;
 
-        int timesize  = pInput->GetResult()->GetTimeSize();
-        int batchsize = pInput->GetResult()->GetBatchSize();
+        int timesize    = pInput->GetResult()->GetTimeSize();
+        int batchsize   = pInput->GetResult()->GetBatchSize();
+        int channelsize = pInput->GetResult()->GetChannelSize();
+        int rowsize     = pInput->GetResult()->GetRowSize();
+        int colsize     = pInput->GetResult()->GetColSize();
 
         this->SetResult(new Tensor<DTYPE>(timesize, batchsize, 1, 1, 1));
 
-        Shape *shapeOfSoftmaxResult = new Shape(pInput->GetResult()->GetShape());
+        m_aSoftmaxResult = new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize);
 
-        m_aSoftmaxResult = new Tensor<DTYPE>(shapeOfSoftmaxResult);
-
-        Shape *shapeOfGradient = new Shape(pInput->GetResult()->GetShape());
-
-        this->SetGradient(new Tensor<DTYPE>(shapeOfGradient));
+        this->SetGradient(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
 
         m_epsilon = epsilon;
 
