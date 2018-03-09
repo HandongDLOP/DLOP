@@ -120,14 +120,6 @@ template<typename DTYPE> int Tensor<DTYPE>::GetCapacity() {
     return m_aData->GetCapacity();
 }
 
-template<typename DTYPE> int Tensor<DTYPE>::GetCols() {
-    return m_aData->GetCols();
-}
-
-template<typename DTYPE> int Tensor<DTYPE>::GetRows() {
-    return m_aData->GetRows();
-}
-
 template<typename DTYPE> DTYPE& Tensor<DTYPE>::GetRawData() {
     return m_aData->GetRawData();
 }

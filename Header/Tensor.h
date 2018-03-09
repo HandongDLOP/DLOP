@@ -35,8 +35,6 @@ public:
     int          GetColSize();
 
     int          GetCapacity();
-    int          GetCols();
-    int          GetRows();
 
     DTYPE      & GetRawData();
 

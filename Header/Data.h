@@ -23,8 +23,6 @@ public:
     void   Delete();
 
     int    GetCapacity();
-    int    GetCols();
-    int    GetRows();
 
     DTYPE& GetRawData();
     DTYPE& operator[](unsigned int index);

@@ -133,14 +133,6 @@ template<typename DTYPE> int Data<DTYPE>::GetCapacity() {
     return m_Capacity;
 }
 
-template<typename DTYPE> int Data<DTYPE>::GetCols() {
-    return m_Cols;
-}
-
-template<typename DTYPE> int Data<DTYPE>::GetRows() {
-    return m_Rows;
-}
-
 template<typename DTYPE> DTYPE& Data<DTYPE>::operator[](unsigned int index) {
     return m_aData[index / SIZEOFCOLS][index % SIZEOFCOLS];
 }
