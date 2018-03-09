@@ -13,6 +13,12 @@ public:
         this->Alloc(pTensor, pTrainable);
     }
 
+    Tensorholder(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pName) {
+        std::cout << "Placeholder<DTYPE>::Placeholder(int, int, int, int, int, std::string)" << '\n';
+
+        this->Alloc(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
+    }
+
     ~Tensorholder() {
         std::cout << "Tensorholder<DTYPE>::~Tensorholder()" << '\n';
     }
@@ -36,22 +42,36 @@ public:
         return TRUE;
     }
 
+    int Alloc(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
+        std::cout << "Placeholder<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
+
+        Tensor<DTYPE> *pTensor = Tensor<float>::Zeros(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
+
+        if (pTensor) {
+            this->SetResult(pTensor);
+        } else {
+            printf("Receive NULL pointer of Tensor<DTYPE> class in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
+            return FALSE;
+        }
+
+        Shape *shapeOfDelta = new Shape(pTensor->GetShape());
+        this->SetDelta(new Tensor<DTYPE>(shapeOfDelta));
+
+        return TRUE;
+    }
+
     int ComputeForwardPropagate() {
         return TRUE;
     }
 
     int ComputeBackPropagate() {
-        // int capacity = this->GetResult()->GetCapacity();
-        //
-        // Tensor<DTYPE> *delta    = this->GetDelta();
-        // Tensor<DTYPE> *gradient = this->GetGradient();
-        //
-        // for(int i = 0; i < capacity; i++){
-        // (*gradient)[i] = (*delta)[i];
-        // }
-
         return TRUE;
     }
+
+    void SetTensor(Tensor<DTYPE> *pTensor) {
+        this->SetResult(pTensor);
+    }
+
 };
 
 #endif  // TENSORHOLDER_H_

@@ -15,8 +15,8 @@
 
 int main(int argc, char const *argv[]) {
     // create input, label data placeholder -> Tensorholder
-    Placeholder<float> *x = new Placeholder<float>(1, BATCH, 1, 1, 784, "x");
-    Placeholder<float> *label = new Placeholder<float>(1, BATCH, 1, 1, 10, "label");
+    Tensorholder<float> *x = new Tensorholder<float>(1, BATCH, 1, 1, 784, "x");
+    Tensorholder<float> *label = new Tensorholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // ======================= Select net ===================
     NeuralNetwork<float> *net = new my_CNN(x, label);

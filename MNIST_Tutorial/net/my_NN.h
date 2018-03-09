@@ -10,12 +10,12 @@ enum MODEL_OPTION {
 class my_NN : public NeuralNetwork<float>{
 private:
 public:
-    my_NN(Placeholder<float> *x, Placeholder<float> *label, MODEL_OPTION pOption) {
+    my_NN(Tensorholder<float> *x, Tensorholder<float> *label, MODEL_OPTION pOption) {
         if (pOption == isSLP) SLP(x, label);
         else if (pOption == isMLP) MLP(x, label);
     }
 
-    void SLP(Placeholder<float> *x, Placeholder<float> *label) {
+    void SLP(Tensorholder<float> *x, Tensorholder<float> *label) {
         Operator<float> *out = NULL;
 
         // ======================= layer 1======================
@@ -30,7 +30,7 @@ public:
         Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE);
     }
 
-    void MLP(Placeholder<float> *x, Placeholder<float> *label) {
+    void MLP(Tensorholder<float> *x, Tensorholder<float> *label) {
         Operator<float> *out = NULL;
 
         // ======================= layer 1======================

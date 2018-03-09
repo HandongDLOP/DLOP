@@ -1,14 +1,10 @@
 #ifndef Objective_H_
 #define Objective_H_
 
-#include "Operator//Placeholder.h"
 #include "Operator//Tensorholder.h"
-
 #include "Operator//Reshape.h"
-
 #include "Operator//Relu.h"
 #include "Operator//Sigmoid.h"
-
 #include "Operator//Add.h"
 #include "Operator//Addconv.h"
 #include "Operator//MatMul.h"

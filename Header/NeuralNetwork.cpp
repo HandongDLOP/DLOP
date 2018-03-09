@@ -11,11 +11,9 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     checkCUDNN(cudnnCreate(&m_cudnnHandle));
 #endif  // if __CUDNN__
 
-    m_aaPlaceholder  = NULL;
     m_aaOperator     = NULL;
     m_aaTensorholder = NULL;
 
-    m_PlaceholderDegree  = 0;
     m_OperatorDegree     = 0;
     m_TensorholderDegree = 0;
 
@@ -36,13 +34,6 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
     std::cout << "NeuralNetwork<DTYPE>::Delete()" << '\n';
-
-    if (m_aaPlaceholder) {
-        for (int i = 0; i < m_PlaceholderDegree; i++) {
-            delete m_aaPlaceholder[i];
-        }
-        delete[] m_aaPlaceholder;
-    }
 
     if (m_aaOperator) {
         for (int i = 0; i < m_OperatorDegree; i++) {
@@ -67,27 +58,6 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         delete m_aOptimizer;
         m_aOptimizer = NULL;
     }
-}
-
-template<typename DTYPE> Placeholder<DTYPE> *NeuralNetwork<DTYPE>::AddPlaceholder(Placeholder<DTYPE> *pPlaceholder) {
-    try {
-        Placeholder<DTYPE> **temp = new Placeholder<DTYPE> *[m_PlaceholderDegree + 1];
-
-        for (int i = 0; i < m_PlaceholderDegree; i++) temp[i] = m_aaPlaceholder[i];
-        temp[m_PlaceholderDegree] = pPlaceholder;
-
-        if (m_aaPlaceholder) {
-            delete[] m_aaPlaceholder;
-            m_aaPlaceholder = NULL;
-        }
-
-        m_aaPlaceholder = temp;
-    } catch (...) {
-        printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
-        return NULL;
-    }
-    m_PlaceholderDegree++;
-    return pPlaceholder;
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Operator<DTYPE> *pOperator) {
@@ -144,21 +114,6 @@ template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::SetOptimizer(Op
     m_aOptimizer = pOptimizer;
     m_aOptimizer->SetTrainableTensorDegree(m_TensorholderDegree);
     return pOptimizer;
-}
-
-template<typename DTYPE> int NeuralNetwork<DTYPE>::FeedData(int numOfPlaceholder, ...) {
-    va_list ap;
-
-    va_start(ap, numOfPlaceholder);
-
-    // need to check compare between pRank value and number of another parameter
-    for (int i = 0; i < numOfPlaceholder; i++) {
-        // need to check whether int or not
-        m_aaPlaceholder[i]->SetTensor(va_arg(ap, Tensor<DTYPE> *));
-    }
-    va_end(ap);
-
-    return TRUE;
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::GetResultOperator() {

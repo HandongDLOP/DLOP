@@ -6,7 +6,7 @@
 class my_CNN : public NeuralNetwork<float>{
 private:
 public:
-    my_CNN(Placeholder<float> *x, Placeholder<float> *label) {
+    my_CNN(Tensorholder<float> *x, Tensorholder<float> *label) {
         Operator<float> *out = NULL;
 
         // AddPlaceholder(x);

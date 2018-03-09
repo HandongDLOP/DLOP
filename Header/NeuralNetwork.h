@@ -9,11 +9,9 @@ private:
 #if __CUDNN__
     cudnnHandle_t m_cudnnHandle;
 #endif  // if __CUDNN__
-    Placeholder<DTYPE> **m_aaPlaceholder;
     Operator<DTYPE> **m_aaOperator;
     Tensorholder<DTYPE> **m_aaTensorholder;
 
-    int m_PlaceholderDegree;
     int m_OperatorDegree;
     int m_TensorholderDegree;
 
@@ -35,7 +33,6 @@ public:
     // =======
 
     // 추후 직접 변수를 만들지 않은 operator* + operator*의 변환 변수도 자동으로 할당될 수 있도록 Operator와 NN class를 수정해야 한다.
-    Placeholder<DTYPE> * AddPlaceholder(Placeholder<DTYPE> *pPlaceholder);
     Operator<DTYPE>    * AddOperator(Operator<DTYPE> *pOperator);
     Tensorholder<DTYPE>* AddTensorholder(Tensorholder<DTYPE> *pTensorholder);
 
@@ -43,9 +40,6 @@ public:
     Optimizer<DTYPE>   * SetOptimizer(Optimizer<DTYPE> *pOptimizer);
 
     // =======
-
-    // Optimizer<DTYPE>* SetOptimizer(Optimizer<DTYPE> *pOptimizer);
-    int                   FeedData(int numOfTensorholder, ...);
 
     Operator<DTYPE>     * GetResultOperator();
     Operator<DTYPE>     * GetResult();
