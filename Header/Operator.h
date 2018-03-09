@@ -1,11 +1,10 @@
 #ifndef OPERATOR_H_
 #define OPERATOR_H_
 
-#ifndef __CUDNN__
-    # define __CUDNN__    TRUE
-        # include "cuda.h"
-        # include "cudnn.h"
-        # include "error_util.h"
+#ifdef __CUDNN__
+    # include "cuda.h"
+    # include "cudnn.h"
+    # include "error_util.h"
 #endif  // ifndef __CUDNN__
 
 #include "Tensor.h"
@@ -29,7 +28,6 @@ private:
     std::string m_name;
 
 public:
-
 #if __CUDNN__
     cudnnHandle_t m_pCudnnHandle;
     cudnnHandle_t& GetCudnnHandle();
