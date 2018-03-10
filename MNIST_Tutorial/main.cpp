@@ -1,8 +1,5 @@
 /*g++ -g -o testing -std=c++11 main.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Objective_.cpp ../Header/Optimizer.cpp ../Header/NeuralNetwork_.cpp*/
 
-#include <iostream>
-#include <string>
-
 #include "net//my_CNN.h"
 #include "net//my_NN.h"
 #include "MNIST_Reader.h"

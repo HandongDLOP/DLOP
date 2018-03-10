@@ -4,7 +4,7 @@ template class Optimizer<int>;
 template class Optimizer<float>;
 template class Optimizer<double>;
 
-template<typename DTYPE> Optimizer<DTYPE>::Optimizer(Tensorholder<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+template<typename DTYPE> Optimizer<DTYPE>::Optimizer(Container<Tensorholder<DTYPE> *> *pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection) {
     std::cout << "Optimizer::Optimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
     m_LearningRate          = 0.f;
     m_OptimizeDirection     = 1;
@@ -20,8 +20,9 @@ template<typename DTYPE> Optimizer<DTYPE>::~Optimizer() {
     this->Delete();
 }
 
-template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Tensorholder<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Container<Tensorholder<DTYPE> *> *pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection) {
     m_ppTrainableTensors = pTrainableTensors;
+    m_TrainableTensorDegree = pTrainableTensors->GetSize();
 
     m_LearningRate = pLearningRate;
 
@@ -32,15 +33,12 @@ template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Tensorholder<DTYPE> **pTrai
 }
 
 template<typename DTYPE> int Optimizer<DTYPE>::Delete() {
-    // delete m_ppTrainableTensors;
-
     return TRUE;
 }
 
 template<typename DTYPE> int Optimizer<DTYPE>::UpdateVariable() {
     for (int i = 0; i < m_TrainableTensorDegree; i++) {
-        // UpdateVariable(m_aTrainableData[i]->Data, m_aTrainableData[i]->Gradient);
-        UpdateVariable(m_ppTrainableTensors[i]);
+        UpdateVariable((*m_ppTrainableTensors)[i]);
     }
     return TRUE;
 }

@@ -6,7 +6,7 @@
 template<typename DTYPE> class GradientDescentOptimizer : public Optimizer<DTYPE>{
 
 public:
-    GradientDescentOptimizer(Tensorholder<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pTrainableTensors, pLearningRate, pOptimizeDirection) {
+    GradientDescentOptimizer(Container<Tensorholder<DTYPE> *> *pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pTrainableTensors, pLearningRate, pOptimizeDirection) {
         std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(Objective<DTYPE> *, float, OptimizeDirection)" << '\n';
     }
 

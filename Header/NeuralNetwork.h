@@ -9,16 +9,14 @@ private:
 #if __CUDNN__
     cudnnHandle_t m_cudnnHandle;
 #endif  // if __CUDNN__
-    Operator<DTYPE> **m_aaOperator;
-    Tensorholder<DTYPE> **m_aaTensorholder;
+    Container<Operator<DTYPE> *> *m_aaOperator;
+    Container<Tensorholder<DTYPE> *> *m_aaTensorholder;
 
     int m_OperatorDegree;
     int m_TensorholderDegree;
 
     Objective<DTYPE> *m_aObjective;
     Optimizer<DTYPE> *m_aOptimizer;
-
-    // Optimizer<DTYPE> *m_aOptimizer;
 
 public:
     NeuralNetwork();
@@ -41,29 +39,28 @@ public:
 
     // =======
 
-    Operator<DTYPE>     * GetResultOperator();
-    Operator<DTYPE>     * GetResult();
+    Operator<DTYPE>                 * GetResultOperator();
+    Operator<DTYPE>                 * GetResult();
 
-    Tensorholder<DTYPE>** GetTensorholder();
-    int                   GetTensorholderDegree();
+    Container<Tensorholder<DTYPE> *>* GetTensorholder();
 
-    Objective<DTYPE>    * GetObjective();
-    Optimizer<DTYPE>    * GetOptimizer();
-
-    // =======
-    float                 GetAccuracy();
-    int                   GetMaxIndex(Tensor<DTYPE> *data, int ba, int numOfClass);
-    float                 GetLoss();
+    Objective<DTYPE>                * GetObjective();
+    Optimizer<DTYPE>                * GetOptimizer();
 
     // =======
-    Operator<DTYPE>     * ForwardPropagate();
-    int                   ForwardPropagate(Operator<DTYPE> *pEnd);
-    int                   ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
-    int                   BackPropagate();
+    float                             GetAccuracy();
+    int                               GetMaxIndex(Tensor<DTYPE> *data, int ba, int numOfClass);
+    float                             GetLoss();
 
     // =======
-    int                   Training();
-    int                   Testing();
+    int                               ForwardPropagate();
+    int                               ForwardPropagate(Operator<DTYPE> *pEnd);
+    int                               ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
+    int                               BackPropagate();
+
+    // =======
+    int                               Training();
+    int                               Testing();
 
     // =======
 

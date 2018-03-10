@@ -14,19 +14,19 @@ private:
     float m_LearningRate;
     int m_OptimizeDirection;  // 1 or -1
 
-    Tensorholder<DTYPE> **m_ppTrainableTensors;
+    Container<Tensorholder<DTYPE> *> *m_ppTrainableTensors;
     int m_TrainableTensorDegree;
 
 public:
     Optimizer(Operator<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection);
-    Optimizer(Tensorholder<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection);
+    Optimizer(Container<Tensorholder<DTYPE> *> *pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection);
 
 
     virtual ~Optimizer();
 
     // ===============
 
-    int Alloc(Tensorholder<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection);
+    int Alloc(Container<Tensorholder<DTYPE> *> *pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection);
 
     int Delete();
 
