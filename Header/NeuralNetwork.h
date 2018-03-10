@@ -2,7 +2,6 @@
 #define NEURALNETWORK_H_
 
 #include "Optimizer//GradientDescentOptimizer.h"
-// #include "Temporary_method.h"
 
 template<typename DTYPE> class NeuralNetwork {
 private:
@@ -22,12 +21,9 @@ public:
     NeuralNetwork();
     virtual ~NeuralNetwork();
 
-    // int  Alloc();
+    int  Alloc();
     void Delete();
 
-#if 0
-    int  CuDNN_DevTensorAlloc(Operator<DTYPE> *pHostTensor);
-#endif  // if 0
     // =======
 
     // 추후 직접 변수를 만들지 않은 operator* + operator*의 변환 변수도 자동으로 할당될 수 있도록 Operator와 NN class를 수정해야 한다.
@@ -66,7 +62,6 @@ public:
 
     int CreateGraph();
 
-    // temporary
 };
 
 #endif  // NEURALNETWORK_H_

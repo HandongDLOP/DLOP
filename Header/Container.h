@@ -1,8 +1,8 @@
 #include "Common.h"
 
-template <typename DTYPE> class Tensor;
-template <typename DTYPE> class Operator;
-template <typename DTYPE> class Tensorholder;
+template<typename DTYPE> class Tensor;
+template<typename DTYPE> class Operator;
+template<typename DTYPE> class Tensorholder;
 
 template<typename DTYPE> class Container {
 private:
@@ -10,22 +10,20 @@ private:
     int m_size;
 
 public:
-    Container(){
+    Container() {
         std::cout << "Container<DTYPE>::Container()" << '\n';
         m_aElement = NULL;
-        m_size = 0;
+        m_size     = 0;
     }
 
-    virtual ~Container(){
-        if(m_aElement){
-            delete [] m_aElement;
+    virtual ~Container() {
+        if (m_aElement) {
+            delete[] m_aElement;
             m_aElement = NULL;
         }
     }
 
-    int Append(DTYPE pElement){
-        std::cout << "Container<DTYPE>::Append(DTYPE pElement)" << '\n';
-
+    int Push(DTYPE pElement) {
         try {
             DTYPE *temp = new DTYPE[m_size + 1];
 
@@ -48,8 +46,26 @@ public:
         return TRUE;
     }
 
+    DTYPE Pop() {
+        DTYPE  element = m_aElement[m_size - 1];
+        DTYPE *temp    = new DTYPE[m_size - 1];
+
+        for (int i = 0; i < m_size - 1; i++) temp[i] = m_aElement[i];
+
+        if (m_aElement) {
+            delete[] m_aElement;
+            m_aElement = NULL;
+        }
+
+        m_aElement = temp;
+
+        m_size--;
+
+        return element;
+    }
+
     int GetSize() {
-        std::cout << "Container<DTYPE>::GetSize()" << '\n';
+        // std::cout << "Container<DTYPE>::GetSize()" << '\n';
         return m_size;
     }
 
@@ -58,7 +74,11 @@ public:
         return m_aElement[m_size - 1];
     }
 
-    DTYPE operator[](unsigned int index){
+    DTYPE* GetRawData() const {
+        return m_aElement;
+    }
+
+    DTYPE operator[](unsigned int index) {
         return m_aElement[index];
     }
 };

@@ -8,15 +8,16 @@
 
 template<typename DTYPE> class Operator {
 private:
-    Tensor<DTYPE> *m_aResult;
-    Tensor<DTYPE> *m_aGradient;
-    Tensor<DTYPE> *m_aDelta;
+    Container<Tensor<DTYPE> *> *m_aaResult;
+    Container<Tensor<DTYPE> *> *m_aaGradient;
+    Container<Tensor<DTYPE> *> *m_aaDelta;
 
-    Operator<DTYPE> **m_apOutput;
-    Operator<DTYPE> **m_apInput;
+    Container<Operator<DTYPE> *> *m_apOutput;
+    Container<Operator<DTYPE> *> *m_apInput;
 
     int m_OutputDegree;
     int m_InputDegree;
+
     int m_currentOutputDegree;
     int m_currentInputDegree;
 
@@ -35,40 +36,57 @@ public:
     Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName = "NO NAME");
     virtual ~Operator();
 
-    virtual int       Alloc(int numInput, ...);
-    virtual void      Delete();
+    virtual int                   Alloc();
+    virtual int                   Alloc(int numInput, ...);
+    virtual void                  Delete();
 
-    void              SetResult(Tensor<DTYPE> *pTensor);
-    void              SetGradient(Tensor<DTYPE> *pTensor);
-    void              SetDelta(Tensor<DTYPE> *pTensor);
+    void                          SetResult(Tensor<DTYPE> *pTensor);
+    void                          AddResult(Tensor<DTYPE> *pTensor);
 
-    void              IncreaseCurrentOutputDegree();
-    void              IncreaseCurrentInputDegree();
+    void                          SetGradient(Tensor<DTYPE> *pTensor);
+    void                          AddGradient(Tensor<DTYPE> *pTensor);
 
-    int               _AddInputEdge(Operator<DTYPE> *pInput);
-    int               _AddOutputEdge(Operator<DTYPE> *pOutput);
-    void              AddEdgebetweenOperators(Operator<DTYPE> *pInput);
+    void                          SetDelta(Tensor<DTYPE> *pTensor);
+    void                          AddDelta(Tensor<DTYPE> *pTensor);
 
-    Tensor<DTYPE>   * GetResult() const;
-    Tensor<DTYPE>   * GetGradient() const;
-    Tensor<DTYPE>   * GetDelta() const;
-    Operator<DTYPE>** GetInput() const;
-    Operator<DTYPE>** GetOutput() const;
-    int               GetOutputDegree() const;
-    int               GetInputDegree() const;
-    int               GetCurrentOutputDegree() const;
-    int               GetCurrentInputDegree() const;
-    std::string       GetName() const;
+    void                          IncreaseCurrentOutputDegree();
+    void                          IncreaseCurrentInputDegree();
 
-    Operator<DTYPE> * Concatenate(Operator<DTYPE> *src, Operator<DTYPE> *dst, int axis = 0);
+    int                           _AddInputEdge(Operator<DTYPE> *pInput);
+    int                           _AddOutputEdge(Operator<DTYPE> *pOutput);
+    void                          AddEdgebetweenOperators(Operator<DTYPE> *pInput);
+
+    Tensor<DTYPE>               * GetResult() const;
+    Container<Tensor<DTYPE> *>  * GetResultContainer();
+
+    Tensor<DTYPE>               * GetGradient() const;
+    Container<Tensor<DTYPE> *>  * GetGradientContainer();
+
+    Tensor<DTYPE>               * GetDelta() const;
+    Container<Tensor<DTYPE> *>  * GetDeltaContainer();
+
+    Operator<DTYPE>            ** GetOutput();
+    Container<Operator<DTYPE> *>* GetOutputContatiner();
+
+    Operator<DTYPE>            ** GetInput();
+    Container<Operator<DTYPE> *>* GetInputContatiner();
+
+    int                           GetOutputDegree() const;
+    int                           GetInputDegree() const;
+
+    int                           GetCurrentOutputDegree() const;
+    int                           GetCurrentInputDegree() const;
+    std::string                   GetName() const;
+
+    // Operator<DTYPE>             * Concatenate(Operator<DTYPE> *src, Operator<DTYPE> *dst, int axis = 0);
 
     // For Propagate
-    int               ForwardPropagate();
-    virtual int       ComputeForwardPropagate();
+    int         ForwardPropagate();
+    virtual int ComputeForwardPropagate();
 
     // For BackPropagate
-    int               BackPropagate();
-    virtual int       ComputeBackPropagate();
+    int         BackPropagate();
+    virtual int ComputeBackPropagate();
 };
 
 #endif  // OPERATOR_H_

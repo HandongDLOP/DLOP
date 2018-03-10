@@ -11,14 +11,16 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     checkCUDNN(cudnnCreate(&m_cudnnHandle));
 #endif  // if __CUDNN__
 
-    m_aaOperator     = new Container<Operator<DTYPE> *>();
-    m_aaTensorholder = new Container<Tensorholder<DTYPE> *>();
+    m_aaOperator     = NULL;
+    m_aaTensorholder = NULL;
 
     m_OperatorDegree     = 0;
     m_TensorholderDegree = 0;
 
     m_aObjective = NULL;
     m_aOptimizer = NULL;
+
+    Alloc();
 }
 
 template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
@@ -30,6 +32,13 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
 #endif  // if __CUDNN__
 
     this->Delete();
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
+    m_aaOperator = new Container<Operator<DTYPE> *>();
+    m_aaTensorholder = new Container<Tensorholder<DTYPE> *>();
+
+    return TRUE;
 }
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
@@ -69,13 +78,13 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Oper
 #if __CUDNN__
     pOperator->SetCudnnHandle(m_cudnnHandle);
 #endif  // if __CUDNN__
-    m_aaOperator->Append(pOperator);
+    m_aaOperator->Push(pOperator);
     m_OperatorDegree++;
     return pOperator;
 }
 
 template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddTensorholder(Tensorholder<DTYPE> *pTensorholder) {
-    m_aaTensorholder->Append(pTensorholder);
+    m_aaTensorholder->Push(pTensorholder);
     m_TensorholderDegree++;
     return pTensorholder;
 }
