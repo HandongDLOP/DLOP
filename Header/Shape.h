@@ -1,18 +1,7 @@
 #ifndef __SHAPE__
 #define __SHAPE__    value
 
-#include <iostream>
-#include <stdexcept>
-#include <exception>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
-#ifndef TRUE
-    # define TRUE     1
-    # define FALSE    0
-#endif  // !TRUE
+#include "Common.h"
 
 class Shape {
 private:

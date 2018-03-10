@@ -1,13 +1,8 @@
 #ifndef OPERATOR_H_
 #define OPERATOR_H_
 
-#ifdef __CUDNN__
-    # include "cuda.h"
-    # include "cudnn.h"
-    # include "error_util.h"
-#endif  // ifndef __CUDNN__
-
 #include "Tensor.h"
+#include "Container.h"
 #define VALID    0
 #define SAME     1
 
