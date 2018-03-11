@@ -6,7 +6,6 @@
 #include "Operator//Relu.h"
 #include "Operator//Sigmoid.h"
 #include "Operator//Add.h"
-#include "Operator//Addconv.h"
 #include "Operator//MatMul.h"
 #include "Operator//Convolution.h"
 #include "Operator//Maxpooling.h"
