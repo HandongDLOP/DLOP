@@ -1,7 +1,7 @@
 #ifndef NEURALNETWORK_H_
 #define NEURALNETWORK_H_
 
-#include "Optimizer//GradientDescentOptimizer.h"
+#include "Optimizer/GradientDescentOptimizer.h"
 
 template<typename DTYPE> class NeuralNetwork {
 private:
