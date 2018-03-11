@@ -30,9 +30,9 @@ public:
         out = AddFullyConnectedLayer(out, 256, 10, "4");
 
         // ======================= Select Objective Function ===================
-        // Objective<float> *objective = new Objective<float>(net, label,"SCE");
+        // Objective<float> *objective = new Objective<float>(out, label,"SCE");
         Objective<float> *objective = new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE");
-        // Objective<float> *objective = new MSE<float>(net, label, "MSE");
+        // Objective<float> *objective = new MSE<float>(out, label, "MSE");
 
         SetObjective(objective);
 

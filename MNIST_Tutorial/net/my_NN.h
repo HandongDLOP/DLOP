@@ -22,12 +22,16 @@ public:
         out = AddFullyConnectedLayer(x, 784, 10, FALSE, "1");
 
         // ======================= Select Objective Function ===================
-        // Objective<float> *objective = new Objective<float>(net, label,"SCE");
-        Objective<float> *objective = new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE");
-        // Objective<float> *objective = new MSE<float>(net, label, "MSE");
+        // Objective<float> *objective = new Objective<float>(out, label,"SCE");
+        Objective<float> *objective = new SoftmaxCrossEntropy<float>(out, label, 0.000001, "SCE");
+        // Objective<float> *objective = new MSE<float>(out, label, "MSE");
+
+        SetObjective(objective);
 
         // ======================= Select Optimizer ===================
         Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE);
+
+        SetOptimizer(optimizer);
     }
 
     void MLP(Tensorholder<float> *x, Tensorholder<float> *label) {
@@ -40,12 +44,16 @@ public:
         out = AddFullyConnectedLayer(out, 15, 10, TRUE, "2");
 
         // ======================= Select Objective Function ===================
-        // Objective<float> *objective = new Objective<float>(net, label,"SCE");
-        Objective<float> *objective = new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE");
-        // Objective<float> *objective = new MSE<float>(net, label, "MSE");
+        // Objective<float> *objective = new Objective<float>(out, label,"SCE");
+        // Objective<float> *objective = new SoftmaxCrossEntropy<float>(out, label, 0.000001, "SCE");
+        Objective<float> *objective = new MSE<float>(out, label, "MSE");
+
+        SetObjective(objective);
 
         // ======================= Select Optimizer ===================
         Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE);
+
+        SetOptimizer(optimizer);
     }
 
     Operator<float>* AddFullyConnectedLayer(Operator<float> *pInput, int pColSize_in, int pColSize_out, int pActivation, std::string pLayernum) {
