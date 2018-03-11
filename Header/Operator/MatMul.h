@@ -35,7 +35,6 @@ public:
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *weight = this->GetInput()[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
-        // result->Reset();
 
         int timesize    = result->GetTimeSize();
         int batchsize   = result->GetBatchSize();
@@ -78,9 +77,7 @@ public:
 
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-        // input_delta->Reset();
         Tensor<DTYPE> *weight_gradient = this->GetInput()[1]->GetGradient();
-        // weight_gradient->Reset();
 
         int timesize    = this_delta->GetTimeSize();
         int batchsize   = this_delta->GetBatchSize();
@@ -211,9 +208,8 @@ public:
                         for (m_co = 0; m_co < m_colsize; m_co++) {
                             for (m_hid = 0; m_hid < m_hidsize; m_hid++) {
                                 (*result)[Index5D(m_pResultTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
-                                += (*input)[Index5D(inputTenShape, m_ti, m_ba, m_ch, m_ro, m_hid)] * (*weight)[Index5D(weightTenShape, *m_ti_weight, *m_ba_weight, *m_ch_weight, *m_hid_weight, *m_co_weight)];
+                                    += (*input)[Index5D(inputTenShape, m_ti, m_ba, m_ch, m_ro, m_hid)] * (*weight)[Index5D(weightTenShape, *m_ti_weight, *m_ba_weight, *m_ch_weight, *m_hid_weight, *m_co_weight)];
                             }
-
                         }
                     }
                 }
@@ -231,10 +227,33 @@ public:
 
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-        // input_delta->Reset();
         Tensor<DTYPE> *weight_gradient = this->GetInput()[1]->GetGradient();
-        // weight_gradient->Reset();
 
+        Shape *inputTenShape  = input->GetShape();
+        Shape *weightTenShape = weight->GetShape();
+
+        int input_index  = 0;
+        int weight_index = 0;
+        int result_index = 0;
+
+        for (m_ti = 0; m_ti < m_timesize; m_ti++) {
+            for (m_ba = 0; m_ba < m_batchsize; m_ba++) {
+                for (m_ch = 0; m_ch < m_channelsize; m_ch++) {
+                    for (m_ro = 0; m_ro < m_rowsize; m_ro++) {
+                        for (m_co = 0; m_co < m_colsize; m_co++) {
+                            for (m_hid = 0; m_hid < m_hidsize; m_hid++) {
+                                input_index  = Index5D(inputTenShape, m_ti, m_ba, m_ch, m_ro, m_hid);
+                                weight_index = Index5D(weightTenShape, *m_ti_weight, *m_ba_weight, *m_ch_weight, *m_hid_weight, *m_co_weight);
+                                result_index = Index5D(m_pResultTenShape, m_ti, m_ba, m_ch, m_ro, m_co);
+
+                                (*input_delta)[input_index]      += (*weight)[weight_index] * (*this_delta)[result_index];
+                                (*weight_gradient)[weight_index] += (*input)[input_index] * (*this_delta)[result_index];
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         return TRUE;
     }
