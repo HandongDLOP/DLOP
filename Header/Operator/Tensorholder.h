@@ -33,11 +33,11 @@ public:
             return FALSE;
         }
 
-        // Shape *shapeOfDelta = new Shape(pTensor->GetShape());
-        // this->SetDelta(new Tensor<DTYPE>(shapeOfDelta));
+        Tensor<DTYPE> * temp = new Tensor<DTYPE>(new Shape(pTensor->GetShape()));
 
-        Shape *shapeOfGradient = new Shape(pTensor->GetShape());
-        this->SetGradient(new Tensor<DTYPE>(shapeOfGradient));
+        this->SetDelta(temp);
+
+        this->SetGradient(temp);
 
         return TRUE;
     }

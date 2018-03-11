@@ -1,7 +1,6 @@
 #ifndef OPERATOR_H_
 #define OPERATOR_H_
 
-#include "Tensor.h"
 #include "Tensor_utils.h"
 #include "Container.h"
 #define VALID    0

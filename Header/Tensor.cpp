@@ -208,7 +208,7 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pTimeSize, 
 
 template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Add(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor) {
     Shape *leftTenShape = pLeftTensor->GetShape();
-    int capacity = pLeftTensor->GetCapacity();
+    int    capacity     = pLeftTensor->GetCapacity();
 
     int timesize    = (*leftTenShape)[0];
     int batchsize   = (*leftTenShape)[1];
@@ -229,7 +229,7 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Add(Tensor<DTYPE> *pLeftT
     return pDestTensor;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::BroadcastAdd(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor) {
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::BroadcastAdd(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor, int is_inverse) {
     Shape *leftTenShape  = pLeftTensor->GetShape();
     Shape *rightTenShape = pRightTensor->GetShape();
 

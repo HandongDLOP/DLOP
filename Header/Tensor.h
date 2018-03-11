@@ -60,9 +60,13 @@ public:
 
     ///////////////////////////////////////////////////////////////////
 
-    static Tensor<DTYPE>* Add(Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pDestTensor=NULL);
+    static Tensor<DTYPE>* Add(Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pDestTensor = NULL);
 
-    static Tensor<DTYPE>* BroadcastAdd(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor=NULL);
+    static Tensor<DTYPE>* BroadcastAdd(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor = NULL, int is_inverse = FALSE);
+
+    // static Tensor<DTYPE>* Matmul(Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pDestTensor=NULL);
+    //
+    // static Tensor<DTYPE>* BroadcastMatmul(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor=NULL);
 };
 
 ///////////////////////////////////////////////////////////////////
