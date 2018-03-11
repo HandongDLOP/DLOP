@@ -1,7 +1,7 @@
 #ifndef __DATA__
 #define __DATA__      value
 
-#include "Shape.h"
+#include "Common.h"
 
 #define SIZEOFCOLS    1024
 

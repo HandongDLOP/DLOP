@@ -6,6 +6,7 @@
 #include <chrono>
 #include <random>
 
+#include "Shape.h"
 #include "Data.h"
 
 template<typename DTYPE> class Tensor {
@@ -51,11 +52,17 @@ public:
 
     ///////////////////////////////////////////////////////////////////
 
-    static Tensor* Truncated_normal(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, float mean, float stddev);
+    static Tensor<DTYPE>* Truncated_normal(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, float mean, float stddev);
 
-    static Tensor* Zeros(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
+    static Tensor<DTYPE>* Zeros(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
 
-    static Tensor* Constants(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, DTYPE constant);
+    static Tensor<DTYPE>* Constants(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, DTYPE constant);
+
+    ///////////////////////////////////////////////////////////////////
+
+    static Tensor<DTYPE>* Add(Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pDestTensor = NULL);
+
+    static Tensor<DTYPE>* BroadcastAdd(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor);
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -67,9 +74,5 @@ inline unsigned int Index5D(Shape *pShape, int ti, int ba, int ch, int ro, int c
 inline unsigned int Index4D(Shape *pShape, int ba, int ch, int ro, int co) {
     return ((ba * (*pShape)[2] + ch) * (*pShape)[3] + ro) * (*pShape)[4] + co;
 }
-
-std::ostream& operator<<(std::ostream& pOS, Tensor<int> *pTensor);
-std::ostream& operator<<(std::ostream& pOS, Tensor<float> *pTensor);
-std::ostream& operator<<(std::ostream& pOS, Tensor<double> *pTensor);
 
 #endif  // TENSOR_H_

@@ -5,38 +5,6 @@ Shape::Shape() {
     m_aDim = NULL;
 }
 
-Shape::Shape(int pSize0) {
-    std::cout << "Shape::Shape(int)" << '\n';
-    m_Rank = 0;
-    m_aDim = NULL;
-
-    Alloc(1, pSize0);
-}
-
-Shape::Shape(int pSize0, int pSize1) {
-    std::cout << "Shape::Shape(int, int)" << '\n';
-    m_Rank = 0;
-    m_aDim = NULL;
-
-    Alloc(2, pSize0, pSize1);
-}
-
-Shape::Shape(int pSize0, int pSize1, int pSize2) {
-    std::cout << "Shape::Shape(int, int, int)" << '\n';
-    m_Rank = 0;
-    m_aDim = NULL;
-
-    Alloc(3, pSize0, pSize1, pSize2);
-}
-
-Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3) {
-    std::cout << "Shape::Shape(int, int, int, int)" << '\n';
-    m_Rank = 0;
-    m_aDim = NULL;
-
-    Alloc(4, pSize0, pSize1, pSize2, pSize3);
-}
-
 Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
     // std::cout << "Shape::Shape(int, int, int, int, int)" << '\n';
     m_Rank = 0;

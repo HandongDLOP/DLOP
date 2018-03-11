@@ -206,137 +206,102 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pTimeSize, 
     return temp;
 }
 
-///////////////////////////////////////////////////////////////////
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Add(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor) {
+    Shape *leftTenShape = pLeftTensor->GetShape();
 
+    int timesize    = (*leftTenShape)[0];
+    int batchsize   = (*leftTenShape)[1];
+    int channelsize = (*leftTenShape)[2];
+    int rowsize     = (*leftTenShape)[3];
+    int colsize     = (*leftTenShape)[4];
 
-std::ostream& operator<<(std::ostream& pOS, Tensor<int> *pTensor) {
-    int timesize    = pTensor->GetTimeSize();
-    int batchsize   = pTensor->GetBatchSize();
-    int channelsize = pTensor->GetChannelSize();
-    int rowsize     = pTensor->GetRowSize();
-    int colsize     = pTensor->GetColSize();
-
-    Shape *shape = pTensor->GetShape();
-
-    pOS << "[ ";
+    if (pDestTensor == NULL) pDestTensor = new Tensor<DTYPE>(timesize,
+                                                             batchsize,
+                                                             channelsize,
+                                                             rowsize,
+                                                             colsize);
 
     for (int ti = 0; ti < timesize; ti++) {
-        pOS << "[ \n";
-
         for (int ba = 0; ba < batchsize; ba++) {
-            pOS << "[ ";
-
             for (int ch = 0; ch < channelsize; ch++) {
-                pOS << "[ ";
-
                 for (int ro = 0; ro < rowsize; ro++) {
-                    pOS << "[ ";
-
                     for (int co = 0; co < colsize; co++) {
-                        pOS << (*pTensor)[Index5D(shape, ti, ba, ch, ro, co)] << ", ";
+                        (*pDestTensor)[Index5D(leftTenShape, ti, ba, ch, ro, co)]
+                            = (*pLeftTensor)[Index5D(leftTenShape, ti, ba, ch, ro, co)]
+                              + (*pRightTensor)[Index5D(leftTenShape, ti, ba, ch, ro, co)];
                     }
-                    pOS << " ]\n";
                 }
-                pOS << " ]";
             }
-            pOS << " ]\n";
         }
-        pOS << " ]\n";
     }
-    pOS << " ]\n";
 
-    return pOS;
+    return pDestTensor;
 }
 
-std::ostream& operator<<(std::ostream& pOS, Tensor<float> *pTensor) {
-    int timesize    = pTensor->GetTimeSize();
-    int batchsize   = pTensor->GetBatchSize();
-    int channelsize = pTensor->GetChannelSize();
-    int rowsize     = pTensor->GetRowSize();
-    int colsize     = pTensor->GetColSize();
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::BroadcastAdd(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor) {
+    Shape *leftTenShape  = pLeftTensor->GetShape();
+    Shape *rightTenShape = pRightTensor->GetShape();
 
-    Shape *shape = pTensor->GetShape();
+    int timesize    = (*leftTenShape)[0];
+    int batchsize   = (*leftTenShape)[1];
+    int channelsize = (*leftTenShape)[2];
+    int rowsize     = (*leftTenShape)[3];
+    int colsize     = (*leftTenShape)[4];
 
-    pOS << "[ ";
+    int ti = 0;
+    int ba = 0;
+    int ch = 0;
+    int ro = 0;
+    int co = 0;
 
-    for (int ti = 0; ti < timesize; ti++) {
-        pOS << "[ \n";
+    int zero = 0;
 
-        for (int ba = 0; ba < batchsize; ba++) {
-            pOS << "[ ";
+    int *ti_right = &ti;
+    int *ba_right = &ba;
+    int *ch_right = &ch;
+    int *ro_right = &ro;
+    int *co_right = &co;
 
-            for (int ch = 0; ch < channelsize; ch++) {
-                pOS << "[ ";
+    if ((*rightTenShape)[0] == 1) ti_right = &zero;
 
-                for (int ro = 0; ro < rowsize; ro++) {
-                    pOS << "[ ";
+    if ((*rightTenShape)[1] == 1) ba_right = &zero;
 
-                    for (int co = 0; co < colsize; co++) {
-                        pOS << (*pTensor)[Index5D(shape, ti, ba, ch, ro, co)] << ", ";
+    if ((*rightTenShape)[2] == 1) ch_right = &zero;
+
+    if ((*rightTenShape)[3] == 1) ro_right = &zero;
+
+    if ((*rightTenShape)[4] == 1) co_right = &zero;
+
+    for (ti = 0; ti < timesize; ti++) {
+        for (ba = 0; ba < batchsize; ba++) {
+            for (ch = 0; ch < channelsize; ch++) {
+                for (ro = 0; ro < rowsize; ro++) {
+                    for (co = 0; co < colsize; co++) {
+                        (*pDestTensor)[Index5D(leftTenShape, ti, ba, ch, ro, co)]
+                            = (*pLeftTensor)[Index5D(leftTenShape, ti, ba, ch, ro, co)]
+                              + (*pRightTensor)[Index5D(rightTenShape, *ti_right, *ba_right, *ch_right, *ro_right, *co_right)];
                     }
-                    pOS << " ]\n";
                 }
-                pOS << " ]";
             }
-            pOS << " ]\n";
         }
-        pOS << " ]\n";
     }
-    pOS << " ]\n";
 
-    return pOS;
-}
-
-std::ostream& operator<<(std::ostream& pOS, Tensor<double> *pTensor) {
-    int timesize    = pTensor->GetTimeSize();
-    int batchsize   = pTensor->GetBatchSize();
-    int channelsize = pTensor->GetChannelSize();
-    int rowsize     = pTensor->GetRowSize();
-    int colsize     = pTensor->GetColSize();
-
-    Shape *shape = pTensor->GetShape();
-
-    pOS << "[ ";
-
-    for (int ti = 0; ti < timesize; ti++) {
-        pOS << "[ \n";
-
-        for (int ba = 0; ba < batchsize; ba++) {
-            pOS << "[ ";
-
-            for (int ch = 0; ch < channelsize; ch++) {
-                pOS << "[ ";
-
-                for (int ro = 0; ro < rowsize; ro++) {
-                    pOS << "[ ";
-
-                    for (int co = 0; co < colsize; co++) {
-                        pOS << (*pTensor)[Index5D(shape, ti, ba, ch, ro, co)] << ", ";
-                    }
-                    pOS << " ]\n";
-                }
-                pOS << " ]";
-            }
-            pOS << " ]\n";
-        }
-        pOS << " ]\n";
-    }
-    pOS << " ]\n";
-
-    return pOS;
+    return NULL;
 }
 
 //// example code
 // int main(int argc, char const *argv[]) {
-//// Tensor<int> *temp = new Tensor<int>(1, 100, 1, 28, 28);
+// Tensor<float> *left  = Tensor<float>::Constants(1, 2, 3, 3, 3, 2);
+// Tensor<float> *right = Tensor<float>::Truncated_normal(1, 1, 3, 1, 1, 0.0, 0.1);
+// Tensor<float> *dst = Tensor<float>::Zeros(1, 2, 3, 3, 3);
 //
-// Tensor<int> *temp = Tensor<int>::Constants(100, 100, 100, 100, 100, 3);
+// std::cout << left << '\n';
+// std::cout << right << '\n';
+// std::cout << dst << '\n';
 //
-// std::cout << Index5D(temp->GetShape(), 0, 1, 0, 1, 1) << '\n';
+// Tensor<float>::BroadcastAdd(left, right, dst);
 //
-// std::cout << (*temp)[Index5D(temp->GetShape(), 0, 1, 0, 1, 1)] << '\n';
-//
-// delete temp;
+// std::cout << dst << '\n';
 //
 // return 0;
 // }
