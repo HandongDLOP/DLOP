@@ -75,8 +75,8 @@ public:
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *weight = this->GetInput()[1]->GetResult();
 
-        Tensor<DTYPE> *this_delta  = this->GetDelta();
-        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
+        Tensor<DTYPE> *this_delta      = this->GetDelta();
+        Tensor<DTYPE> *input_delta     = this->GetInput()[0]->GetDelta();
         Tensor<DTYPE> *weight_gradient = this->GetInput()[1]->GetGradient();
 
         int timesize    = this_delta->GetTimeSize();
@@ -193,8 +193,9 @@ public:
 
     int ComputeForwardPropagate() {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
-        Tensor<DTYPE> *input                           = (*input_contatiner)[0]->GetResult();
-        Tensor<DTYPE> *weight                          = (*input_contatiner)[1]->GetResult();
+
+        Tensor<DTYPE> *input  = (*input_contatiner)[0]->GetResult();
+        Tensor<DTYPE> *weight = (*input_contatiner)[1]->GetResult();
 
         Tensor<DTYPE> *result = this->GetResult();
 
@@ -225,8 +226,8 @@ public:
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *weight = this->GetInput()[1]->GetResult();
 
-        Tensor<DTYPE> *this_delta  = this->GetDelta();
-        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
+        Tensor<DTYPE> *this_delta      = this->GetDelta();
+        Tensor<DTYPE> *input_delta     = this->GetInput()[0]->GetDelta();
         Tensor<DTYPE> *weight_gradient = this->GetInput()[1]->GetGradient();
 
         Shape *inputTenShape  = input->GetShape();
