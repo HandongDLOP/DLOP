@@ -8,9 +8,11 @@ template<typename DTYPE> class Layer {
 private:
     Container<Operator<DTYPE> *> *m_aaOperator;
     Container<Tensorholder<DTYPE> *> *m_aaParameter;
+    Container<Layer<DTYPE> *> *m_aaLayer;
 
     int m_numOfOperator;
     int m_numOfParameter;
+    int m_numOfLayer;
 
     std::string m_name;
 
@@ -23,6 +25,7 @@ public:
 
     // =======
 
+    Operator<DTYPE>    * AddLayer(Layer<DTYPE> *pLayer);
     Operator<DTYPE>    * AddOperator(Operator<DTYPE> *pOperator);
     Tensorholder<DTYPE>* AddParameter(Tensorholder<DTYPE> *pParameter);
 

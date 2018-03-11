@@ -6,8 +6,10 @@ template class Layer<double>;
 
 template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) {
     std::cout << "Layer<DTYPE>::Layer()" << '\n';
-    m_aaOperator     = NULL;
-    m_aaParameter    = NULL;
+    m_aaOperator  = NULL;
+    m_aaParameter = NULL;
+    m_aaLayer     = NULL;
+
     m_numOfOperator  = 0;
     m_numOfParameter = 0;
     m_name           = pName;
@@ -23,7 +25,7 @@ template<typename DTYPE> Layer<DTYPE>::~Layer() {
 template<typename DTYPE> int Layer<DTYPE>::Alloc() {
     m_aaOperator  = new Container<Operator<DTYPE> *>();
     m_aaParameter = new Container<Tensorholder<DTYPE> *>();
-
+    m_aaLayer     = new Container<Layer<DTYPE> *>();
     return TRUE;
 }
 
@@ -32,6 +34,7 @@ template<typename DTYPE> void Layer<DTYPE>::Delete() {
 
     if (m_aaOperator) {
         Operator<DTYPE> **OperatorContainer = m_aaOperator->GetRawData();
+
         for (int i = 0; i < m_numOfOperator; i++) {
             delete OperatorContainer[i];
             OperatorContainer[i] = NULL;
@@ -42,6 +45,7 @@ template<typename DTYPE> void Layer<DTYPE>::Delete() {
 
     if (m_aaParameter) {
         Tensorholder<DTYPE> **ParameterContainer = m_aaParameter->GetRawData();
+
         for (int i = 0; i < m_numOfParameter; i++) {
             delete ParameterContainer[i];
             ParameterContainer[i] = NULL;
@@ -49,6 +53,37 @@ template<typename DTYPE> void Layer<DTYPE>::Delete() {
         delete m_aaParameter;
         m_aaParameter = NULL;
     }
+
+    if (m_aaLayer) {
+        Layer<DTYPE> **LayerContainer = m_aaLayer->GetRawData();
+
+        for (int i = 0; i < m_numOfLayer; i++) {
+            delete LayerContainer[i];
+            LayerContainer[i] = NULL;
+        }
+        delete m_aaLayer;
+        m_aaLayer = NULL;
+    }
+}
+
+template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::AddLayer(Layer<DTYPE> *pLayer) {
+    int pNumOfOperator  = pLayer->GetNumOfOperator();
+    int pNumOfParameter = pLayer->GetNumOfParameter();
+
+    for (int i = 0; i < pNumOfOperator; i++) {
+        m_aaOperator->Push(pLayer->PopOperator());
+        m_numOfOperator++;
+    }
+
+    for (int i = 0; i < pNumOfParameter; i++) {
+        m_aaParameter->Push(pLayer->PopParameter());
+        m_numOfParameter++;
+    }
+
+    m_aaLayer->Push(pLayer);
+    m_numOfLayer++;
+
+    return m_aaOperator->GetLast();
 }
 
 template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::AddOperator(Operator<DTYPE> *pOperator) {
