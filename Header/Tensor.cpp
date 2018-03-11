@@ -208,6 +208,7 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pTimeSize, 
 
 template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Add(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor) {
     Shape *leftTenShape = pLeftTensor->GetShape();
+    int capacity = pLeftTensor->GetCapacity();
 
     int timesize    = (*leftTenShape)[0];
     int batchsize   = (*leftTenShape)[1];
@@ -221,18 +222,8 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Add(Tensor<DTYPE> *pLeftT
                                                              rowsize,
                                                              colsize);
 
-    for (int ti = 0; ti < timesize; ti++) {
-        for (int ba = 0; ba < batchsize; ba++) {
-            for (int ch = 0; ch < channelsize; ch++) {
-                for (int ro = 0; ro < rowsize; ro++) {
-                    for (int co = 0; co < colsize; co++) {
-                        (*pDestTensor)[Index5D(leftTenShape, ti, ba, ch, ro, co)]
-                            = (*pLeftTensor)[Index5D(leftTenShape, ti, ba, ch, ro, co)]
-                              + (*pRightTensor)[Index5D(leftTenShape, ti, ba, ch, ro, co)];
-                    }
-                }
-            }
-        }
+    for (int i = 0; i < capacity; i++) {
+        (*pDestTensor)[i] = (*pLeftTensor)[i] + (*pRightTensor)[i];
     }
 
     return pDestTensor;
@@ -247,6 +238,12 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::BroadcastAdd(Tensor<DTYPE
     int channelsize = (*leftTenShape)[2];
     int rowsize     = (*leftTenShape)[3];
     int colsize     = (*leftTenShape)[4];
+
+    if (pDestTensor == NULL) pDestTensor = new Tensor<DTYPE>(timesize,
+                                                             batchsize,
+                                                             channelsize,
+                                                             rowsize,
+                                                             colsize);
 
     int ti = 0;
     int ba = 0;
@@ -286,20 +283,20 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::BroadcastAdd(Tensor<DTYPE
         }
     }
 
-    return NULL;
+    return pDestTensor;
 }
 
-//// example code
+// example code
 // int main(int argc, char const *argv[]) {
 // Tensor<float> *left  = Tensor<float>::Constants(1, 2, 3, 3, 3, 2);
 // Tensor<float> *right = Tensor<float>::Truncated_normal(1, 1, 3, 1, 1, 0.0, 0.1);
-// Tensor<float> *dst = Tensor<float>::Zeros(1, 2, 3, 3, 3);
+// Tensor<float> *dst   = Tensor<float>::Zeros(1, 2, 3, 3, 3);
 //
 // std::cout << left << '\n';
 // std::cout << right << '\n';
 // std::cout << dst << '\n';
 //
-// Tensor<float>::BroadcastAdd(left, right, dst);
+// Tensor<float>::BroadcastAdd(left, right);
 //
 // std::cout << dst << '\n';
 //

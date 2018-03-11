@@ -60,9 +60,9 @@ public:
 
     ///////////////////////////////////////////////////////////////////
 
-    static Tensor<DTYPE>* Add(Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pDestTensor = NULL);
+    static Tensor<DTYPE>* Add(Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pDestTensor=NULL);
 
-    static Tensor<DTYPE>* BroadcastAdd(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor);
+    static Tensor<DTYPE>* BroadcastAdd(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor=NULL);
 };
 
 ///////////////////////////////////////////////////////////////////
