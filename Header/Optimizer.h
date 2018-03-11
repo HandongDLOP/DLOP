@@ -1,8 +1,7 @@
 #ifndef OPTIMIZER_H_
 #define OPTIMIZER_H_    value
 
-#include "Objective/SoftmaxCrossEntropy.h"
-#include "Objective/MSE.h"
+#include "Objective_utils.h"
 
 enum OptimizeDirection {
     MAXIMIZE,

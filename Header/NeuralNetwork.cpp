@@ -13,6 +13,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
 
     m_aaOperator     = NULL;
     m_aaTensorholder = NULL;
+    m_aaLayer        = NULL;
 
     m_OperatorDegree     = 0;
     m_TensorholderDegree = 0;
@@ -37,6 +38,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
 template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
     m_aaOperator     = new Container<Operator<DTYPE> *>();
     m_aaTensorholder = new Container<Tensorholder<DTYPE> *>();
+    m_aaLayer        = new Container<Layer<DTYPE> *>();
 
     return TRUE;
 }
@@ -47,26 +49,44 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
 
     if (m_aaOperator) {
         size = m_aaOperator->GetSize();
+        Operator<DTYPE> **OperatorContainer = m_aaOperator->GetRawData();
 
         for (int i = 0; i < size; i++) {
             if ((*m_aaOperator)[i]) {
-                delete (*m_aaOperator)[i];
-                m_aaOperator->SetElement(NULL, i);
+                delete OperatorContainer[i];
+                OperatorContainer[i] = NULL;
             }
         }
         delete m_aaOperator;
+        m_aaOperator = NULL;
     }
 
     if (m_aaTensorholder) {
         size = m_aaTensorholder->GetSize();
+        Tensorholder<DTYPE> **TensorholderContainer = m_aaTensorholder->GetRawData();
 
         for (int i = 0; i < size; i++) {
             if ((*m_aaTensorholder)[i]) {
-                delete (*m_aaTensorholder)[i];
-                m_aaTensorholder->SetElement(NULL, i);
+                delete TensorholderContainer[i];
+                TensorholderContainer[i] = NULL;
             }
         }
         delete m_aaTensorholder;
+        m_aaTensorholder = NULL;
+    }
+
+    if (m_aaLayer) {
+        size = m_aaLayer->GetSize();
+        Layer<DTYPE> **LayerContainer = m_aaLayer->GetRawData();
+
+        for (int i = 0; i < size; i++) {
+            if ((*m_aaLayer)[i]) {
+                delete LayerContainer[i];
+                LayerContainer[i] = NULL;
+            }
+        }
+        delete m_aaLayer;
+        m_aaLayer = NULL;
     }
 
     if (m_aObjective) {
@@ -93,6 +113,25 @@ template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddTensorhol
     m_aaTensorholder->Push(pTensorholder);
     m_TensorholderDegree++;
     return pTensorholder;
+}
+
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddLayer(Layer<DTYPE> *pLayer) {
+    int pNumOfOperator  = pLayer->GetNumOfOperator();
+    int pNumOfParameter = pLayer->GetNumOfParameter();
+
+    for (int i = 0; i < pNumOfOperator; i++) {
+        m_aaOperator->Push(pLayer->PopOperator());
+        m_OperatorDegree++;
+    }
+
+    for (int i = 0; i < pNumOfParameter; i++) {
+        m_aaTensorholder->Push(pLayer->PopParameter());
+        m_TensorholderDegree++;
+    }
+
+    m_aaLayer->Push(pLayer);
+
+    return m_aaOperator->GetLast();
 }
 
 template<typename DTYPE> Objective<DTYPE> *NeuralNetwork<DTYPE>::SetObjective(Objective<DTYPE> *pObjective) {

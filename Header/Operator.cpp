@@ -105,12 +105,11 @@ template<typename DTYPE> void Operator<DTYPE>::Delete() {
 
     if (m_aaResult) {
         size = m_aaResult->GetSize();
+        Tensor<DTYPE> **ResultContainer = m_aaResult->GetRawData();
 
         for (int i = 0; i < size; i++) {
-            if ((*m_aaResult)[i]) {
-                delete (*m_aaResult)[i];
-                m_aaResult->SetElement(NULL, i);
-            }
+            delete ResultContainer[i];
+            ResultContainer[i] = NULL;
         }
 
         delete m_aaResult;
@@ -133,11 +132,12 @@ template<typename DTYPE> void Operator<DTYPE>::Delete() {
 
     if (m_aaGradient) {
         size = m_aaGradient->GetSize();
+        Tensor<DTYPE> **GradientContainer = m_aaGradient->GetRawData();
 
         for (int i = 0; i < size; i++) {
             if ((*m_aaGradient)[i]) {
-                delete (*m_aaGradient)[i];
-                m_aaGradient->SetElement(NULL, i);
+                delete GradientContainer[i];
+                GradientContainer[i] = NULL;
             }
         }
 

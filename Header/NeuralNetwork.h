@@ -1,7 +1,7 @@
 #ifndef NEURALNETWORK_H_
 #define NEURALNETWORK_H_
 
-#include "Optimizer/GradientDescentOptimizer.h"
+#include "Layer_utils.h"
 
 template<typename DTYPE> class NeuralNetwork {
 private:
@@ -10,6 +10,8 @@ private:
 #endif  // if __CUDNN__
     Container<Operator<DTYPE> *> *m_aaOperator;
     Container<Tensorholder<DTYPE> *> *m_aaTensorholder;
+    Container<Layer<DTYPE> *> *m_aaLayer;
+    // Parameter
 
     int m_OperatorDegree;
     int m_TensorholderDegree;
@@ -29,6 +31,7 @@ public:
     // 추후 직접 변수를 만들지 않은 operator* + operator*의 변환 변수도 자동으로 할당될 수 있도록 Operator와 NN class를 수정해야 한다.
     Operator<DTYPE>    * AddOperator(Operator<DTYPE> *pOperator);
     Tensorholder<DTYPE>* AddTensorholder(Tensorholder<DTYPE> *pTensorholder);
+    Operator<DTYPE>    * AddLayer(Layer<DTYPE> *pLayer);
 
     Objective<DTYPE>   * SetObjective(Objective<DTYPE> *pObjective);
     Optimizer<DTYPE>   * SetOptimizer(Optimizer<DTYPE> *pOptimizer);
