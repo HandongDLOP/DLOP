@@ -10,7 +10,7 @@ template<typename DTYPE> class Operator {
 private:
     Container<Tensor<DTYPE> *> *m_aaResult;
     Container<Tensor<DTYPE> *> *m_aaGradient;
-    Container<Tensor<DTYPE> *> *m_aaDelta;
+    // Container<Tensor<DTYPE> *> *m_aaDelta;
 
     Container<Operator<DTYPE> *> *m_apOutput;
     Container<Operator<DTYPE> *> *m_apInput;

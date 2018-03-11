@@ -64,6 +64,11 @@ public:
         return element;
     }
 
+    int SetElement(DTYPE pElement, unsigned int index){
+        m_aElement[index] = pElement;
+        return TRUE;
+    }
+
     int GetSize() {
         // std::cout << "Container<DTYPE>::GetSize()" << '\n';
         return m_size;
@@ -76,6 +81,10 @@ public:
 
     DTYPE* GetRawData() const {
         return m_aElement;
+    }
+
+    DTYPE GetElement(unsigned int index){
+        return m_aElement[index];
     }
 
     DTYPE operator[](unsigned int index) {

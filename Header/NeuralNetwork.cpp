@@ -49,7 +49,10 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         size = m_aaOperator->GetSize();
 
         for (int i = 0; i < size; i++) {
-            delete (*m_aaOperator)[i];
+            if( (*m_aaOperator)[i]){
+                delete (*m_aaOperator)[i];
+                m_aaOperator->SetElement(NULL, i);
+            }
         }
         delete m_aaOperator;
     }
@@ -58,7 +61,10 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         size = m_aaTensorholder->GetSize();
 
         for (int i = 0; i < size; i++) {
-            delete (*m_aaTensorholder)[i];
+            if( (*m_aaTensorholder)[i]){
+                delete (*m_aaTensorholder)[i];
+                m_aaTensorholder->SetElement(NULL, i);
+            }
         }
         delete m_aaTensorholder;
     }
