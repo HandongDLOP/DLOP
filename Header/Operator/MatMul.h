@@ -35,7 +35,7 @@ public:
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *weight = this->GetInput()[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
-        result->Reset();
+        // result->Reset();
 
         int timesize    = result->GetTimeSize();
         int batchsize   = result->GetBatchSize();
@@ -78,9 +78,9 @@ public:
 
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-        input_delta->Reset();
+        // input_delta->Reset();
         Tensor<DTYPE> *weight_gradient = this->GetInput()[1]->GetGradient();
-        weight_gradient->Reset();
+        // weight_gradient->Reset();
 
         int timesize    = this_delta->GetTimeSize();
         int batchsize   = this_delta->GetBatchSize();

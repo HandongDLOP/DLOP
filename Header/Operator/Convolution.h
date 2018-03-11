@@ -176,7 +176,7 @@ public:
 
         Tensor<DTYPE> *result = this->GetResult();
         Shape *shapeOfResult  = result->GetShape();
-        result->Reset();
+        // result->Reset();
 
         int batchsize   = (*shapeOfResult)[1];
         int channelsize = (*shapeOfResult)[2];  // == shapeOfWeight[1]
@@ -339,12 +339,12 @@ public:
         Tensor<DTYPE> *input       = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
         Shape *shapeOfInput        = input->GetShape();
-        input_delta->Reset();
+        // input_delta->Reset();
 
         Tensor<DTYPE> *weight          = this->GetInput()[1]->GetResult();
         Tensor<DTYPE> *weight_gradient = this->GetInput()[1]->GetGradient();
         Shape *shapeOfWeight           = weight->GetShape();
-        weight_gradient->Reset();
+        // weight_gradient->Reset();
 
         Tensor<DTYPE> *this_delta = this->GetDelta();
         Shape *shapeOfResult      = this_delta->GetShape();

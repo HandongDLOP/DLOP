@@ -133,7 +133,7 @@ public:
 
         Tensor<DTYPE> *result = this->GetResult();
         Shape *shapeOfResult  = result->GetShape();
-        result->Reset();
+        // result->Reset();
 
         int batchsize   = (*shapeOfResult)[1];
         int channelsize = (*shapeOfResult)[2];  // == shapeOfWeight[1]
@@ -268,7 +268,7 @@ public:
 
     int ComputeBackPropagate() {
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-        input_delta->Reset();
+        // input_delta->Reset();
 
         Tensor<DTYPE> *this_delta = this->GetDelta();
         Shape *shapeOfDelta       = this_delta->GetShape();

@@ -112,9 +112,9 @@ public:
         // Tensor<float> *this_delta = Tensor<float>::Constants(1, 3, 4, 2, 2, 1.0);
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-        input_delta->Reset();
+        // input_delta->Reset();
         Tensor<DTYPE> *bias_delta = this->GetInput()[1]->GetDelta();
-        bias_delta->Reset();
+        // bias_delta->Reset();
 
         for (m_ti = 0; m_ti < m_timesize; m_ti++) {
             for (m_ba = 0; m_ba < m_batchsize; m_ba++) {

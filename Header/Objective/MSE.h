@@ -42,8 +42,8 @@ public:
         Tensor<DTYPE> *label    = this->GetLabel()->GetResult();
         Tensor<DTYPE> *result   = this->GetResult();
         Tensor<DTYPE> *gradient = this->GetGradient();
-        result->Reset();
-        gradient->Reset();
+        // result->Reset();
+        // gradient->Reset();
 
         int timesize  = input->GetTimeSize();
         int batchsize = input->GetBatchSize();

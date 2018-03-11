@@ -5,7 +5,7 @@
 #include "MNIST_Reader.h"
 
 #define BATCH             100
-#define EPOCH             1
+#define EPOCH             10
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
@@ -16,8 +16,8 @@ int main(int argc, char const *argv[]) {
     Tensorholder<float> *label = new Tensorholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // ======================= Select net ===================
-    // NeuralNetwork<float> *net = new my_CNN(x, label);
-    NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
+    NeuralNetwork<float> *net = new my_CNN(x, label);
+    // NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
     // NeuralNetwork<float> *net = new my_NN(x, label, isMLP);
 
     // ======================= Prepare Data ===================
@@ -35,10 +35,12 @@ int main(int argc, char const *argv[]) {
             x->SetTensor(dataset->GetTrainFeedImage());
             label->SetTensor(dataset->GetTrainFeedLabel());
 
-            net->Training();
             net->ResetParameterGradient();
+            net->Training();
+
             train_accuracy += net->GetAccuracy();
             train_avg_loss += net->GetLoss();
+
 
             printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f",
                    j + 1, LOOP_FOR_TRAIN,

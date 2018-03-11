@@ -57,8 +57,8 @@ public:
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
         Tensor<DTYPE> *result        = this->GetResult();
         Tensor<DTYPE> *gradient      = this->GetGradient();
-        result->Reset();
-        gradient->Reset();
+        // result->Reset();
+        // gradient->Reset();
 
         int timesize    = input->GetTimeSize();
         int batchsize   = input->GetBatchSize();
@@ -126,7 +126,7 @@ public:
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
 
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
-        input_delta->Reset();
+        // input_delta->Reset();
 
         int capacity = input_delta->GetCapacity();
 
