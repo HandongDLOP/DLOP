@@ -35,7 +35,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
-    m_aaOperator = new Container<Operator<DTYPE> *>();
+    m_aaOperator     = new Container<Operator<DTYPE> *>();
     m_aaTensorholder = new Container<Tensorholder<DTYPE> *>();
 
     return TRUE;
@@ -49,7 +49,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         size = m_aaOperator->GetSize();
 
         for (int i = 0; i < size; i++) {
-            if( (*m_aaOperator)[i]){
+            if ((*m_aaOperator)[i]) {
                 delete (*m_aaOperator)[i];
                 m_aaOperator->SetElement(NULL, i);
             }
@@ -61,7 +61,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         size = m_aaTensorholder->GetSize();
 
         for (int i = 0; i < size; i++) {
-            if( (*m_aaTensorholder)[i]){
+            if ((*m_aaTensorholder)[i]) {
                 delete (*m_aaTensorholder)[i];
                 m_aaTensorholder->SetElement(NULL, i);
             }
@@ -207,13 +207,16 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
 // =========
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::Training() {
-    ForwardPropagate();
+    this->ForwardPropagate();
     m_aObjective->ForwardPropagate();
 
     m_aObjective->BackPropagate();
-    BackPropagate();
+    this->BackPropagate();
 
     m_aOptimizer->UpdateVariable();
+
+    this->ResetOperatorResult();
+    this->ResetOperatorGradient();
 
     return TRUE;
 }
@@ -222,6 +225,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Testing() {
     ForwardPropagate();
     m_aObjective->ForwardPropagate();
 
+    this->ResetOperatorResult();
     return TRUE;
 }
 
@@ -230,5 +234,34 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Testing() {
 template<typename DTYPE> int NeuralNetwork<DTYPE>::CreateGraph() {
     // in this part, we can check dependency between operator
 
+    return TRUE;
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ResetOperatorResult() {
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        (*m_aaOperator)[i]->ResetResult();
+    }
+    return TRUE;
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ResetOperatorGradient() {
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        (*m_aaOperator)[i]->ResetGradient();
+    }
+    return TRUE;
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ResetObjectiveResult() {
+    m_aObjective->ResetResult();
+    return TRUE;
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ResetObjectiveGradient() {
+    m_aObjective->ResetGradient();
+    return TRUE;
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ResetParameterGradient() {
+    m_aOptimizer->ResetParameterGradient();
     return TRUE;
 }

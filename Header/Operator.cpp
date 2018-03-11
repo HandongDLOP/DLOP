@@ -6,8 +6,8 @@ template class Operator<double>;
 
 template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    m_aaResult            = NULL;
-    m_aaGradient          = NULL;
+    m_aaResult   = NULL;
+    m_aaGradient = NULL;
     // m_aaDelta             = NULL;
     m_apOutput            = NULL;
     m_apInput             = NULL;
@@ -21,8 +21,8 @@ template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
 
 template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std::string pName) {
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    m_aaResult            = NULL;
-    m_aaGradient          = NULL;
+    m_aaResult   = NULL;
+    m_aaGradient = NULL;
     // m_aaDelta             = NULL;
     m_apOutput            = NULL;
     m_apInput             = NULL;
@@ -36,8 +36,8 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std:
 
 template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) {
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    m_aaResult            = NULL;
-    m_aaGradient          = NULL;
+    m_aaResult   = NULL;
+    m_aaGradient = NULL;
     // m_aaDelta             = NULL;
     m_apOutput            = NULL;
     m_apInput             = NULL;
@@ -58,8 +58,8 @@ template<typename DTYPE> int Operator<DTYPE>::Alloc() {
     m_aaResult   = new Container<Tensor<DTYPE> *>();
     m_aaGradient = new Container<Tensor<DTYPE> *>();
     // m_aaDelta    = new Container<Tensor<DTYPE> *>();
-    m_apOutput   = new Container<Operator<DTYPE> *>();
-    m_apInput    = new Container<Operator<DTYPE> *>();
+    m_apOutput = new Container<Operator<DTYPE> *>();
+    m_apInput  = new Container<Operator<DTYPE> *>();
 
     return TRUE;
 }
@@ -71,8 +71,8 @@ template<typename DTYPE> int Operator<DTYPE>::Alloc(int numInput, ...) {
     m_aaResult   = new Container<Tensor<DTYPE> *>();
     m_aaGradient = new Container<Tensor<DTYPE> *>();
     // m_aaDelta    = new Container<Tensor<DTYPE> *>();
-    m_apOutput   = new Container<Operator<DTYPE> *>();
-    m_apInput    = new Container<Operator<DTYPE> *>();
+    m_apOutput = new Container<Operator<DTYPE> *>();
+    m_apInput  = new Container<Operator<DTYPE> *>();
 
     va_list ap;
     va_start(ap, numInput);
@@ -107,7 +107,7 @@ template<typename DTYPE> void Operator<DTYPE>::Delete() {
         size = m_aaResult->GetSize();
 
         for (int i = 0; i < size; i++) {
-            if((*m_aaResult)[i]){
+            if ((*m_aaResult)[i]) {
                 delete (*m_aaResult)[i];
                 m_aaResult->SetElement(NULL, i);
             }
@@ -118,24 +118,24 @@ template<typename DTYPE> void Operator<DTYPE>::Delete() {
     }
 
     // if (m_aaDelta) {
-    //     size = m_aaDelta->GetSize();
+    // size = m_aaDelta->GetSize();
     //
-    //     for (int i = 0; i < size; i++) {
-    //         if((*m_aaDelta)[i]){
-    //             delete (*m_aaDelta)[i];
-    //             m_aaDelta->SetElement(NULL, i);
-    //         }
-    //     }
+    // for (int i = 0; i < size; i++) {
+    // if((*m_aaDelta)[i]){
+    // delete (*m_aaDelta)[i];
+    // m_aaDelta->SetElement(NULL, i);
+    // }
+    // }
     //
-    //     delete m_aaDelta;
-    //     m_aaDelta = NULL;
+    // delete m_aaDelta;
+    // m_aaDelta = NULL;
     // }
 
     if (m_aaGradient) {
         size = m_aaGradient->GetSize();
 
         for (int i = 0; i < size; i++) {
-            if((*m_aaGradient)[i]){
+            if ((*m_aaGradient)[i]) {
                 delete (*m_aaGradient)[i];
                 m_aaGradient->SetElement(NULL, i);
             }
@@ -207,9 +207,9 @@ template<typename DTYPE> void Operator<DTYPE>::SetDelta(Tensor<DTYPE> *pTensor) 
 
     m_aaGradient->Push(pTensor);
     // if (m_aaDelta->GetSize()) {
-    //     Tensor<DTYPE> *temp = m_aaDelta->Pop();
-    //     delete temp;
-    //     temp = NULL;
+    // Tensor<DTYPE> *temp = m_aaDelta->Pop();
+    // delete temp;
+    // temp = NULL;
     // }
     //
     // m_aaDelta->Push(pTensor);
@@ -378,6 +378,26 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagate() {
 
 template<typename DTYPE> int Operator<DTYPE>::ComputeBackPropagate() {
     std::cout << this->GetName() << '\n';
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::ResetResult() {
+    int size = m_aaResult->GetSize();
+
+    for (int i = 0; i < size; i++) {
+        (*m_aaResult)[i]->Reset();
+    }
+
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::ResetGradient() {
+    int size = m_aaGradient->GetSize();
+
+    for (int i = 0; i < size; i++) {
+        (*m_aaGradient)[i]->Reset();
+    }
+
     return TRUE;
 }
 

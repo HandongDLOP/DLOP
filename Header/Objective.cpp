@@ -98,6 +98,18 @@ template<typename DTYPE> DTYPE& Objective<DTYPE>::operator[](unsigned int index)
     return (*m_aResult)[index];
 }
 
+template<typename DTYPE> int Objective<DTYPE>::ResetResult() {
+    m_aResult->Reset();
+
+    return TRUE;
+}
+
+template<typename DTYPE> int Objective<DTYPE>::ResetGradient() {
+    m_aGradient->Reset();
+
+    return TRUE;
+}
+
 // int main(int argc, char const *argv[]) {
 // Objective<int> *temp1 = new Objective<int>("temp1");
 // Objective<int> *temp2 = new Objective<int>(temp1, "temp2");

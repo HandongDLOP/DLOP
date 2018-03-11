@@ -58,3 +58,11 @@ template<typename DTYPE> float Optimizer<DTYPE>::GetLearningRate()  const {
 template<typename DTYPE> int Optimizer<DTYPE>::GetOptimizeDirection() const {
     return m_OptimizeDirection;
 }
+
+template<typename DTYPE> int Optimizer<DTYPE>::ResetParameterGradient() {
+    for (int i = 0; i < m_TrainableTensorDegree; i++) {
+        (*m_ppTrainableTensors)[i]->ResetGradient();
+    }
+
+    return TRUE;
+}

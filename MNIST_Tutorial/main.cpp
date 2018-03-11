@@ -36,6 +36,7 @@ int main(int argc, char const *argv[]) {
             label->SetTensor(dataset->GetTrainFeedLabel());
 
             net->Training();
+            net->ResetParameterGradient();
             train_accuracy += net->GetAccuracy();
             train_avg_loss += net->GetLoss();
 

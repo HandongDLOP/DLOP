@@ -48,6 +48,8 @@ public:
     float GetLearningRate() const;
 
     int   GetOptimizeDirection() const;
+
+    int   ResetParameterGradient();
 };
 
 #endif  // OPTIMIZER_H_

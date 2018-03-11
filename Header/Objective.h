@@ -50,6 +50,10 @@ public:
     virtual Tensor<DTYPE>* BackPropagate();
 
     DTYPE                & operator[](unsigned int index);
+
+    // reset value
+    int ResetResult();
+    int ResetGradient();
 };
 
 #endif  // Objective_H_

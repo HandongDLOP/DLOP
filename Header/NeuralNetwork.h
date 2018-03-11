@@ -62,6 +62,14 @@ public:
 
     int CreateGraph();
 
+    // reset value
+    int ResetOperatorResult();
+    int ResetOperatorGradient();
+
+    int ResetObjectiveResult();
+    int ResetObjectiveGradient();
+
+    int ResetParameterGradient();
 };
 
 #endif  // NEURALNETWORK_H_

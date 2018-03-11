@@ -87,6 +87,10 @@ public:
     // For BackPropagate
     int         BackPropagate();
     virtual int ComputeBackPropagate();
+
+    // reset value
+    int         ResetResult();
+    int         ResetGradient();
 };
 
 #endif  // OPERATOR_H_
