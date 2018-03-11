@@ -82,8 +82,12 @@ public:
     }
 
     int ComputeForwardPropagate() {
-        Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
-        Tensor<DTYPE> *bias   = this->GetInput()[1]->GetResult();
+        // Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
+        // Tensor<DTYPE> *bias   = this->GetInput()[1]->GetResult();
+        Container<Operator<DTYPE>*> *input_contatiner = this->GetInputContainer();
+        Tensor<DTYPE> *input = (*input_contatiner)[0]->GetResult();
+        Tensor<DTYPE> *bias = (*input_contatiner)[1]->GetResult();
+
         Tensor<DTYPE> *result = this->GetResult();
 
         for (m_ti = 0; m_ti < m_timesize; m_ti++) {
@@ -105,6 +109,7 @@ public:
     }
 
     int ComputeBackPropagate() {
+        // Tensor<float> *this_delta = Tensor<float>::Constants(1, 3, 4, 2, 2, 1.0);
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
         input_delta->Reset();

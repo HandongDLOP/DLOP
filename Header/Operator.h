@@ -66,10 +66,10 @@ public:
     Container<Tensor<DTYPE> *>  * GetDeltaContainer();
 
     Operator<DTYPE>            ** GetOutput();
-    Container<Operator<DTYPE> *>* GetOutputContatiner();
+    Container<Operator<DTYPE> *>* GetOutputContainer();
 
     Operator<DTYPE>            ** GetInput();
-    Container<Operator<DTYPE> *>* GetInputContatiner();
+    Container<Operator<DTYPE> *>* GetInputContainer();
 
     int                           GetOutputDegree() const;
     int                           GetInputDegree() const;

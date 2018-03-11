@@ -226,7 +226,7 @@ template<typename DTYPE> Operator<DTYPE> **Operator<DTYPE>::GetOutput() {
     return m_apOutput->GetRawData();
 }
 
-template<typename DTYPE> Container<Operator<DTYPE> *> *Operator<DTYPE>::GetOutputContatiner() {
+template<typename DTYPE> Container<Operator<DTYPE> *> *Operator<DTYPE>::GetOutputContainer() {
     return m_apOutput;
 }
 
@@ -234,7 +234,7 @@ template<typename DTYPE> Operator<DTYPE> **Operator<DTYPE>::GetInput() {
     return m_apInput->GetRawData();
 }
 
-template<typename DTYPE> Container<Operator<DTYPE> *> *Operator<DTYPE>::GetInputContatiner() {
+template<typename DTYPE> Container<Operator<DTYPE> *> *Operator<DTYPE>::GetInputContainer() {
     return m_apInput;
 }
 
