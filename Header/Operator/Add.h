@@ -3,6 +3,72 @@
 
 #include "..//Operator.h"
 
+template<typename DTYPE> class Addall : public Operator<DTYPE>{
+private:
+    int m_capacity;
+
+public:
+    Addall(Operator<DTYPE> *pLeftInput, Operator<DTYPE> *pRightInput, std::string pName) : Operator<DTYPE>(pLeftInput, pRightInput, pName) {
+        std::cout << "Addall::Addall(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
+        this->Alloc(pLeftInput, pRightInput);
+    }
+
+    ~Addall() {
+        std::cout << "Addall::~Addall()" << '\n';
+    }
+
+    int Alloc(Operator<DTYPE> *pLeftInput, Operator<DTYPE> *pRightInput) {
+        std::cout << "Addall::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
+
+        Shape *pInputTenShape = pLeftInput->GetResult()->GetShape();
+
+        int timesize    = (*pInputTenShape)[0];
+        int batchsize   = (*pInputTenShape)[1];
+        int channelsize = (*pInputTenShape)[2];
+        int rowsize     = (*pInputTenShape)[3];
+        int colsize     = (*pInputTenShape)[4];
+
+        m_capacity = pLeftInput->GetResult()->GetCapacity();
+
+        this->SetResult(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
+
+        this->SetDelta(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
+
+        return TRUE;
+    }
+
+    int ComputeForwardPropagate() {
+        // Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
+        // Tensor<DTYPE> *bias   = this->GetInput()[1]->GetResult();
+        Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
+
+        Tensor<DTYPE> *left_input  = (*input_contatiner)[0]->GetResult();
+        Tensor<DTYPE> *right_input = (*input_contatiner)[1]->GetResult();
+
+        Tensor<DTYPE> *result = this->GetResult();
+
+        for (int i = 0; i < m_capacity; i++) {
+            (*result)[i] = (*left_input)[i] + (*right_input)[i];
+        }
+
+        return TRUE;
+    }
+
+    int ComputeBackPropagate() {
+        // Tensor<DTYPE> *this_delta = Tensor<DTYPE>::Constants(1, 3, 4, 2, 2, 1.0);
+        Tensor<DTYPE> *this_delta  = this->GetDelta();
+        Tensor<DTYPE> *left_input_delta = this->GetInput()[0]->GetDelta();
+        Tensor<DTYPE> *right_input_delta = this->GetInput()[1]->GetDelta();
+
+        for (int i = 0; i < m_capacity; i++) {
+            (*left_input_delta)[i] += (*this_delta)[i];
+            (*right_input_delta)[i] += (*this_delta)[i];
+        }
+
+        return TRUE;
+    }
+};
+
 template<typename DTYPE> class Add : public Operator<DTYPE>{
 private:
     Shape *m_pInputTenShape;
@@ -84,9 +150,9 @@ public:
     int ComputeForwardPropagate() {
         // Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         // Tensor<DTYPE> *bias   = this->GetInput()[1]->GetResult();
-        Container<Operator<DTYPE>*> *input_contatiner = this->GetInputContainer();
-        Tensor<DTYPE> *input = (*input_contatiner)[0]->GetResult();
-        Tensor<DTYPE> *bias = (*input_contatiner)[1]->GetResult();
+        Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
+        Tensor<DTYPE> *input                           = (*input_contatiner)[0]->GetResult();
+        Tensor<DTYPE> *bias                            = (*input_contatiner)[1]->GetResult();
 
         Tensor<DTYPE> *result = this->GetResult();
 
@@ -109,7 +175,7 @@ public:
     }
 
     int ComputeBackPropagate() {
-        // Tensor<float> *this_delta = Tensor<float>::Constants(1, 3, 4, 2, 2, 1.0);
+        // Tensor<DTYPE> *this_delta = Tensor<DTYPE>::Constants(1, 3, 4, 2, 2, 1.0);
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
         // input_delta->Reset();

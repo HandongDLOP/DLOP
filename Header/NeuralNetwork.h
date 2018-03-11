@@ -61,6 +61,7 @@ public:
     // =======
 
     int CreateGraph();
+    int PrintGraphShape();
 
     // reset value
     int ResetOperatorResult();

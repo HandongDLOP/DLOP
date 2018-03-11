@@ -240,6 +240,15 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::CreateGraph() {
     return TRUE;
 }
 
+template<typename DTYPE> int NeuralNetwork<DTYPE>::PrintGraphShape() {
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        std::cout << (*m_aaOperator)[i]->GetName() << '\n';
+        std::cout << (*m_aaOperator)[i]->GetResult()->GetShape() << '\n';
+    }
+
+    return TRUE;
+}
+
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ResetOperatorResult() {
     for (int i = 0; i < m_OperatorDegree; i++) {
         (*m_aaOperator)[i]->ResetResult();

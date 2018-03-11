@@ -62,7 +62,7 @@ public:
         Operator<float> *weight = AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, pColSize_in, pColSize_out, 0.0, 0.1), "fc_weight" + pLayernum));
         Operator<float> *bias   = AddTensorholder(new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, pColSize_out, 0.1), "fc_bias" + pLayernum));
 
-        out = AddOperator(new MatMul<float>(pInput, weight, "fc_matmul" + pLayernum));
+        out = AddOperator(new BroadcastMatMul<float>(pInput, weight, "fc_matmul" + pLayernum));
         out = AddOperator(new Add<float>(out, bias, "fc_add" + pLayernum));
 
         if (pActivation) {

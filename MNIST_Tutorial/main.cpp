@@ -3,6 +3,7 @@
 #include "net//my_CNN.h"
 #include "net//my_NN.h"
 #include "MNIST_Reader.h"
+#include <time.h>
 
 #define BATCH             100
 #define EPOCH             10
@@ -16,8 +17,8 @@ int main(int argc, char const *argv[]) {
     Tensorholder<float> *label = new Tensorholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // ======================= Select net ===================
-    NeuralNetwork<float> *net = new my_CNN(x, label);
-    // NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
+    // NeuralNetwork<float> *net = new my_CNN(x, label);
+    NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
     // NeuralNetwork<float> *net = new my_NN(x, label, isMLP);
 
     // ======================= Prepare Data ===================
