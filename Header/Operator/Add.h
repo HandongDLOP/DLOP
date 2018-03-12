@@ -32,20 +32,17 @@ public:
 
         this->SetResult(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
 
-        this->SetDelta(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
+        this->SetGradient(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
 
         return TRUE;
     }
 
     int ComputeForwardPropagate() {
-        // Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
-        // Tensor<DTYPE> *bias   = this->GetInput()[1]->GetResult();
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *left_input  = (*input_contatiner)[0]->GetResult();
         Tensor<DTYPE> *right_input = (*input_contatiner)[1]->GetResult();
-
-        Tensor<DTYPE> *result = this->GetResult();
+        Tensor<DTYPE> *result      = this->GetResult();
 
         for (int i = 0; i < m_capacity; i++) {
             (*result)[i] = (*left_input)[i] + (*right_input)[i];
@@ -55,14 +52,15 @@ public:
     }
 
     int ComputeBackPropagate() {
-        // Tensor<DTYPE> *this_delta = Tensor<DTYPE>::Constants(1, 3, 4, 2, 2, 1.0);
-        Tensor<DTYPE> *this_delta  = this->GetDelta();
-        Tensor<DTYPE> *left_input_delta = this->GetInput()[0]->GetDelta();
-        Tensor<DTYPE> *right_input_delta = this->GetInput()[1]->GetDelta();
+        Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
+
+        Tensor<DTYPE> *left_input_grad  = (*input_contatiner)[0]->GetGradient();
+        Tensor<DTYPE> *right_input_grad = (*input_contatiner)[1]->GetGradient();
+        Tensor<DTYPE> *this_grad        = this->GetGradient();
 
         for (int i = 0; i < m_capacity; i++) {
-            (*left_input_delta)[i] += (*this_delta)[i];
-            (*right_input_delta)[i] += (*this_delta)[i];
+            (*left_input_grad)[i]  += (*this_grad)[i];
+            (*right_input_grad)[i] += (*this_grad)[i];
         }
 
         return TRUE;
@@ -142,18 +140,16 @@ public:
 
         this->SetResult(new Tensor<DTYPE>(m_timesize, m_batchsize, m_channelsize, m_rowsize, m_colsize));
 
-        this->SetDelta(new Tensor<DTYPE>(m_timesize, m_batchsize, m_channelsize, m_rowsize, m_colsize));
+        this->SetGradient(new Tensor<DTYPE>(m_timesize, m_batchsize, m_channelsize, m_rowsize, m_colsize));
 
         return TRUE;
     }
 
     int ComputeForwardPropagate() {
-        // Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
-        // Tensor<DTYPE> *bias   = this->GetInput()[1]->GetResult();
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
-        Tensor<DTYPE> *input                           = (*input_contatiner)[0]->GetResult();
-        Tensor<DTYPE> *bias                            = (*input_contatiner)[1]->GetResult();
 
+        Tensor<DTYPE> *input  = (*input_contatiner)[0]->GetResult();
+        Tensor<DTYPE> *bias   = (*input_contatiner)[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
         for (m_ti = 0; m_ti < m_timesize; m_ti++) {
@@ -170,34 +166,31 @@ public:
             }
         }
 
-
         return TRUE;
     }
 
     int ComputeBackPropagate() {
-        // Tensor<DTYPE> *this_delta = Tensor<DTYPE>::Constants(1, 3, 4, 2, 2, 1.0);
-        Tensor<DTYPE> *this_delta  = this->GetDelta();
-        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-        // input_delta->Reset();
-        Tensor<DTYPE> *bias_delta = this->GetInput()[1]->GetDelta();
-        // bias_delta->Reset();
+        Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
+
+        Tensor<DTYPE> *input_grad = (*input_contatiner)[0]->GetGradient();
+        Tensor<DTYPE> *bias_grad  = (*input_contatiner)[1]->GetGradient();
+        Tensor<DTYPE> *this_grad  = this->GetGradient();
 
         for (m_ti = 0; m_ti < m_timesize; m_ti++) {
             for (m_ba = 0; m_ba < m_batchsize; m_ba++) {
                 for (m_ch = 0; m_ch < m_channelsize; m_ch++) {
                     for (m_ro = 0; m_ro < m_rowsize; m_ro++) {
                         for (m_co = 0; m_co < m_colsize; m_co++) {
-                            (*input_delta)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
-                                += (*this_delta)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
+                            (*input_grad)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                                += (*this_grad)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
 
-                            (*bias_delta)[Index5D(m_pBiasTenShape, *m_ti_bias, *m_ba_bias, *m_ch_bias, *m_ro_bias, *m_co_bias)]
-                                += (*this_delta)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
+                            (*bias_grad)[Index5D(m_pBiasTenShape, *m_ti_bias, *m_ba_bias, *m_ch_bias, *m_ro_bias, *m_co_bias)]
+                                += (*this_grad)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
                         }
                     }
                 }
             }
         }
-
 
         return TRUE;
     }
