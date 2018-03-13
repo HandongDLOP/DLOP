@@ -50,7 +50,7 @@ public:
         int capacity               = result->GetCapacity();
 
         for (int i = 0; i < capacity; i++) {
-            (*input_delta)[i] = (*result)[i] * (1 - (*result)[i]) * (*this_delta)[i];
+            (*input_delta)[i] += (*result)[i] * (1 - (*result)[i]) * (*this_delta)[i];
         }
         return TRUE;
     }

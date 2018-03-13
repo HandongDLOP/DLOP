@@ -82,7 +82,7 @@ public:
                     for (int ro = 0; ro < m_rowsize; ro++) {
                         for (int co = 0; co < m_colsize; co++) {
                             (*input_grad)[Index5D(inputTenShape, ti, ba, ch, ro, co)]
-                                = (*this_grad)[Index5D(resultTenShape, ti, ba, ch, 0, 0)] / m_divisor;
+                                += (*this_grad)[Index5D(resultTenShape, ti, ba, ch, 0, 0)] / m_divisor;
                         }
                     }
                 }

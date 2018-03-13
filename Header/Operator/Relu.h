@@ -233,8 +233,8 @@ public:
 #else  // if __CUDNN__ is undefined
 
         for (int i = 0; i < capacity; i++) {
-            if ((*result)[i] > 0.0) (*input_delta)[i] = (*this_delta)[i];
-            else (*input_delta)[i] = 0;
+            if ((*result)[i] > 0.0) (*input_delta)[i] += (*this_delta)[i];
+            else (*input_delta)[i] += 0;
         }
 
 #endif  // if __CUDNN__

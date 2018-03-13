@@ -56,7 +56,7 @@ public:
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
 
         for (int i = 0; i < capacity; i++) {
-            (*input_delta)[i] = (*this_delta)[i];
+            (*input_delta)[i] += (*this_delta)[i];
         }
 
         return TRUE;
