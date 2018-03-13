@@ -19,7 +19,7 @@ public:
         Operator<float> *out = x;
 
         // ======================= layer 1======================
-        out = AddLayer(new _Layer::Linear<float>(out, 784, 10, TRUE, "1"));
+        out = AddLayer(new layer::Linear<float>(out, 784, 10, TRUE, "1"));
 
         // ======================= Select Objective Function ===================
         SetObjective(new SoftmaxCrossEntropy<float>(out, label, 0.000001, "SCE"));
@@ -34,12 +34,12 @@ public:
         Operator<float> *out = x;
 
         // ======================= layer 1======================
-        out = AddLayer(new _Layer::Linear<float>(out, 784, 15, TRUE, "1"));
+        out = AddLayer(new layer::Linear<float>(out, 784, 15, TRUE, "1"));
 
         out = AddOperator(new Sigmoid<float>(out, "Sigmoid"));
 
         // ======================= layer 2=======================
-        out = AddLayer(new _Layer::Linear<float>(out, 15, 10, TRUE, "2"));
+        out = AddLayer(new layer::Linear<float>(out, 15, 10, TRUE, "2"));
 
         // ======================= Select Objective Function ===================
         // SetObjective(new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE"));

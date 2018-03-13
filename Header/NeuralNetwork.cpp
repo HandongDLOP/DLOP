@@ -165,6 +165,10 @@ template<typename DTYPE> Container<Tensorholder<DTYPE> *> *NeuralNetwork<DTYPE>:
     return m_aaTensorholder;
 }
 
+template<typename DTYPE> Container<Tensorholder<DTYPE> *> *NeuralNetwork<DTYPE>::GetParameter() {
+    return m_aaTensorholder;
+}
+
 template<typename DTYPE> Objective<DTYPE> *NeuralNetwork<DTYPE>::GetObjective() {
     return m_aObjective;
 }

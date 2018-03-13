@@ -29,12 +29,12 @@ public:
         out = AddOperator(new Reshape<float>(out, 1, batch_size, 1, 1, 5 * 5 * 64, "Flat"));
 
         // ======================= layer 3=======================
-        out = AddLayer(new _Layer::Linear<float>(out, 5 * 5 * 64, 256, TRUE, "3"));
+        out = AddLayer(new layer::Linear<float>(out, 5 * 5 * 64, 256, TRUE, "3"));
 
         out = AddOperator(new Relu<float>(out, "Relu_3"));
 
         // ======================= layer 4=======================
-        out = AddLayer(new _Layer::Linear<float>(out, 256, 10, TRUE, "4"));
+        out = AddLayer(new layer::Linear<float>(out, 256, 10, TRUE, "4"));
 
         // ======================= Select Objective Function ===================
         SetObjective(new SoftmaxCrossEntropy<float>(out, label, 0.000001, "SCE"));

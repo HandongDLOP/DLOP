@@ -3,7 +3,7 @@
 
 #include "../Layer.h"
 
-namespace _Layer {
+namespace layer {
 template<typename DTYPE> class Linear : public Layer<DTYPE>{
 private:
 public:

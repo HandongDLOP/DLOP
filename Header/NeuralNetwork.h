@@ -43,6 +43,7 @@ public:
     Operator<DTYPE>                 * GetResult();
 
     Container<Tensorholder<DTYPE> *>* GetTensorholder();
+    Container<Tensorholder<DTYPE> *>* GetParameter();
 
     Objective<DTYPE>                * GetObjective();
     Optimizer<DTYPE>                * GetOptimizer();
