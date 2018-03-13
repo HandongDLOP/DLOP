@@ -15,12 +15,14 @@ public:
 
         // ======================= layer 1=======================
         out = AddLayer(new _Layer::_Convolution2D<float>(out, 1, 32, 3, 3, 1, 1, VALID, TRUE, "1"));
+        // out = AddLayer(new _Layer::_BatchNormalize<float>(out, TRUE, "1"));
         out = AddOperator(new Relu<float>(out, "Relu_1"));
         out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, VALID, "MaxPool_1"));
 
 
         // ======================= layer 2=======================
         out = AddLayer(new _Layer::_Convolution2D<float>(out, 32, 64, 3, 3, 1, 1, VALID, TRUE, "1"));
+        // out = AddLayer(new _Layer::_BatchNormalize<float>(out, TRUE, "1"));
         out = AddOperator(new Relu<float>(out, "Relu_2"));
         out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, VALID, "MaxPool_2"));
 
