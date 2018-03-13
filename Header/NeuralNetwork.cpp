@@ -119,25 +119,16 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddLayer(Layer<D
     int pNumOfOperator  = pLayer->GetNumOfOperator();
     int pNumOfParameter = pLayer->GetNumOfParameter();
 
-    Container<Operator<DTYPE> *> *pOperatorContainer = pLayer->GetOperatorContainer();
-    Container<Tensorholder<DTYPE> *> *pParameterContainer = pLayer->GetParameterContainer();
-
-    Operator<DTYPE> * out = NULL;
-    Tensorholder<DTYPE> * param = NULL;
-
-
     for (int i = 0; i < pNumOfOperator; i++) {
-        out = (*pOperatorContainer)[i];
-        m_aaOperator->Push(out);
-#if __CUDNN__
-        out->SetCudnnHandle(m_cudnnHandle);
-#endif  // if __CUDNN__
+        m_aaOperator->Push(pLayer->PopOperator());
         m_OperatorDegree++;
+#if __CUDNN__
+        (*m_aaOperator)[m_OperatorDegree - 1]->SetCudnnHandle(m_cudnnHandle);
+#endif  // if __CUDNN__
     }
 
     for (int i = 0; i < pNumOfParameter; i++) {
-        param = (*pParameterContainer)[i];
-        m_aaTensorholder->Push(param);
+        m_aaTensorholder->Push(pLayer->PopParameter());
         m_TensorholderDegree++;
     }
 

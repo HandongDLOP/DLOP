@@ -9,9 +9,6 @@ public:
     my_CNN(Tensorholder<float> *x, Tensorholder<float> *label) {
         Operator<float> *out = NULL;
 
-        // AddPlaceholder(x);
-        // AddPlaceholder(label);
-
         int batch_size = x->GetResult()->GetBatchSize();
 
         out = AddOperator(new Reshape<float>(x, 1, batch_size, 1, 28, 28, "reshape"));
@@ -27,7 +24,7 @@ public:
         out = AddLayer(new _Layer::Linear<float>(out, 5 * 5 * 64, 256, "Relu", TRUE, "3"));
 
         // ======================= layer 4=======================
-        out = AddLayer(new _Layer::Linear<float>(out, 256, 10, "Relu", FALSE, "4"));
+        out = AddLayer(new _Layer::Linear<float>(out, 256, 10, "No", TRUE, "4"));
 
 
         // ======================= Select Objective Function ===================

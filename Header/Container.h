@@ -47,10 +47,10 @@ public:
     }
 
     DTYPE Pop() {
-        DTYPE  element = m_aElement[m_size - 1];
+        DTYPE  element = m_aElement[0];
         DTYPE *temp    = new DTYPE[m_size - 1];
 
-        for (int i = 0; i < m_size - 1; i++) temp[i] = m_aElement[i];
+        for (int i = 1; i < m_size; i++) temp[i - 1] = m_aElement[i];
 
         if (m_aElement) {
             delete[] m_aElement;
@@ -64,7 +64,7 @@ public:
         return element;
     }
 
-    int SetElement(DTYPE pElement, unsigned int index){
+    int SetElement(DTYPE pElement, unsigned int index) {
         m_aElement[index] = pElement;
         return TRUE;
     }
@@ -83,7 +83,7 @@ public:
         return m_aElement;
     }
 
-    DTYPE GetElement(unsigned int index){
+    DTYPE GetElement(unsigned int index) {
         return m_aElement[index];
     }
 
