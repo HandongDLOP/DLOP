@@ -14,48 +14,33 @@ public:
         out = AddOperator(new Reshape<float>(x, 1, batch_size, 1, 28, 28, "reshape"));
 
         // ======================= layer 1=======================
-        out = AddConvLayer(out, 1, 32, "1");
+        out = AddLayer(new _Layer::_Convolution2D<float>(out, 1, 32, 3, 3, 1, 1, VALID, TRUE, "1"));
+        out = AddOperator(new Relu<float>(out, "Relu_1"));
+        out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, VALID, "MaxPool_1"));
+
 
         // ======================= layer 2=======================
-        out = AddConvLayer(out, 32, 64, "2");
-        out = AddOperator(new Reshape<float>(out, 1, batch_size, 1, 1, 5 * 5 * 64, "flat"));
+        out = AddLayer(new _Layer::_Convolution2D<float>(out, 32, 64, 3, 3, 1, 1, VALID, TRUE, "1"));
+        out = AddOperator(new Relu<float>(out, "Relu_2"));
+        out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, VALID, "MaxPool_2"));
+
+        out = AddOperator(new Reshape<float>(out, 1, batch_size, 1, 1, 5 * 5 * 64, "Flat"));
 
         // ======================= layer 3=======================
-        out = AddLayer(new Linear<float>(out, 5 * 5 * 64, 256, TRUE, "3"));
+        out = AddLayer(new _Layer::Linear<float>(out, 5 * 5 * 64, 256, TRUE, "3"));
 
-        out = AddOperator(new Relu<float>(out, "relu"));
+        out = AddOperator(new Relu<float>(out, "Relu_3"));
 
         // ======================= layer 4=======================
-        out = AddLayer(new Linear<float>(out, 256, 10, TRUE, "4"));
-
+        out = AddLayer(new _Layer::Linear<float>(out, 256, 10, TRUE, "4"));
 
         // ======================= Select Objective Function ===================
-        // Objective<float> *objective = new Objective<float>(out, label,"SCE");
-        Objective<float> *objective = new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE");
-        // Objective<float> *objective = new MSE<float>(out, label, "MSE");
-
-        SetObjective(objective);
+        SetObjective(new SoftmaxCrossEntropy<float>(out, label, 0.000001, "SCE"));
+        // SetObjective(new MSE<float>(out, label, "MSE"));
 
         // ======================= Select Optimizer ===================
-        Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE);
-
-        SetOptimizer(optimizer);
+        SetOptimizer(new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE));
     }
-
-    Operator<float>* AddConvLayer(Operator<float> *pInput, int pChannelSize_in, int pChannelSize_out, std::string pLayernum) {
-        Operator<float> *out = NULL;
-
-        Operator<float> *weight = AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, pChannelSize_out, pChannelSize_in, 3, 3, 0.0, 0.1), "conv_weight" + pLayernum));
-        Operator<float> *bias   = AddTensorholder(new Tensorholder<float>(Tensor<float>::Constants(1, 1, pChannelSize_out, 1, 1, 0.1), "conv_bias" + pLayernum));
-
-        out = AddOperator(new Convolution2D<float>(pInput, weight, 1, 1, 1, 1, VALID, "conv" + pLayernum));
-        out = AddOperator(new Add<float>(out, bias, "conv_add" + pLayernum));
-        out = AddOperator(new Relu<float>(out, "conv_relu" + pLayernum));
-        out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, VALID, "maxpool" + pLayernum));
-
-        return out;
-    }
-
 
     virtual ~my_CNN() {}
 };

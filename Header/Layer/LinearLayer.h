@@ -3,6 +3,7 @@
 
 #include "../Layer.h"
 
+namespace _Layer {
 template<typename DTYPE> class Linear : public Layer<DTYPE>{
 private:
 public:
@@ -26,5 +27,6 @@ public:
         return TRUE;
     }
 };
+}
 
 #endif  // __LINEAR_LAYER__

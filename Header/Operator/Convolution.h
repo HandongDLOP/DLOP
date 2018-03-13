@@ -20,14 +20,14 @@ private:
     int m_padding[2] = { 0, };
 
 public:
-    Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride0, int stride1, int stride2, int stride3) : Operator<DTYPE>(pInput, pWeight) {
+    Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride1, int stride2, int padding, std::string pName="NO NAME") : Operator<DTYPE>(pInput, pWeight, pName) {
     #if __CUDNN__
         createHandles();
     #endif  // if __CUDNN__
-        Alloc(pInput, pWeight, stride0, stride1, stride2, stride3);
+        Alloc(pInput, pWeight, 1, stride1, stride2, 1, padding);
     }
 
-    Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride0, int stride1, int stride2, int stride3, std::string pName) : Operator<DTYPE>(pInput, pWeight, pName) {
+    Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride0, int stride1, int stride2, int stride3, std::string pName="NO NAME") : Operator<DTYPE>(pInput, pWeight, pName) {
     #if __CUDNN__
         createHandles();
     #endif  // if __CUDNN__
