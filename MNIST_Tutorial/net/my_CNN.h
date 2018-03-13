@@ -21,10 +21,12 @@ public:
         out = AddOperator(new Reshape<float>(out, 1, batch_size, 1, 1, 5 * 5 * 64, "flat"));
 
         // ======================= layer 3=======================
-        out = AddLayer(new _Layer::Linear<float>(out, 5 * 5 * 64, 256, "Relu", TRUE, "3"));
+        out = AddLayer(new Linear<float>(out, 5 * 5 * 64, 256, TRUE, "3"));
+
+        out = AddOperator(new Relu<float>(out, "relu"));
 
         // ======================= layer 4=======================
-        out = AddLayer(new _Layer::Linear<float>(out, 256, 10, "No", TRUE, "4"));
+        out = AddLayer(new Linear<float>(out, 256, 10, TRUE, "4"));
 
 
         // ======================= Select Objective Function ===================

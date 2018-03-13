@@ -1,6 +1,5 @@
 #ifndef __LAYER__
-# define __LAYER__    value
-#endif  // ifndef __LAYER__
+#define __LAYER__    value
 
 #include "Optimizer_utils.h"
 
@@ -40,3 +39,5 @@ public:
     Operator<DTYPE>                 * PopOperator();
     Tensorholder<DTYPE>             * PopParameter();
 };
+
+#endif  // ifndef __LAYER__

@@ -19,7 +19,7 @@ public:
         Operator<float> *out = x;
 
         // ======================= layer 1======================
-        out = AddLayer(new _Layer::Linear<float>(out, 784, 10, "No", TRUE, "1"));
+        out = AddLayer(new Linear<float>(out, 784, 10, TRUE, "1"));
 
         // ======================= Select Objective Function ===================
         // Objective<float> *objective = new Objective<float>(out, label,"SCE");
@@ -38,10 +38,12 @@ public:
         Operator<float> *out = x;
 
         // ======================= layer 1======================
-        out = AddLayer(new _Layer::Linear<float>(out, 784, 15, "Sigmoid", TRUE, "1"));
+        out = AddLayer(new Linear<float>(out, 784, 15, TRUE, "1"));
+
+        out = AddOperator(new Sigmoid<float>(out, "Sigmoid"));
 
         // ======================= layer 2=======================
-        out = AddLayer(new _Layer::Linear<float>(out, 15, 10, "No", TRUE, "2"));
+        out = AddLayer(new Linear<float>(out, 15, 10, TRUE, "2"));
 
         // ======================= Select Objective Function ===================
         // Objective<float> *objective = new Objective<float>(out, label,"SCE");
