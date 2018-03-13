@@ -31,6 +31,7 @@ public:
     // 추후 직접 변수를 만들지 않은 operator* + operator*의 변환 변수도 자동으로 할당될 수 있도록 Operator와 NN class를 수정해야 한다.
     Operator<DTYPE>    * AddOperator(Operator<DTYPE> *pOperator);
     Tensorholder<DTYPE>* AddTensorholder(Tensorholder<DTYPE> *pTensorholder);
+    Tensorholder<DTYPE>* AddParameter(Tensorholder<DTYPE> *pTensorholder);
     Operator<DTYPE>    * AddLayer(Layer<DTYPE> *pLayer);
 
     Objective<DTYPE>   * SetObjective(Objective<DTYPE> *pObjective);

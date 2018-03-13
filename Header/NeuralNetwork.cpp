@@ -115,6 +115,12 @@ template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddTensorhol
     return pTensorholder;
 }
 
+template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddParameter(Tensorholder<DTYPE> *pTensorholder) {
+    m_aaTensorholder->Push(pTensorholder);
+    m_TensorholderDegree++;
+    return pTensorholder;
+}
+
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddLayer(Layer<DTYPE> *pLayer) {
     int pNumOfOperator  = pLayer->GetNumOfOperator();
     int pNumOfParameter = pLayer->GetNumOfParameter();

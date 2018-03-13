@@ -4,6 +4,7 @@
 #include "..//Operator.h"
 #include <cstdio>
 
+namespace op {
 template<typename DTYPE> class Convolution2D : public Operator<DTYPE>{
 private:
 #if __CUDNN__
@@ -20,14 +21,14 @@ private:
     int m_padding[2] = { 0, };
 
 public:
-    Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride1, int stride2, int padding, std::string pName="NO NAME") : Operator<DTYPE>(pInput, pWeight, pName) {
+    Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride1, int stride2, int padding, std::string pName = "NO NAME") : Operator<DTYPE>(pInput, pWeight, pName) {
     #if __CUDNN__
         createHandles();
     #endif  // if __CUDNN__
         Alloc(pInput, pWeight, 1, stride1, stride2, 1, padding);
     }
 
-    Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride0, int stride1, int stride2, int stride3, std::string pName="NO NAME") : Operator<DTYPE>(pInput, pWeight, pName) {
+    Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride0, int stride1, int stride2, int stride3, std::string pName = "NO NAME") : Operator<DTYPE>(pInput, pWeight, pName) {
     #if __CUDNN__
         createHandles();
     #endif  // if __CUDNN__
@@ -579,5 +580,5 @@ public:
         return TRUE;
     }
 };
-
+}
 #endif  // CONVOLUTION_H_

@@ -5,6 +5,7 @@
 
 #include <cmath>
 
+namespace op {
 template<typename DTYPE>
 class BatchNormalize : public Operator<DTYPE>{
 public:
@@ -448,5 +449,5 @@ private:
         return std::sqrt(base + 1e-6f);
     }
 };
-
+}
 #endif  // __BATCH_NORMALIZE__
