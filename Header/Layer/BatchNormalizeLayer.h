@@ -21,11 +21,13 @@ public:
         Tensorholder<DTYPE> *pBeta  = NULL;
 
         if (pIsChannelwise) {
-            int pNumInputChannel = (*pInputShape)[3];
+            int pNumInputChannel = (*pInputShape)[2];
             pGamma = this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Constants(1, 1, pNumInputChannel, 1, 1, 1.0), "BatchNormalize_Gamma_" + pName));
+            std::cout << pGamma->GetResult()->GetShape() << '\n';
             pBeta  = this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Zeros(1, 1, pNumInputChannel, 1, 1), "BatchNormalize_Beta_" + pName));
+            std::cout << pBeta->GetResult()->GetShape() << '\n';
         } else {
-            int pNumInputCol = (*pInputShape)[5];
+            int pNumInputCol = (*pInputShape)[4];
             pGamma = this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Constants(1, 1, 1, 1, pNumInputCol, 1.0), "BatchNormalize_Gamma_" + pName));
             pBeta  = this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Zeros(1, 1, 1, 1, pNumInputCol), "BatchNormalize_Beta_" + pName));
         }
