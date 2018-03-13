@@ -24,10 +24,11 @@ public:
         out = AddOperator(new Reshape<float>(out, 1, batch_size, 1, 1, 5 * 5 * 64, "flat"));
 
         // ======================= layer 3=======================
-        out = AddFullyConnectedLayer(out, 5 * 5 * 64, 256, "3");
+        out = AddLayer(new _Layer::Linear<float>(out, 5 * 5 * 64, 256, "Relu", TRUE, "3"));
 
         // ======================= layer 4=======================
-        out = AddFullyConnectedLayer(out, 256, 10, "4");
+        out = AddLayer(new _Layer::Linear<float>(out, 256, 10, "Relu", FALSE, "4"));
+
 
         // ======================= Select Objective Function ===================
         // Objective<float> *objective = new Objective<float>(out, label,"SCE");
@@ -56,17 +57,6 @@ public:
         return out;
     }
 
-    Operator<float>* AddFullyConnectedLayer(Operator<float> *pInput, int pColSize_in, int pColSize_out, std::string pLayernum) {
-        Operator<float> *out = NULL;
-
-        Operator<float> *weight = AddTensorholder(new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, pColSize_in, pColSize_out, 0.0, 0.1), "fc_weight" + pLayernum));
-        Operator<float> *bias   = AddTensorholder(new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, pColSize_out, 0.1), "fc_bias" + pLayernum));
-
-        out = AddOperator(new MatMul<float>(pInput, weight, "fc_matmul" + pLayernum));
-        out = AddOperator(new Add<float>(out, bias, "fc_add" + pLayernum));
-
-        return out;
-    }
 
     virtual ~my_CNN() {}
 };
