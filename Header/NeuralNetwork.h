@@ -63,19 +63,23 @@ public:
     int                               Training();
     int                               Testing();
 
-    // =======
+    // ============
+    void                              SetModeTraining();
+    void                              SetModeAccumulating();
+    void                              SetModeInferencing();
 
-    int CreateGraph();
-    int PrintGraphShape();
+    // =======
+    int                               CreateGraph();
+    int                               PrintGraphShape();
 
     // reset value
-    int ResetOperatorResult();
-    int ResetOperatorGradient();
+    int                               ResetOperatorResult();
+    int                               ResetOperatorGradient();
 
-    int ResetObjectiveResult();
-    int ResetObjectiveGradient();
+    int                               ResetObjectiveResult();
+    int                               ResetObjectiveGradient();
 
-    int ResetParameterGradient();
+    int                               ResetParameterGradient();
 };
 
 #endif  // NEURALNETWORK_H_

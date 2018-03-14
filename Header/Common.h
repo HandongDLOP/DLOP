@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <exception>
 #include <string>
+#include <cmath>
 
 // C header
 #include <stdio.h>

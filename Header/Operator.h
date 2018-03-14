@@ -6,6 +6,12 @@
 #define VALID    0
 #define SAME     1
 
+enum Mode {
+    TRAINING,
+    ACCUMULATING,
+    INFERENCING
+};
+
 template<typename DTYPE> class Operator {
 private:
     Container<Tensor<DTYPE> *> *m_aaResult;
@@ -91,6 +97,10 @@ public:
     // reset value
     int         ResetResult();
     int         ResetGradient();
+
+    virtual void SetModeTraining();
+    virtual void SetModeAccumulating();
+    virtual void SetModeInferencing();
 };
 
 #endif  // OPERATOR_H_

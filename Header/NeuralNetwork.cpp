@@ -286,6 +286,26 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Testing() {
 
 // =========
 
+template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeTraining() {
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        (*m_aaOperator)[i]->SetModeTraining();
+    }
+}
+
+template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeAccumulating() {
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        (*m_aaOperator)[i]->SetModeAccumulating();
+    }
+}
+
+template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeInferencing() {
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        (*m_aaOperator)[i]->SetModeInferencing();
+    }
+}
+
+// =========
+
 template<typename DTYPE> int NeuralNetwork<DTYPE>::CreateGraph() {
     // in this part, we can check dependency between operator
 

@@ -3,12 +3,10 @@
 
 #include "../Operator.h"
 
-#include <cmath>
-
 template<typename DTYPE>
 class BatchNormalize : public Operator<DTYPE>{
 public:
-    enum class Mode;
+    // enum class Mode;
 
     BatchNormalize(Operator<DTYPE> *pInput, Operator<DTYPE> *pScale, Operator<DTYPE> *pShift, int pIsChannelwise, std::string pName) : Operator<DTYPE>(pName) {
         std::cout << "BatchNormalize:: BatchNormalize( Operator< DTYPE>*, Operator< DTYPE>*, Operator< DTYPE>*, int, std:: string)" << '\n';
@@ -105,6 +103,7 @@ public:
     }
 
     void SetModeTraining() {
+        std::cout << "BatchNormalize::SetModeTraining()" << '\n';
         if (m_mode == Mode::ACCUMULATING) {
             ;
         } else if (m_mode == Mode::INFERENCING) {
@@ -116,6 +115,7 @@ public:
     }
 
     void SetModeAccumulating() {
+        std::cout << "BatchNormalize::SetModeAccumulating()" << '\n';
         if (m_mode == Mode::TRAINING) {
             m_numBatch = 0;
 
@@ -131,6 +131,7 @@ public:
     }
 
     void SetModeInferencing() {
+        std::cout << "BatchNormalize::SetModeInferencing()" << '\n';
         if ((m_mode == Mode::ACCUMULATING) && (m_numBatch > 0)) {
             ComputeTotalSummary();
             ReplaceTransform();
@@ -140,11 +141,11 @@ public:
         m_mode = Mode::INFERENCING;
     }
 
-    enum class Mode {
-        TRAINING,
-        ACCUMULATING,
-        INFERENCING
-    };
+    // enum class Mode {
+    //     TRAINING,
+    //     ACCUMULATING,
+    //     INFERENCING
+    // };
 
 private:
     Tensor<DTYPE> *m_pTenInput;

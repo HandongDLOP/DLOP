@@ -401,78 +401,17 @@ template<typename DTYPE> int Operator<DTYPE>::ResetGradient() {
     return TRUE;
 }
 
-// template<typename DTYPE> Operator<DTYPE> *Operator<DTYPE>::Concatenate(Operator<DTYPE> *src, Operator<DTYPE> *dst, int axis) {
-// switch (axis) {
-// case 0: return Concatenate0(src, dst);  // break;
-// case 1: return Concatenate1(src, dst);  // break;
-// case 2: return Concatenate2(src, dst);  // break;
-// default:
-// printf("Receive invalid axis value in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
-// return FALSE;
-// }
-// }
-//
-// template<typename DTYPE> int IsSameDim(Operator<DTYPE> *src, Operator<DTYPE> *dst) {
-// if ((src->GetResult()->GetTimeSize() != dst->GetResult()->GetTimeSize())  // src->GetResult()->GetChannelSize() != dst->GetResult()->GetChannelSize() ||
-// || (src->GetResult()->GetRowSize() != dst->GetResult()->GetRowSize()) || (src->GetResult()->GetColSize() != dst->GetResult()->GetColSize())) {
-// printf("Receive invalid tensor in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
-// return FALSE;
-// }
-//
-// return TRUE;
-// }
+template<typename DTYPE> void Operator<DTYPE>::SetModeTraining() {
+    std::cout << "Operator<DTYPE>::SetModeTraining()" << '\n';
+}
 
-// \sigma(n_i) * ch_1 * h * w
-// template<typename DTYPE> Operator<DTYPE>* Concatenate0(Operator<DTYPE> *src, Operator<DTYPE> *dst) {
-// if (IsSameDim(src, dst)) {
-// int batch = src->GetResult()->GetBatchSize();
-// }
-// }
-//
-//// n_1 * \sigma(ch_i) * h * w
-// template<typename DTYPE> Operator<DTYPE>* Concatenate1(Operator<DTYPE> *src, Operator<DTYPE> *dst) {
-// if (IsSameDim(src, dst)) {}
-// }
-//
-////
-// template<typename DTYPE> Operator<DTYPE>* Concatenate2(Operator<DTYPE> *src1, Operator<DTYPE> *src2) {
-// if (IsSameDim(src1, src2)) {
-// Operator<DTYPE> *concat = new Operator<DTYPE>("concat");
-//
-// Tensor<DTYPE> *srcTensor1 = src1->GetResult();
-// Tensor<DTYPE> *srcTensor2 = src2->GetResult();
-// Tensor<DTYPE> *srcDelta1  = src1->GetDelta();
-// Tensor<DTYPE> *srcDelta2  = src2->GetDelta();
-//
-// int t          = srcTensor1->GetTimeSize();
-// int b          = srcTensor1->GetBatchSize();
-// int newChannel = srcTensor1->GetChannelSize() + srcTensor2->GetChannelSize();
-// int r          = srcTensor1->GetRowSize();
-// int c          = srcTensor1->GetColSize();
-//
-// Tensor<DTYPE> *newTensor = new Tensor<DTYPE>(t, b, newChannel, r, c);
-// Tensor<DTYPE> *newDelta  = new Tensor<DTYPE>(t, b, newChannel, r, c);
-//
-// int i            = 0;
-// int srcCapacity1 = src1->GetResult()->GetCapacity();
-// int newCapacity  = newTensor->GetCapacity();
-//
-// for (i = 0; i < srcCapacity1; i++) {
-// (*newTensor)[i] = (*srcTensor1)[i];
-// (*newDelta)[i]  = (*srcDelta1)[i];
-// }
-//
-// for (i = srcCapacity1; i < newCapacity; i++) {
-// (*newTensor)[i] = (*srcTensor2)[i - srcCapacity1];
-// (*newDelta)[i]  = (*srcDelta2)[i - srcCapacity1];
-// }
-//
-// concat->SetResult(newTensor);
-// concat->SetDelta(newDelta);
-//
-// return concat;
-// }
-// }
+template<typename DTYPE> void Operator<DTYPE>::SetModeAccumulating() {
+    std::cout << "Operator<DTYPE>::SetModeAccumulating()" << '\n';
+}
+
+template<typename DTYPE> void Operator<DTYPE>::SetModeInferencing() {
+    std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
+}
 
 // int main(int argc, char const *argv[]) {
 // Operator<int> *temp1 = new Operator<int>("temp1");

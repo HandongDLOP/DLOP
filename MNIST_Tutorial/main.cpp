@@ -18,10 +18,10 @@ int main(int argc, char const *argv[]) {
     Tensorholder<float> *label = new Tensorholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // ======================= Select net ===================
-    // NeuralNetwork<float> *net = new my_CNN(x, label);
+    NeuralNetwork<float> *net = new my_CNN(x, label);
     // NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
     // NeuralNetwork<float> *net = new my_NN(x, label, isMLP);
-    NeuralNetwork<float> *net = Resnet14<float>(x, label);
+    // NeuralNetwork<float> *net = Resnet14<float>(x, label);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
@@ -35,6 +35,7 @@ int main(int argc, char const *argv[]) {
         float train_accuracy = 0.f;
         float train_avg_loss = 0.f;
 
+        net->SetModeTraining();
         for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
             dataset->CreateTrainDataPair(BATCH);
             x->SetTensor(dataset->GetTrainFeedImage());
@@ -62,6 +63,7 @@ int main(int argc, char const *argv[]) {
         float test_accuracy = 0.f;
         float test_avg_loss = 0.f;
 
+        net->SetModeInferencing();
         for (int j = 0; j < (int)LOOP_FOR_TEST; j++) {
             dataset->CreateTestDataPair(BATCH);
             x->SetTensor(dataset->GetTestFeedImage());
