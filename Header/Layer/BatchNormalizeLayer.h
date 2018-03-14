@@ -16,9 +16,7 @@ public:
         Operator<DTYPE> *out = pInput;
 
         Tensorholder<DTYPE> *pGamma = this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Constants(1, 1, pNumOfChannel, 1, 1, 1.0), "BatchNormalize_Gamma_" + pName));
-        std::cout << pGamma->GetResult()->GetShape() << '\n';
         Tensorholder<DTYPE> *pBeta = this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Zeros(1, 1, pNumOfChannel, 1, 1), "BatchNormalize_Beta_" + pName));
-        std::cout << pBeta->GetResult()->GetShape() << '\n';
 
         out = this->AddOperator(new BatchNormalize<DTYPE>(out, pGamma, pBeta, TRUE, "BatchNormalize_BatchNormalize_" + pName));
 
