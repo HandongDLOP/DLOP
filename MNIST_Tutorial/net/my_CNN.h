@@ -14,27 +14,27 @@ public:
         out = AddOperator(new Reshape<float>(x, 1, batch_size, 1, 28, 28, "reshape"));
 
         // ======================= layer 1=======================
-        out = AddLayer(new layer::Convolution2D<float>(out, 1, 32, 3, 3, 1, 1, VALID, FALSE, "1"));
-        out = AddLayer(new layer::BatchNormalize2D<float>(out, 32, "1"));
+        out = AddLayer(new ConvolutionLayer2D<float>(out, 1, 32, 3, 3, 1, 1, VALID, FALSE, "1"));
+        out = AddLayer(new BatchNormalizeLayer2D<float>(out, 32, "1"));
         out = AddOperator(new Relu<float>(out, "Relu_1"));
         out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, VALID, "MaxPool_1"));
 
 
         // ======================= layer 2=======================
-        out = AddLayer(new layer::Convolution2D<float>(out, 32, 64, 3, 3, 1, 1, VALID, FALSE, "1"));
-        out = AddLayer(new layer::BatchNormalize2D<float>(out, 64, "1"));
+        out = AddLayer(new ConvolutionLayer2D<float>(out, 32, 64, 3, 3, 1, 1, VALID, FALSE, "1"));
+        out = AddLayer(new BatchNormalizeLayer2D<float>(out, 64, "1"));
         out = AddOperator(new Relu<float>(out, "Relu_2"));
         out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, VALID, "MaxPool_2"));
 
         out = AddOperator(new Reshape<float>(out, 1, batch_size, 1, 1, 5 * 5 * 64, "Flat"));
 
         // ======================= layer 3=======================
-        out = AddLayer(new layer::Linear<float>(out, 5 * 5 * 64, 256, TRUE, "3"));
+        out = AddLayer(new Linear<float>(out, 5 * 5 * 64, 256, TRUE, "3"));
 
         out = AddOperator(new Relu<float>(out, "Relu_3"));
 
         // ======================= layer 4=======================
-        out = AddLayer(new layer::Linear<float>(out, 256, 10, TRUE, "4"));
+        out = AddLayer(new Linear<float>(out, 256, 10, TRUE, "4"));
 
         // ======================= Select Objective Function ===================
         SetObjective(new SoftmaxCrossEntropy<float>(out, label, 0.000001, "SCE"));

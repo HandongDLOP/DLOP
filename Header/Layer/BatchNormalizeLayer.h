@@ -3,15 +3,14 @@
 
 #include "../Layer.h"
 
-namespace layer {
-template<typename DTYPE> class BatchNormalize2D : public Layer<DTYPE>{
+template<typename DTYPE> class BatchNormalizeLayer2D : public Layer<DTYPE>{
 private:
 public:
-    BatchNormalize2D(Operator<DTYPE> *pInput, int pNumOfChannel, std::string pName = "NO NAME") {
+    BatchNormalizeLayer2D(Operator<DTYPE> *pInput, int pNumOfChannel, std::string pName = "NO NAME") {
         Alloc(pInput, pNumOfChannel, pName);
     }
 
-    virtual ~BatchNormalize2D() {}
+    virtual ~BatchNormalizeLayer2D() {}
 
     int Alloc(Operator<DTYPE> *pInput, int pNumOfChannel, std::string pName) {
         Operator<DTYPE> *out = pInput;
@@ -21,20 +20,20 @@ public:
         Tensorholder<DTYPE> *pBeta = this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Zeros(1, 1, pNumOfChannel, 1, 1), "BatchNormalize_Beta_" + pName));
         std::cout << pBeta->GetResult()->GetShape() << '\n';
 
-        out = this->AddOperator(new op::BatchNormalize<DTYPE>(out, pGamma, pBeta, TRUE, "BatchNormalize_BatchNormalize_" + pName));
+        out = this->AddOperator(new BatchNormalize<DTYPE>(out, pGamma, pBeta, TRUE, "BatchNormalize_BatchNormalize_" + pName));
 
         return TRUE;
     }
 };
 
-template<typename DTYPE> class BatchNormalize : public Layer<DTYPE>{
+template<typename DTYPE> class BatchNormalizeLayer : public Layer<DTYPE>{
 private:
 public:
-    BatchNormalize(Operator<DTYPE> *pInput, int pIsChannelwise = FALSE, std::string pName = "NO NAME") {
+    BatchNormalizeLayer(Operator<DTYPE> *pInput, int pIsChannelwise = FALSE, std::string pName = "NO NAME") {
         Alloc(pInput, pIsChannelwise, pName);
     }
 
-    virtual ~BatchNormalize() {}
+    virtual ~BatchNormalizeLayer() {}
 
     int Alloc(Operator<DTYPE> *pInput, int pIsChannelwise, std::string pName) {
         Operator<DTYPE> *out = pInput;
@@ -55,12 +54,11 @@ public:
             pBeta  = this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Zeros(1, 1, 1, 1, pNumInputCol), "BatchNormalize_Beta_" + pName));
         }
 
-        out = this->AddOperator(new op::BatchNormalize<DTYPE>(out, pGamma, pBeta, pIsChannelwise, "BatchNormalize_BatchNormalize_" + pName));
+        out = this->AddOperator(new BatchNormalize<DTYPE>(out, pGamma, pBeta, pIsChannelwise, "BatchNormalize_BatchNormalize_" + pName));
 
         return TRUE;
     }
 };
-}
 
 
 #endif  // __BATCH_NORMALIZE_LAYER__

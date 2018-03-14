@@ -4,7 +4,6 @@
 #include "..//Operator.h"
 #include <cstdio>
 
-namespace op {
 template<typename DTYPE> class Convolution2D : public Operator<DTYPE>{
 private:
 #if __CUDNN__
@@ -580,5 +579,4 @@ public:
         return TRUE;
     }
 };
-}
 #endif  // CONVOLUTION_H_
