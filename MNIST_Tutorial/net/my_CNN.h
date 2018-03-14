@@ -9,9 +9,7 @@ public:
     my_CNN(Tensorholder<float> *x, Tensorholder<float> *label) {
         Operator<float> *out = NULL;
 
-        int batch_size = x->GetResult()->GetBatchSize();
-
-        out = AddOperator(new Reshape<float>(x, 1, batch_size, 1, 28, 28, "reshape"));
+        out = AddOperator(new Reshape<float>(x, 28, 28, "reshape"));
 
         // ======================= layer 1=======================
         out = AddLayer(new ConvolutionLayer2D<float>(out, 1, 32, 3, 3, 1, 1, VALID, FALSE, "1"));
@@ -26,7 +24,7 @@ public:
         out = AddOperator(new Relu<float>(out, "Relu_2"));
         out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, VALID, "MaxPool_2"));
 
-        out = AddOperator(new Reshape<float>(out, 1, batch_size, 1, 1, 5 * 5 * 64, "Flat"));
+        out = AddOperator(new Reshape<float>(out, 1, 1, 5 * 5 * 64, "Flat"));
 
         // ======================= layer 3=======================
         out = AddLayer(new Linear<float>(out, 5 * 5 * 64, 256, TRUE, "3"));

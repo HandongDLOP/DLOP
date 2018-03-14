@@ -110,7 +110,7 @@ public:
 
         // Reshape
         int batch_size = out->GetResult()->GetBatchSize();
-        out = this->AddOperator(new Reshape<DTYPE>(out, 1, batch_size, 1, 28, 28, "reshape"));
+        out = this->AddOperator(new Reshape<DTYPE>(out, 28, 28, "reshape"));
 
         // 1
         out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, 1, m_numInputChannel, 1, 1, 1, 1, VALID, FALSE, "BasicBlock_Conv1"));
@@ -123,7 +123,7 @@ public:
 
         out = this->AddOperator(new GlobalAvaragePooling2D<DTYPE>(out, "Avg Pooling"));
 
-        out = this->AddOperator(new Reshape<DTYPE>(out, 1, batch_size, 1, 1, 512, "reshape"));
+        out = this->AddOperator(new Reshape<DTYPE>(out, 1, 1, 512, "reshape"));
 
         out = this->AddLayer(new Linear<DTYPE>(out, 512, pNumOfClass, TRUE, "Classification"));
 
