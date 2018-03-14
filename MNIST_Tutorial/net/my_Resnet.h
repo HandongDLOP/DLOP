@@ -2,7 +2,6 @@
 
 template<typename DTYPE> class BasicBlock : public Layer<DTYPE>{
 private:
-    int m_expansion;
 
 public:
     BasicBlock(Operator<DTYPE> *pInput, int pNumInputChannel, int pNumOutputChannel, int pStride = 1) {
@@ -163,5 +162,5 @@ public:
 };
 
 template<typename DTYPE> NeuralNetwork<DTYPE>* Resnet14(Tensorholder<DTYPE> *pInput, Tensorholder<DTYPE> *pLabel) {
-    return new ResNet<DTYPE>(pInput, pLabel, "BasicBlock", 2, 2, 2, 0, 10);
+    return new ResNet<DTYPE>(pInput, pLabel, "BasicBlock", 2, 2, 2, 2, 10);
 }
