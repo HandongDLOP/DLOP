@@ -87,16 +87,16 @@ public:
     // Operator<DTYPE>             * Concatenate(Operator<DTYPE> *src, Operator<DTYPE> *dst, int axis = 0);
 
     // For Propagate
-    int         ForwardPropagate();
-    virtual int ComputeForwardPropagate();
+    int          ForwardPropagate();
+    virtual int  ComputeForwardPropagate();
 
     // For BackPropagate
-    int         BackPropagate();
-    virtual int ComputeBackPropagate();
+    int          BackPropagate();
+    virtual int  ComputeBackPropagate();
 
     // reset value
-    int         ResetResult();
-    int         ResetGradient();
+    int          ResetResult();
+    int          ResetGradient();
 
     virtual void SetModeTraining();
     virtual void SetModeAccumulating();

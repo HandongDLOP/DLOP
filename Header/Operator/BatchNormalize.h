@@ -63,12 +63,12 @@ public:
     }
 
     int ComputeForwardPropagate() {
-        if (m_mode == Mode::INFERENCING) {
+        if (m_mode == INFERENCING) {
             Transform(m_pTenInput);
         } else {
             ComputeBatchSummary();
 
-            if (m_mode == Mode::ACCUMULATING) {
+            if (m_mode == ACCUMULATING) {
                 Accumulate();
             }
             Normalize();
@@ -134,45 +134,45 @@ public:
     }
 
     void SetModeTraining() {
-        std::cout << "BatchNormalize::SetModeTraining()" << '\n';
+        // std::cout << "BatchNormalize::SetModeTraining()" << '\n';
 
-        if (m_mode == Mode::ACCUMULATING) {
+        if (m_mode == ACCUMULATING) {
             ;
-        } else if (m_mode == Mode::INFERENCING) {
+        } else if (m_mode == INFERENCING) {
             RestoreTransform();
         } else {
             return;
         }
-        m_mode = Mode::TRAINING;
+        m_mode = TRAINING;
     }
 
     void SetModeAccumulating() {
-        std::cout << "BatchNormalize::SetModeAccumulating()" << '\n';
+        // std::cout << "BatchNormalize::SetModeAccumulating()" << '\n';
 
-        if (m_mode == Mode::TRAINING) {
+        if (m_mode == TRAINING) {
             m_numBatch = 0;
 
             m_aTenTotalMean->Reset();
             m_aTenTotalStandardDeviation->Reset();
-        } else if (m_mode == Mode::INFERENCING) {
+        } else if (m_mode == INFERENCING) {
             RestoreTransform();
             RestoreAccumulation();
         } else {
             return;
         }
-        m_mode = Mode::ACCUMULATING;
+        m_mode = ACCUMULATING;
     }
 
     void SetModeInferencing() {
-        std::cout << "BatchNormalize::SetModeInferencing()" << '\n';
+        // std::cout << "BatchNormalize::SetModeInferencing()" << '\n';
 
-        if ((m_mode == Mode::ACCUMULATING) && (m_numBatch > 0)) {
+        if ((m_mode == ACCUMULATING) && (m_numBatch > 0)) {
             ComputeTotalSummary();
             ReplaceTransform();
         } else {
             return;
         }
-        m_mode = Mode::INFERENCING;
+        m_mode = INFERENCING;
     }
 
     // enum class Mode {
@@ -279,7 +279,7 @@ private:
         m_aTenTotalMean->Reset();
         m_aTenTotalStandardDeviation->Reset();
 
-        m_mode     = Mode::TRAINING;
+        m_mode     = TRAINING;
         m_numBatch = 0;
     }
 

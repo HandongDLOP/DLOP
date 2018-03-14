@@ -42,7 +42,7 @@ public:
         out = AddLayer(new Linear<float>(out, 15, 10, TRUE, "2"));
 
         // ======================= Select Objective Function ===================
-        // SetObjective(new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE"));
+        // SetObjective(new SoftmaxCrossEntropy<float>(out, label, "SCE"));
         SetObjective(new MSE<float>(out, label, "MSE"));
 
         // ======================= Select Optimizer ===================

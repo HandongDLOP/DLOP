@@ -104,7 +104,7 @@ public:
     virtual ~ResNet() {}
 
     int Alloc(Tensorholder<DTYPE> *pInput, Tensorholder<DTYPE> *pLabel, std::string pBlockType, int pNumOfBlock1, int pNumOfBlock2, int pNumOfBlock3, int pNumOfBlock4, int pNumOfClass) {
-        m_numInputChannel = 16;
+        m_numInputChannel = 64;
 
         Operator<DTYPE> *out = pInput;
 
@@ -113,21 +113,22 @@ public:
         out = this->AddOperator(new Reshape<DTYPE>(out, 1, batch_size, 1, 28, 28, "reshape"));
 
         // 1
-        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, 1, 16, 1, 1, 1, 1, VALID, FALSE, "BasicBlock_Conv1"));
-        out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, 16, "BasicBlock_BN1"));
+        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, 1, m_numInputChannel, 1, 1, 1, 1, VALID, FALSE, "BasicBlock_Conv1"));
+        out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, m_numInputChannel, "BasicBlock_BN1"));
 
-        out = this->MakeLayer(out, 16, pBlockType, pNumOfBlock1, 1);
-        out = this->MakeLayer(out, 32, pBlockType, pNumOfBlock2, 2);
-        out = this->MakeLayer(out, 64, pBlockType, pNumOfBlock3, 2);
+        out = this->MakeLayer(out, m_numInputChannel, pBlockType, pNumOfBlock1, 1);
+        out = this->MakeLayer(out, 128, pBlockType, pNumOfBlock2, 2);
+        out = this->MakeLayer(out, 256, pBlockType, pNumOfBlock3, 2);
+        out = this->MakeLayer(out, 512, pBlockType, pNumOfBlock3, 2);
 
         out = this->AddOperator(new GlobalAvaragePooling2D<DTYPE>(out, "Avg Pooling"));
 
-        out = this->AddOperator(new Reshape<DTYPE>(out, 1, batch_size, 1, 1, 64, "reshape"));
+        out = this->AddOperator(new Reshape<DTYPE>(out, 1, batch_size, 1, 1, 512, "reshape"));
 
-        out = this->AddLayer(new Linear<DTYPE>(out, 64, pNumOfClass, TRUE, "Classification"));
+        out = this->AddLayer(new Linear<DTYPE>(out, 512, pNumOfClass, TRUE, "Classification"));
 
         // ======================= Select Objective Function ===================
-        this->SetObjective(new SoftmaxCrossEntropy<float>(out, pLabel, 0.000001, "SCE"));
+        this->SetObjective(new SoftmaxCrossEntropy<float>(out, pLabel, "SCE"));
         // SetObjective(new MSE<float>(out, label, "MSE"));
 
         // ======================= Select Optimizer ===================

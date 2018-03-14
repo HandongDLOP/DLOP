@@ -402,15 +402,15 @@ template<typename DTYPE> int Operator<DTYPE>::ResetGradient() {
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetModeTraining() {
-    std::cout << "Operator<DTYPE>::SetModeTraining()" << '\n';
+    // std::cout << "Operator<DTYPE>::SetModeTraining()" << '\n';
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetModeAccumulating() {
-    std::cout << "Operator<DTYPE>::SetModeAccumulating()" << '\n';
+    // std::cout << "Operator<DTYPE>::SetModeAccumulating()" << '\n';
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetModeInferencing() {
-    std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
+    // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
 }
 
 // int main(int argc, char const *argv[]) {
