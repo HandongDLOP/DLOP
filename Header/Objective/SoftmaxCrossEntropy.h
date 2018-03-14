@@ -10,7 +10,7 @@ private:
     DTYPE m_epsilon;  // for backprop
 
 public:
-    SoftmaxCrossEntropy(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, DTYPE epsilon = 1e-2, std::string pName = "NO NAME") : Objective<DTYPE>(pOperator, pLabel, pName) {
+    SoftmaxCrossEntropy(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, DTYPE epsilon = 1e-6f, std::string pName = "NO NAME") : Objective<DTYPE>(pOperator, pLabel, pName) {
         std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
         Alloc(pOperator, epsilon);
     }

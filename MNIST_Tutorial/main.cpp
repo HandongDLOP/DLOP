@@ -18,10 +18,10 @@ int main(int argc, char const *argv[]) {
     Tensorholder<float> *label = new Tensorholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // ======================= Select net ===================
-    NeuralNetwork<float> *net = new my_CNN(x, label);
+    // NeuralNetwork<float> *net = new my_CNN(x, label);
     // NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
     // NeuralNetwork<float> *net = new my_NN(x, label, isMLP);
-    // NeuralNetwork<float> *net = Resnet14<float>(x, label);
+    NeuralNetwork<float> *net = Resnet14<float>(x, label);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
@@ -36,6 +36,27 @@ int main(int argc, char const *argv[]) {
         float train_avg_loss = 0.f;
 
         net->SetModeTraining();
+        for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
+            dataset->CreateTrainDataPair(BATCH);
+            x->SetTensor(dataset->GetTrainFeedImage());
+            label->SetTensor(dataset->GetTrainFeedLabel());
+
+            net->ResetParameterGradient();
+            net->Training();
+
+            train_accuracy += net->GetAccuracy();
+            train_avg_loss += net->GetLoss();
+
+
+            printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f",
+                   j + 1, LOOP_FOR_TRAIN,
+                   train_avg_loss / (j + 1),
+                   train_accuracy / (j + 1));
+            fflush(stdout);
+        }
+        std::cout << '\n';
+
+        net->SetModeAccumurating();
         for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
             dataset->CreateTrainDataPair(BATCH);
             x->SetTensor(dataset->GetTrainFeedImage());

@@ -17,18 +17,49 @@ public:
     ~BatchNormalize() {
         std::cout << "BatchNormalize:: ~ BatchNormalize()" << '\n';
 
-        delete m_aBatchSummaryShape;
+        Delete();
+    }
 
-        delete m_aTenNormalizedInput;
+    void Delete() {
+        if (m_aBatchSummaryShape) {
+            delete m_aBatchSummaryShape;
+            m_aBatchSummaryShape = NULL;
+        }
 
-        delete m_aTenBatchMean;
-        delete m_aTenBatchStandardDeviation;
+        if (m_aTenNormalizedInput) {
+            delete m_aTenNormalizedInput;
+            m_aTenNormalizedInput = NULL;
+        }
 
-        delete m_aTenDerBatchMean;
-        delete m_aTenDerBatchStandardDeviation;
+        if (m_aTenBatchMean) {
+            delete m_aTenBatchMean;
+            m_aTenBatchMean = NULL;
+        }
 
-        delete m_aTenTotalMean;
-        delete m_aTenTotalStandardDeviation;
+        if (m_aTenBatchStandardDeviation) {
+            delete m_aTenBatchStandardDeviation;
+            m_aTenBatchStandardDeviation = NULL;
+        }
+
+        if (m_aTenDerBatchMean) {
+            delete m_aTenDerBatchMean;
+            m_aTenDerBatchMean = NULL;
+        }
+
+        if (m_aTenDerBatchStandardDeviation) {
+            delete m_aTenDerBatchStandardDeviation;
+            m_aTenDerBatchStandardDeviation = NULL;
+        }
+
+        if (m_aTenTotalMean) {
+            delete m_aTenTotalMean;
+            m_aTenTotalMean = NULL;
+        }
+
+        if (m_aTenTotalStandardDeviation) {
+            delete m_aTenTotalStandardDeviation;
+            m_aTenTotalStandardDeviation = NULL;
+        }
     }
 
     int ComputeForwardPropagate() {
@@ -104,6 +135,7 @@ public:
 
     void SetModeTraining() {
         std::cout << "BatchNormalize::SetModeTraining()" << '\n';
+
         if (m_mode == Mode::ACCUMULATING) {
             ;
         } else if (m_mode == Mode::INFERENCING) {
@@ -116,6 +148,7 @@ public:
 
     void SetModeAccumulating() {
         std::cout << "BatchNormalize::SetModeAccumulating()" << '\n';
+
         if (m_mode == Mode::TRAINING) {
             m_numBatch = 0;
 
@@ -132,6 +165,7 @@ public:
 
     void SetModeInferencing() {
         std::cout << "BatchNormalize::SetModeInferencing()" << '\n';
+
         if ((m_mode == Mode::ACCUMULATING) && (m_numBatch > 0)) {
             ComputeTotalSummary();
             ReplaceTransform();
@@ -142,9 +176,9 @@ public:
     }
 
     // enum class Mode {
-    //     TRAINING,
-    //     ACCUMULATING,
-    //     INFERENCING
+    // TRAINING,
+    // ACCUMULATING,
+    // INFERENCING
     // };
 
 private:
