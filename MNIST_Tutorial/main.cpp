@@ -36,6 +36,7 @@ int main(int argc, char const *argv[]) {
         float train_avg_loss = 0.f;
 
         net->SetModeTraining();
+
         for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
             dataset->CreateTrainDataPair(BATCH);
             x->SetTensor(dataset->GetTrainFeedImage());
@@ -56,7 +57,11 @@ int main(int argc, char const *argv[]) {
         }
         std::cout << '\n';
 
+        float accum_accuracy = 0.f;
+        float accum_avg_loss = 0.f;
+
         net->SetModeAccumulating();
+
         for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
             dataset->CreateTrainDataPair(BATCH);
             x->SetTensor(dataset->GetTrainFeedImage());
@@ -65,14 +70,14 @@ int main(int argc, char const *argv[]) {
             net->ResetParameterGradient();
             net->Training();
 
-            train_accuracy += net->GetAccuracy();
-            train_avg_loss += net->GetLoss();
+            accum_accuracy += net->GetAccuracy();
+            accum_avg_loss += net->GetLoss();
 
 
-            printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f",
+            printf("\rAccumulating complete percentage is %d / %d -> loss : %f, acc : %f",
                    j + 1, LOOP_FOR_TRAIN,
-                   train_avg_loss / (j + 1),
-                   train_accuracy / (j + 1));
+                   accum_avg_loss / (j + 1),
+                   accum_accuracy / (j + 1));
             fflush(stdout);
         }
         std::cout << '\n';
@@ -85,6 +90,7 @@ int main(int argc, char const *argv[]) {
         float test_avg_loss = 0.f;
 
         net->SetModeInferencing();
+
         for (int j = 0; j < (int)LOOP_FOR_TEST; j++) {
             dataset->CreateTestDataPair(BATCH);
             x->SetTensor(dataset->GetTestFeedImage());
