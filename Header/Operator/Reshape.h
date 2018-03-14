@@ -6,8 +6,22 @@
 template<typename DTYPE>
 class Reshape : public Operator<DTYPE>{
 private:
-
 public:
+    Reshape(Operator<DTYPE> *pInput, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
+        std::cout << "Reshape::Reshape(Operator *)" << '\n';
+        this->Alloc(pInput, 0, 0, 0, pRowSize, pColSize);
+    }
+
+    Reshape(Operator<DTYPE> *pInput, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
+        std::cout << "Reshape::Reshape(Operator *)" << '\n';
+        this->Alloc(pInput, 0, 0, pChannelSize, pRowSize, pColSize);
+    }
+
+    Reshape(Operator<DTYPE> *pInput, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
+        std::cout << "Reshape::Reshape(Operator *)" << '\n';
+        this->Alloc(pInput, 0, pBatchSize, pChannelSize, pRowSize, pColSize);
+    }
+
     Reshape(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
         std::cout << "Reshape::Reshape(Operator *)" << '\n';
         this->Alloc(pInput, pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
@@ -22,6 +36,13 @@ public:
     int Alloc(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
         std::cout << "Reshape::Alloc(Operator *, Operator *)" << '\n';
 
+        Shape * pInputShape =  pInput->GetResult()->GetShape();
+
+        if(pTimeSize == 0) pTimeSize =  (*pInputShape)[0];
+        if(pBatchSize == 0) pBatchSize =  (*pInputShape)[1];
+        if(pChannelSize == 0) pChannelSize =  (*pInputShape)[2];
+
+
         Tensor<DTYPE> *result = new Tensor<DTYPE>(pInput->GetResult());
         result->Reshape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
 
@@ -32,11 +53,9 @@ public:
         return TRUE;
     }
 
-    void Delete() {
+    void Delete() {}
 
-    }
-
-    int ComputeForwardPropagate() {
+    int  ComputeForwardPropagate() {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
