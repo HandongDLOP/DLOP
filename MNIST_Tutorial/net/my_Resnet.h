@@ -61,7 +61,7 @@ public:
         Operator<DTYPE> *out      = pInput;
 
         // 1
-        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, pNumInputChannel, pNumOutputChannel, 1, 1, pStride, pStride, VALID, FALSE, "BasicBlock_Conv1"));
+        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, pNumInputChannel, pNumOutputChannel, 1, 1, pStride, pStride, SAME, FALSE, "BasicBlock_Conv1"));
         out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN1"));
 
         out = this->AddOperator(new Relu<DTYPE>(out, "BasicBlock_Relu1"));
@@ -113,7 +113,7 @@ public:
         out = this->AddOperator(new Reshape<DTYPE>(out, 28, 28, "reshape"));
 
         // 1
-        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, 1, m_numInputChannel, 1, 1, 1, 1, VALID, FALSE, "BasicBlock_Conv1"));
+        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, 1, m_numInputChannel, 1, 1, 1, 1, SAME, FALSE, "BasicBlock_Conv1"));
         out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, m_numInputChannel, "BasicBlock_BN1"));
 
         out = this->MakeLayer(out, m_numInputChannel, pBlockType, pNumOfBlock1, 1);
