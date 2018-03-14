@@ -56,7 +56,7 @@ int main(int argc, char const *argv[]) {
         }
         std::cout << '\n';
 
-        net->SetModeAccumurating();
+        net->SetModeAccumulating();
         for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
             dataset->CreateTrainDataPair(BATCH);
             x->SetTensor(dataset->GetTrainFeedImage());
