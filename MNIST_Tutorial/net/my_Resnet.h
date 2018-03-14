@@ -47,39 +47,39 @@ private:
     int m_expansion;
 
 public:
-    Bottleneck(Operator<DTYPE> *pInput, int pNumInputChannel, int pNumOutputChannel, int pStride = 1, int pExpansion = 1) {
-        Alloc(pInput, pNumInputChannel, pNumOutputChannel, pStride, pExpansion);
+    Bottleneck(Operator<DTYPE> *pInput, int pNumInputChannel, int pNumOfChannel, int pStride = 1, int pExpansion = 1) {
+        Alloc(pInput, pNumInputChannel, pNumOfChannel, pStride, pExpansion);
     }
 
     virtual ~Bottleneck() {}
 
-    int Alloc(Operator<DTYPE> *pInput, int pNumInputChannel, int pNumOutputChannel, int pStride, int pExpansion) {
+    int Alloc(Operator<DTYPE> *pInput, int pNumInputChannel, int pNumOfChannel, int pStride, int pExpansion) {
         m_expansion = pExpansion;
 
         Operator<DTYPE> *remember = pInput;
         Operator<DTYPE> *out      = pInput;
 
         // 1
-        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, pNumInputChannel, pNumOutputChannel, 1, 1, pStride, pStride, SAME, FALSE, "BasicBlock_Conv1"));
-        out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN1"));
+        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, pNumInputChannel, pNumOfChannel, 1, 1, pStride, pStride, SAME, FALSE, "BasicBlock_Conv1"));
+        out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, pNumOfChannel, "BasicBlock_BN1"));
 
         out = this->AddOperator(new Relu<DTYPE>(out, "BasicBlock_Relu1"));
 
         // 2
-        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, pNumOutputChannel, pNumOutputChannel, 3, 3, 1, 1, SAME, FALSE, "BasicBlock_Conv1"));
-        out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN1"));
+        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, pNumOfChannel, pNumOfChannel, 3, 3, 1, 1, SAME, FALSE, "BasicBlock_Conv1"));
+        out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, pNumOfChannel, "BasicBlock_BN1"));
 
         out = this->AddOperator(new Relu<DTYPE>(out, "BasicBlock_Relu1"));
 
         // 3
-        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, pNumOutputChannel, m_expansion * pNumOutputChannel, 3, 3, 1, 1, SAME, FALSE, "BasicBlock_Conv1"));
-        out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, m_expansion * pNumOutputChannel, "BasicBlock_BN1"));
+        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, pNumOfChannel, m_expansion * pNumOfChannel, 3, 3, 1, 1, SAME, FALSE, "BasicBlock_Conv1"));
+        out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, m_expansion * pNumOfChannel, "BasicBlock_BN1"));
 
         // ShortCut
         if
-        ((pStride != 1) || (pNumInputChannel != m_expansion * pNumOutputChannel)) {
-            remember = this->AddLayer(new ConvolutionLayer2D<DTYPE>(remember, pNumInputChannel, m_expansion * pNumOutputChannel, 3, 3, pStride, pStride, SAME, FALSE, "BasicBlock_Conv1"));
-            remember = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(remember, m_expansion * pNumOutputChannel, "BasicBlock_BN1"));
+        ((pStride != 1) || (pNumInputChannel != m_expansion * pNumOfChannel)) {
+            remember = this->AddLayer(new ConvolutionLayer2D<DTYPE>(remember, pNumInputChannel, m_expansion * pNumOfChannel, 3, 3, pStride, pStride, SAME, FALSE, "BasicBlock_Conv1"));
+            remember = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(remember, m_expansion * pNumOfChannel, "BasicBlock_BN1"));
         }
 
         out = this->AddOperator(new Add<DTYPE>(remember, out, "ResNet_Skip_Add"));
