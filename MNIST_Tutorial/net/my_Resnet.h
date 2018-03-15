@@ -127,7 +127,7 @@ public:
         // SetObjective(new MSE<float>(out, label, "MSE"));
 
         // ======================= Select Optimizer ===================
-        this->SetOptimizer(new GradientDescentOptimizer<float>(this->GetTensorholder(), 0.001, MINIMIZE));
+        this->SetOptimizer(new GradientDescentOptimizer<float>(this->GetTensorholder(), 0.0001, MINIMIZE));
 
         return TRUE;
     }
