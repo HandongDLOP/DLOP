@@ -218,7 +218,7 @@ public:
         checkCudaErrors(cudaMemcpy(hostInputDelta, pDevInputDelta, (inputDeltaCapacity * sizeof(float)), cudaMemcpyDeviceToHost));
 
         for (int i = 0; i < inputDeltaCapacity; i++) {
-            (*input_delta)[i] = hostInputDelta[i];
+            (*input_delta)[i] += hostInputDelta[i];
         }
 
         delete[] hostInput;

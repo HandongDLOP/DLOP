@@ -496,11 +496,11 @@ public:
         checkCudaErrors(cudaMemcpy(hostFilter, pDevFilter, (filterCapacity) * sizeof(float), cudaMemcpyDeviceToHost));
 
         for (int i = 0; i < inputDeltaCapacity; i++) {
-            (*input_delta)[i] = hostInputDelta[i];
+            (*input_delta)[i] += hostInputDelta[i];
         }
 
         for (int i = 0; i < filterCapacity; i++) {
-            (*weight_gradient)[i] = hostFilter[i];
+            (*weight_gradient)[i] += hostFilter[i];
         }
 
         if (dataSizeInBytes != 0) {
