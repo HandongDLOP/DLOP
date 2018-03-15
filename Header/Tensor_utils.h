@@ -1,13 +1,13 @@
 #include "Tensor.h"
 
 template<typename DTYPE> std::ostream & operator<<(std::ostream& pOS, Tensor<DTYPE> pTensor) {
-    int timesize    = pTensor->GetTimeSize();
-    int batchsize   = pTensor->GetBatchSize();
-    int channelsize = pTensor->GetChannelSize();
-    int rowsize     = pTensor->GetRowSize();
-    int colsize     = pTensor->GetColSize();
+    int timesize    = pTensor.GetTimeSize();
+    int batchsize   = pTensor.GetBatchSize();
+    int channelsize = pTensor.GetChannelSize();
+    int rowsize     = pTensor.GetRowSize();
+    int colsize     = pTensor.GetColSize();
 
-    Shape *shape = pTensor->GetShape();
+    Shape *shape = pTensor.GetShape();
 
     pOS.precision(4);
 
@@ -27,10 +27,10 @@ template<typename DTYPE> std::ostream & operator<<(std::ostream& pOS, Tensor<DTY
 
                     for (int co = 0; co < colsize; co++) {
                         if (co != colsize - 1) {
-                            pOS << "\t\t" << (*pTensor)[Index5D(shape, ti, ba, ch, ro, co)] << ", ";
+                            pOS << "\t\t" << pTensor[Index5D(shape, ti, ba, ch, ro, co)] << ", ";
                         }
                         else {
-                            pOS << "\t\t" << (*pTensor)[Index5D(shape, ti, ba, ch, ro, co)];
+                            pOS << "\t\t" << pTensor[Index5D(shape, ti, ba, ch, ro, co)];
                         }
                     }
 
