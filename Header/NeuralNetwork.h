@@ -80,6 +80,9 @@ public:
     int                               ResetObjectiveGradient();
 
     int                               ResetParameterGradient();
+
+    // debug
+    Operator<DTYPE>                 * SerchOperator(std::string pName);
 };
 
 #endif  // NEURALNETWORK_H_

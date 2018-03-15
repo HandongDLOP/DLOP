@@ -349,3 +349,14 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::ResetParameterGradient() {
     m_aOptimizer->ResetParameterGradient();
     return TRUE;
 }
+
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::SerchOperator(std::string pName) {
+    std::string name = NULL;
+
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        name = (*m_aaOperator)[i]->GetName();
+        if(name == pName) return (*m_aaOperator)[i];
+    }
+
+    return NULL;
+}
