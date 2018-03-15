@@ -12,3 +12,5 @@
 #include "Operator/Avgpooling.h"
 
 #include "Operator/BatchNormalize.h"
+#include "Operator/Recurrent.h"
+#include "Operator/Tanh.h"

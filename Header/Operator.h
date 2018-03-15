@@ -34,6 +34,9 @@ public:
     Operator(std::string pName = "NO NAME");
     Operator(Operator<DTYPE> *pInput, std::string pName = "NO NAME");
     Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName = "NO NAME");
+    // -------
+    Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, Operator<DTYPE> *pInput2, Operator<DTYPE> *pInput3, Operator<DTYPE> *pInput4, Operator<DTYPE> *pInput5, Operator<DTYPE> *pInput6, std::string pName = "NO NAME");
+    // -------
     virtual ~Operator();
 
     virtual int                   Alloc();
