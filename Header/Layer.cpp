@@ -12,6 +12,7 @@ template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) {
 
     m_numOfOperator  = 0;
     m_numOfParameter = 0;
+    m_numOfLayer     = 0;
     m_name           = pName;
     Alloc();
 }
