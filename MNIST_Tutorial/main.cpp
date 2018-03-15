@@ -7,7 +7,7 @@
 #include <time.h>
 
 #define BATCH             100
-#define EPOCH             10
+#define EPOCH             100
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
@@ -21,7 +21,7 @@ int main(int argc, char const *argv[]) {
     // NeuralNetwork<float> *net = new my_CNN(x, label);
     // NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
     // NeuralNetwork<float> *net = new my_NN(x, label, isMLP);
-    NeuralNetwork<float> *net = Resnet14<float>(x, label);
+    // NeuralNetwork<float> *net = Resnet14<float>(x, label);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
@@ -48,7 +48,6 @@ int main(int argc, char const *argv[]) {
             train_accuracy += net->GetAccuracy();
             train_avg_loss += net->GetLoss();
 
-
             printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f",
                    j + 1, LOOP_FOR_TRAIN,
                    train_avg_loss / (j + 1),
@@ -67,12 +66,9 @@ int main(int argc, char const *argv[]) {
             x->SetTensor(dataset->GetTrainFeedImage());
             label->SetTensor(dataset->GetTrainFeedLabel());
 
-            net->ResetParameterGradient();
             net->Testing();
-
             accum_accuracy += net->GetAccuracy();
             accum_avg_loss += net->GetLoss();
-
 
             printf("\rAccumulating complete percentage is %d / %d -> loss : %f, acc : %f",
                    j + 1, LOOP_FOR_TRAIN,
