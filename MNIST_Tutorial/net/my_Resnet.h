@@ -2,41 +2,39 @@
 
 template<typename DTYPE> class BasicBlock : public Layer<DTYPE>{
 private:
-
 public:
-    BasicBlock(Operator<DTYPE> *pInput, int pNumInputChannel, int pNumOutputChannel, int pStride = 1) {
-        Alloc(pInput, pNumInputChannel, pNumOutputChannel, pStride);
+    BasicBlock(Operator<DTYPE> *pInput, int pNumInputChannel, int pNumOutputChannel, int pStride = 1, std::string pName = NULL) {
+        Alloc(pInput, pNumInputChannel, pNumOutputChannel, pStride, pName);
     }
 
     virtual ~BasicBlock() {}
 
-    int Alloc(Operator<DTYPE> *pInput, int pNumInputChannel, int pNumOutputChannel, int pStride) {
+    int Alloc(Operator<DTYPE> *pInput, int pNumInputChannel, int pNumOutputChannel, int pStride, std::string pName) {
         Operator<DTYPE> *remember = pInput;
         Operator<DTYPE> *out      = pInput;
 
         // 1
-        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, pNumInputChannel, pNumOutputChannel, 3, 3, pStride, pStride, SAME, FALSE, "BasicBlock_Conv1"));
-        out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN1"));
+        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, pNumInputChannel, pNumOutputChannel, 3, 3, pStride, pStride, SAME, FALSE, "BasicBlock_Conv1" + pName));
+        out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN1" + pName));
 
-        out = this->AddOperator(new Relu<DTYPE>(out, "BasicBlock_Relu1"));
+        out = this->AddOperator(new Relu<DTYPE>(out, "BasicBlock_Relu1" + pName));
 
         // 2
-        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, pNumOutputChannel, pNumOutputChannel, 3, 3, 1, 1, SAME, FALSE, "BasicBlock_Conv1"));
-        out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN1"));
+        out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, pNumOutputChannel, pNumOutputChannel, 3, 3, 1, 1, SAME, FALSE, "BasicBlock_Conv2" + pName));
+        out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN2" + pName));
 
         // ShortCut
-        if
-        ((pStride != 1) || (pNumInputChannel != pNumOutputChannel)) {
-            remember = this->AddLayer(new ConvolutionLayer2D<DTYPE>(remember, pNumInputChannel, pNumOutputChannel, 3, 3, pStride, pStride, SAME, FALSE, "BasicBlock_Conv1"));
-            remember = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(remember, pNumOutputChannel, "BasicBlock_BN1"));
+        if ((pStride != 1) || (pNumInputChannel != pNumOutputChannel)) {
+            remember = this->AddLayer(new ConvolutionLayer2D<DTYPE>(remember, pNumInputChannel, pNumOutputChannel, 3, 3, pStride, pStride, SAME, FALSE, "BasicBlock_Conv_Shortcut" + pName));
+            remember = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(remember, pNumOutputChannel, "BasicBlock_BN_Shortcut" + pName));
         }
 
         // Add (for skip Connection)
-        out = this->AddOperator(new Add<DTYPE>(remember, out, "ResNet_Skip_Add"));
-        // out = this->AddOperator(new Addall<DTYPE>(pInput, out, "ResNet_Skip_Add"));
+        out = this->AddOperator(new Add<DTYPE>(remember, out, "ResNet_Skip_Add" + pName));
+        // out = this->AddOperator(new Addall<DTYPE>(remember, out, "ResNet_Skip_Add"));
 
         // Last Relu
-        out = this->AddOperator(new Relu<DTYPE>(out, "BasicBlock_Relu1"));
+        out = this->AddOperator(new Relu<DTYPE>(out, "BasicBlock_Relu2" + pName));
 
         return TRUE;
     }
@@ -76,8 +74,7 @@ public:
         out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, m_expansion * pNumOfChannel, "BasicBlock_BN1"));
 
         // ShortCut
-        if
-        ((pStride != 1) || (pNumInputChannel != m_expansion * pNumOfChannel)) {
+        if ((pStride != 1) || (pNumInputChannel != m_expansion * pNumOfChannel)) {
             remember = this->AddLayer(new ConvolutionLayer2D<DTYPE>(remember, pNumInputChannel, m_expansion * pNumOfChannel, 3, 3, pStride, pStride, SAME, FALSE, "BasicBlock_Conv1"));
             remember = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(remember, m_expansion * pNumOfChannel, "BasicBlock_BN1"));
         }
@@ -108,17 +105,16 @@ public:
         Operator<DTYPE> *out = pInput;
 
         // Reshape
-        int batch_size = out->GetResult()->GetBatchSize();
         out = this->AddOperator(new Reshape<DTYPE>(out, 28, 28, "reshape"));
 
         // 1
         out = this->AddLayer(new ConvolutionLayer2D<DTYPE>(out, 1, m_numInputChannel, 1, 1, 1, 1, SAME, FALSE, "BasicBlock_Conv1"));
         out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, m_numInputChannel, "BasicBlock_BN1"));
 
-        out = this->MakeLayer(out, m_numInputChannel, pBlockType, pNumOfBlock1, 1);
-        out = this->MakeLayer(out, 128, pBlockType, pNumOfBlock2, 2);
-        out = this->MakeLayer(out, 256, pBlockType, pNumOfBlock3, 2);
-        out = this->MakeLayer(out, 512, pBlockType, pNumOfBlock3, 2);
+        out = this->MakeLayer(out, m_numInputChannel, pBlockType, pNumOfBlock1, 1, "Block1");
+        out = this->MakeLayer(out, 128, pBlockType, pNumOfBlock2, 2, "Block2");
+        out = this->MakeLayer(out, 256, pBlockType, pNumOfBlock3, 2, "Block3");
+        out = this->MakeLayer(out, 512, pBlockType, pNumOfBlock3, 2, "Block4");
 
         out = this->AddOperator(new GlobalAvaragePooling2D<DTYPE>(out, "Avg Pooling"));
 
@@ -136,8 +132,10 @@ public:
         return TRUE;
     }
 
-    Operator<DTYPE>* MakeLayer(Operator<DTYPE> *pInput, int pNumOfChannel, std::string pBlockType, int pNumOfBlock, int pStride) {
-        if ((pBlockType == "BasicBlock") && (pNumOfBlock > 0)) {
+    Operator<DTYPE>* MakeLayer(Operator<DTYPE> *pInput, int pNumOfChannel, std::string pBlockType, int pNumOfBlock, int pStride, std::string pName = NULL) {
+        if (pNumOfBlock == 0) {
+            return pInput;
+        } else if ((pBlockType == "BasicBlock") && (pNumOfBlock > 0)) {
             Operator<DTYPE> *out = pInput;
 
             if (pStride > 1) {
@@ -146,10 +144,10 @@ public:
 
             int pNumOutputChannel = pNumOfChannel;
 
-            out = this->AddLayer(new BasicBlock<DTYPE>(out, m_numInputChannel, pNumOutputChannel, 1));
+            out = this->AddLayer(new BasicBlock<DTYPE>(out, m_numInputChannel, pNumOutputChannel, 1, pName));
 
             for (int i = 1; i < pNumOfBlock; i++) {
-                out = this->AddLayer(new BasicBlock<DTYPE>(out, pNumOutputChannel, pNumOutputChannel, 1));
+                out = this->AddLayer(new BasicBlock<DTYPE>(out, pNumOutputChannel, pNumOutputChannel, 1, pName));
             }
 
             m_numInputChannel = pNumOutputChannel;
