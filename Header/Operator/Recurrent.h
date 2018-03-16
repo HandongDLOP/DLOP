@@ -63,7 +63,7 @@ public:
 
         if(output_Gradient){
           delete output_Gradient;
-          output_Delta = NULL;
+          output_Gradient = NULL;
         }
 
         if(hidden_Gradient){
@@ -112,27 +112,15 @@ public:
 
     int ComputeForwardPropagate() {
         printf("ComputeForwardPropagate()\n");
-        Tensor<DTYPE> *input = this->GetInput()[0] -> GetResult();
-        Shape *shapeOfInput = input->GetShape();
-
-        // // Output
-        // Tensor<DTYPE> *output_Result = this->GetResult();
-        // Shape *shapeOfResult  = output_Result->GetShape();
+        Tensor<DTYPE> *input        = this->GetInput()[0] -> GetResult();
 
         Tensor<DTYPE> *weightInput  = this->GetInput()[1] -> GetResult();
-        Shape *shapeOfWeightInput   = weightInput->GetShape();
         Tensor<DTYPE> *weightHidden = this->GetInput()[2] -> GetResult();
-        Shape *shapeOfWeightHidden  = weightHidden->GetShape();
         Tensor<DTYPE> *weightOutput = this->GetInput()[3] -> GetResult();
-        Shape *shapeOfWeightOutput  = weightOutput->GetShape();
 
         Tensor<DTYPE> *biasInput  = this->GetInput()[4] -> GetResult();
-        Shape *shapeOfBiasInput   = biasInput->GetShape();
         Tensor<DTYPE> *biasHidden = this->GetInput()[5] -> GetResult();
-        Shape *shapeOfBiasHidden  = biasHidden->GetShape();
         Tensor<DTYPE> *biasOutput = this->GetInput()[6] -> GetResult();
-        Shape *shapeOfBiasOutput  = biasOutput->GetShape();
-
 
         int timesize = (*shapeOfInput)[0];
 
@@ -144,10 +132,7 @@ public:
         // Operator<DTYPE> *R_hidden_to_prehidden = new Tensorholder<DTYPE>(pre_hidden_Result,"R_hidden_to_prehidden");
         // Operator<DTYPE> *R_output = new Tensorholder<DTYPE>(output_Result,"R_output");
 
-
-
         for (int ti = 0; ti < timesize; ti++) {
-          printf("timesize : %d\n", timesize);
             Linear(input, weightInput, biasInput, input_Result, ti, TRUE);
             printf("Result_of_input\n");
             std::cout<< input_Result << std::endl;
@@ -177,6 +162,17 @@ public:
 
         return TRUE;
     }
+
+    int ComputeBackPropagate() {
+        // 델타 3개
+        output_Gradient =
+        for(ti = timesize; ti > -1; ti++){
+          Linear()
+        }
+
+        return TRUE;
+    }
+
 
     int CopyNextTensor(Tensor<DTYPE> *hidden_Result, Tensor<DTYPE> *pre_hidden_Result, int ti, int isForward = TRUE){
 
@@ -356,11 +352,6 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagate() {
-        // 델타 3개
-
-        return TRUE;
-    }
 
 
 

@@ -10,7 +10,7 @@
 #define TIME              2
 #define BATCH             2
 
-#define LOOP_FOR_TRAIN    1
+#define LOOP_FOR_TRAIN    10
 // 10,000 is number of Test data
 //#define LOOP_FOR_TEST     (10000 / BATCH)
 
