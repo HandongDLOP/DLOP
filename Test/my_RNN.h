@@ -28,19 +28,19 @@ public:
         std::cout << "b3" << '\n' << b3->GetResult() << '\n';
 
         out = AddOperator(new Recurrent<float>(x, w1, w2, w3, b1, b2, b3, 3, "rnn"));
-        out->ComputeForwardPropagate();
-        std::cout << out->GetResult() << '\n';
+        //out->ComputeForwardPropagate();
+        //std::cout << out->GetResult() << '\n';
         // ======================= Select Objective Function ===================
-        //  Objective<float> *objective = new Objective<float>(out, label,"SCE");
-        // //Objective<float> *objective = new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE");
-        // // Objective<float> *objective = new MSE<float>(out, label, "MSE");
-        //
-        // SetObjective(objective);
-        //
-        // // ======================= Select Optimizer ===================
-        // Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE);
-        //
-        // SetOptimizer(optimizer);
+        //Objective<float> *objective = new Objective<float>(out, label,"SCE");
+        //Objective<float> *objective = new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE");
+        Objective<float> *objective = new MSE<float>(out, label, "MSE");
+
+        SetObjective(objective);
+
+        // ======================= Select Optimizer ===================
+        Optimizer<float> *optimizer = new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE);
+
+        SetOptimizer(optimizer);
     }
 
     virtual ~my_RNN() {}

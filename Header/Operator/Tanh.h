@@ -7,7 +7,6 @@
 template<typename DTYPE>
 class Tanh :public Operator<DTYPE>{
 public:
-  FILE *fp;
 
   Tanh(Operator<DTYPE> *pInput, std::string pName) : Operator<DTYPE>(pInput, pName){
     std::cout<<"Tanh::Tanh(Operator *, string)" << '\n';
@@ -16,7 +15,6 @@ public:
 
   ~Tanh(){
     std::cout<< "Tanh::~Tanh()" << '\n';
-  //  fclose(fp);
   }
 
   int Alloc(Operator<DTYPE> *pInput){
@@ -29,12 +27,6 @@ public:
     Shape *shapeOfDelta = new Shape(pInput->GetResult()->GetShape());
     this->SetDelta(new Tensor<DTYPE>(shapeOfDelta));
 
-  //  fp = fopen("tanh Test", "w");
-  //  if(fp == NULL){
-  //    printf("FILEOPEN ERROR\n");
-  //    return 0;
-  //  }
-
     return TRUE;
   }
 
@@ -44,17 +36,14 @@ public:
     Tensor<DTYPE> *result = this->GetResult();
     int capacity          = input->GetData()->GetCapacity();
 
-    for (int i = 0; i < capacity; i++){
-      printf("(*input)[%d] : %f\n", i, (*input)[i]);
-    }
+    // for (int i = 0; i < capacity; i++){
+    //   printf("(*input)[%d] : %f\n", i, (*input)[i]);
+    // }
 
     for (int i = 0; i < capacity; i++){
       (*result)[i] = this->TANH((*input)[i]);
-      printf("(*result)[%d] : %f\n", i, (*result)[i]);
-    //  fprintf(fp, "%lf", (*result)[i]);
-      //fp << (*result)[i] << ";" <<endl;
+    //  printf("(*result)[%d] : %f\n", i, (*result)[i]);
     }
-
     return TRUE;
   }
 
@@ -66,8 +55,8 @@ public:
     int capacity               = result->GetData()->GetCapacity();
 
     for (int i = 0; i < capacity; i++){
-      printf("%d\n", i);
-      printf("(*result)[%d] : %f", i, (*result)[i]);
+      //printf("%d\n", i);
+    //  printf("(*result)[%d] : %f", i, (*result)[i]);
       // std::cout << result << '\n';
       (*input_delta)[i] = (1 - ((*result)[i] * (*result)[i])) * (*this_delta)[i];
     }
@@ -76,7 +65,7 @@ public:
   }
 
   inline DTYPE TANH(DTYPE data){
-    printf("TANH(DTYPE)\n");
+    //printf("TANH(DTYPE)\n");
     //DTYPE sinh = ((DTYPE)exp(data) - (DTYPE)exp(-data)) / 2;
     //DTYPE cosh = ((DTYPE)exp(data) + (DTYPE)exp(-data)) / 2;
     //return sinh/cosh;

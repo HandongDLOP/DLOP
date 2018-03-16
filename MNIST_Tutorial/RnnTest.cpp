@@ -19,24 +19,10 @@ int main(int argc, char const *argv[]){
   Operator<float> *w3 = new Tensorholder<float>(Tensor<float>::Truncated_normal(1, 1, 1, 4, 3, 0.0, 0.1), "weight3");
   Operator<float> *b3 = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, 3, 0.1), "bias3");
 
-  printf("x\n");
-  std::cout<< x->GetResult() << std::endl;
-  printf("w1\n");
-  std::cout<< w1->GetResult() << std::endl;
-  printf("w2\n");
-  std::cout<< w2->GetResult() << std::endl;
-  printf("w3\n");
-  std::cout<< w3->GetResult() << std::endl;
-  printf("b1\n");
-  std::cout<< b1->GetResult() << std::endl;
-  printf("b2\n");
-  std::cout<< b2->GetResult() << std::endl;
-  printf("b3\n");
-  std::cout<< b3->GetResult() << std::endl;
 
   Operator<float> *out = new Recurrent<float>(x, w1, w2, w3, b1, b2, b3, 3, "rnn");
-  out->ComputeForwardPropagate();
-  std::cout<< out->GetResult() << std::endl;
+  //out->ComputeForwardPropagate();
+  //std::cout<< out->GetResult() << std::endl;
 
   Objective<float> *objective = new MSE<float>(out, label, "MSE");
 
@@ -46,6 +32,7 @@ int main(int argc, char const *argv[]){
 
   SetOptimizer(optimizer);
 
+  NeuralNetwork<float> *net = new
 
 //  out->ComputeBackPropagate();
 //  std::cout<< out->GetDelta() << std::endl;

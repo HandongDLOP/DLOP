@@ -15,10 +15,9 @@ private:
     Tensor<DTYPE> *hidden_Result;
     Tensor<DTYPE> *output_Result;
 
-
-    // AddDelta
-    Tensor<DTYPE> *output_Delta;
-    Tensor<DTYPE> *hidden_Delta;
+    // AddGradient
+    Tensor<DTYPE> *output_Gradient;
+    Tensor<DTYPE> *hidden_Gradient;
 
 public:
     Recurrent(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeightInput, Operator<DTYPE> *pWeightHidden, Operator<DTYPE> *pWeightOutput, Operator<DTYPE> *pBiasInput, Operator<DTYPE> *pBiasHidden, Operator<DTYPE> *pBiasOutput, int pHiddenSize, std::string pName)
@@ -62,12 +61,15 @@ public:
             output_Result = NULL;
         }
 
-        // if (output) {
-        //     delete output;
-        //     output = NULL;
-        // }
+        if(output_Gradient){
+          delete output_Gradient;
+          output_Delta = NULL;
+        }
 
-
+        if(hidden_Gradient){
+          delete hidden_Gradient;
+          hidden_Gradient = NULL;
+        }
     }
 
     int Alloc(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeightInput, Operator<DTYPE> *pWeightHidden, Operator<DTYPE> *pWeightOutput,
@@ -94,14 +96,14 @@ public:
         this->AddResult(hidden_Result);
 
         output_Result = new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightOutput)[4]);
-                                        this->AddResult(output_Result);
+        this->AddResult(output_Result);
 
         // AddDelta
-        output_Delta = new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightOutput)[4]);
-        this->AddDelta(output_Delta);
+        output_Gradient = new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightOutput)[4]);
+        this->AddGradient(output_Gradient);
 
-        hidden_Delta = new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4]);
-        this->AddDelta(hidden_Delta);
+        hidden_Gradient = new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4]);
+        this->AddGradient(hidden_Gradient);
 
         m_hiddenSize = pHiddenSize;
 
@@ -146,11 +148,9 @@ public:
 
         for (int ti = 0; ti < timesize; ti++) {
           printf("timesize : %d\n", timesize);
-          printf("1\n");
             Linear(input, weightInput, biasInput, input_Result, ti, TRUE);
             printf("Result_of_input\n");
             std::cout<< input_Result << std::endl;
-
 
             Linear(pre_hidden_Result, weightHidden, biasHidden, pre_net_Result, ti, TRUE);    // WX + b
             printf("Result_of_pre_net\n");
@@ -160,35 +160,25 @@ public:
             printf("Result_of_net\n");
             std::cout<< net_Result << std::endl;
 
-            // std::cout<< R_net->GetResult() << std::endl;
-
             Tanh(net_Result, hidden_Result, ti, TRUE);          // hidden_result
             printf("Result_of_hidden\n");
             std::cout<< hidden_Result << std::endl;
-            // std::cout<< R_hidden->GetResult() << std::endl;
 
             if(ti < timesize - 1){
                   CopyNextTensor(hidden_Result, pre_hidden_Result, ti, TRUE);   //src ,dst
                   printf("Result_of_hidden_to_prehidden\n");
                   std::cout<< pre_hidden_Result << std::endl;
-                  // std::cout<< R_hidden_to_prehidden->GetResult() << std::endl;
             }// hidden_result -> prehidden_result
 
             Linear(hidden_Result, weightOutput, biasOutput, output_Result, ti, TRUE);
             printf("Result_of_output\n");
             std::cout<< output_Result << std::endl;
-
-
-            // std::cout<< R_output->GetResult() << std::endl;
-
-            //Linear(pre_hidden_Result, weightOutput, biasOutput, result, ti);
-        }
-
+          }
 
         return TRUE;
     }
 
-    int CopyNextTensor(Tensor<DTYPE> *hidden_Result, Tensor<DTYPE> *pre_hidden_Result, int ti, int isForward){
+    int CopyNextTensor(Tensor<DTYPE> *hidden_Result, Tensor<DTYPE> *pre_hidden_Result, int ti, int isForward = TRUE){
 
         Shape *shapeOfHiddenResult  = hidden_Result->GetShape();
         Shape *shapeOfPreHiddenResult = pre_hidden_Result->GetShape();
@@ -222,7 +212,7 @@ public:
 
 
 
-    int Tanh(Tensor<DTYPE> *input, Tensor<DTYPE> *result, int ti, int isForward){
+    int Tanh(Tensor<DTYPE> *input, Tensor<DTYPE> *result, int ti, int isForward = TRUE){
 
         // result->GetBatchSize();
         int batchsize   = input->GetBatchSize();
@@ -256,14 +246,15 @@ public:
     }
 
     inline DTYPE TANH(DTYPE data){
-      printf("TANH(DTYPE)\n");
       //DTYPE sinh = ((DTYPE)exp(data) - (DTYPE)exp(-data)) / 2;
       //DTYPE cosh = ((DTYPE)exp(data) + (DTYPE)exp(-data)) / 2;
       //return sinh/cosh;
       return ((DTYPE)exp(data) - (DTYPE)exp(-data)) / ((DTYPE)exp(data) + (DTYPE)exp(-data));
     }
 
-    int Linear(Tensor<DTYPE> *input, Tensor<DTYPE> *weight, Tensor<DTYPE> *bias, Tensor<DTYPE> *result, int ti, int isForward) {
+//Linear(pre_hidden_Result, weightHidden, biasHidden, pre_net_Result, ti, TRUE);    // WX + b
+
+    int Linear(Tensor<DTYPE> *input, Tensor<DTYPE> *weight, Tensor<DTYPE> *bias, Tensor<DTYPE> *result, int ti, int isForward = TRUE) {
         Shape *shapeOfInput  = input->GetShape();
         Shape *shapeOfWeight = weight->GetShape();
 
@@ -273,11 +264,9 @@ public:
         int colsize     = result->GetColSize();
 
         int hiddensize = input->GetColSize();
+        std::cout << "result colsize : " << colsize;
 
-        int bias_capacity = bias->GetCapacity();
-
-
-
+        //int bias_capacity = bias->GetCapacity();
 
         if(isForward){
 
@@ -294,21 +283,15 @@ public:
                   for (int ro = 0; ro < rowsize; ro++) {
                       for (int co = 0; co < colsize; co++) {
                           for (int hid = 0; hid < hiddensize; hid++) {
-                              // index5d 못쓴다 hid는 weight의 col이기 때문에 input의 col과 다르다.
-                              // input의 hid가 다름..
-
                               input_index = ((((((ti * batchsize) + ba) * channelsize) + ch) * rowsize) + ro) * hiddensize + hid;
-                              // temp += (*input)[Index5D(shapeOfInput, ti, ba, ch, ro, hid)] * (*weight)[weight_index];
 
                               weight_index = hid * colsize + co;
                               temp        += (*input)[input_index] * (*weight)[weight_index];
                           }
 
                           (*result)[Index5D(result->GetShape(), ti, ba, ch, ro, co)] = temp;
-                          // result_index                = (((((((ti * batchsize) + ba) * channelsize) + ch) * rowsize) + ro) * colsize) + co;
-                          // (*result)[result_index]     = temp;
 
-                          std::cout<<(*result)[Index5D(result->GetShape(), ti, ba, ch, ro, co)]<<'\n';
+                          //std::cout<<(*result)[Index5D(result->GetShape(), ti, ba, ch, ro, co)]<<'\n';
                           temp = 0.f;
                       }
                   }
@@ -324,9 +307,6 @@ public:
                       for (int co = 0; co < colsize; co++) {
                               index = ((((((ti * batchsize) + ba) * channelsize) + ch) * rowsize) + ro) * colsize + co;
 
-                              //(*result)[index] = (*input)[index] + (*bias)[cap];
-                              //std::cout<< "ba co : "<< ba << co << colsize << rowsize << "   bias : " << (*bias)[co] << '\n';
-                              //std::cout << (*bias)[cap];
                               (*result)[index] += (*bias)[co];
 
                       }
@@ -347,7 +327,7 @@ public:
         return TRUE;
     }
 
-    int Add(Tensor<DTYPE> *input0, Tensor<DTYPE> *input1, Tensor<DTYPE> *result, int ti, int isForward){
+    int Add(Tensor<DTYPE> *input0, Tensor<DTYPE> *input1, Tensor<DTYPE> *result, int ti, int isForward = TRUE){
         int batchsize   = result->GetBatchSize();
         int channelsize = result->GetChannelSize();
         int rowsize     = result->GetRowSize();
