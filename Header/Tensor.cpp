@@ -286,6 +286,29 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::BroadcastAdd(Tensor<DTYPE
     return pDestTensor;
 }
 
+
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Multiply(Tensor<DTYPE> *pLeftTensor, float pMultiplier, Tensor<DTYPE> *pDestTensor) {
+    Shape *leftTenShape = pLeftTensor->GetShape();
+    int    capacity     = pLeftTensor->GetCapacity();
+
+    int timesize    = (*leftTenShape)[0];
+    int batchsize   = (*leftTenShape)[1];
+    int channelsize = (*leftTenShape)[2];
+    int rowsize     = (*leftTenShape)[3];
+    int colsize     = (*leftTenShape)[4];
+
+    if (pDestTensor == NULL) pDestTensor = new Tensor<DTYPE>(timesize,
+                                                             batchsize,
+                                                             channelsize,
+                                                             rowsize,
+                                                             colsize);
+
+    for (int i = 0; i < capacity; i++) {
+        (*pDestTensor)[i] = (*pLeftTensor)[i] * pMultiplier;
+    }
+
+    return pDestTensor;
+}
 // example code
 // int main(int argc, char const *argv[]) {
 // Tensor<float> *left  = Tensor<float>::Constants(1, 2, 3, 3, 3, 2);

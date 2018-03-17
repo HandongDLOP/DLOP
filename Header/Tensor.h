@@ -64,6 +64,8 @@ public:
 
     static Tensor<DTYPE>* BroadcastAdd(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor = NULL, int is_inverse = FALSE);
 
+    static Tensor<DTYPE>* Multiply(Tensor<DTYPE> *pLeftTensor, float pMultiplier, Tensor<DTYPE> *pDestTensor = NULL);
+
     // static Tensor<DTYPE>* Matmul(Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pDestTensor=NULL);
     //
     // static Tensor<DTYPE>* BroadcastMatmul(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor=NULL);

@@ -33,22 +33,27 @@ public:
     // int AddTrainableTensor(Operator<DTYPE> *pTrainableTensor);
 
     // ===============
-    int         UpdateVariable();
+    virtual int UpdateVariable();
 
     // virtual int UpdateVariable(Tensor<DTYPE> *Trainable, Tensor<DTYPE> *Gradient) = 0;
-    virtual int UpdateVariable(Tensorholder<DTYPE> *pTrainableTensor) = 0;
+
+    virtual int UpdateVariable(Tensorholder<DTYPE> * pTrainableTensor) = 0;
 
     // ===============
 
-    void  SetLearningRate(float pLearningRate);
+    void                              SetLearningRate(float pLearningRate);
 
-    void  SetTrainableTensorDegree(int pTrainableTensorDegree);
+    void                              SetTrainableTensorDegree(int pTrainableTensorDegree);
 
-    float GetLearningRate() const;
+    float                             GetLearningRate() const;
 
-    int   GetOptimizeDirection() const;
+    int                               GetOptimizeDirection() const;
 
-    int   ResetParameterGradient();
+    Container<Tensorholder<DTYPE> *>* GetTrainableTensor();
+
+    int                               GetTrainableTensorDegree() const;
+
+    int                               ResetParameterGradient();
 };
 
 #endif  // OPTIMIZER_H_

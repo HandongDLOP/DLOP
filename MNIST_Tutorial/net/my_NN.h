@@ -26,7 +26,8 @@ public:
         // SetObjective(new MSE<float>(out, label, "MSE"));
 
         // ======================= Select Optimizer ===================
-        SetOptimizer(new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE));
+        SetOptimizer(new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, 0.9, MINIMIZE));
+        // SetOptimizer(new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE));
 
     }
 
@@ -46,7 +47,7 @@ public:
         SetObjective(new MSE<float>(out, label, "MSE"));
 
         // ======================= Select Optimizer ===================
-        SetOptimizer(new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE));
+        SetOptimizer(new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, 0.9, MINIMIZE));
 
     }
 

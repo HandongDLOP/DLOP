@@ -59,6 +59,14 @@ template<typename DTYPE> int Optimizer<DTYPE>::GetOptimizeDirection() const {
     return m_OptimizeDirection;
 }
 
+template<typename DTYPE> Container<Tensorholder<DTYPE> *> * Optimizer<DTYPE>::GetTrainableTensor() {
+    return m_ppTrainableTensors;
+}
+
+template<typename DTYPE> int Optimizer<DTYPE>::GetTrainableTensorDegree() const {
+    return m_TrainableTensorDegree;
+}
+
 template<typename DTYPE> int Optimizer<DTYPE>::ResetParameterGradient() {
     for (int i = 0; i < m_TrainableTensorDegree; i++) {
         (*m_ppTrainableTensors)[i]->ResetGradient();
