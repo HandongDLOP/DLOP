@@ -99,14 +99,12 @@ public:
         Tensor<DTYPE> *trainable_data = pParameter->GetResult();
         Tensor<DTYPE> *gradient       = pParameter->GetGradient();
 
-        int batchsize = gradient->GetBatchSize();
-
         float learning_rate = this->GetOptimizeDirection() * this->GetLearningRate();
 
         int capacity = trainable_data->GetCapacity();
 
         for (int i = 0; i < capacity; i++) {
-            (*pVelocity)[i] = m_momentum * (*pVelocity)[i] + learning_rate * (*gradient)[i] / batchsize;
+            (*pVelocity)[i]       = m_momentum * (*pVelocity)[i] + learning_rate * (*gradient)[i];
             (*trainable_data)[i] += (*pVelocity)[i];
         }
 

@@ -131,12 +131,13 @@ public:
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
 
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
-        // input_delta->Reset();
+
+        int batchsize = gradient->GetBatchSize();
 
         int capacity = input_delta->GetCapacity();
 
         for (int i = 0; i < capacity; i++) {
-            (*input_delta)[i] = (*gradient)[i];
+            (*input_delta)[i] = (*gradient)[i] / batchsize;
         }
 
 
