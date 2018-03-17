@@ -265,9 +265,9 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Training() {
     this->ResetObjectiveGradient();
 
     this->ForwardPropagate();
-    m_aObjective->ForwardPropagate();
+    m_aObjective->ComputeForwardPropagate();
 
-    m_aObjective->BackPropagate();
+    m_aObjective->ComputeBackPropagate();
     this->BackPropagate();
 
     m_aOptimizer->UpdateVariable();
@@ -279,7 +279,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Testing() {
     this->ResetOperatorResult();
     this->ResetObjectiveResult();
     ForwardPropagate();
-    m_aObjective->ForwardPropagate();
+    m_aObjective->ComputeForwardPropagate();
 
     return TRUE;
 }

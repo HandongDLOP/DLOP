@@ -35,10 +35,10 @@ public:
     std::string            GetName() const;
 
     // For Propagate
-    virtual Tensor<DTYPE>* ForwardPropagate();
+    virtual Tensor<DTYPE>* ComputeForwardPropagate();
 
     // For BackPropagate
-    virtual Tensor<DTYPE>* BackPropagate();
+    virtual Tensor<DTYPE>* ComputeBackPropagate();
 
     DTYPE                & operator[](unsigned int index);
 
