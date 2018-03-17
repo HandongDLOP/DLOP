@@ -112,7 +112,7 @@ public:
         out = this->AddLayer(new BatchNormalizeLayer2D<DTYPE>(out, m_numInputChannel, "BasicBlock_BN1"));
 
         out = this->MakeLayer(out, m_numInputChannel, pBlockType, pNumOfBlock1, 1, "Block1");
-        out = this->MakeLayer(out, 128, pBlockType, pNumOfBlock2, 2, "Block2");
+        out = this->MakeLayer(out, 128, pBlockType, pNumOfBlock2, 1, "Block2");
         out = this->MakeLayer(out, 256, pBlockType, pNumOfBlock3, 2, "Block3");
         out = this->MakeLayer(out, 512, pBlockType, pNumOfBlock3, 2, "Block4");
 
@@ -127,7 +127,8 @@ public:
         // SetObjective(new MSE<float>(out, label, "MSE"));
 
         // ======================= Select Optimizer ===================
-        this->SetOptimizer(new GradientDescentOptimizer<float>(this->GetTensorholder(), 0.0001, MINIMIZE));
+        this->SetOptimizer(new GradientDescentOptimizer<float>(this->GetTensorholder(), 0.001, 0.9, MINIMIZE));
+        // this->SetOptimizer(new GradientDescentOptimizer<float>(this->GetTensorholder(), 0.001, MINIMIZE));
 
         return TRUE;
     }
@@ -160,5 +161,5 @@ public:
 };
 
 template<typename DTYPE> NeuralNetwork<DTYPE>* Resnet14(Tensorholder<DTYPE> *pInput, Tensorholder<DTYPE> *pLabel) {
-    return new ResNet<DTYPE>(pInput, pLabel, "BasicBlock", 2, 2, 2, 2, 10);
+    return new ResNet<DTYPE>(pInput, pLabel, "BasicBlock", 0, 2, 2, 2, 10);
 }
