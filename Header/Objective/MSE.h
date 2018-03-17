@@ -59,7 +59,7 @@ public:
         for (int i = 0; i < count; i++) {
             for (int j = 0; j < capacity; j++) {
                 index              = i * capacity + j;
-                (*result)[i]      += Error((*input)[index], (*label)[index], capacity);
+                (*result)[i]      += Error((*input)[index], (*label)[index]);
                 (*gradient)[index] = ((*input)[index] - (*label)[index]);
             }
         }
@@ -81,8 +81,8 @@ public:
         return NULL;
     }
 
-    inline DTYPE Error(DTYPE pred, DTYPE ans, int numOfOutputDim) {
-        return (pred - ans) * (pred - ans) / numOfOutputDim * 0.5;
+    inline DTYPE Error(DTYPE pred, DTYPE ans) {
+        return (pred - ans) * (pred - ans) / 2;
     }
 };
 
