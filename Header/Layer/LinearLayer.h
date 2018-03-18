@@ -19,7 +19,7 @@ public:
         out = this->AddOperator(new MatMul<DTYPE>(out, pWeight, "Layer_MatMul_" + pName));
 
         if (use_bias) {
-            Tensorholder<DTYPE> *pBias = this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Constants(1, 1, 1, 1, pNumOutputCol, 0.1), "Add_Bias_" + pName));
+            Tensorholder<DTYPE> *pBias = this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Constants(1, 1, 1, 1, pNumOutputCol, 0.f), "Add_Bias_" + pName));
             out = this->AddOperator(new Add<DTYPE>(out, pBias, "Layer_Add_" + pName));
         }
 

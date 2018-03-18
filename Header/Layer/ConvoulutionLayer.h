@@ -19,7 +19,7 @@ public:
         out = this->AddOperator(new Convolution2D<DTYPE>(out, pWeight, pStrideRow, pStrideCol, pPadding, "Convolution2D_Convolution2D_" + pName));
 
         if(use_bias){
-            Tensorholder<DTYPE> *pBias = this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Constants(1, 1, pNumOutputChannel, 1, 1, 0.0), "Convolution2D_Bias_" + pName));
+            Tensorholder<DTYPE> *pBias = this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Constants(1, 1, pNumOutputChannel, 1, 1, 0.f), "Convolution2D_Bias_" + pName));
             out = this->AddOperator(new Add<DTYPE>(out, pBias, "Convolution2D_Add_" + pName));
         }
 
