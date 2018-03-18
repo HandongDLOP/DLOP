@@ -52,8 +52,8 @@ public:
         for (int i = 0; i < m_numOfParameter; i++) {
             pParameterGradShape = (*m_ppParameter)[i]->GetGradient()->GetShape();
 
-            std::cout << (*m_ppParameter)[i]->GetName() << '\n';
-            std::cout << pParameterGradShape << '\n';
+            // std::cout << (*m_ppParameter)[i]->GetName() << '\n';
+            // std::cout << pParameterGradShape << '\n';
 
             m_aaVelocity->Push(new Tensor<DTYPE>(new Shape(pParameterGradShape)));
             pParameterGradShape = NULL;
