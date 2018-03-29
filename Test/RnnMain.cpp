@@ -8,16 +8,20 @@
 
 #define EPOCH             1
 #define TIME              2
-#define BATCH             2
+#define BATCH             3
 
-#define LOOP_FOR_TRAIN    1
+#define LOOP_FOR_TRAIN    3
 // 10,000 is number of Test data
 //#define LOOP_FOR_TEST     (10000 / BATCH)
 
 int main(int argc, char const *argv[]) {
     // create input, label data placeholder -> Tensorholder
-    Tensorholder<float> *x     = new Tensorholder<float>(Tensor<float>::Constants(TIME, BATCH, 1, 1, 2, 1.0), "x");
-    Tensorholder<float> *label = new Tensorholder<float>(Tensor<float>::Constants(TIME, BATCH, 1, 1, 2, 1.0), "label");
+    Tensorholder<float> *x =     new Tensorholder<float>(Tensor<float>::Truncated_normal(TIME, BATCH, 1, 1, 4, 0.0, 0.1), "x");
+    Tensorholder<float> *label = new Tensorholder<float>(Tensor<float>::Truncated_normal(TIME, BATCH, 1, 1, 2, 0.0, 0.1), "label");
+
+
+    // Tensorholder<float> *x     = new Tensorholder<float>(Tensor<float>::Constants(TIME, BATCH, 1, 1, 4, 1.0), "x");
+    // Tensorholder<float> *label = new Tensorholder<float>(Tensor<float>::Constants(TIME, BATCH, 1, 1, 2, 1.0), "label");
     std::cout << x->GetResult() << '\n';
     std::cout << label->GetResult() << '\n';
     //Tensorholder<float> *label = new Tensorholder<float>(Tensor<float>::Truncated_normal(2, 3, 1, 1, 4, 0.0, 0.1), "label");
