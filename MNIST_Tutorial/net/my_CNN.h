@@ -12,22 +12,22 @@ public:
         out = AddOperator(new Reshape<float>(x, 28, 28, "reshape"));
 
         // ======================= layer 1=======================
-        out = AddLayer(new ConvolutionLayer2D<float>(out, 1, 32, 3, 3, 1, 1, VALID, FALSE, "1"));
-        out = AddLayer(new BatchNormalizeLayer2D<float>(out, 32, "1"));
+        out = AddLayer(new ConvolutionLayer2D<float>(out, 1, 32, 3, 3, 2, 2, 1, FALSE, "1"));
+        // out = AddLayer(new BatchNormalizeLayer2D<float>(out, 32, "1"));
         out = AddOperator(new Relu<float>(out, "Relu_1"));
-        out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, VALID, "MaxPool_1"));
+        // out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, VALID, "MaxPool_1"));
 
 
         // ======================= layer 2=======================
-        out = AddLayer(new ConvolutionLayer2D<float>(out, 32, 64, 3, 3, 1, 1, VALID, FALSE, "1"));
-        out = AddLayer(new BatchNormalizeLayer2D<float>(out, 64, "1"));
+        out = AddLayer(new ConvolutionLayer2D<float>(out, 32, 64, 3, 3, 2, 2, 1, FALSE, "1"));
+        // out = AddLayer(new BatchNormalizeLayer2D<float>(out, 64, "1"));
         out = AddOperator(new Relu<float>(out, "Relu_2"));
-        out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, VALID, "MaxPool_2"));
+        // out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, VALID, "MaxPool_2"));
 
-        out = AddOperator(new Reshape<float>(out, 1, 1, 5 * 5 * 64, "Flat"));
+        out = AddOperator(new Reshape<float>(out, 1, 1, 7 * 7 * 64, "Flat"));
 
         // ======================= layer 3=======================
-        out = AddLayer(new Linear<float>(out, 5 * 5 * 64, 256, TRUE, "3"));
+        out = AddLayer(new Linear<float>(out, 7 * 7 * 64, 256, TRUE, "3"));
 
         out = AddOperator(new Relu<float>(out, "Relu_3"));
 
