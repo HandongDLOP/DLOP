@@ -304,6 +304,23 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeInferencing() {
     }
 }
 
+#if __CUDNN__
+
+template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeGPU() {
+    // std::cout << "NeuralNetwork<DTYPE>::SetModeGPU()" << '\n';
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        (*m_aaOperator)[i]->SetModeGPU();
+    }
+}
+
+#endif  // __CUDNN__
+
+template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeCPU() {
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        (*m_aaOperator)[i]->SetModeCPU();
+    }
+}
+
 // =========
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::CreateGraph() {
@@ -355,7 +372,8 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::SerchOperator(st
 
     for (int i = 0; i < m_OperatorDegree; i++) {
         name = (*m_aaOperator)[i]->GetName();
-        if(name == pName) return (*m_aaOperator)[i];
+
+        if (name == pName) return (*m_aaOperator)[i];
     }
 
     return NULL;

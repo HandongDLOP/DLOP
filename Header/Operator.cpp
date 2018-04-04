@@ -6,9 +6,8 @@ template class Operator<double>;
 
 template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    m_aaResult   = NULL;
-    m_aaGradient = NULL;
-    // m_aaDelta             = NULL;
+    m_aaResult            = NULL;
+    m_aaGradient          = NULL;
     m_apOutput            = NULL;
     m_apInput             = NULL;
     m_OutputDegree        = 0;
@@ -21,9 +20,8 @@ template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
 
 template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std::string pName) {
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    m_aaResult   = NULL;
-    m_aaGradient = NULL;
-    // m_aaDelta             = NULL;
+    m_aaResult            = NULL;
+    m_aaGradient          = NULL;
     m_apOutput            = NULL;
     m_apInput             = NULL;
     m_OutputDegree        = 0;
@@ -36,9 +34,8 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std:
 
 template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) {
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    m_aaResult   = NULL;
-    m_aaGradient = NULL;
-    // m_aaDelta             = NULL;
+    m_aaResult            = NULL;
+    m_aaGradient          = NULL;
     m_apOutput            = NULL;
     m_apInput             = NULL;
     m_OutputDegree        = 0;
@@ -70,9 +67,8 @@ template<typename DTYPE> int Operator<DTYPE>::Alloc(int numInput, ...) {
 
     m_aaResult   = new Container<Tensor<DTYPE> *>();
     m_aaGradient = new Container<Tensor<DTYPE> *>();
-    // m_aaDelta    = new Container<Tensor<DTYPE> *>();
-    m_apOutput = new Container<Operator<DTYPE> *>();
-    m_apInput  = new Container<Operator<DTYPE> *>();
+    m_apOutput   = new Container<Operator<DTYPE> *>();
+    m_apInput    = new Container<Operator<DTYPE> *>();
 
     va_list ap;
     va_start(ap, numInput);
@@ -115,20 +111,6 @@ template<typename DTYPE> void Operator<DTYPE>::Delete() {
         delete m_aaResult;
         m_aaResult = NULL;
     }
-
-    // if (m_aaDelta) {
-    // size = m_aaDelta->GetSize();
-    //
-    // for (int i = 0; i < size; i++) {
-    // if((*m_aaDelta)[i]){
-    // delete (*m_aaDelta)[i];
-    // m_aaDelta->SetElement(NULL, i);
-    // }
-    // }
-    //
-    // delete m_aaDelta;
-    // m_aaDelta = NULL;
-    // }
 
     if (m_aaGradient) {
         size = m_aaGradient->GetSize();
@@ -206,18 +188,10 @@ template<typename DTYPE> void Operator<DTYPE>::SetDelta(Tensor<DTYPE> *pTensor) 
     }
 
     m_aaGradient->Push(pTensor);
-    // if (m_aaDelta->GetSize()) {
-    // Tensor<DTYPE> *temp = m_aaDelta->Pop();
-    // delete temp;
-    // temp = NULL;
-    // }
-    //
-    // m_aaDelta->Push(pTensor);
 }
 
 template<typename DTYPE> void Operator<DTYPE>::AddDelta(Tensor<DTYPE> *pTensor) {
     m_aaGradient->Push(pTensor);
-    // m_aaDelta->Push(pTensor);
 }
 
 template<typename DTYPE> void Operator<DTYPE>::IncreaseCurrentOutputDegree() {
@@ -230,7 +204,6 @@ template<typename DTYPE> void Operator<DTYPE>::IncreaseCurrentInputDegree() {
 
 #if __CUDNN__
 template<typename DTYPE> cudnnHandle_t& Operator<DTYPE>::GetCudnnHandle() {
-    // return this->m_pCudnnHandle;
     return m_pCudnnHandle;
 }
 
@@ -355,7 +328,7 @@ template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate() {
 }
 
 template<typename DTYPE> int Operator<DTYPE>::ComputeForwardPropagate() {
-    std::cout << this->GetName() << '\n';
+    // std::cout << this->GetName() << '\n';
     return TRUE;
 }
 
@@ -377,9 +350,10 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagate() {
 }
 
 template<typename DTYPE> int Operator<DTYPE>::ComputeBackPropagate() {
-    std::cout << this->GetName() << '\n';
+    // std::cout << this->GetName() << '\n';
     return TRUE;
 }
+
 
 template<typename DTYPE> int Operator<DTYPE>::ResetResult() {
     int size = m_aaResult->GetSize();
@@ -410,6 +384,14 @@ template<typename DTYPE> void Operator<DTYPE>::SetModeAccumulating() {
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetModeInferencing() {
+    // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
+}
+
+template<typename DTYPE> void Operator<DTYPE>::SetModeGPU() {
+    // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
+}
+
+template<typename DTYPE> void Operator<DTYPE>::SetModeCPU() {
     // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
 }
 

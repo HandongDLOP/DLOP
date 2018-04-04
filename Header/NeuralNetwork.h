@@ -68,6 +68,12 @@ public:
     void                              SetModeAccumulating();
     void                              SetModeInferencing();
 
+#if __CUDNN__
+    void                              SetModeGPU();
+#endif  // __CUDNN__
+
+    void                              SetModeCPU();
+
     // =======
     int                               CreateGraph();
     int                               PrintGraphShape();

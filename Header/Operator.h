@@ -3,13 +3,14 @@
 
 #include "Tensor_utils.h"
 #include "Container.h"
-#define VALID    0
-#define SAME     1
+
 
 enum Mode {
     TRAINING,
     ACCUMULATING,
-    INFERENCING
+    INFERENCING,
+    CPU,
+    GPU
 };
 
 template<typename DTYPE> class Operator {
@@ -101,6 +102,9 @@ public:
     virtual void SetModeTraining();
     virtual void SetModeAccumulating();
     virtual void SetModeInferencing();
+
+    virtual void SetModeGPU();
+    virtual void SetModeCPU();
 };
 
 #endif  // OPERATOR_H_

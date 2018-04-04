@@ -21,6 +21,9 @@ private:
     int m_padding[2] = { 0, };
 
 public:
+    int (Convolution2D<DTYPE>::*pComputeForwardPropagate)();
+    int (Convolution2D<DTYPE>::*pComputeBackPropagate)();
+
     Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride1, int stride2, std::string pName = "NO NAME") : Operator<DTYPE>(pInput, pWeight, pName) {
         Alloc(pInput, pWeight, stride1, stride2, 0, 0);
     }
@@ -30,18 +33,6 @@ public:
     }
 
     Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride1, int stride2, int padding1, int padding2, std::string pName = "NO NAME") : Operator<DTYPE>(pInput, pWeight, pName) {
-        Alloc(pInput, pWeight, stride1, stride2, padding1, padding2);
-    }
-
-    // Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride0, int stride1, int stride2, int stride3, std::string pName = "NO NAME") : Operator<DTYPE>(pInput, pWeight, pName) {
-    //     Alloc(pInput, pWeight, stride1, stride2, 0, 0);
-    // }
-
-    Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride0, int stride1, int stride2, int stride3, int padding, std::string pName) : Operator<DTYPE>(pInput, pWeight, pName) {
-        Alloc(pInput, pWeight, stride1, stride2, padding, padding);
-    }
-
-    Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride0, int stride1, int stride2, int stride3, int padding1, int padding2, std::string pName) : Operator<DTYPE>(pInput, pWeight, pName) {
         Alloc(pInput, pWeight, stride1, stride2, padding1, padding2);
     }
 
@@ -60,6 +51,9 @@ public:
         pDevInputDelta = NULL;
         pDevDelta      = NULL;
 #endif  // if __CUDNN__
+
+        pComputeForwardPropagate = &Convolution2D<DTYPE>::ComputeForwardPropagateOnCPU;
+        pComputeBackPropagate    = &Convolution2D<DTYPE>::ComputeBackPropagateOnCPU;
 
         Shape *shapeOfInput  = pInput->GetResult()->GetShape();
         Shape *shapeOfWeight = pWeight->GetResult()->GetShape();
@@ -92,58 +86,17 @@ public:
 #endif  // if __CUDNN__
     }
 
-#if __CUDNN__
-    void createHandles() {
-        checkCUDNN(cudnnCreateTensorDescriptor(&inputTensorDesc));
-        checkCUDNN(cudnnCreateTensorDescriptor(&outputTensorDesc));
-        checkCUDNN(cudnnCreateTensorDescriptor(&deltaDesc));
-        checkCUDNN(cudnnCreateTensorDescriptor(&inputDeltaDesc));
-        checkCUDNN(cudnnCreateConvolutionDescriptor(&convDesc));
-        checkCUDNN(cudnnCreateFilterDescriptor(&filterDesc));
-        checkCUDNN(cudnnCreateFilterDescriptor(&filterDeltaDesc));
+    int ComputeForwardPropagate(){
+        (this->*pComputeForwardPropagate)();
+        return TRUE;
     }
 
-    void destroyHandles() {
-        checkCUDNN(cudnnDestroyTensorDescriptor(inputTensorDesc));
-        checkCUDNN(cudnnDestroyTensorDescriptor(outputTensorDesc));
-        checkCUDNN(cudnnDestroyTensorDescriptor(deltaDesc));
-        checkCUDNN(cudnnDestroyTensorDescriptor(inputDeltaDesc));
-        checkCUDNN(cudnnDestroyConvolutionDescriptor(convDesc));
-        checkCUDNN(cudnnDestroyFilterDescriptor(filterDesc));
-        checkCUDNN(cudnnDestroyFilterDescriptor(filterDeltaDesc));
+    int ComputeBackPropagate(){
+        (this->*pComputeBackPropagate)();
+        return TRUE;
     }
 
-# define mexPrintf    printf
-    inline void gpuAssert(cudaError_t code, char *file, int line, bool abort = true) {
-        if (code != cudaSuccess) {
-            mexPrintf("GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
-
-            if (abort) exit(code);
-        }
-    }
-
-# define gpuErrchk(ans)    { gpuAssert((ans), __FILE__, __LINE__); }
-    inline void gpuMemReport(size_t *avail, size_t *total,
-                             const char *title = 0, const size_t *free = 0, const bool sense = true) {
-        char tstring[32] = { '\0' };
-
-        gpuErrchk(cudaMemGetInfo(avail, total));
-
-        if (free) {
-            if (title) {
-                strncpy(tstring, title, 31);
-            }
-            mexPrintf("%s Memory avaliable: Free: %zu, Total: %zu, %s: %zu\n",
-                      tstring, *avail, *total, (sense) ? "Allocated\0" : "Freed\0",
-                      (sense) ? (*free - *avail) : (*avail - *free));
-        } else {
-            mexPrintf("Memory avaliable: Free: %zu, Total: %zu\n", *avail, *total);
-        }
-    }
-
-#endif  // if __CUDNN__
-
-    int ComputeForwardPropagate_() {
+    int ComputeForwardPropagateOnCPU() {
         Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
         Shape *shapeOfInput  = input->GetShape();
 
@@ -187,7 +140,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagate_() {
+    int ComputeBackPropagateOnCPU() {
         Tensor<DTYPE> *input       = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
         Shape *shapeOfInput        = input->GetShape();
@@ -248,8 +201,61 @@ public:
         return TRUE;
     }
 
+    void SetModeCPU() {
+        pComputeForwardPropagate = &Convolution2D<DTYPE>::ComputeForwardPropagateOnCPU;
+        pComputeBackPropagate    = &Convolution2D<DTYPE>::ComputeBackPropagateOnCPU;
+    }
+
 #if __CUDNN__
-    int ComputeForwardPropagate() {
+    void createHandles() {
+        checkCUDNN(cudnnCreateTensorDescriptor(&inputTensorDesc));
+        checkCUDNN(cudnnCreateTensorDescriptor(&outputTensorDesc));
+        checkCUDNN(cudnnCreateTensorDescriptor(&deltaDesc));
+        checkCUDNN(cudnnCreateTensorDescriptor(&inputDeltaDesc));
+        checkCUDNN(cudnnCreateConvolutionDescriptor(&convDesc));
+        checkCUDNN(cudnnCreateFilterDescriptor(&filterDesc));
+        checkCUDNN(cudnnCreateFilterDescriptor(&filterDeltaDesc));
+    }
+
+    void destroyHandles() {
+        checkCUDNN(cudnnDestroyTensorDescriptor(inputTensorDesc));
+        checkCUDNN(cudnnDestroyTensorDescriptor(outputTensorDesc));
+        checkCUDNN(cudnnDestroyTensorDescriptor(deltaDesc));
+        checkCUDNN(cudnnDestroyTensorDescriptor(inputDeltaDesc));
+        checkCUDNN(cudnnDestroyConvolutionDescriptor(convDesc));
+        checkCUDNN(cudnnDestroyFilterDescriptor(filterDesc));
+        checkCUDNN(cudnnDestroyFilterDescriptor(filterDeltaDesc));
+    }
+
+# define mexPrintf    printf
+    inline void gpuAssert(cudaError_t code, char *file, int line, bool abort = true) {
+        if (code != cudaSuccess) {
+            mexPrintf("GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+
+            if (abort) exit(code);
+        }
+    }
+
+# define gpuErrchk(ans)    { gpuAssert((ans), __FILE__, __LINE__); }
+    inline void gpuMemReport(size_t *avail, size_t *total,
+                             const char *title = 0, const size_t *free = 0, const bool sense = true) {
+        char tstring[32] = { '\0' };
+
+        gpuErrchk(cudaMemGetInfo(avail, total));
+
+        if (free) {
+            if (title) {
+                strncpy(tstring, title, 31);
+            }
+            mexPrintf("%s Memory avaliable: Free: %zu, Total: %zu, %s: %zu\n",
+                      tstring, *avail, *total, (sense) ? "Allocated\0" : "Freed\0",
+                      (sense) ? (*free - *avail) : (*avail - *free));
+        } else {
+            mexPrintf("Memory avaliable: Free: %zu, Total: %zu\n", *avail, *total);
+        }
+    }
+
+    int ComputeForwardPropagateOnGPU() {
         Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
         Shape *shapeOfInput  = input->GetShape();
 
@@ -394,7 +400,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagate() {
+    int ComputeBackPropagateOnGPU() {
         Tensor<DTYPE> *input       = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
         Shape *shapeOfInput        = input->GetShape();
@@ -572,6 +578,11 @@ public:
         delete[] hostDelta;
 
         return TRUE;
+    }
+
+    void SetModeGPU() {
+        pComputeForwardPropagate = &Convolution2D<DTYPE>::ComputeForwardPropagateOnGPU;
+        pComputeBackPropagate    = &Convolution2D<DTYPE>::ComputeBackPropagateOnGPU;
     }
 
 #endif  // if __CUDNN__
