@@ -69,10 +69,10 @@ public:
     void                              SetModeInferencing();
 
 #if __CUDNN__
-    void                              SetModeGPU();
+    void                              SetDeviceGPU();
 #endif  // __CUDNN__
 
-    void                              SetModeCPU();
+    void                              SetDeviceCPU();
 
     // =======
     int                               CreateGraph();

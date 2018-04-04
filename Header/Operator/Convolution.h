@@ -201,7 +201,7 @@ public:
         return TRUE;
     }
 
-    void SetModeCPU() {
+    void SetDeviceCPU() {
         pComputeForwardPropagate = &Convolution2D<DTYPE>::ComputeForwardPropagateOnCPU;
         pComputeBackPropagate    = &Convolution2D<DTYPE>::ComputeBackPropagateOnCPU;
     }
@@ -580,7 +580,7 @@ public:
         return TRUE;
     }
 
-    void SetModeGPU() {
+    void SetDeviceGPU() {
         pComputeForwardPropagate = &Convolution2D<DTYPE>::ComputeForwardPropagateOnGPU;
         pComputeBackPropagate    = &Convolution2D<DTYPE>::ComputeBackPropagateOnGPU;
     }

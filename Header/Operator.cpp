@@ -387,11 +387,11 @@ template<typename DTYPE> void Operator<DTYPE>::SetModeInferencing() {
     // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
 }
 
-template<typename DTYPE> void Operator<DTYPE>::SetModeGPU() {
+template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
     // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
 }
 
-template<typename DTYPE> void Operator<DTYPE>::SetModeCPU() {
+template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
     // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
 }
 

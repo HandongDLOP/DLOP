@@ -9,8 +9,11 @@ enum Mode {
     TRAINING,
     ACCUMULATING,
     INFERENCING,
+};
+
+enum Device {
     CPU,
-    GPU
+    GPU,
 };
 
 template<typename DTYPE> class Operator {
@@ -103,8 +106,8 @@ public:
     virtual void SetModeAccumulating();
     virtual void SetModeInferencing();
 
-    virtual void SetModeGPU();
-    virtual void SetModeCPU();
+    virtual void SetDeviceGPU();
+    virtual void SetDeviceCPU();
 };
 
 #endif  // OPERATOR_H_

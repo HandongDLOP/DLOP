@@ -27,7 +27,8 @@ int main(int argc, char const *argv[]) {
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
 
     net->PrintGraphShape();
-    net->SetModeGPU();
+
+    net->SetDeviceGPU();
 
     // pytorch check하기
     for (int i = 0; i < EPOCH; i++) {

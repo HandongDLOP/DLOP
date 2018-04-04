@@ -306,18 +306,18 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeInferencing() {
 
 #if __CUDNN__
 
-template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeGPU() {
+template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
     // std::cout << "NeuralNetwork<DTYPE>::SetModeGPU()" << '\n';
     for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->SetModeGPU();
+        (*m_aaOperator)[i]->SetDeviceGPU();
     }
 }
 
 #endif  // __CUDNN__
 
-template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeCPU() {
+template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceCPU() {
     for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->SetModeCPU();
+        (*m_aaOperator)[i]->SetDeviceCPU();
     }
 }
 
