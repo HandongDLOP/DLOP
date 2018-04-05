@@ -3,7 +3,7 @@
 
 #include "Optimizer_utils.h"
 
-template<typename DTYPE> class Layer {
+template<typename DTYPE> class Layer : public Operator<DTYPE>{
 private:
     Container<Operator<DTYPE> *> *m_aaOperator;
     Container<Tensorholder<DTYPE> *> *m_aaParameter;
@@ -12,8 +12,6 @@ private:
     int m_numOfOperator;
     int m_numOfParameter;
     int m_numOfLayer;
-
-    std::string m_name;
 
 public:
     Layer(std::string pName = "No Name");
@@ -38,6 +36,29 @@ public:
 
     Operator<DTYPE>                 * PopOperator();
     Tensorholder<DTYPE>             * PopParameter();
+
+    Tensor<DTYPE>                   * GetResult() const;
+    Container<Tensor<DTYPE> *>      * GetResultContainer();
+
+    Tensor<DTYPE>                   * GetGradient() const;
+    Container<Tensor<DTYPE> *>      * GetGradientContainer();
+
+    Tensor<DTYPE>                   * GetDelta() const;
+    Container<Tensor<DTYPE> *>      * GetDeltaContainer();
+
+    int                               ComputeForwardPropagate();
+    int                               ComputeBackPropagate();
+
+    Operator<DTYPE>                 * GetLastOperator();
+
+    void                              SetDeviceCPU();
+#if __CUDNN__
+    void                              SetDeviceGPU();
+    void                              SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
+#endif  // if __CUDNN__
+
+    int                               ResetResult();
+    int                               ResetGradient();
 };
 
 #endif  // ifndef __LAYER__

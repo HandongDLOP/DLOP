@@ -8,3 +8,4 @@
 main_.cpp
 HGUNeuralNetworks/*
 CIFAR_Tutorial/*
+cudacode.cpp

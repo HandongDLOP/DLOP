@@ -4,7 +4,7 @@ template class Layer<int>;
 template class Layer<float>;
 template class Layer<double>;
 
-template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) {
+template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) : Operator<DTYPE>(pName) {
     std::cout << "Layer<DTYPE>::Layer()" << '\n';
     m_aaOperator  = NULL;
     m_aaParameter = NULL;
@@ -13,7 +13,6 @@ template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) {
     m_numOfOperator  = 0;
     m_numOfParameter = 0;
     m_numOfLayer     = 0;
-    m_name           = pName;
     Alloc();
 }
 
@@ -117,10 +116,6 @@ template<typename DTYPE> int Layer<DTYPE>::GetNumOfParameter() {
     return m_numOfParameter;
 }
 
-template<typename DTYPE> std::string Layer<DTYPE>::GetName() {
-    return m_name;
-}
-
 template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::PopOperator() {
     m_numOfOperator--;
     return m_aaOperator->Pop();
@@ -129,4 +124,81 @@ template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::PopOperator() {
 template<typename DTYPE> Tensorholder<DTYPE> *Layer<DTYPE>::PopParameter() {
     m_numOfParameter--;
     return m_aaParameter->Pop();
+}
+
+template<typename DTYPE> Tensor<DTYPE> *Layer<DTYPE>::GetResult() const {
+    return m_aaOperator->GetLast()->GetResult();
+}
+
+template<typename DTYPE> Container<Tensor<DTYPE> *> *Layer<DTYPE>::GetResultContainer() {
+    return m_aaOperator->GetLast()->GetResultContainer();
+}
+
+template<typename DTYPE> Tensor<DTYPE> *Layer<DTYPE>::GetGradient() const {
+    return m_aaOperator->GetLast()->GetGradient();
+}
+
+template<typename DTYPE> Container<Tensor<DTYPE> *> *Layer<DTYPE>::GetGradientContainer() {
+    return m_aaOperator->GetLast()->GetGradientContainer();
+}
+
+template<typename DTYPE> Tensor<DTYPE> *Layer<DTYPE>::GetDelta() const {
+    return m_aaOperator->GetLast()->GetDelta();
+}
+
+template<typename DTYPE> Container<Tensor<DTYPE> *> *Layer<DTYPE>::GetDeltaContainer() {
+    return m_aaOperator->GetLast()->GetDeltaContainer();
+}
+
+template<typename DTYPE> int Layer<DTYPE>::ComputeForwardPropagate() {
+    for (int i = 0; i < m_numOfOperator; i++) {
+        (*m_aaOperator)[i]->ComputeForwardPropagate();
+    }
+    return TRUE;
+}
+
+template<typename DTYPE> int Layer<DTYPE>::ComputeBackPropagate() {
+    for (int i = m_numOfOperator - 1; i >= 0; i--) {
+        (*m_aaOperator)[i]->ComputeBackPropagate();
+    }
+    return TRUE;
+}
+
+template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::GetLastOperator() {
+    return m_aaOperator->GetLast();
+}
+
+template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU() {
+    for (int i = 0; i < m_numOfOperator; i++) {
+        (*m_aaOperator)[i]->SetDeviceCPU();
+    }
+}
+
+#ifdef __CUDNN__
+template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU() {
+    for (int i = 0; i < m_numOfOperator; i++) {
+        (*m_aaOperator)[i]->SetDeviceGPU();
+    }
+}
+
+template<typename DTYPE> void Layer<DTYPE>::SetCudnnHandle(cudnnHandle_t& pCudnnHandle) {
+    for (int i = 0; i < m_numOfOperator; i++) {
+        (*m_aaOperator)[i]->SetCudnnHandle(pCudnnHandle);
+    }
+}
+
+#endif  // if __CUDNN__
+
+template<typename DTYPE> int Layer<DTYPE>::ResetResult() {
+    for (int i = m_numOfOperator - 1; i >= 0; i--) {
+        (*m_aaOperator)[i]->ResetResult();
+    }
+    return TRUE;
+}
+
+template<typename DTYPE> int Layer<DTYPE>::ResetGradient() {
+    for (int i = m_numOfOperator - 1; i >= 0; i--) {
+        (*m_aaOperator)[i]->ResetGradient();
+    }
+    return TRUE;
 }

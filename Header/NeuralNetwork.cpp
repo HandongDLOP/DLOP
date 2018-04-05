@@ -119,22 +119,26 @@ template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddParameter
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddLayer(Layer<DTYPE> *pLayer) {
-    int pNumOfOperator  = pLayer->GetNumOfOperator();
+    // int pNumOfOperator  = pLayer->GetNumOfOperator();
     int pNumOfParameter = pLayer->GetNumOfParameter();
 
-    for (int i = 0; i < pNumOfOperator; i++) {
-        m_aaOperator->Push(pLayer->PopOperator());
-        m_OperatorDegree++;
-    }
+    m_aaOperator->Push(pLayer);
+    m_OperatorDegree++;
+
+    // for (int i = 0; i < pNumOfOperator; i++) {
+    //     m_aaOperator->Push(pLayer->PopOperator());
+    //     m_OperatorDegree++;
+    // }
 
     for (int i = 0; i < pNumOfParameter; i++) {
         m_aaTensorholder->Push(pLayer->PopParameter());
         m_TensorholderDegree++;
     }
 
-    m_aaLayer->Push(pLayer);
+    // m_aaLayer->Push(pLayer);
 
-    return m_aaOperator->GetLast();
+    // return m_aaOperator->GetLast();
+    return pLayer->GetLastOperator();
 }
 
 template<typename DTYPE> Objective<DTYPE> *NeuralNetwork<DTYPE>::SetObjective(Objective<DTYPE> *pObjective) {
@@ -179,6 +183,8 @@ template<typename DTYPE> float NeuralNetwork<DTYPE>::GetAccuracy() {
 
     Tensor<DTYPE> *pred = result->GetResult();
     Tensor<DTYPE> *ans  = label->GetResult();
+
+    // std::cout << pred << '\n';
 
     float accuracy = 0.f;
 
@@ -303,6 +309,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeInferencing() {
 template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
     // std::cout << "NeuralNetwork<DTYPE>::SetModeGPU()" << '\n';
     for (int i = 0; i < m_OperatorDegree; i++) {
+        // important order
         (*m_aaOperator)[i]->SetDeviceGPU();
         (*m_aaOperator)[i]->SetCudnnHandle(m_cudnnHandle);
     }
@@ -327,7 +334,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::CreateGraph() {
 template<typename DTYPE> int NeuralNetwork<DTYPE>::PrintGraphShape() {
     for (int i = 0; i < m_OperatorDegree; i++) {
         std::cout << (*m_aaOperator)[i]->GetName() << '\n';
-        std::cout << (*m_aaOperator)[i]->GetResult()->GetShape() << '\n';
+        // std::cout << (*m_aaOperator)[i]->GetResult()->GetShape() << '\n';
     }
 
     return TRUE;
