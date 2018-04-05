@@ -120,7 +120,11 @@ public:
             return FALSE;
         }
 
-        input->ConvertTo1D(hostInput);
+        for(int i = 0; i < inputCapacity; i++){
+            hostInput[i] = (*input)[i];
+        }
+
+        // input->ConvertTo1D(hostInput);
 
         checkCUDNN(cudnnSetActivationDescriptor(actDesc, CUDNN_ACTIVATION_RELU, CUDNN_PROPAGATE_NAN, 0.0));
         checkCUDNN(cudnnSetTensor4dDescriptor(inputTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
@@ -159,7 +163,8 @@ public:
 
     int ComputeBackPropagate() {
         Tensor<DTYPE> *result      = this->GetResult();
-        Tensor<DTYPE> *this_delta  = this->GetDelta();
+        Tensor<DTYPE> *this_delta  = this->GetGradient();
+        // std::cout << this_delta << '\n';
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
         int capacity               = result->GetCapacity();
 
@@ -188,9 +193,21 @@ public:
             return FALSE;
         }
 
-        input->ConvertTo1D(hostInput);
-        this_delta->ConvertTo1D(hostDelta);
-        result->ConvertTo1D(hostOutput);
+        for(int i = 0; i < inputCapacity; i++){
+            hostInput[i] = (*input)[i];
+        }
+
+        for(int i = 0; i < deltaCapacity; i++){
+            hostDelta[i] = (*this_delta)[i];
+        }
+
+        for(int i = 0; i < outputCapacity; i++){
+            hostOutput[i] = (*result)[i];
+        }
+        //
+        // input->ConvertTo1D(hostInput);
+        // this_delta->ConvertTo1D(hostDelta);
+        // result->ConvertTo1D(hostOutput);
 
         checkCUDNN(cudnnSetActivationDescriptor(actDesc, CUDNN_ACTIVATION_RELU, CUDNN_PROPAGATE_NAN, 0.0));
         checkCUDNN(cudnnSetTensor4dDescriptor(inputTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,

@@ -62,11 +62,6 @@ public:
         int rowsize = 0;
         int colsize = 0;
 
-        if (padding == SAME) {
-            m_padding[0] = (((*shapeOfInput)[3] - 1) * m_stride[0] - (*shapeOfInput)[3] + maskCol) / 2;
-            m_padding[1] = (((*shapeOfInput)[4] - 1) * m_stride[1] - (*shapeOfInput)[4] + maskRow) / 2;
-        }
-
         rowsize = ((*shapeOfInput)[3] - maskRow + (2 * m_padding[0])) / strideRow + 1;
         colsize = ((*shapeOfInput)[4] - maskCol + (2 * m_padding[1])) / strideCol + 1;
 
