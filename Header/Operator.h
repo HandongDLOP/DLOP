@@ -109,6 +109,18 @@ public:
 
     virtual void SetDeviceGPU();
     virtual void SetDeviceCPU();
+
+    virtual int  GetNumOfParameter() {
+        return 0;
+    }
+
+    virtual Container<Tensorholder<DTYPE> *>* GetParameterContainer() {
+        return NULL;
+    }
+
+    virtual Tensorholder<DTYPE>* PopParameter() {
+        return NULL;
+    }
 };
 
 #endif  // OPERATOR_H_

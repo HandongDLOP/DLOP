@@ -32,7 +32,7 @@ public:
     Operator<DTYPE>    * AddOperator(Operator<DTYPE> *pOperator);
     Tensorholder<DTYPE>* AddTensorholder(Tensorholder<DTYPE> *pTensorholder);
     Tensorholder<DTYPE>* AddParameter(Tensorholder<DTYPE> *pTensorholder);
-    Operator<DTYPE>    * AddLayer(Layer<DTYPE> *pLayer);
+    // Operator<DTYPE>    * AddLayer(Layer<DTYPE> *pLayer);
 
     Objective<DTYPE>   * SetObjective(Objective<DTYPE> *pObjective);
     Optimizer<DTYPE>   * SetOptimizer(Optimizer<DTYPE> *pOptimizer);

@@ -6,7 +6,7 @@
 #include "MNIST_Reader.h"
 #include <time.h>
 
-#define BATCH             20
+#define BATCH             100
 #define EPOCH             100
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
@@ -18,10 +18,10 @@ int main(int argc, char const *argv[]) {
     Tensorholder<float> *label = new Tensorholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // ======================= Select net ===================
-    NeuralNetwork<float> *net = new my_CNN(x, label);
+    // NeuralNetwork<float> *net = new my_CNN(x, label);
     // NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
     // NeuralNetwork<float> *net = new my_NN(x, label, isMLP);
-    // NeuralNetwork<float> *net = Resnet14<float>(x, label);
+    NeuralNetwork<float> *net = Resnet14<float>(x, label);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();

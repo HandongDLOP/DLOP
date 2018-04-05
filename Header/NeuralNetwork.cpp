@@ -101,8 +101,16 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Operator<DTYPE> *pOperator) {
+    int pNumOfParameter = pOperator->GetNumOfParameter();
+
     m_aaOperator->Push(pOperator);
     m_OperatorDegree++;
+
+    for (int i = 0; i < pNumOfParameter; i++) {
+        m_aaTensorholder->Push(pOperator->PopParameter());
+        m_TensorholderDegree++;
+    }
+
     return pOperator;
 }
 
@@ -118,28 +126,19 @@ template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddParameter
     return pTensorholder;
 }
 
-template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddLayer(Layer<DTYPE> *pLayer) {
-    // int pNumOfOperator  = pLayer->GetNumOfOperator();
-    int pNumOfParameter = pLayer->GetNumOfParameter();
-
-    m_aaOperator->Push(pLayer);
-    m_OperatorDegree++;
-
-    // for (int i = 0; i < pNumOfOperator; i++) {
-    //     m_aaOperator->Push(pLayer->PopOperator());
-    //     m_OperatorDegree++;
-    // }
-
-    for (int i = 0; i < pNumOfParameter; i++) {
-        m_aaTensorholder->Push(pLayer->PopParameter());
-        m_TensorholderDegree++;
-    }
-
-    // m_aaLayer->Push(pLayer);
-
-    // return m_aaOperator->GetLast();
-    return pLayer->GetLastOperator();
-}
+// template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddLayer(Layer<DTYPE> *pLayer) {
+//     int pNumOfParameter = pLayer->GetNumOfParameter();
+//
+//     m_aaOperator->Push(pLayer);
+//     m_OperatorDegree++;
+//
+//     for (int i = 0; i < pNumOfParameter; i++) {
+//         m_aaTensorholder->Push(pLayer->PopParameter());
+//         m_TensorholderDegree++;
+//     }
+//
+//     return pLayer;
+// }
 
 template<typename DTYPE> Objective<DTYPE> *NeuralNetwork<DTYPE>::SetObjective(Objective<DTYPE> *pObjective) {
     m_aObjective = pObjective;
