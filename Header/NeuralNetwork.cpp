@@ -7,10 +7,6 @@ template class NeuralNetwork<double>;
 template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     std::cout << "NeuralNetwork<DTYPE>::NeuralNetwork()" << '\n';
 
-#if __CUDNN__
-    checkCUDNN(cudnnCreate(&m_cudnnHandle));
-#endif  // if __CUDNN__
-
     m_aaOperator     = NULL;
     m_aaTensorholder = NULL;
     m_aaLayer        = NULL;
@@ -27,11 +23,6 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
 template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
     std::cout << "NeuralNetwork<DTYPE>::~NeuralNetwork()" << '\n';
 
-#if __CUDNN__
-    checkCudaErrors(cudaDeviceSynchronize());
-    checkCUDNN(cudnnDestroy(m_cudnnHandle));
-#endif  // if __CUDNN__
-
     this->Delete();
 }
 
@@ -39,6 +30,10 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
     m_aaOperator     = new Container<Operator<DTYPE> *>();
     m_aaTensorholder = new Container<Tensorholder<DTYPE> *>();
     m_aaLayer        = new Container<Layer<DTYPE> *>();
+
+#if __CUDNN__
+    checkCUDNN(cudnnCreate(&m_cudnnHandle));
+#endif  // if __CUDNN__
 
     return TRUE;
 }
@@ -98,12 +93,14 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         delete m_aOptimizer;
         m_aOptimizer = NULL;
     }
+
+#if __CUDNN__
+    checkCudaErrors(cudaDeviceSynchronize());
+    checkCUDNN(cudnnDestroy(m_cudnnHandle));
+#endif  // if __CUDNN__
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Operator<DTYPE> *pOperator) {
-#if __CUDNN__
-    pOperator->SetCudnnHandle(m_cudnnHandle);
-#endif  // if __CUDNN__
     m_aaOperator->Push(pOperator);
     m_OperatorDegree++;
     return pOperator;
@@ -128,9 +125,6 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddLayer(Layer<D
     for (int i = 0; i < pNumOfOperator; i++) {
         m_aaOperator->Push(pLayer->PopOperator());
         m_OperatorDegree++;
-#if __CUDNN__
-        (*m_aaOperator)[m_OperatorDegree - 1]->SetCudnnHandle(m_cudnnHandle);
-#endif  // if __CUDNN__
     }
 
     for (int i = 0; i < pNumOfParameter; i++) {
@@ -310,6 +304,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
     // std::cout << "NeuralNetwork<DTYPE>::SetModeGPU()" << '\n';
     for (int i = 0; i < m_OperatorDegree; i++) {
         (*m_aaOperator)[i]->SetDeviceGPU();
+        (*m_aaOperator)[i]->SetCudnnHandle(m_cudnnHandle);
     }
 }
 

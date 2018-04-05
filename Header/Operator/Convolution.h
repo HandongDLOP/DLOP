@@ -304,7 +304,7 @@ public:
          * BUT, THESE ALREADY EXIST IN OUR MODEL*/
         // cudnnGetConvolutionNdForwardOutputDim( ... )
         checkCUDNN(cudnnSetTensor4dDescriptor(outputTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
-                                              n, channelsize, rowsize, colsize));
+                                              batchsize, channelsize, rowsize, colsize));
 
         /* FIND THE BEST ALGORITHM ACCORDING TO PREFERENCE */
         // CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT
