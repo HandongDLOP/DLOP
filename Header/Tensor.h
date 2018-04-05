@@ -13,6 +13,11 @@ template<typename DTYPE> class Tensor {
 private:
     Shape *m_aShape;
     Data<DTYPE> *m_aData;
+// #ifdef __DATA_CLASS__
+//     Data<DTYPE> *m_aData;
+// #else // ifdef __DATA_CLASS__
+//     DTYPE *m_aData;
+// #endif  // __DATA_CLASS__
 
 public:
     Tensor();
@@ -42,7 +47,6 @@ public:
     ///////////////////////////////////////////////////////////////////
 
     int  Reshape(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
-    void ConvertTo1D(DTYPE *dst);
     void Reset();
 
     ///////////////////////////////////////////////////////////////////

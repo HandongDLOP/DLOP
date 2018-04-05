@@ -144,14 +144,6 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pTimeSize, int pBatchSiz
     return TRUE;
 }
 
-template<typename DTYPE> void Tensor<DTYPE>::ConvertTo1D(DTYPE *dst) {
-    int capacity = GetCapacity();
-
-    for (int i = 0; i < capacity; i++) {
-        dst[i] = (*m_aData)[i];
-    }
-}
-
 template<typename DTYPE> void Tensor<DTYPE>::Reset() {
     int capacity = GetCapacity();
 

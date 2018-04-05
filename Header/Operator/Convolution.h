@@ -71,18 +71,22 @@ public:
         checkCUDNN(cudnnCreateConvolutionDescriptor(&convDesc));
         checkCUDNN(cudnnCreateFilterDescriptor(&filterDesc));
         checkCUDNN(cudnnCreateFilterDescriptor(&filterDeltaDesc));
-        // for cudnn
-        m_pDevInput      = NULL;
-        m_pDevFilter     = NULL;
-        m_pDevOutput     = NULL;
-        m_pDevInputDelta = NULL;
-        m_pDevDelta      = NULL;
 
-        m_aHostInput      = new DTYPE[pInput->GetResult()->GetCapacity()];
-        m_aHostOutput     = new DTYPE[this->GetResult()->GetCapacity()];
-        m_aHostFilter     = new DTYPE[pWeight->GetResult()->GetCapacity()];
-        m_aHostInputDelta = new DTYPE[pInput->GetResult()->GetCapacity()];
-        m_aHostDelta      = new DTYPE[this->GetResult()->GetCapacity()];
+        int inputCapacity  = pInput->GetResult()->GetCapacity();
+        int outputCapacity = this->GetResult()->GetCapacity();
+        int filterCapacity = pWeight->GetResult()->GetCapacity();
+
+        checkCudaErrors(cudaMalloc((void**)&m_pDevInput, (inputCapacity * sizeof(DTYPE))));
+        checkCudaErrors(cudaMalloc((void**)&m_pDevOutput, (outputCapacity * sizeof(DTYPE))));
+        checkCudaErrors(cudaMalloc((void**)&m_pDevFilter, (filterCapacity * sizeof(DTYPE))));
+        checkCudaErrors(cudaMalloc((void**)&m_pDevInputDelta, (inputCapacity) * sizeof(DTYPE)));
+        checkCudaErrors(cudaMalloc((void**)&m_pDevDelta, (outputCapacity) * sizeof(DTYPE)));
+
+        m_aHostInput      = new DTYPE[inputCapacity];
+        m_aHostOutput     = new DTYPE[outputCapacity];
+        m_aHostFilter     = new DTYPE[filterCapacity];
+        m_aHostInputDelta = new DTYPE[inputCapacity];
+        m_aHostDelta      = new DTYPE[outputCapacity];
 
 #endif  // if __CUDNN__
 
@@ -98,6 +102,12 @@ public:
         checkCUDNN(cudnnDestroyConvolutionDescriptor(convDesc));
         checkCUDNN(cudnnDestroyFilterDescriptor(filterDesc));
         checkCUDNN(cudnnDestroyFilterDescriptor(filterDeltaDesc));
+
+        checkCudaErrors(cudaFree(m_pDevInput));
+        checkCudaErrors(cudaFree(m_pDevOutput));
+        checkCudaErrors(cudaFree(m_pDevFilter));
+        checkCudaErrors(cudaFree(m_pDevInputDelta));
+        checkCudaErrors(cudaFree(m_pDevDelta));
 
         delete[] m_aHostInput;
         delete[] m_aHostOutput;
@@ -269,15 +279,16 @@ public:
         int inputCapacity  = input->GetCapacity();
         int filterCapacity = weight->GetCapacity();
 
-        input->ConvertTo1D(m_aHostInput);
-        weight->ConvertTo1D(m_aHostFilter);
+        for (int i = 0; i < inputCapacity; i++) {
+            m_aHostInput[i] = (*input)[i];
+        }
 
-        checkCudaErrors(cudaMalloc(&m_pDevInput, (inputCapacity * sizeof(DTYPE))));
-        checkCudaErrors(cudaMalloc(&m_pDevFilter, (filterCapacity * sizeof(DTYPE))));
+        for (int i = 0; i < filterCapacity; i++) {
+            m_aHostFilter[i] = (*weight)[i];
+        }
 
         checkCudaErrors(cudaMemcpy(m_pDevInput, m_aHostInput, (inputCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
         checkCudaErrors(cudaMemcpy(m_pDevFilter, m_aHostFilter, (filterCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
-
 
         cudnnConvolutionFwdAlgo_t algo;
 
@@ -328,8 +339,6 @@ public:
         DTYPE beta           = 0;
         int   outputCapacity = result->GetCapacity();
 
-        checkCudaErrors(cudaMalloc(&m_pDevOutput, (outputCapacity * sizeof(DTYPE))));
-
         checkCUDNN(cudnnConvolutionForward(this->GetCudnnHandle(), &alpha, inputTensorDesc, m_pDevInput, filterDesc, m_pDevFilter, convDesc,
                                            algo, devWorkSpace, sizeInBytes, &beta, outputTensorDesc, m_pDevOutput));
 
@@ -346,14 +355,6 @@ public:
         }
 
         checkCudaErrors(cudaDeviceSynchronize());
-
-        checkCudaErrors(cudaFree(m_pDevInput));
-        checkCudaErrors(cudaFree(m_pDevFilter));
-        checkCudaErrors(cudaFree(m_pDevOutput));
-
-        m_pDevInput  = NULL;
-        m_pDevFilter = NULL;
-        m_pDevOutput = NULL;
 
         return TRUE;
     }
@@ -394,14 +395,13 @@ public:
         int inputCapacity  = input->GetCapacity();
         int filterCapacity = weight->GetCapacity();
 
+        for (int i = 0; i < inputCapacity; i++) {
+            m_aHostInput[i] = (*input)[i];
+        }
 
-        input->ConvertTo1D(m_aHostInput);
-        weight->ConvertTo1D(m_aHostFilter);
-
-        // printf("\n***** TEMPORARY VARIABLES ARE COPIED *****\n");
-        checkCudaErrors(cudaMalloc(&m_pDevInput, (inputCapacity * sizeof(DTYPE))));
-        // checkCudaErrors(cudaMalloc(&m_pDevOutput, (outputCapacity * sizeof(DTYPE)) ));
-        checkCudaErrors(cudaMalloc(&m_pDevFilter, (filterCapacity * sizeof(DTYPE))));
+        for (int i = 0; i < filterCapacity; i++) {
+            m_aHostFilter[i] = (*weight)[i];
+        }
 
         checkCudaErrors(cudaMemcpy(m_pDevInput, m_aHostInput, (inputCapacity) * sizeof(DTYPE), cudaMemcpyHostToDevice));
         checkCudaErrors(cudaMemcpy(m_pDevFilter, m_aHostFilter, (filterCapacity) * sizeof(DTYPE), cudaMemcpyHostToDevice));
@@ -415,7 +415,6 @@ public:
         checkCUDNN(cudnnSetTensor4dDescriptor(inputTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
                                               n, ch, h, w));
 
-        // cudnnSetFilter4dDescriptor(filterDesc, DATA_TYPE, TENSOR_FORMAT, k, c, h, w)
 
         /* k : # of output feature map,       c : # of input feature map,
          * h : height of each filter,         w : width of each filter */
@@ -475,10 +474,9 @@ public:
         int inputDeltaCapacity = input->GetCapacity();
         int deltaCapacity      = this_delta->GetCapacity();
 
-        checkCudaErrors(cudaMalloc(&m_pDevInputDelta, (inputDeltaCapacity) * sizeof(DTYPE)));
-        checkCudaErrors(cudaMalloc(&m_pDevDelta, (deltaCapacity) * sizeof(DTYPE)));
-
-        this_delta->ConvertTo1D(m_aHostDelta);
+        for(int i = 0; i < deltaCapacity; i++){
+            m_aHostDelta[i] = (*this_delta)[i];
+        }
 
         checkCudaErrors(cudaMemcpy(m_pDevDelta, m_aHostDelta, (deltaCapacity) * sizeof(DTYPE), cudaMemcpyHostToDevice));
 
@@ -507,11 +505,6 @@ public:
         if (filterSizeInBytes != 0) {
             checkCudaErrors(cudaFree(filterDevWorkSpace));
         }
-
-        checkCudaErrors(cudaFree(m_pDevInput));
-        checkCudaErrors(cudaFree(m_pDevFilter));
-        checkCudaErrors(cudaFree(m_pDevInputDelta));
-        checkCudaErrors(cudaFree(m_pDevDelta));
 
         return TRUE;
     }
