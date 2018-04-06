@@ -4,8 +4,16 @@
 #include "..//Operator.h"
 #include "..//Operator_utils.h"
 
+#define INPUT         0
+#define WEIGHTINPUT   1
+#define WEIGHTHIDDEN  2
+#define WEIGHTOUTPUT  3
+#define BIASINPUT     4
+#define BIASOUTPUT    5
+
 template<typename DTYPE> class Recurrent : public Operator<DTYPE>{
 private:
+    int m_activeHidden;
     int m_hiddenSize;
 
     Tensor<DTYPE> *input_Result;
@@ -14,6 +22,7 @@ private:
     Tensor<DTYPE> *net_Result;
     Tensor<DTYPE> *hidden_Result;
     Tensor<DTYPE> *output_Result;
+    Tensor<DTYPE> *hidden;
 
     Tensor<DTYPE> *input_temp;
     Tensor<DTYPE> *hidden_temp;
@@ -35,9 +44,9 @@ private:
     Tensor<DTYPE> *zero_tensor;
 
 public:
-    Recurrent(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeightInput, Operator<DTYPE> *pWeightHidden, Operator<DTYPE> *pWeightOutput, Operator<DTYPE> *pBiasInput, Operator<DTYPE> *pBiasHidden, Operator<DTYPE> *pBiasOutput, int pHiddenSize, std::string pName)
-        : Operator<DTYPE>(pInput, pWeightInput, pWeightHidden, pWeightOutput, pBiasInput, pBiasHidden, pBiasOutput, pName) {
-        Alloc(pInput, pWeightInput, pWeightHidden, pWeightOutput, pBiasInput, pBiasHidden, pBiasOutput, pHiddenSize);
+    Recurrent(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeightInput, Operator<DTYPE> *pWeightHidden, Operator<DTYPE> *pWeightOutput, Operator<DTYPE> *pBiasInput, Operator<DTYPE> *pBiasOutput, int pHiddenSize, std::string pName)
+        : Operator<DTYPE>(pInput, pWeightInput, pWeightHidden, pWeightOutput, pBiasInput, pBiasOutput, pName) {
+        Alloc(pInput, pWeightInput, pWeightHidden, pWeightOutput, pBiasInput, pBiasOutput, pHiddenSize);
     }
 
     ~Recurrent() {
@@ -49,6 +58,11 @@ public:
         if (input_Result) {
             delete input_Result;
             input_Result = NULL;
+        }
+
+        if (hidden) {
+            delete[] hidden;
+            hidden = NULL;
         }
 
         if (pre_hidden_Result) {
@@ -154,7 +168,7 @@ public:
     }
 
     int Alloc(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeightInput, Operator<DTYPE> *pWeightHidden, Operator<DTYPE> *pWeightOutput,
-              Operator<DTYPE> *pBiasInput, Operator<DTYPE> *pBiasHidden, Operator<DTYPE> *pBiasOutput, int pHiddenSize) {
+              Operator<DTYPE> *pBiasInput, Operator<DTYPE> *pBiasOutput, int pHiddenSize) {
         // input은 onehot이어야 한다.
         Shape *shapeOfInput        = pInput->GetResult()->GetShape();
         Shape *shapeOfWeightInput  = pWeightInput->GetResult()->GetShape();
@@ -177,6 +191,12 @@ public:
         this->AddResult(net_Result);
 
         hidden_Result = Tensor<DTYPE>::Constants((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4], 0);
+        this->AddResult(hidden_Result);
+
+        //(*hidden) = Tensor<DTYPE>()[2];
+        hidden[0] = Tensor<DTYPE>::Constants((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4], 0);
+        hidden[1] = Tensor<DTYPE>::Constants((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4], 0);
+
         this->AddResult(hidden_Result);
 
         // -----------bias temp-----------
@@ -236,19 +256,71 @@ public:
         // this->AddGradient(output_Gradient);
 
         m_hiddenSize = pHiddenSize;
-
+        m_activeHidden = 0;
         return TRUE;
+    }
+
+    //Tensor<DTYPE>* step(Tensor<DTYPE> *input, Tensor<DTYPE>* output, int ti){
+    int step(){
+
+      //m_pInput = pInput;			// for training
+
+    	Tensor<DTYPE> *prevHidden = hidden[m_activeHidden];
+    	m_activeHidden = 1 - m_activeHidden;			// toggle current hidden and previous hidden
+    	Tensor<DTYPE> *currHidden = hidden[m_activeHidden];
+
+      printf("==================================step======================================\n");
+      Tensor<DTYPE> *input        = this->GetInput()[INPUT]->GetResult();
+      Tensor<DTYPE> *weightInput  = this->GetInput()[WEIGHTINPUT]->GetResult();
+      Tensor<DTYPE> *weightHidden = this->GetInput()[WEIGHTHIDDEN]->GetResult();
+      Tensor<DTYPE> *weightOutput = this->GetInput()[WEIGHTOUTPUT]->GetResult();
+      Tensor<DTYPE> *biasInput    = this->GetInput()[BIASINPUT]->GetResult();
+      Tensor<DTYPE> *biasOutput   = this->GetInput()[BIASOUTPUT]->GetResult();
+
+      Shape *shapeOfInput = input->GetShape();
+      int timesize = (*shapeOfInput)[0];
+
+      for (int ti = 0; ti < timesize; ti++) {
+          //Linear(input, weightInput, biasInput, input_Result, ti, TRUE);
+          MatMul(input, weightInput, input_temp, ti);
+printf("input_temp\n");
+std::cout<< input_temp << std::endl;
+          Add(input_temp, biasInput, input_Result, ti);
+printf("input_Result\n");
+std::cout<< input_Result << std::endl;
+
+          //Linear(pre_hidden_Result, weightHidden, biasHidden, pre_net_Result, ti, TRUE);    // WX + b
+          MatMul(prevHidden, weightHidden, hidden_temp, ti);
+          Add(hidden_temp, biasInput, pre_net_Result, ti);
+printf("pre_net_Result\n");
+std::cout<< pre_net_Result << std::endl;
+
+          Add(input_Result, pre_net_Result, net_Result, ti); // net_result   //Tensor + Tensor
+printf("net_Result\n");
+std::cout<< net_Result << std::endl;
+
+          Tanh(net_Result, currHidden, ti);          // hidden_result
+printf("hidden_Result\n");
+std::cout<< hidden_Result << std::endl;
+
+          //Linear(hidden_Result, weightOutput, biasOutput, output_Result, ti, TRUE);
+          MatMul(currHidden, weightOutput, output_temp, ti);
+          Add(output_temp, biasOutput, output_Result, ti);
+printf("output_Result\n");
+std::cout<< output_Result << std::endl;
+        }
+
+        return 0;
     }
 
     int ComputeForwardPropagate() {
         printf("ComputeForwardPropagate()\n");
-        Tensor<DTYPE> *input        = this->GetInput()[0]->GetResult();
-        Tensor<DTYPE> *weightInput  = this->GetInput()[1]->GetResult();
-        Tensor<DTYPE> *weightHidden = this->GetInput()[2]->GetResult();
-        Tensor<DTYPE> *weightOutput = this->GetInput()[3]->GetResult();
-        Tensor<DTYPE> *biasInput    = this->GetInput()[4]->GetResult();
-        Tensor<DTYPE> *biasHidden   = this->GetInput()[5]->GetResult();
-        Tensor<DTYPE> *biasOutput   = this->GetInput()[6]->GetResult();
+        Tensor<DTYPE> *input        = this->GetInput()[INPUT]->GetResult();
+        Tensor<DTYPE> *weightInput  = this->GetInput()[WEIGHTINPUT]->GetResult();
+        Tensor<DTYPE> *weightHidden = this->GetInput()[WEIGHTHIDDEN]->GetResult();
+        Tensor<DTYPE> *weightOutput = this->GetInput()[WEIGHTOUTPUT]->GetResult();
+        Tensor<DTYPE> *biasInput    = this->GetInput()[BIASINPUT]->GetResult();
+        Tensor<DTYPE> *biasOutput   = this->GetInput()[BIASOUTPUT]->GetResult();
 
         Shape *shapeOfInput = input->GetShape();
         int timesize = (*shapeOfInput)[0];
@@ -258,13 +330,13 @@ public:
             MatMul(input, weightInput, input_temp, ti);
 printf("input_temp\n");
 std::cout<< input_temp << std::endl;
-            BiasAdd(input_temp, biasInput, input_Result, ti);
+            Add(input_temp, biasInput, input_Result, ti);
 printf("input_Result\n");
 std::cout<< input_Result << std::endl;
 
             //Linear(pre_hidden_Result, weightHidden, biasHidden, pre_net_Result, ti, TRUE);    // WX + b
             MatMul(pre_hidden_Result, weightHidden, hidden_temp, ti);
-            BiasAdd(hidden_temp, biasHidden, pre_net_Result, ti);
+            Add(hidden_temp, biasInput, pre_net_Result, ti);
 printf("pre_net_Result\n");
 std::cout<< pre_net_Result << std::endl;
 
@@ -284,7 +356,7 @@ std::cout<< pre_hidden_Result << std::endl;
 
             //Linear(hidden_Result, weightOutput, biasOutput, output_Result, ti, TRUE);
             MatMul(hidden_Result, weightOutput, output_temp, ti);
-            BiasAdd(output_temp, biasOutput, output_Result, ti);
+            Add(output_temp, biasOutput, output_Result, ti);
 printf("output_Result\n");
 std::cout<< output_Result << std::endl;
           }
@@ -294,23 +366,23 @@ std::cout<< output_Result << std::endl;
 
     int ComputeBackPropagate() {
         printf("ComputeBackPropagate()\n");
-        Tensor<DTYPE> *input        = this->GetInput()[0]->GetResult();
+        Tensor<DTYPE> *input        = this->GetInput()[INPUT]->GetResult();
 
-        Tensor<DTYPE> *weightInput  = this->GetInput()[1]->GetResult();
+        Tensor<DTYPE> *weightInput  = this->GetInput()[WEIGHTINPUT]->GetResult();
         Tensor<DTYPE> *weightHidden = this->GetInput()[2]->GetResult();
-        Tensor<DTYPE> *weightOutput = this->GetInput()[3]->GetResult();
-        Tensor<DTYPE> *biasInput    = this->GetInput()[4]->GetResult();
+        Tensor<DTYPE> *weightOutput = this->GetInput()[WEIGHTOUTPUT]->GetResult();
+        Tensor<DTYPE> *biasInput    = this->GetInput()[BIASINPUT]->GetResult();
         Tensor<DTYPE> *biasHidden   = this->GetInput()[5]->GetResult();
-        Tensor<DTYPE> *biasOutput   = this->GetInput()[6]->GetResult();
+        Tensor<DTYPE> *biasOutput   = this->GetInput()[BIASOUTPUT]->GetResult();
 
-        Tensor<DTYPE> *weightInputGradient  = this->GetInput()[1]->GetGradient();
+        Tensor<DTYPE> *weightInputGradient  = this->GetInput()[WEIGHTINPUT]->GetGradient();
         Tensor<DTYPE> *weightHiddenGradient = this->GetInput()[2]->GetGradient();
-        Tensor<DTYPE> *weightOutputGradient = this->GetInput()[3]->GetGradient();
-        Tensor<DTYPE> *biasInputGradient    = this->GetInput()[4]->GetGradient();
+        Tensor<DTYPE> *weightOutputGradient = this->GetInput()[WEIGHTOUTPUT]->GetGradient();
+        Tensor<DTYPE> *biasInputGradient    = this->GetInput()[BIASINPUT]->GetGradient();
         Tensor<DTYPE> *biasHiddenGradient   = this->GetInput()[5]->GetGradient();
-        Tensor<DTYPE> *biasOutputGradient   = this->GetInput()[6]->GetGradient();
+        Tensor<DTYPE> *biasOutputGradient   = this->GetInput()[BIASOUTPUT]->GetGradient();
 
-        Tensor<DTYPE> *input_delta          = this->GetInput()[0]->GetGradient();
+        Tensor<DTYPE> *input_delta          = this->GetInput()[INPUT]->GetGradient();
 
         Shape *shapeOfInput = input->GetShape();
         int timesize = (*shapeOfInput)[0];
@@ -336,7 +408,7 @@ std::cout<< weightOutput << std::endl;
           MatMul(output_Gradient, weightOutput, linear_output_Gradient, ti);
 printf("linear_output_Gradient\n");
 std::cout<< linear_output_Gradient << std::endl;
-
+//Add
           Add(linear_output_Gradient, next_linear_hidden_Gradient, pre_tanhDer_Gradient, ti);
 printf("pre_tanhDer_Gradient\n");
 std::cout<< pre_tanhDer_Gradient << std::endl;
@@ -345,7 +417,7 @@ std::cout<< pre_tanhDer_Gradient << std::endl;
 printf("DerTanh\n");
 std::cout<< DerTanh << std::endl;
 
-          Elementwise(pre_tanhDer_Gradient, DerTanh, hidden_Gradient, ti);   //Matrix Multiplication ?? or Tensor * scalar ??  // hidden_Gradient
+          MatMulTrans(pre_tanhDer_Gradient, DerTanh, hidden_Gradient, ti);   //Matrix Multiplication ?? or Tensor * scalar ??  // hidden_Gradient
 printf("hidden_Gradient\n");
 std::cout<< hidden_Gradient << std::endl;
 
@@ -470,7 +542,7 @@ std::cout<< "Tanh" << '\n';
             for (int ch = 0; ch < channelsize; ch++) {
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
-                          (*result)[Index5D(result->GetShape(), ti, ba, ch, ro, co)] = this->TANH((*input)[Index5D(input->GetShape(), ti, ba, ch, ro, co)]);
+                          (*result)[Index5D(result->GetShape(), ti, ba, ch, ro, co)] = this->tanh((*input)[Index5D(input->GetShape(), ti, ba, ch, ro, co)]);
 std::cout<<(*result)[Index5D(result->GetShape(), ti, ba, ch, ro, co)]<<'\n';
                     }
                 }
@@ -480,7 +552,7 @@ std::cout<<(*result)[Index5D(result->GetShape(), ti, ba, ch, ro, co)]<<'\n';
         return TRUE;
     }
 
-    inline DTYPE TANH(DTYPE data){
+    inline DTYPE tanh(DTYPE data){
         return ((DTYPE)exp(data) - (DTYPE)exp(-data)) / ((DTYPE)exp(data) + (DTYPE)exp(-data));
     }
 
@@ -492,12 +564,14 @@ std::cout<< "DerivativeTanh" << '\n';
         int colsize     = result->GetColSize();
 
         int capacity          = result->GetCapacity();
+        DTYPE temp = 0.f;
 
         for (int ba = 0; ba < batchsize; ba++) {
             for (int ch = 0; ch < channelsize; ch++) {
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
-                            (*result)[Index5D(result->GetShape(), ti, ba, ch, ro, co)] = (1 - (*input)[Index5D(input->GetShape(), ti, ba, ch, ro, co)] * (*input)[Index5D(input->GetShape(), ti, ba, ch, ro, co)]);
+                        temp = (*input)[Index5D(input->GetShape(), ti, ba, ch, ro, co)];
+                        (*result)[Index5D(result->GetShape(), ti, ba, ch, ro, co)] = 1 - temp * temp;
                     }
                 }
             }
@@ -622,13 +696,13 @@ std::cout << "result[" << Index5D(result->GetShape(), resulttimesize - 1, result
         return TRUE;
     }
 
-    int Elementwise(Tensor<DTYPE> *input, Tensor<DTYPE> *weight, Tensor<DTYPE> *result, int ti) {
+    int MatMulTrans(Tensor<DTYPE> *input, Tensor<DTYPE> *weight, Tensor<DTYPE> *result, int ti) {
         int batchsize   = result->GetBatchSize();
         int channelsize = result->GetChannelSize();
         int rowsize     = result->GetRowSize();
         int colsize     = result->GetColSize();
 
-std::cout << "Elementwise()\n" << '\n';
+std::cout << "MatMulTrans()\n" << '\n';
         int input_index  = 0;
         int weight_index = 0;
         int result_index = 0;
@@ -659,7 +733,7 @@ std::cout << "Elementwise()\n" << '\n';
         return TRUE;
     }
 
-    int BiasAdd(Tensor<DTYPE> *input, Tensor<DTYPE> *bias, Tensor<DTYPE> *result, int ti){
+    int Add(Tensor<DTYPE> *input, Tensor<DTYPE> *bias, Tensor<DTYPE> *result, int ti){
         int batchsize   = result->GetBatchSize();
         int channelsize = result->GetChannelSize();
         int rowsize     = result->GetRowSize();
@@ -667,32 +741,9 @@ std::cout << "Elementwise()\n" << '\n';
         int input_index = 0, bias_index = 0;
 // Shape *shapeOfResult = result->GetShape();
 
-std::cout<< "BiasAdd" << '\n';
-std::cout<< "BiasAdd- Batchsize : " << batchsize << '\n';
-//         for (int ba = 0; ba < batchsize; ba++) {
-//             for (int ch = 0; ch < channelsize; ch++) {
-//                 for (int ro = 0; ro < rowsize; ro++) {
-//                     for (int co = 0; co < colsize; co++) {
-// input_index = ((((((ti * batchsize) + ba) * channelsize) + ch) * rowsize) + ro) * colsize + co;
-// bias_index  = co;
-// //bias_index = ((((channelsize) + ch) * rowsize) + ro) * colsize + co;
-//
-// std::cout << "input[" << input_index <<"] : " << (*input)[input_index] << "\tbias[" << bias_index <<"] : " << (*bias)[bias_index] << '\n';
-//
-//                             (*result)[Index5D(shapeOfResult, ti, ba, ch, ro, co)] = (*input)[Index5D(input->GetShape(), ti, ba, ch, ro, co)] + (*bias)[Index5D(bias->GetShape(), ti, ba, ch, ro, co)];
-//
-//                     }
-//                 }
-//             }
-//         }
+std::cout<< "Add" << '\n';
+std::cout<< "Add- Batchsize : " << batchsize << '\n';
 
-
-        // Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
-
-        // Tensor<DTYPE> *input  = (*input_contatiner)[0]->GetResult();
-        // Tensor<DTYPE> *bias   = (*input_contatiner)[1]->GetResult();
-        // Tensor<DTYPE> *result = this->GetResult();
-        ///
         Shape *m_pInputTenShape = input->GetShape();
         Shape *m_pBiasTenShape  = bias->GetShape();
 
@@ -730,47 +781,21 @@ std::cout<< "BiasAdd- Batchsize : " << batchsize << '\n';
                 for (m_ch = 0; m_ch < m_channelsize; m_ch++) {
                     for (m_ro = 0; m_ro < m_rowsize; m_ro++) {
                         for (m_co = 0; m_co < m_colsize; m_co++) {
-input_index = ((((((ti * m_batchsize) + m_ba) * m_channelsize) + m_ch) * m_rowsize) + m_ro) * m_colsize + m_co;
-bias_index  = m_co;
+//input_index = ((((((ti * m_batchsize) + m_ba) * m_channelsize) + m_ch) * m_rowsize) + m_ro) * m_colsize + m_co;
+//bias_index  = m_co;
+input_index = Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co);
+bias_index = Index5D(m_pBiasTenShape, *m_ti_bias, *m_ba_bias, *m_ch_bias, *m_ro_bias, *m_co_bias);
         //bias_index = ((((channelsize) + ch) * rowsize) + ro) * colsize + co;
                         (*result)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
                                 = (*input)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
                                   + (*bias)[Index5D(m_pBiasTenShape, *m_ti_bias, *m_ba_bias, *m_ch_bias, *m_ro_bias, *m_co_bias)];
 std::cout << "input[" << input_index <<"] : " << (*input)[input_index] << "\tbias[" << bias_index <<"] : " << (*bias)[bias_index] << '\n';
+std::cout << "result[" <<   Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co) << "] : " <<  (*result)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)] << '\n';
                         }
                     }
                 }
             }
 
-
-        return TRUE;
-    }
-
-    int Add(Tensor<DTYPE> *input0, Tensor<DTYPE> *input1, Tensor<DTYPE> *result, int ti){
-        int batchsize   = result->GetBatchSize();
-        int channelsize = result->GetChannelSize();
-        int rowsize     = result->GetRowSize();
-        int colsize     = result->GetColSize();
-        int input_index0 = 0, input_index1 = 0;
-        Shape *shapeOfResult = result->GetShape();
-
-std::cout<< "Add" << '\n';
-std::cout<< "Add- Batchsize : " << batchsize << '\n';
-        for (int ba = 0; ba < batchsize; ba++) {
-            for (int ch = 0; ch < channelsize; ch++) {
-                for (int ro = 0; ro < rowsize; ro++) {
-                    for (int co = 0; co < colsize; co++) {
-input_index0 = ((((((ti * batchsize) + ba) * channelsize) + ch) * rowsize) + ro) * colsize + co;
-input_index1 = ((((((ti * batchsize) + ba) * channelsize) + ch) * rowsize) + ro) * colsize + co;
-
-std::cout << "input0[" << input_index0 <<"] : " << (*input0)[input_index0] << "\tinput1[" << input_index1 <<"] : " << (*input1)[input_index1] << '\n';
-
-                            (*result)[Index5D(shapeOfResult, ti, ba, ch, ro, co)] = (*input0)[Index5D(input0->GetShape(), ti, ba, ch, ro, co)] + (*input1)[Index5D(input1->GetShape(), ti, ba, ch, ro, co)];
-
-                    }
-                }
-            }
-        }
 
         return TRUE;
     }

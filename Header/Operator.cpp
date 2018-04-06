@@ -50,7 +50,7 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Ope
 }
 
 // ----------------------
-template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, Operator<DTYPE> *pInput2, Operator<DTYPE> *pInput3, Operator<DTYPE> *pInput4, Operator<DTYPE> *pInput5, Operator<DTYPE> *pInput6, std::string pName){
+template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, Operator<DTYPE> *pInput2, Operator<DTYPE> *pInput3, Operator<DTYPE> *pInput4, Operator<DTYPE> *pInput5, std::string pName){
   std::cout << "Operator<DTYPE>::Operator()" << '\n';
   m_aaResult = NULL;
   m_aaGradient = NULL;
@@ -62,7 +62,7 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Ope
   m_currentOutputDegree = 0;
   m_currentInputDegree = 0;
   m_name = pName;
-  Alloc(7, pInput0, pInput1, pInput2, pInput3, pInput4, pInput5, pInput6);
+  Alloc(6, pInput0, pInput1, pInput2, pInput3, pInput4, pInput5);
 }
 // ---------------------
 
