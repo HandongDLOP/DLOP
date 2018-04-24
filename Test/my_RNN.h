@@ -30,12 +30,13 @@ public:
         std::cout << "w2" << '\n' << w2->GetResult() << '\n';
         std::cout << "w3" << '\n' << w3->GetResult() << '\n';
         std::cout << "b1" << '\n' << b1->GetResult() << '\n';
-      std::cout << "b3" << '\n' << b3->GetResult() << '\n';
-
+        std::cout << "b3" << '\n' << b3->GetResult() << '\n';
+std::cout << "====================================="<<std::endl;
         out = AddOperator(new Recurrent<float>(x, w1, w2, w3, b1, b3, HCOL, "rnn"));
         //out->ComputeForwardPropagate();
         //std::cout << out->GetResult() << '\n';
-        out->step();
+std::cout << "====================================="<<std::endl;
+        out->stepForTrain();
         // ======================= Select Objective Function ===================
         //Objective<float> *objective = new Objective<float>(out, label,"SCE");
         //Objective<float> *objective = new SoftmaxCrossEntropy<float>(out, label, 0.0000001, "SCE");

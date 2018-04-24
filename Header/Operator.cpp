@@ -376,6 +376,14 @@ template<typename DTYPE> int Operator<DTYPE>::ComputeForwardPropagate() {
     return TRUE;
 }
 
+//======================================================================================
+template<typename DTYPE> int Operator<DTYPE>::stepForTrain() {
+    std::cout << "============stepForTrain===========" << std::endl;
+    return TRUE;
+}
+
+
+
 template<typename DTYPE> int Operator<DTYPE>::BackPropagate() {
     this->ComputeBackPropagate();
 

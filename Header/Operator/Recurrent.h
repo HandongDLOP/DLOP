@@ -11,6 +11,8 @@
 #define BIASINPUT     4
 #define BIASOUTPUT    5
 
+#define SIZE_OF_HIDDEN_ARRAY 2
+#define TIMEONE 1
 template<typename DTYPE> class Recurrent : public Operator<DTYPE>{
 private:
     int m_activeHidden;
@@ -22,7 +24,7 @@ private:
     Tensor<DTYPE> *net_Result;
     Tensor<DTYPE> *hidden_Result;
     Tensor<DTYPE> *output_Result;
-    Tensor<DTYPE> *hidden;
+    Tensor<DTYPE> **hidden;
 
     Tensor<DTYPE> *input_temp;
     Tensor<DTYPE> *hidden_temp;
@@ -42,6 +44,7 @@ private:
     Tensor<DTYPE> *transpose_inputweight;
 
     Tensor<DTYPE> *zero_tensor;
+    Tensor<DTYPE> *SoftmaxResult;
 
 public:
     Recurrent(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeightInput, Operator<DTYPE> *pWeightHidden, Operator<DTYPE> *pWeightOutput, Operator<DTYPE> *pBiasInput, Operator<DTYPE> *pBiasOutput, int pHiddenSize, std::string pName)
@@ -61,6 +64,10 @@ public:
         }
 
         if (hidden) {
+          for(int i = 0; i < SIZE_OF_HIDDEN_ARRAY; i++){
+            delete hidden[i];
+            hidden[i] = NULL;
+          }
             delete[] hidden;
             hidden = NULL;
         }
@@ -165,6 +172,11 @@ public:
           transpose_inputweight = NULL;
         }
 
+        if(SoftmaxResult){
+          delete SoftmaxResult;
+          SoftmaxResult =  NULL;
+        }
+
     }
 
     int Alloc(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeightInput, Operator<DTYPE> *pWeightHidden, Operator<DTYPE> *pWeightOutput,
@@ -193,7 +205,7 @@ public:
         hidden_Result = Tensor<DTYPE>::Constants((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4], 0);
         this->AddResult(hidden_Result);
 
-        //(*hidden) = Tensor<DTYPE>()[2];
+        hidden = new Tensor<DTYPE>*[2];
         hidden[0] = Tensor<DTYPE>::Constants((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4], 0);
         hidden[1] = Tensor<DTYPE>::Constants((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4], 0);
 
@@ -251,6 +263,9 @@ public:
         transpose_inputweight = Tensor<DTYPE>::Constants((*shapeOfWeightInput)[0], (*shapeOfWeightInput)[1], (*shapeOfWeightInput)[2], (*shapeOfWeightInput)[4], (*shapeOfWeightInput)[3], 0);
         this->AddGradient(transpose_inputweight);
 
+        SoftmaxResult = Tensor<DTYPE>::Constants((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4], 0);
+        this->AddGradient(SoftmaxResult);
+
         // AddDelta
         // output_Gradient = new Tensor<DTYPE>((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightOutput)[4]);
         // this->AddGradient(output_Gradient);
@@ -260,27 +275,141 @@ public:
         return TRUE;
     }
 
-    //Tensor<DTYPE>* step(Tensor<DTYPE> *input, Tensor<DTYPE>* output, int ti){
-    int step(){
+/*
+    int GetPointer(int ti){
 
-      //m_pInput = pInput;			// for training
+      Tensor<DTYPE> *p;
+      p = Pointer(ti);
+      std::cout<<"p = "<<p->GetShape()<<std::endl;
+      return 0;
+    }
+
+    Tensor<DTYPE>* Pointer(int ti){
+
+      Tensor<DTYPE> *p;
+      Tensor<DTYPE> *input = this->GetInput()[INPUT]->GetResult();
+
+      int batchsize   = input->GetBatchSize();
+      int channelsize = input->GetChannelSize();
+      int rowsize     = input->GetRowSize();
+      int colsize     = input->GetColSize();
+
+      for(int ba = 0; ba < batchsize; ba++){
+        for(int ch = 0; ch < channelsize; ch++){
+          for(int ro = 0; ro < rowsize; ro++){
+            for(int co = 0; co < colsize; co++){
+                p = input[Index5D(input->GetShape(), ti, ba, ch, ro, co)];
+            }
+          }
+        }
+      }
+      return p;
+    }
+*/
+
+    int Softmax(Tensor<DTYPE> *input, Tensor<DTYPE> *output, int ti){
+      int timesize    = input->GetTimeSize();
+      int batchsize   = input->GetBatchSize();
+      int channelsize = input->GetChannelSize();
+      int rowsize     = input->GetRowSize();
+      int colsize     = input->GetColSize();
+
+      DTYPE m_epsilon = 1e-20;
+
+      DTYPE sum[timesize][batchsize] = { 0.f, };
+      DTYPE max[timesize][batchsize] = { 0.f, };
+
+      int capacity = colsize;
+
+      int start = 0;
+      int end   = 0;
+
+      for (int ti = 0; ti < timesize; ti++) {
+          for (int ba = 0; ba < batchsize; ba++) {
+              start = (ti * batchsize + ba) * capacity;
+              end   = start + capacity;
+
+              max[ti][ba] = Max(input, start, end);
+          }
+      }
+
+      DTYPE temp = 0.f;
+
+      for (int ti = 0; ti < timesize; ti++) {
+          for (int ba = 0; ba < batchsize; ba++) {
+              start = (ti * batchsize + ba) * capacity;
+              end   = start + capacity;
+
+              for (int i = start; i < end; i++) {
+                  temp += (exp((*input)[i] - max[ti][ba]) + m_epsilon);
+              }
+              sum[ti][ba] = temp;
+              temp        = 0.f;
+          }
+      }
+
+      for (int ti = 0; ti < timesize; ti++) {
+          for (int ba = 0; ba < batchsize; ba++) {
+              start = (ti * batchsize + ba) * capacity;
+              end   = start + capacity;
+
+              for (int i = start; i < end; i++) {
+                (*output)[i] = (exp((*input)[i] - max[ti][ba]) + m_epsilon) / sum[ti][ba];
+              }
+          }
+      }
+
+      return TRUE;
+    }
+
+    DTYPE Max(Tensor<DTYPE> *input, int start, int end) {
+        DTYPE max = (*input)[start];
+
+        for (int i = start + 1; i < end; i++) {
+            if ((*input)[i] > max) max = (*input)[i];
+        }
+
+        return max;
+    }
+
+    //Tensor<DTYPE>* step(Tensor<DTYPE> *input, Tensor<DTYPE>* output, int ti){
+    int stepForTrain(){
+
+      printf("===============================Recurrent::stepForTrain===================================\n");
+
+      Tensor<DTYPE> *input = this->GetInput()[INPUT]->GetResult();
+      Shape *shapeOfInput = input->GetShape();
+      int timesize = (*shapeOfInput)[0];
+
+      for(int i = 0; i < timesize; i++){
+        Tensor<DTYPE>* stepOutput = step(input, order);
+
+
+std::cout << "===============================Recurrent::stepForTrain===================================" << std::endl;
+        std::cout << stepOutput << std::endl;
+      }
+
+      return 0;
+    }
+
+
+//==============================================================================================================================================================================
+//===============================================================================================================================================================================
+    Tensor<DTYPE>* step(Tensor<DTYPE> *input, int ti){
 
     	Tensor<DTYPE> *prevHidden = hidden[m_activeHidden];
     	m_activeHidden = 1 - m_activeHidden;			// toggle current hidden and previous hidden
     	Tensor<DTYPE> *currHidden = hidden[m_activeHidden];
 
-      printf("==================================step======================================\n");
-      Tensor<DTYPE> *input        = this->GetInput()[INPUT]->GetResult();
+      printf("==================================Recurrent::step======================================\n");
+      //Tensor<DTYPE> *input        = this->GetInput()[INPUT]->GetResult();
       Tensor<DTYPE> *weightInput  = this->GetInput()[WEIGHTINPUT]->GetResult();
       Tensor<DTYPE> *weightHidden = this->GetInput()[WEIGHTHIDDEN]->GetResult();
       Tensor<DTYPE> *weightOutput = this->GetInput()[WEIGHTOUTPUT]->GetResult();
       Tensor<DTYPE> *biasInput    = this->GetInput()[BIASINPUT]->GetResult();
       Tensor<DTYPE> *biasOutput   = this->GetInput()[BIASOUTPUT]->GetResult();
 
-      Shape *shapeOfInput = input->GetShape();
-      int timesize = (*shapeOfInput)[0];
 
-      for (int ti = 0; ti < timesize; ti++) {
           //Linear(input, weightInput, biasInput, input_Result, ti, TRUE);
           MatMul(input, weightInput, input_temp, ti);
 printf("input_temp\n");
@@ -308,58 +437,62 @@ std::cout<< hidden_Result << std::endl;
           Add(output_temp, biasOutput, output_Result, ti);
 printf("output_Result\n");
 std::cout<< output_Result << std::endl;
-        }
 
-        return 0;
+          Softmax(output_Result, SoftmaxResult, ti);
+printf("SoftmaxResult\n");
+std::cout<< SoftmaxResult << std::endl;
+
+        return SoftmaxResult;
     }
 
     int ComputeForwardPropagate() {
         printf("ComputeForwardPropagate()\n");
-        Tensor<DTYPE> *input        = this->GetInput()[INPUT]->GetResult();
-        Tensor<DTYPE> *weightInput  = this->GetInput()[WEIGHTINPUT]->GetResult();
-        Tensor<DTYPE> *weightHidden = this->GetInput()[WEIGHTHIDDEN]->GetResult();
-        Tensor<DTYPE> *weightOutput = this->GetInput()[WEIGHTOUTPUT]->GetResult();
-        Tensor<DTYPE> *biasInput    = this->GetInput()[BIASINPUT]->GetResult();
-        Tensor<DTYPE> *biasOutput   = this->GetInput()[BIASOUTPUT]->GetResult();
-
-        Shape *shapeOfInput = input->GetShape();
-        int timesize = (*shapeOfInput)[0];
-
-        for (int ti = 0; ti < timesize; ti++) {
-            //Linear(input, weightInput, biasInput, input_Result, ti, TRUE);
-            MatMul(input, weightInput, input_temp, ti);
-printf("input_temp\n");
-std::cout<< input_temp << std::endl;
-            Add(input_temp, biasInput, input_Result, ti);
-printf("input_Result\n");
-std::cout<< input_Result << std::endl;
-
-            //Linear(pre_hidden_Result, weightHidden, biasHidden, pre_net_Result, ti, TRUE);    // WX + b
-            MatMul(pre_hidden_Result, weightHidden, hidden_temp, ti);
-            Add(hidden_temp, biasInput, pre_net_Result, ti);
-printf("pre_net_Result\n");
-std::cout<< pre_net_Result << std::endl;
-
-            Add(input_Result, pre_net_Result, net_Result, ti); // net_result   //Tensor + Tensor
-printf("net_Result\n");
-std::cout<< net_Result << std::endl;
-
-            Tanh(net_Result, hidden_Result, ti);          // hidden_result
-printf("hidden_Result\n");
-std::cout<< hidden_Result << std::endl;
-
-            if(ti < timesize - 1){
-                  Copy(hidden_Result, pre_hidden_Result, ti, ti + 1);   //src ,dst
-printf("pre_hidden_Result\n");
-std::cout<< pre_hidden_Result << std::endl;
-            }// hidden_result -> prehidden_result
-
-            //Linear(hidden_Result, weightOutput, biasOutput, output_Result, ti, TRUE);
-            MatMul(hidden_Result, weightOutput, output_temp, ti);
-            Add(output_temp, biasOutput, output_Result, ti);
-printf("output_Result\n");
-std::cout<< output_Result << std::endl;
-          }
+        stepForTrain();
+//         Tensor<DTYPE> *input        = this->GetInput()[INPUT]->GetResult();
+//         Tensor<DTYPE> *weightInput  = this->GetInput()[WEIGHTINPUT]->GetResult();
+//         Tensor<DTYPE> *weightHidden = this->GetInput()[WEIGHTHIDDEN]->GetResult();
+//         Tensor<DTYPE> *weightOutput = this->GetInput()[WEIGHTOUTPUT]->GetResult();
+//         Tensor<DTYPE> *biasInput    = this->GetInput()[BIASINPUT]->GetResult();
+//         Tensor<DTYPE> *biasOutput   = this->GetInput()[BIASOUTPUT]->GetResult();
+//
+//         Shape *shapeOfInput = input->GetShape();
+//         int timesize = (*shapeOfInput)[0];
+//
+//         for (int ti = 0; ti < timesize; ti++) {
+//             //Linear(input, weightInput, biasInput, input_Result, ti, TRUE);
+//             MatMul(input, weightInput, input_temp, ti);
+// printf("input_temp\n");
+// std::cout<< input_temp << std::endl;
+//             Add(input_temp, biasInput, input_Result, ti);
+// printf("input_Result\n");
+// std::cout<< input_Result << std::endl;
+//
+//             //Linear(pre_hidden_Result, weightHidden, biasHidden, pre_net_Result, ti, TRUE);    // WX + b
+//             MatMul(pre_hidden_Result, weightHidden, hidden_temp, ti);
+//             Add(hidden_temp, biasInput, pre_net_Result, ti);
+// printf("pre_net_Result\n");
+// std::cout<< pre_net_Result << std::endl;
+//
+//             Add(input_Result, pre_net_Result, net_Result, ti); // net_result   //Tensor + Tensor
+// printf("net_Result\n");
+// std::cout<< net_Result << std::endl;
+//
+//             Tanh(net_Result, hidden_Result, ti);          // hidden_result
+// printf("hidden_Result\n");
+// std::cout<< hidden_Result << std::endl;
+//
+//             if(ti < timesize - 1){
+//                   Copy(hidden_Result, pre_hidden_Result, ti, ti + 1);   //src ,dst
+// printf("pre_hidden_Result\n");
+// std::cout<< pre_hidden_Result << std::endl;
+//             }// hidden_result -> prehidden_result
+//
+//             //Linear(hidden_Result, weightOutput, biasOutput, output_Result, ti, TRUE);
+//             MatMul(hidden_Result, weightOutput, output_temp, ti);
+//             Add(output_temp, biasOutput, output_Result, ti);
+// printf("output_Result\n");
+// std::cout<< output_Result << std::endl;
+//           }
 
         return TRUE;
     }

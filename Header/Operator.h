@@ -87,9 +87,7 @@ public:
     int         ForwardPropagate();
     virtual int ComputeForwardPropagate();
 //=====================================================================================
-    virtual int step();
-
-
+    virtual int stepForTrain();
     // For BackPropagate
     int         BackPropagate();
     virtual int ComputeBackPropagate();
