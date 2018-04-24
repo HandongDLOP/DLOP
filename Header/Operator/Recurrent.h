@@ -206,8 +206,8 @@ public:
         this->AddResult(hidden_Result);
 
         hidden = new Tensor<DTYPE>*[2];
-        hidden[0] = Tensor<DTYPE>::Constants((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4], 0);
-        hidden[1] = Tensor<DTYPE>::Constants((*shapeOfInput)[0], (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4], 0);
+        hidden[0] = Tensor<DTYPE>::Constants(TIMEONE, (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4], 0);
+        hidden[1] = Tensor<DTYPE>::Constants(TIMEONE, (*shapeOfInput)[1], (*shapeOfInput)[2], (*shapeOfInput)[3], (*shapeOfWeightInput)[4], 0);
 
         this->AddResult(hidden_Result);
 
@@ -382,7 +382,7 @@ public:
       int timesize = (*shapeOfInput)[0];
 
       for(int i = 0; i < timesize; i++){
-        Tensor<DTYPE>* stepOutput = step(input, order);
+        Tensor<DTYPE>* stepOutput = step(input, i);
 
 
 std::cout << "===============================Recurrent::stepForTrain===================================" << std::endl;
@@ -396,7 +396,7 @@ std::cout << "===============================Recurrent::stepForTrain============
 //==============================================================================================================================================================================
 //===============================================================================================================================================================================
     Tensor<DTYPE>* step(Tensor<DTYPE> *input, int ti){
-
+std::cout<<"______________________________________________________________m_activeHidden = "<<m_activeHidden<<std::endl;
     	Tensor<DTYPE> *prevHidden = hidden[m_activeHidden];
     	m_activeHidden = 1 - m_activeHidden;			// toggle current hidden and previous hidden
     	Tensor<DTYPE> *currHidden = hidden[m_activeHidden];
@@ -420,6 +420,8 @@ std::cout<< input_Result << std::endl;
 
           //Linear(pre_hidden_Result, weightHidden, biasHidden, pre_net_Result, ti, TRUE);    // WX + b
           MatMul(prevHidden, weightHidden, hidden_temp, ti);
+printf("hidden_temp\n");
+std::cout<< hidden_temp << std::endl;
           Add(hidden_temp, biasInput, pre_net_Result, ti);
 printf("pre_net_Result\n");
 std::cout<< pre_net_Result << std::endl;
@@ -428,12 +430,17 @@ std::cout<< pre_net_Result << std::endl;
 printf("net_Result\n");
 std::cout<< net_Result << std::endl;
 
+
+// std::cout<< currHidden->GetShape() << std::endl;
           Tanh(net_Result, currHidden, ti);          // hidden_result
-printf("hidden_Result\n");
-std::cout<< hidden_Result << std::endl;
+printf("currHidden\n");
+std::cout<< currHidden << std::endl;
+std::cout<< currHidden->GetShape() << std::endl;
 
           //Linear(hidden_Result, weightOutput, biasOutput, output_Result, ti, TRUE);
           MatMul(currHidden, weightOutput, output_temp, ti);
+printf("output_temp\n");
+std::cout<< output_temp << std::endl;
           Add(output_temp, biasOutput, output_Result, ti);
 printf("output_Result\n");
 std::cout<< output_Result << std::endl;
@@ -834,6 +841,7 @@ std::cout << "result[" << Index5D(result->GetShape(), resulttimesize - 1, result
         int channelsize = result->GetChannelSize();
         int rowsize     = result->GetRowSize();
         int colsize     = result->GetColSize();
+
 
 std::cout << "MatMulTrans()\n" << '\n';
         int input_index  = 0;
