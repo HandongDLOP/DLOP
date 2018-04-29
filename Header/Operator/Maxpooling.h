@@ -23,7 +23,7 @@ private:
     Tensor<int> *indexOfMaxInput;
 
 public:
-    Maxpooling2D(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol) : Operator<DTYPE>(pInput) {
+    Maxpooling2D(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol, std::string pName) : Operator<DTYPE>(pInput, pName) {
         std::cout << "Maxpooling2D::Maxpooling2D(Operator<DTYPE> *, int, int)" << '\n';
         this->Alloc(pInput, strideRow, strideCol, maskRow, maskCol);
     }
@@ -40,7 +40,7 @@ public:
         #endif  // if __CUDNN__
     }
 
-    int Alloc(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol, int padding) {
+    int Alloc(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol, int padding = 0) {
         std::cout << "Maxpooling2D::Alloc(Operator<DTYPE> *, int, int)" << '\n';
         #if __CUDNN__
         createHandles();
