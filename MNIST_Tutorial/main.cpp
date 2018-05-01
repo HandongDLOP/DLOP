@@ -6,29 +6,32 @@
 #include "MNIST_Reader.h"
 #include <time.h>
 
-#define BATCH             100
+#define BATCH             2
 #define EPOCH             100
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
 
 int main(int argc, char const *argv[]) {
+    clock_t startTime, endTime;
+    double  nProcessExcuteTime;
+
     // create input, label data placeholder -> Tensorholder
     Tensorholder<float> *x     = new Tensorholder<float>(1, BATCH, 1, 1, 784, "x");
     Tensorholder<float> *label = new Tensorholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // ======================= Select net ===================
-    // NeuralNetwork<float> *net = new my_CNN(x, label);
+    NeuralNetwork<float> *net = new my_CNN(x, label);
     // NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
     // NeuralNetwork<float> *net = new my_NN(x, label, isMLP);
-    NeuralNetwork<float> *net = Resnet14<float>(x, label);
+    // NeuralNetwork<float> *net = Resnet14<float>(x, label);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
 
     net->PrintGraphShape();
 
-    net->SetDeviceGPU();
+    // net->SetDeviceGPU();
 
     // pytorch check하기
     for (int i = 0; i < EPOCH; i++) {
@@ -44,19 +47,25 @@ int main(int argc, char const *argv[]) {
             x->SetTensor(dataset->GetTrainFeedImage());
             label->SetTensor(dataset->GetTrainFeedLabel());
 
+            startTime  = clock();
+
             net->ResetParameterGradient();
             net->Training();
 
+            endTime = clock();
+
             train_accuracy += net->GetAccuracy();
             train_avg_loss += net->GetLoss();
+            nProcessExcuteTime = ( (double)(endTime - startTime) ) / CLOCKS_PER_SEC;
 
-            printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f",
+            printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f (ExcuteTime : %f)",
                    j + 1, LOOP_FOR_TRAIN,
                    train_avg_loss / (j + 1),
-                   train_accuracy / (j + 1));
+                   train_accuracy / (j + 1),
+                   nProcessExcuteTime);
             fflush(stdout);
 
-            if(j % 100 == 99) std::cout << '\n';
+            if (j % 100 == 99) std::cout << '\n';
         }
         std::cout << '\n';
 
@@ -66,19 +75,19 @@ int main(int argc, char const *argv[]) {
         // net->SetModeAccumulating();
         //
         // for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
-        //     dataset->CreateTrainDataPair(BATCH);
-        //     x->SetTensor(dataset->GetTrainFeedImage());
-        //     label->SetTensor(dataset->GetTrainFeedLabel());
+        // dataset->CreateTrainDataPair(BATCH);
+        // x->SetTensor(dataset->GetTrainFeedImage());
+        // label->SetTensor(dataset->GetTrainFeedLabel());
         //
-        //     net->Testing();
-        //     accum_accuracy += net->GetAccuracy();
-        //     accum_avg_loss += net->GetLoss();
+        // net->Testing();
+        // accum_accuracy += net->GetAccuracy();
+        // accum_avg_loss += net->GetLoss();
         //
-        //     printf("\rAccumulating complete percentage is %d / %d -> loss : %f, acc : %f",
-        //            j + 1, LOOP_FOR_TRAIN,
-        //            accum_avg_loss / (j + 1),
-        //            accum_accuracy / (j + 1));
-        //     fflush(stdout);
+        // printf("\rAccumulating complete percentage is %d / %d -> loss : %f, acc : %f",
+        // j + 1, LOOP_FOR_TRAIN,
+        // accum_avg_loss / (j + 1),
+        // accum_accuracy / (j + 1));
+        // fflush(stdout);
         // }
         // std::cout << '\n';
 

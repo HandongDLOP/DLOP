@@ -33,6 +33,8 @@ private:
 
     std::string m_name;
 
+    Device m_Device;
+
 public:
 #if __CUDNN__
     cudnnHandle_t m_pCudnnHandle;
@@ -107,10 +109,18 @@ public:
     virtual void SetModeAccumulating();
     virtual void SetModeInferencing();
 
-    virtual void SetDeviceGPU();
-    virtual void SetDeviceCPU();
 
-    virtual int  GetNumOfParameter() {
+    void         SetDeviceCPU();
+#ifdef __CUDNN__
+    void         SetDeviceGPU();
+
+#endif  // if __CUDNN__
+
+    Device GetDevice() {
+        return m_Device;
+    }
+
+    virtual int GetNumOfParameter() {
         return 0;
     }
 

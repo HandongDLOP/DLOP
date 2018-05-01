@@ -354,7 +354,6 @@ template<typename DTYPE> int Operator<DTYPE>::ComputeBackPropagate() {
     return TRUE;
 }
 
-
 template<typename DTYPE> int Operator<DTYPE>::ResetResult() {
     int size = m_aaResult->GetSize();
 
@@ -387,13 +386,17 @@ template<typename DTYPE> void Operator<DTYPE>::SetModeInferencing() {
     // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
 }
 
-template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
-    // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
-}
 
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
-    // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
+    m_Device = Device::CPU;
 }
+
+#if __CUDNN__
+template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
+    m_Device = Device::GPU;
+}
+
+#endif // __CUDNN__
 
 // int main(int argc, char const *argv[]) {
 // Operator<int> *temp1 = new Operator<int>("temp1");

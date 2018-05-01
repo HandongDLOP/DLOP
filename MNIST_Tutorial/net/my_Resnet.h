@@ -14,18 +14,18 @@ public:
         Operator<DTYPE> *out      = pInput;
 
         // 1
-        out = this->AddOperator(new ConvolutionLayer2D<DTYPE>(out, pNumInputChannel, pNumOutputChannel, 3, 3, pStride, pStride, 1, TRUE, "BasicBlock_Conv1" + pName));
+        out = this->AddOperator(new ConvolutionLayer2D<DTYPE>(out, pNumInputChannel, pNumOutputChannel, 3, 3, pStride, pStride, 1, FALSE, "BasicBlock_Conv1" + pName));
         // out = this->AddOperator(new BatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN1" + pName));
 
         out = this->AddOperator(new Relu<DTYPE>(out, "BasicBlock_Relu1" + pName));
 
         // 2
-        out = this->AddOperator(new ConvolutionLayer2D<DTYPE>(out, pNumOutputChannel, pNumOutputChannel, 3, 3, 1, 1, 1, TRUE, "BasicBlock_Conv2" + pName));
+        out = this->AddOperator(new ConvolutionLayer2D<DTYPE>(out, pNumOutputChannel, pNumOutputChannel, 3, 3, 1, 1, 1, FALSE, "BasicBlock_Conv2" + pName));
         // out = this->AddOperator(new BatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN2" + pName));
 
         // ShortCut
         if ((pStride != 1) || (pNumInputChannel != pNumOutputChannel)) {
-            remember = this->AddOperator(new ConvolutionLayer2D<DTYPE>(remember, pNumInputChannel, pNumOutputChannel, 3, 3, pStride, pStride, 1, TRUE, "BasicBlock_Conv_Shortcut" + pName));
+            remember = this->AddOperator(new ConvolutionLayer2D<DTYPE>(remember, pNumInputChannel, pNumOutputChannel, 3, 3, pStride, pStride, 1, FALSE, "BasicBlock_Conv_Shortcut" + pName));
             // remember = this->AddOperator(new BatchNormalizeLayer2D<DTYPE>(remember, pNumOutputChannel, "BasicBlock_BN_Shortcut" + pName));
         }
 
@@ -139,9 +139,18 @@ public:
         } else if ((pBlockType == "BasicBlock") && (pNumOfBlock > 0)) {
             Operator<DTYPE> *out = pInput;
 
+            // Test of effect of the Max pool
+            if (pStride > 1) {
+                out = this->AddOperator(new Maxpooling2D<float>(out, pStride, pStride, 2, 2, "MaxPool_2"));
+            }
+
+            out = this->AddOperator(new BasicBlock<DTYPE>(out, m_numInputChannel, pNumOfChannel, 1, pName));
+
             int pNumOutputChannel = pNumOfChannel;
 
-            out = this->AddOperator(new BasicBlock<DTYPE>(out, m_numInputChannel, pNumOutputChannel, pStride, pName));
+            // int pNumOutputChannel = pNumOfChannel;
+            //
+            // out = this->AddOperator(new BasicBlock<DTYPE>(out, m_numInputChannel, pNumOutputChannel, pStride, pName));
 
             for (int i = 1; i < pNumOfBlock; i++) {
                 out = this->AddOperator(new BasicBlock<DTYPE>(out, pNumOutputChannel, pNumOutputChannel, 1, pName));

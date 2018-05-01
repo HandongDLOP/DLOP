@@ -17,8 +17,6 @@ private:
     DTYPE *m_aHostInput, *m_aHostOutput, *m_aHostFilter, *m_aHostInputDelta, *m_aHostDelta, *m_aHostFilterDelta;
 #endif  // __CUDNN__
 
-    Device m_Device;
-
 public:
     Convolution2D(Operator<DTYPE> *pInput, Operator<DTYPE> *pWeight, int stride1, int stride2, std::string pName = "NO NAME") : Operator<DTYPE>(pInput, pWeight, pName) {
         Alloc(pInput, pWeight, stride1, stride2, 0, 0);
@@ -48,8 +46,6 @@ public:
             printf("Receive invalid timesize value in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
             return FALSE;
         }
-
-        m_Device = Device::CPU;
 
         m_stride[0] = stride1;
         m_stride[1] = stride2;
@@ -120,33 +116,22 @@ public:
     }
 
     int ComputeForwardPropagate() {
-        if (m_Device == Device::CPU) ComputeForwardPropagateOnCPU();
+        if (this->GetDevice() == Device::CPU) ComputeForwardPropagateOnCPU();
 #ifdef __CUDNN__
-        else if (m_Device == Device::GPU) ComputeForwardPropagateOnGPU();
+        else if (this->GetDevice() == Device::GPU) ComputeForwardPropagateOnGPU();
 #endif  // if __CUDNN__
         else return FALSE;
         return TRUE;
     }
 
     int ComputeBackPropagate() {
-        if (m_Device == Device::CPU) ComputeBackPropagateOnCPU();
+        if (this->GetDevice() == Device::CPU) ComputeBackPropagateOnCPU();
 #ifdef __CUDNN__
-        else if (m_Device == Device::GPU) ComputeBackPropagateOnGPU();
+        else if (this->GetDevice() == Device::GPU) ComputeBackPropagateOnGPU();
 #endif  // if __CUDNN__
         else return FALSE;
         return TRUE;
     }
-
-    void SetDeviceCPU() {
-        m_Device = Device::CPU;
-    }
-
-#ifdef __CUDNN__
-    void SetDeviceGPU() {
-        m_Device = Device::GPU;
-    }
-
-#endif  // if __CUDNN__
 
     int ComputeForwardPropagateOnCPU() {
         Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
@@ -488,6 +473,14 @@ public:
     }
 
 #endif  // if __CUDNN__
+
+    int* GetStrideList() {
+        return m_stride;
+    }
+
+    int* GetPaddingList() {
+        return m_padding;
+    }
 };
 
 

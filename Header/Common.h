@@ -4,6 +4,7 @@
 #include <exception>
 #include <string>
 #include <cmath>
+#include <thread>
 
 // C header
 #include <stdio.h>
