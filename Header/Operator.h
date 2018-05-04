@@ -110,13 +110,13 @@ public:
     virtual void SetModeInferencing();
 
 
-    void         SetDeviceCPU();
+    virtual void SetDeviceCPU();
 #ifdef __CUDNN__
-    void         SetDeviceGPU();
+    virtual void SetDeviceGPU();
 
 #endif  // if __CUDNN__
 
-    Device GetDevice() {
+    virtual Device GetDevice() {
         return m_Device;
     }
 

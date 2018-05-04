@@ -232,7 +232,7 @@ template<typename DTYPE> float NeuralNetwork<DTYPE>::GetLoss() {
 
 // ===========================================================================================
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate() {
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(){
     for (int i = 0; i < m_OperatorDegree; i++) {
         (*m_aaOperator)[i]->ComputeForwardPropagate();
     }

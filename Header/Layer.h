@@ -11,6 +11,7 @@ private:
     int m_numOfOperator;
     int m_numOfParameter;
 
+    Device m_Device;
 public:
     Layer(std::string pName = "No Name");
     virtual ~Layer();
@@ -55,8 +56,14 @@ public:
     void                              SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
 #endif  // if __CUDNN__
 
-    int                               ResetResult();
-    int                               ResetGradient();
+
+    Device GetDevice() {
+        return m_Device;
+    }
+
+    int    ResetResult();
+    int    ResetGradient();
+
 };
 
 #endif  // ifndef __LAYER__

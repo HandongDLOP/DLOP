@@ -53,17 +53,17 @@ template<typename DTYPE> void Layer<DTYPE>::Delete() {
 }
 
 // template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::AddLayer(Layer<DTYPE> *pLayer) {
-//     int pNumOfParameter = pLayer->GetNumOfParameter();
+// int pNumOfParameter = pLayer->GetNumOfParameter();
 //
-//     m_numOfOperator++;
-//     m_aaOperator->Push(pLayer);
+// m_numOfOperator++;
+// m_aaOperator->Push(pLayer);
 //
-//     for (int i = 0; i < pNumOfParameter; i++) {
-//         m_aaParameter->Push(pLayer->PopParameter());
-//         m_numOfParameter++;
-//     }
+// for (int i = 0; i < pNumOfParameter; i++) {
+// m_aaParameter->Push(pLayer->PopParameter());
+// m_numOfParameter++;
+// }
 //
-//     return pLayer;
+// return pLayer;
 // }
 
 template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::AddOperator(Operator<DTYPE> *pOperator) {
@@ -156,6 +156,8 @@ template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::GetLastOperator() {
 }
 
 template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU() {
+    m_Device = Device::CPU;
+
     for (int i = 0; i < m_numOfOperator; i++) {
         (*m_aaOperator)[i]->SetDeviceCPU();
     }
@@ -163,6 +165,8 @@ template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU() {
 
 #ifdef __CUDNN__
 template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU() {
+    m_Device = Device::GPU;
+
     for (int i = 0; i < m_numOfOperator; i++) {
         (*m_aaOperator)[i]->SetDeviceGPU();
     }
