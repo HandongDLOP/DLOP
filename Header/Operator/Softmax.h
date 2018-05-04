@@ -34,11 +34,11 @@ public:
         return 1;
     }
 
-    virtual int ComputeForwardPropagate() {
+    virtual int ForwardPropagate() {
         return 1;
     }
 
-    virtual int ComputeBackPropagate() {
+    virtual int BackPropagate() {
         return 1;
     }
 };

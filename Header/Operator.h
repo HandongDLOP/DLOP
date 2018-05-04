@@ -94,12 +94,10 @@ public:
     // Operator<DTYPE>             * Concatenate(Operator<DTYPE> *src, Operator<DTYPE> *dst, int axis = 0);
 
     // For Propagate
-    int          ForwardPropagate();
-    virtual int  ComputeForwardPropagate();
+    virtual int  ForwardPropagate();
 
     // For BackPropagate
-    int          BackPropagate();
-    virtual int  ComputeBackPropagate();
+    virtual int  BackPropagate();
 
     // reset value
     virtual int  ResetResult();

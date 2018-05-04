@@ -37,7 +37,7 @@ public:
         return TRUE;
     }
 
-    int ComputeForwardPropagate() {
+    int ForwardPropagate() {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *left_input  = (*input_contatiner)[0]->GetResult();
@@ -51,7 +51,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagate() {
+    int BackPropagate() {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *left_input_grad  = (*input_contatiner)[0]->GetGradient();
@@ -145,7 +145,7 @@ public:
         return TRUE;
     }
 
-    int ComputeForwardPropagate() {
+    int ForwardPropagate() {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input  = (*input_contatiner)[0]->GetResult();
@@ -169,7 +169,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagate() {
+    int BackPropagate() {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input_grad = (*input_contatiner)[0]->GetGradient();

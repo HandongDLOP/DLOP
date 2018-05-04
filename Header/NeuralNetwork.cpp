@@ -234,7 +234,7 @@ template<typename DTYPE> float NeuralNetwork<DTYPE>::GetLoss() {
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(){
     for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->ComputeForwardPropagate();
+        (*m_aaOperator)[i]->ForwardPropagate();
     }
 
     return TRUE;
@@ -250,7 +250,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTY
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
     for (int i = m_OperatorDegree - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->ComputeBackPropagate();
+        (*m_aaOperator)[i]->BackPropagate();
     }
     return TRUE;
 }
@@ -264,9 +264,9 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Training() {
     this->ResetObjectiveGradient();
 
     this->ForwardPropagate();
-    m_aObjective->ComputeForwardPropagate();
+    m_aObjective->ForwardPropagate();
 
-    m_aObjective->ComputeBackPropagate();
+    m_aObjective->BackPropagate();
     this->BackPropagate();
 
     m_aOptimizer->UpdateVariable();
@@ -278,7 +278,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Testing() {
     this->ResetOperatorResult();
     this->ResetObjectiveResult();
     ForwardPropagate();
-    m_aObjective->ComputeForwardPropagate();
+    m_aObjective->ForwardPropagate();
 
     return TRUE;
 }

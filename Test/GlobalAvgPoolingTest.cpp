@@ -8,8 +8,8 @@ int main(int argc, char const *argv[]) {
 
     GlobalAvaragePooling2D<float> *avg = new GlobalAvaragePooling2D<float>(x, "avg");
 
-    avg->ComputeForwardPropagate();
-    avg->ComputeBackPropagate();
+    avg->ForwardPropagate();
+    avg->BackPropagate();
 
     std::cout << _x << '\n';
     std::cout << avg->GetResult() << '\n';

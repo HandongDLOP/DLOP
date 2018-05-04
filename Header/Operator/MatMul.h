@@ -31,7 +31,7 @@ public:
         return TRUE;
     }
 
-    int ComputeForwardPropagate() {
+    int ForwardPropagate() {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *weight = this->GetInput()[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
@@ -71,7 +71,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagate() {
+    int BackPropagate() {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *weight = this->GetInput()[1]->GetResult();
 
@@ -191,7 +191,7 @@ public:
         return TRUE;
     }
 
-    int ComputeForwardPropagate() {
+    int ForwardPropagate() {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input  = (*input_contatiner)[0]->GetResult();
@@ -220,7 +220,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagate() {
+    int BackPropagate() {
         // Tensor<DTYPE> *this_delta = Tensor<DTYPE>::Constants(1, 3, 1, 3, 3, 1.0);
 
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();

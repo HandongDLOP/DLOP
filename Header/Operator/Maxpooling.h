@@ -122,7 +122,7 @@ public:
 
 
     //
-    int ComputeForwardPropagate() {
+    int ForwardPropagate() {
         Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
         Shape *shapeOfInput  = input->GetShape();
 
@@ -261,7 +261,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagate() {
+    int BackPropagate() {
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
         // input_delta->Reset();
 

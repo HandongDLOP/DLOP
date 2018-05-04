@@ -101,7 +101,7 @@ public:
 
     #endif  // if __CUDNN__
 
-    int ComputeForwardPropagate() {
+    int ForwardPropagate() {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
         int inputCapacity     = input->GetCapacity();
@@ -161,7 +161,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagate() {
+    int BackPropagate() {
         Tensor<DTYPE> *result      = this->GetResult();
         Tensor<DTYPE> *this_delta  = this->GetGradient();
         // std::cout << this_delta << '\n';

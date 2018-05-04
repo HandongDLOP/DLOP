@@ -37,7 +37,7 @@ public:
         return TRUE;
     }
 
-    virtual Tensor<DTYPE>* ComputeForwardPropagate() {
+    virtual Tensor<DTYPE>* ForwardPropagate() {
         Tensor<DTYPE> *input    = this->GetTensor();
         Tensor<DTYPE> *label    = this->GetLabel()->GetResult();
         Tensor<DTYPE> *result   = this->GetResult();
@@ -67,7 +67,7 @@ public:
         return result;
     }
 
-    virtual Tensor<DTYPE>* ComputeBackPropagate() {
+    virtual Tensor<DTYPE>* BackPropagate() {
         Tensor<DTYPE> *gradient    = this->GetGradient();
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
 

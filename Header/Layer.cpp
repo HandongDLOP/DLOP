@@ -137,16 +137,16 @@ template<typename DTYPE> Container<Tensor<DTYPE> *> *Layer<DTYPE>::GetDeltaConta
     return m_aaOperator->GetLast()->GetDeltaContainer();
 }
 
-template<typename DTYPE> int Layer<DTYPE>::ComputeForwardPropagate() {
+template<typename DTYPE> int Layer<DTYPE>::ForwardPropagate() {
     for (int i = 0; i < m_numOfOperator; i++) {
-        (*m_aaOperator)[i]->ComputeForwardPropagate();
+        (*m_aaOperator)[i]->ForwardPropagate();
     }
     return TRUE;
 }
 
-template<typename DTYPE> int Layer<DTYPE>::ComputeBackPropagate() {
+template<typename DTYPE> int Layer<DTYPE>::BackPropagate() {
     for (int i = m_numOfOperator - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->ComputeBackPropagate();
+        (*m_aaOperator)[i]->BackPropagate();
     }
     return TRUE;
 }

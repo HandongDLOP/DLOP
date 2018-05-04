@@ -31,7 +31,7 @@ public:
         return TRUE;
     }
 
-    int ComputeForwardPropagate() {
+    int ForwardPropagate() {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
         int capacity          = input->GetCapacity();
@@ -43,7 +43,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagate() {
+    int BackPropagate() {
         Tensor<DTYPE> *result      = this->GetResult();
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();

@@ -126,7 +126,7 @@ public:
         return m_apConv_Relu[layerNum];
     }
 
-    int ComputeForwardPropagate() {
+    int ForwardPropagate() {
         Operator<DTYPE> *concat = NULL;
 
         for (int i = 0; i < m_nBlockLayer - 1; i++) {
@@ -166,14 +166,14 @@ public:
     }
 
     void DenseLayerForwardPropagate(int layerNum) {
-        m_apBN[layerNum]->ComputeForwardPropagate();
-        m_apBN_Relu[layerNum]->ComputeForwardPropagate();
-        m_apConv[layerNum]->ComputeForwardPropagate();
-        m_apConv_Relu[layerNum]->ComputeForwardPropagate();
+        m_apBN[layerNum]->ForwardPropagate();
+        m_apBN_Relu[layerNum]->ForwardPropagate();
+        m_apConv[layerNum]->ForwardPropagate();
+        m_apConv_Relu[layerNum]->ForwardPropagate();
     }
 
     // concatCapacity : input capacity before concatenation.
-    int ComputeBackPropagate() {
+    int BackPropagate() {
         int lastLayerNum   = m_nBlockLayer - 1;
         int outputCapacity = this->GetResult()->GetCapacity();
         int concatCapacity = m_apInput[lastLayerNum]->GetResult()->GetCapacity();
@@ -221,10 +221,10 @@ public:
     }
 
     void DenseLayerBackPropagate(int layerNum) {
-        m_apConv_Relu[layerNum]->ComputeBackPropagate();
-        m_apConv[layerNum]->ComputeBackPropagate();
-        m_apBN_Relu[layerNum]->ComputeBackPropagate();
-        m_apBN[layerNum]->ComputeBackPropagate();
+        m_apConv_Relu[layerNum]->BackPropagate();
+        m_apConv[layerNum]->BackPropagate();
+        m_apBN_Relu[layerNum]->BackPropagate();
+        m_apBN[layerNum]->BackPropagate();
     }
 };
 

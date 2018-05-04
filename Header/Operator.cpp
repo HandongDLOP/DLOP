@@ -302,56 +302,34 @@ template<typename DTYPE> void Operator<DTYPE>::AddEdgebetweenOperators(Operator<
 }
 
 template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate() {
-    if (m_InputDegree == m_currentInputDegree) {
-        this->ComputeForwardPropagate();
-
-        for (int o = 0; o < m_OutputDegree; o++) {
-            (*m_apOutput)[o]->IncreaseCurrentInputDegree();
-        }
-        m_currentInputDegree = 0;
-    } else {
-        for (int i = 0; i < m_InputDegree; i++) {
-            (*m_apInput)[i]->ForwardPropagate();
-
-            if (m_InputDegree == m_currentInputDegree) {
-                this->ComputeForwardPropagate();
-
-                for (int o = 0; o < m_OutputDegree; o++) {
-                    (*m_apOutput)[o]->IncreaseCurrentInputDegree();
-                }
-                m_currentInputDegree = 0;
-            }
-        }
-    }
-
-    return TRUE;
-}
-
-template<typename DTYPE> int Operator<DTYPE>::ComputeForwardPropagate() {
     // std::cout << this->GetName() << '\n';
     return TRUE;
 }
 
 template<typename DTYPE> int Operator<DTYPE>::BackPropagate() {
-    this->ComputeBackPropagate();
-
-    // value 조정
-    for (int i = 0; i < m_InputDegree; i++) {
-        if ((*m_apInput)[i] != NULL) (*m_apInput)[i]->IncreaseCurrentOutputDegree();
-    }
-    m_currentOutputDegree = 0;
-
-    for (int i = 0; i < m_InputDegree; i++) {
-        if ((*m_apInput)[i]->GetOutputDegree() == (*m_apInput)[i]->GetCurrentOutputDegree()) {
-            (*m_apInput)[i]->BackPropagate();
-        }
-    }
+    // std::cout << this->GetName() << '\n';
     return TRUE;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::ComputeBackPropagate() {
-    // std::cout << this->GetName() << '\n';
-    return TRUE;
+template<typename DTYPE> void Operator<DTYPE>::SetModeTraining() {
+    // std::cout << "Operator<DTYPE>::SetModeTraining()" << '\n';
+}
+
+template<typename DTYPE> void Operator<DTYPE>::SetModeAccumulating() {
+    // std::cout << "Operator<DTYPE>::SetModeAccumulating()" << '\n';
+}
+
+template<typename DTYPE> void Operator<DTYPE>::SetModeInferencing() {
+    // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
+}
+
+template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
+    m_Device = Device::CPU;
+}
+
+#if __CUDNN__
+template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
+    m_Device = Device::GPU;
 }
 
 template<typename DTYPE> int Operator<DTYPE>::ResetResult() {
@@ -374,29 +352,8 @@ template<typename DTYPE> int Operator<DTYPE>::ResetGradient() {
     return TRUE;
 }
 
-template<typename DTYPE> void Operator<DTYPE>::SetModeTraining() {
-    // std::cout << "Operator<DTYPE>::SetModeTraining()" << '\n';
-}
 
-template<typename DTYPE> void Operator<DTYPE>::SetModeAccumulating() {
-    // std::cout << "Operator<DTYPE>::SetModeAccumulating()" << '\n';
-}
-
-template<typename DTYPE> void Operator<DTYPE>::SetModeInferencing() {
-    // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
-}
-
-
-template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
-    m_Device = Device::CPU;
-}
-
-#if __CUDNN__
-template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
-    m_Device = Device::GPU;
-}
-
-#endif // __CUDNN__
+#endif  // __CUDNN__
 
 // int main(int argc, char const *argv[]) {
 // Operator<int> *temp1 = new Operator<int>("temp1");

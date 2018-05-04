@@ -62,7 +62,7 @@ public:
         }
     }
 
-    int ComputeForwardPropagate() {
+    int ForwardPropagate() {
         if (m_mode == INFERENCING) {
             Transform(m_pTenInput);
         } else {
@@ -77,7 +77,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagate() {
+    int BackPropagate() {
         unsigned int inputIndex        = 0;
         unsigned int batchSummaryIndex = 0;
 

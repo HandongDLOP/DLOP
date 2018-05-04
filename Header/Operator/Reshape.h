@@ -55,7 +55,7 @@ public:
 
     void Delete() {}
 
-    int  ComputeForwardPropagate() {
+    int  ForwardPropagate() {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
@@ -68,7 +68,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagate() {
+    int BackPropagate() {
         int capacity = this->GetDelta()->GetCapacity();
 
         Tensor<DTYPE> *this_delta  = this->GetDelta();

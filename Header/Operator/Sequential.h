@@ -40,11 +40,11 @@ public:
         return TRUE;
     }
 
-    int ComputeForwardPropagate() {
+    int ForwardPropagate() {
         return TRUE;
     }
 
-    int ComputeBackPropagate() {
+    int BackPropagate() {
         return TRUE;
     }
 };

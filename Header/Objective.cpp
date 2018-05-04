@@ -84,12 +84,12 @@ template<typename DTYPE> std::string Objective<DTYPE>::GetName() const {
     return m_name;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::ComputeForwardPropagate() {
+template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::ForwardPropagate() {
     std::cout << this->GetName() << '\n';
     return NULL;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::ComputeBackPropagate() {
+template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::BackPropagate() {
     std::cout << this->GetName() << '\n';
     return NULL;
 }
