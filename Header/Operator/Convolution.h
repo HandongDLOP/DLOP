@@ -75,9 +75,9 @@ public:
         checkCudaErrors(cudaMalloc((void **)&m_pDevInput, (inputCapacity * sizeof(DTYPE))));
         checkCudaErrors(cudaMalloc((void **)&m_pDevOutput, (outputCapacity * sizeof(DTYPE))));
         checkCudaErrors(cudaMalloc((void **)&m_pDevFilter, (filterCapacity * sizeof(DTYPE))));
-        checkCudaErrors(cudaMalloc((void **)&m_pDevInputDelta, (inputCapacity) * sizeof(DTYPE)));
-        checkCudaErrors(cudaMalloc((void **)&m_pDevDelta, (outputCapacity) * sizeof(DTYPE)));
-        checkCudaErrors(cudaMalloc((void **)&m_pDevFilterDelta, (filterCapacity) * sizeof(DTYPE)));
+        checkCudaErrors(cudaMalloc((void **)&m_pDevInputDelta, (inputCapacity * sizeof(DTYPE))));
+        checkCudaErrors(cudaMalloc((void **)&m_pDevDelta, (outputCapacity * sizeof(DTYPE))));
+        checkCudaErrors(cudaMalloc((void **)&m_pDevFilterDelta, (filterCapacity * sizeof(DTYPE))));
 
         m_aHostInput       = new DTYPE[inputCapacity];
         m_aHostOutput      = new DTYPE[outputCapacity];
@@ -106,12 +106,14 @@ public:
         checkCudaErrors(cudaFree(m_pDevFilter));
         checkCudaErrors(cudaFree(m_pDevInputDelta));
         checkCudaErrors(cudaFree(m_pDevDelta));
+        checkCudaErrors(cudaFree(m_pDevFilterDelta));
 
         delete[] m_aHostInput;
         delete[] m_aHostOutput;
         delete[] m_aHostFilter;
         delete[] m_aHostInputDelta;
         delete[] m_aHostDelta;
+        delete[] m_aHostFilterDelta;
 #endif  // if __CUDNN__
     }
 

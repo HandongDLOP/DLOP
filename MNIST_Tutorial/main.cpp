@@ -6,7 +6,7 @@
 #include "MNIST_Reader.h"
 #include <time.h>
 
-#define BATCH             2
+#define BATCH             50
 #define EPOCH             100
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
@@ -31,7 +31,9 @@ int main(int argc, char const *argv[]) {
 
     net->PrintGraphShape();
 
-    // net->SetDeviceGPU();
+    x->SetDeviceGPU();
+    label->SetDeviceGPU();
+    net->SetDeviceGPU();
 
     // pytorch check하기
     for (int i = 0; i < EPOCH; i++) {
