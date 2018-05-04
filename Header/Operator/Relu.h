@@ -91,18 +91,18 @@ public:
 #endif  // if __CUDNN__
 
     int ForwardPropagate() {
-        if (this->GetDevice() == Device::CPU) ComputeForwardPropagateOnCPU();
+        if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU();
 #ifdef __CUDNN__
-        else if (this->GetDevice() == Device::GPU) ComputeForwardPropagateOnGPU();
+        else if (this->GetDevice() == GPU) ComputeForwardPropagateOnGPU();
 #endif  // if __CUDNN__
         else return FALSE;
         return TRUE;
     }
 
     int BackPropagate() {
-        if (this->GetDevice() == Device::CPU) ComputeBackPropagateOnCPU();
+        if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU();
 #ifdef __CUDNN__
-        else if (this->GetDevice() == Device::GPU) ComputeBackPropagateOnGPU();
+        else if (this->GetDevice() == GPU) ComputeBackPropagateOnGPU();
 #endif  // if __CUDNN__
         else return FALSE;
         return TRUE;

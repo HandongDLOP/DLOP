@@ -54,7 +54,6 @@ template<typename DTYPE> Operator<DTYPE>::~Operator() {
 template<typename DTYPE> int Operator<DTYPE>::Alloc() {
     m_aaResult   = new Container<Tensor<DTYPE> *>();
     m_aaGradient = new Container<Tensor<DTYPE> *>();
-    // m_aaDelta    = new Container<Tensor<DTYPE> *>();
     m_apOutput = new Container<Operator<DTYPE> *>();
     m_apInput  = new Container<Operator<DTYPE> *>();
 
@@ -324,12 +323,12 @@ template<typename DTYPE> void Operator<DTYPE>::SetModeInferencing() {
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
-    m_Device = Device::CPU;
+    m_Device = CPU;
 }
 
 #if __CUDNN__
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
-    m_Device = Device::GPU;
+    m_Device = GPU;
 }
 
 template<typename DTYPE> int Operator<DTYPE>::ResetResult() {

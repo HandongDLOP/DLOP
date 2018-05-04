@@ -6,8 +6,8 @@
 
 template<typename DTYPE> class Convolution2D : public Operator<DTYPE>{
 private:
-    int m_stride[2]  = { 0, };
-    int m_padding[2] = { 0, };
+    int m_stride[2];
+    int m_padding[2];
 
 #if __CUDNN__
     cudnnTensorDescriptor_t inputTensorDesc, outputTensorDesc, deltaDesc, inputDeltaDesc;
@@ -118,82 +118,82 @@ public:
     }
 
     int ForwardPropagate() {
-        if (this->GetDevice() == Device::CPU) ComputeForwardPropagateOnCPU();
-        // if (this->GetDevice() == Device::CPU) ComputeForwardPropagateOnCPU_MT();
+        if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU();
+        // if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU_MT();
 #ifdef __CUDNN__
-        else if (this->GetDevice() == Device::GPU) ComputeForwardPropagateOnGPU();
+        else if (this->GetDevice() == GPU) ComputeForwardPropagateOnGPU();
 #endif  // if __CUDNN__
         else return FALSE;
         return TRUE;
     }
 
     int BackPropagate() {
-        if (this->GetDevice() == Device::CPU) ComputeBackPropagateOnCPU();
-        // if (this->GetDevice() == Device::CPU) ComputeBackPropagateOnCPU_MT();
+        if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU();
+        // if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU_MT();
 #ifdef __CUDNN__
-        else if (this->GetDevice() == Device::GPU) ComputeBackPropagateOnGPU();
+        else if (this->GetDevice() == GPU) ComputeBackPropagateOnGPU();
 #endif  // if __CUDNN__
         else return FALSE;
         return TRUE;
     }
 
     // int ComputeForwardPropagateOnCPU_MT() {
-    //     int numOfThread = this->GetInput()[0]->GetResult()->GetBatchSize();
+    // int numOfThread = this->GetInput()[0]->GetResult()->GetBatchSize();
     //
-    //     std::thread **pthread = new std::thread *[numOfThread];
+    // std::thread **pthread = new std::thread *[numOfThread];
     //
-    //     for (int i = 0; i < numOfThread; i++) {
-    //         pthread[i] = new std::thread(ComputeForwardPropagateOnCPU_T, this, i, numOfThread);
-    //     }
+    // for (int i = 0; i < numOfThread; i++) {
+    // pthread[i] = new std::thread(ComputeForwardPropagateOnCPU_T, this, i, numOfThread);
+    // }
     //
-    //     for (int i = 0; i < numOfThread; i++) {
-    //         pthread[i]->join();
-    //     }
+    // for (int i = 0; i < numOfThread; i++) {
+    // pthread[i]->join();
+    // }
     //
-    //     return TRUE;
+    // return TRUE;
     // }
     //
     // static int ComputeForwardPropagateOnCPU_T(Convolution2D<DTYPE> *obj, int threadNum, int numOfThread) {
-    //     Tensor<DTYPE> *input = obj->GetInput()[0]->GetResult();
-    //     Shape *shapeOfInput  = input->GetShape();
+    // Tensor<DTYPE> *input = obj->GetInput()[0]->GetResult();
+    // Shape *shapeOfInput  = input->GetShape();
     //
-    //     Tensor<DTYPE> *weight = obj->GetInput()[1]->GetResult();
-    //     Shape *shapeOfWeight  = weight->GetShape();
+    // Tensor<DTYPE> *weight = obj->GetInput()[1]->GetResult();
+    // Shape *shapeOfWeight  = weight->GetShape();
     //
-    //     Tensor<DTYPE> *result = obj->GetResult();
-    //     Shape *shapeOfResult  = result->GetShape();
+    // Tensor<DTYPE> *result = obj->GetResult();
+    // Shape *shapeOfResult  = result->GetShape();
     //
-    //     int batchsize   = (*shapeOfResult)[1];
-    //     int channelsize = (*shapeOfResult)[2];  // == shapeOfWeight[1]
-    //     int rowsize     = (*shapeOfResult)[3];
-    //     int colsize     = (*shapeOfResult)[4];
+    // int batchsize   = (*shapeOfResult)[1];
+    // int channelsize = (*shapeOfResult)[2];  // == shapeOfWeight[1]
+    // int rowsize     = (*shapeOfResult)[3];
+    // int colsize     = (*shapeOfResult)[4];
     //
-    //     int channelsizeOfWeight = (*shapeOfWeight)[2];
-    //     int rowsizeOfWeight     = (*shapeOfWeight)[3];
-    //     int colsizeOfWeight     = (*shapeOfWeight)[4];
+    // int channelsizeOfWeight = (*shapeOfWeight)[2];
+    // int rowsizeOfWeight     = (*shapeOfWeight)[3];
+    // int colsizeOfWeight     = (*shapeOfWeight)[4];
     //
-    //     int rowsizeOfInput = (*shapeOfInput)[3];
-    //     int colsizeOfInput = (*shapeOfInput)[4];
+    // int rowsizeOfInput = (*shapeOfInput)[3];
+    // int colsizeOfInput = (*shapeOfInput)[4];
     //
-    //     for (int ba = threadNum; ba < batchsize; ba += numOfThread) {
-    //         for (int ch = 0; ch < channelsize; ch++) {  // Batchsize of weight kernel
-    //             for (int ro = 0; ro < rowsize; ro++) {
-    //                 for (int co = 0; co < colsize; co++) {
-    //                     for (int wch = 0; wch < channelsizeOfWeight; wch++) {  // == (*shapeOfInput)[2];
-    //                         for (int wro = 0; wro < rowsizeOfWeight; wro++) {
-    //                             for (int wco = 0; wco < colsizeOfWeight; wco++) {
-    //                                 (*result)[Index4D(shapeOfResult, ba, ch, ro, co)]
-    //                                     += ((*input)[Index4D(shapeOfInput, ba, wch, (obj->GetStrideList())[0] * ro + wro, (obj->GetStrideList())[1] * co + wco)]
-    //                                         * (*weight)[Index4D(shapeOfWeight, ch, wch, wro, wco)]);
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
+    // for (int ba = threadNum; ba < batchsize; ba += numOfThread) {
+    // for (int ch = 0; ch < channelsize; ch++) {  // Batchsize of weight kernel
+    // for (int ro = 0; ro < rowsize; ro++) {
+    // for (int co = 0; co < colsize; co++) {
+    // for (int wch = 0; wch < channelsizeOfWeight; wch++) {  // == (*shapeOfInput)[2];
+    // for (int wro = 0; wro < rowsizeOfWeight; wro++) {
+    // for (int wco = 0; wco < colsizeOfWeight; wco++) {
+    // (*result)[Index4D(shapeOfResult, ba, ch, ro, co)]
+    // += ((*input)[Index4D(shapeOfInput, ba, wch, (obj->GetStrideList())[0] * ro + wro, (obj->GetStrideList())[1] * co + wco)]
+    // * (*weight)[Index4D(shapeOfWeight, ch, wch, wro, wco)]);
+    // }
+    // }
+    // }
+    // }
+    // }
+    // }
+    // }
     //
-    //     return TRUE;
+    // return TRUE;
     // }
 
     int ComputeForwardPropagateOnCPU() {
@@ -240,74 +240,74 @@ public:
     }
 
     // int ComputeBackPropagateOnCPU_MT() {
-    //     int numOfThread = this->GetInput()[0]->GetResult()->GetBatchSize();
+    // int numOfThread = this->GetInput()[0]->GetResult()->GetBatchSize();
     //
-    //     std::thread **pthread = new std::thread *[numOfThread];
+    // std::thread **pthread = new std::thread *[numOfThread];
     //
-    //     for (int i = 0; i < numOfThread; i++) {
-    //         pthread[i] = new std::thread(ComputeBackPropagateOnCPU_T, this, i, numOfThread);
-    //     }
+    // for (int i = 0; i < numOfThread; i++) {
+    // pthread[i] = new std::thread(ComputeBackPropagateOnCPU_T, this, i, numOfThread);
+    // }
     //
-    //     for (int i = 0; i < numOfThread; i++) {
-    //         pthread[i]->join();
-    //     }
+    // for (int i = 0; i < numOfThread; i++) {
+    // pthread[i]->join();
+    // }
     //
-    //     return TRUE;
+    // return TRUE;
     // }
     //
     // static int ComputeBackPropagateOnCPU_T(Convolution2D<DTYPE> *obj, int threadNum, int numOfThread) {
-    //     Tensor<DTYPE> *input       = obj->GetInput()[0]->GetResult();
-    //     Tensor<DTYPE> *input_delta = obj->GetInput()[0]->GetDelta();
-    //     Shape *shapeOfInput        = input->GetShape();
+    // Tensor<DTYPE> *input       = obj->GetInput()[0]->GetResult();
+    // Tensor<DTYPE> *input_delta = obj->GetInput()[0]->GetDelta();
+    // Shape *shapeOfInput        = input->GetShape();
     //
-    //     Tensor<DTYPE> *weight          = obj->GetInput()[1]->GetResult();
-    //     Tensor<DTYPE> *weight_gradient = obj->GetInput()[1]->GetGradient();
-    //     Shape *shapeOfWeight           = weight->GetShape();
+    // Tensor<DTYPE> *weight          = obj->GetInput()[1]->GetResult();
+    // Tensor<DTYPE> *weight_gradient = obj->GetInput()[1]->GetGradient();
+    // Shape *shapeOfWeight           = weight->GetShape();
     //
-    //     Tensor<DTYPE> *this_delta = obj->GetDelta();
-    //     Shape *shapeOfResult      = this_delta->GetShape();
+    // Tensor<DTYPE> *this_delta = obj->GetDelta();
+    // Shape *shapeOfResult      = this_delta->GetShape();
     //
-    //     int batchsize   = (*shapeOfResult)[1];
-    //     int channelsize = (*shapeOfResult)[2];  // == shapeOfWeight[1]
-    //     int rowsize     = (*shapeOfResult)[3];
-    //     int colsize     = (*shapeOfResult)[4];
+    // int batchsize   = (*shapeOfResult)[1];
+    // int channelsize = (*shapeOfResult)[2];  // == shapeOfWeight[1]
+    // int rowsize     = (*shapeOfResult)[3];
+    // int colsize     = (*shapeOfResult)[4];
     //
-    //     int channelsizeOfWeight = (*shapeOfWeight)[2];
-    //     int rowsizeOfWeight     = (*shapeOfWeight)[3];
-    //     int colsizeOfWeight     = (*shapeOfWeight)[4];
+    // int channelsizeOfWeight = (*shapeOfWeight)[2];
+    // int rowsizeOfWeight     = (*shapeOfWeight)[3];
+    // int colsizeOfWeight     = (*shapeOfWeight)[4];
     //
-    //     int rowsizeOfInput = (*shapeOfInput)[3];
-    //     int colsizeOfInput = (*shapeOfInput)[4];
+    // int rowsizeOfInput = (*shapeOfInput)[3];
+    // int colsizeOfInput = (*shapeOfInput)[4];
     //
-    //     int input_index  = 0;
-    //     int weight_index = 0;
-    //     int result_index = 0;
+    // int input_index  = 0;
+    // int weight_index = 0;
+    // int result_index = 0;
     //
-    //     for (int ba = threadNum; ba < batchsize; ba += numOfThread) {
-    //         for (int ch = 0; ch < channelsize; ch++) {  // Batchsize of weight kernel
-    //             for (int ro = 0; ro < rowsize; ro++) {
-    //                 for (int co = 0; co < colsize; co++) {
-    //                     for (int wch = 0; wch < channelsizeOfWeight; wch++) {  // == (*shapeOfInput)[2];
-    //                         for (int wro = 0; wro < rowsizeOfWeight; wro++) {
-    //                             for (int wco = 0; wco < colsizeOfWeight; wco++) {
-    //                                 input_index  = Index4D(shapeOfInput, ba, wch, (obj->GetStrideList())[0] * ro + wro, (obj->GetStrideList())[1] * co + wco);
-    //                                 weight_index = Index4D(shapeOfWeight, ch, wch, wro, wco);
-    //                                 result_index = Index4D(shapeOfResult, ba, ch, ro, co);
+    // for (int ba = threadNum; ba < batchsize; ba += numOfThread) {
+    // for (int ch = 0; ch < channelsize; ch++) {  // Batchsize of weight kernel
+    // for (int ro = 0; ro < rowsize; ro++) {
+    // for (int co = 0; co < colsize; co++) {
+    // for (int wch = 0; wch < channelsizeOfWeight; wch++) {  // == (*shapeOfInput)[2];
+    // for (int wro = 0; wro < rowsizeOfWeight; wro++) {
+    // for (int wco = 0; wco < colsizeOfWeight; wco++) {
+    // input_index  = Index4D(shapeOfInput, ba, wch, (obj->GetStrideList())[0] * ro + wro, (obj->GetStrideList())[1] * co + wco);
+    // weight_index = Index4D(shapeOfWeight, ch, wch, wro, wco);
+    // result_index = Index4D(shapeOfResult, ba, ch, ro, co);
     //
-    //                                 (*input_delta)[input_index]
-    //                                     += ((*weight)[weight_index] * (*this_delta)[result_index]);
+    // (*input_delta)[input_index]
+    // += ((*weight)[weight_index] * (*this_delta)[result_index]);
     //
-    //                                 (*weight_gradient)[weight_index]
-    //                                     += ((*input)[input_index] * (*this_delta)[result_index]);
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
+    // (*weight_gradient)[weight_index]
+    // += ((*input)[input_index] * (*this_delta)[result_index]);
+    // }
+    // }
+    // }
+    // }
+    // }
+    // }
+    // }
     //
-    //     return TRUE;
+    // return TRUE;
     // }
 
     int ComputeBackPropagateOnCPU() {

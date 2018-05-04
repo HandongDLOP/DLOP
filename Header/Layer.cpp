@@ -156,7 +156,7 @@ template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::GetLastOperator() {
 }
 
 template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU() {
-    m_Device = Device::CPU;
+    m_Device = CPU;
 
     for (int i = 0; i < m_numOfOperator; i++) {
         (*m_aaOperator)[i]->SetDeviceCPU();
@@ -165,7 +165,7 @@ template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU() {
 
 #ifdef __CUDNN__
 template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU() {
-    m_Device = Device::GPU;
+    m_Device = GPU;
 
     for (int i = 0; i < m_numOfOperator; i++) {
         (*m_aaOperator)[i]->SetDeviceGPU();

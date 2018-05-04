@@ -5,9 +5,9 @@
 
 template<typename DTYPE> class Maxpooling2D : public Operator<DTYPE>{
 private:
-    int m_stride[2]  = { 0, };
-    int m_mask[2]    = { 0, };
-    int m_padding[2] = { 0, };
+    int m_stride[2];
+    int m_mask[2];
+    int m_padding[2];
 
     Tensor<int> *indexOfMaxInput;
 
@@ -109,18 +109,18 @@ public:
 #endif  // if __CUDNN__
 
     int ForwardPropagate() {
-        if (this->GetDevice() == Device::CPU) ComputeForwardPropagateOnCPU();
+        if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU();
 #ifdef __CUDNN__
-        else if (this->GetDevice() == Device::GPU) ComputeForwardPropagateOnGPU();
+        else if (this->GetDevice() == GPU) ComputeForwardPropagateOnGPU();
 #endif  // if __CUDNN__
         else return FALSE;
         return TRUE;
     }
 
     int BackPropagate() {
-        if (this->GetDevice() == Device::CPU) ComputeBackPropagateOnCPU();
+        if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU();
 #ifdef __CUDNN__
-        else if (this->GetDevice() == Device::GPU) ComputeBackPropagateOnGPU();
+        else if (this->GetDevice() == GPU) ComputeBackPropagateOnGPU();
 #endif  // if __CUDNN__
         else return FALSE;
         return TRUE;
