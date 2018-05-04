@@ -39,10 +39,8 @@ public:
         int timesize    = result->GetTimeSize();
         int batchsize   = result->GetBatchSize();
         int channelsize = result->GetChannelSize();
-        int count       = timesize * batchsize * channelsize;
-
-        int rowsize = result->GetRowSize();
-        int colsize = result->GetColSize();
+        int rowsize     = result->GetRowSize();
+        int colsize     = result->GetColSize();
 
         int hiddensize = input->GetColSize();
 
@@ -50,20 +48,24 @@ public:
         int weight_index = 0;
         int result_index = 0;
 
+        Shape *inputTenShape  = input->GetShape();
+        Shape *weightTenShape = weight->GetShape();
+        Shape *resultTenShape = result->GetShape();
+
         DTYPE temp = 0.f;
 
-        for (int i = 0; i < count; i++) {
-            for (int ro = 0; ro < rowsize; ro++) {
-                for (int co = 0; co < colsize; co++) {
-                    for (int hid = 0; hid < hiddensize; hid++) {
-                        input_index  = (i * rowsize + ro) * hiddensize + hid;
-                        weight_index = hid * colsize + co;
-
-                        temp += (*input)[input_index] * (*weight)[weight_index];
+        for (int ti = 0; ti < timesize; ti++) {
+            for (int ba = 0; ba < batchsize; ba++) {
+                for (int ch = 0; ch < channelsize; ch++) {
+                    for (int ro = 0; ro < rowsize; ro++) {
+                        for (int co = 0; co < colsize; co++) {
+                            for (int hid = 0; hid < hiddensize; hid++) {
+                                (*result)[Index5D(resultTenShape, ti, ba, ch, ro, co)]
+                                    += (*input)[Index5D(inputTenShape, ti, ba, ch, ro, hid)]
+                                       * (*weight)[Index5D(weightTenShape, 0, 0, 0, hid, co)];
+                            }
+                        }
                     }
-                    result_index            = (i * rowsize + ro) * colsize + co;
-                    (*result)[result_index] = temp;
-                    temp                    = 0.f;
                 }
             }
         }
@@ -82,26 +84,32 @@ public:
         int timesize    = this_delta->GetTimeSize();
         int batchsize   = this_delta->GetBatchSize();
         int channelsize = this_delta->GetChannelSize();
-        int count       = timesize * batchsize * channelsize;
+        int rowsize     = this_delta->GetRowSize();
+        int colsize     = this_delta->GetColSize();
+        int hiddensize  = input_delta->GetColSize();
 
-        int rowsize    = this_delta->GetRowSize();
-        int colsize    = this_delta->GetColSize();
-        int hiddensize = input_delta->GetColSize();
+        Shape *inputTenShape  = input->GetShape();
+        Shape *weightTenShape = weight->GetShape();
+        Shape *resultTenShape = this_delta->GetShape();
 
         int input_index  = 0;
         int weight_index = 0;
         int result_index = 0;
 
-        for (int i = 0; i < count; i++) {
-            for (int ro = 0; ro < rowsize; ro++) {
-                for (int co = 0; co < colsize; co++) {
-                    for (int hid = 0; hid < hiddensize; hid++) {
-                        input_index  = (i * rowsize + ro) * hiddensize + hid;
-                        weight_index = hid * colsize + co;
-                        result_index = (i * rowsize + ro) * colsize + co;
+        for (int ti = 0; ti < timesize; ti++) {
+            for (int ba = 0; ba < batchsize; ba++) {
+                for (int ch = 0; ch < channelsize; ch++) {
+                    for (int ro = 0; ro < rowsize; ro++) {
+                        for (int co = 0; co < colsize; co++) {
+                            for (int hid = 0; hid < hiddensize; hid++) {
+                                input_index  = Index5D(inputTenShape, ti, ba, ch, ro, hid);
+                                weight_index = Index5D(weightTenShape, 0, 0, 0, hid, co);
+                                result_index = Index5D(resultTenShape, ti, ba, ch, ro, co);
 
-                        (*input_delta)[input_index]      += (*weight)[weight_index] * (*this_delta)[result_index];
-                        (*weight_gradient)[weight_index] += (*input)[input_index] * (*this_delta)[result_index];
+                                (*input_delta)[input_index]      += (*weight)[weight_index] * (*this_delta)[result_index];
+                                (*weight_gradient)[weight_index] += (*input)[input_index] * (*this_delta)[result_index];
+                            }
+                        }
                     }
                 }
             }

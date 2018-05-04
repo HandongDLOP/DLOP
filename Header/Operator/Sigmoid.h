@@ -34,10 +34,26 @@ public:
     int ForwardPropagate() {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
-        int capacity          = input->GetCapacity();
 
-        for (int i = 0; i < capacity; i++) {
-            (*result)[i] = this->SIGMOID((*input)[i]);
+        int timesize    = result->GetTimeSize();
+        int batchsize   = result->GetBatchSize();
+        int channelsize = result->GetChannelSize();
+        int rowsize     = result->GetRowSize();
+        int colsize     = result->GetColSize();
+
+        Shape *resultTenShape = result->GetShape();
+
+        for (int ti = 0; ti < timesize; ti++) {
+            for (int ba = 0; ba < batchsize; ba++) {
+                for (int ch = 0; ch < channelsize; ch++) {
+                    for (int ro = 0; ro < rowsize; ro++) {
+                        for (int co = 0; co < colsize; co++) {
+                            (*result)[Index5D(resultTenShape, ti, ba, ch, ro, co)]
+                                = this->SIGMOID((*input)[Index5D(resultTenShape, ti, ba, ch, ro, co)]);
+                        }
+                    }
+                }
+            }
         }
 
         return TRUE;
@@ -47,10 +63,28 @@ public:
         Tensor<DTYPE> *result      = this->GetResult();
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-        int capacity               = result->GetCapacity();
 
-        for (int i = 0; i < capacity; i++) {
-            (*input_delta)[i] += (*result)[i] * (1 - (*result)[i]) * (*this_delta)[i];
+        int timesize    = result->GetTimeSize();
+        int batchsize   = result->GetBatchSize();
+        int channelsize = result->GetChannelSize();
+        int rowsize     = result->GetRowSize();
+        int colsize     = result->GetColSize();
+
+        Shape *resultTenShape = result->GetShape();
+
+        for (int ti = 0; ti < timesize; ti++) {
+            for (int ba = 0; ba < batchsize; ba++) {
+                for (int ch = 0; ch < channelsize; ch++) {
+                    for (int ro = 0; ro < rowsize; ro++) {
+                        for (int co = 0; co < colsize; co++) {
+                            (*input_delta)[Index5D(resultTenShape, ti, ba, ch, ro, co)]
+                                += (*result)[Index5D(resultTenShape, ti, ba, ch, ro, co)]
+                                   * (1 - (*result)[Index5D(resultTenShape, ti, ba, ch, ro, co)])
+                                   * (*this_delta)[Index5D(resultTenShape, ti, ba, ch, ro, co)];
+                        }
+                    }
+                }
+            }
         }
         return TRUE;
     }
