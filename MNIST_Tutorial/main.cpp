@@ -21,8 +21,8 @@ int main(int argc, char const *argv[]) {
     Tensorholder<float> *label = new Tensorholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // ======================= Select net ===================
-    NeuralNetwork<float> *net = new my_CNN(x, label);
-    // NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
+    // NeuralNetwork<float> *net = new my_CNN(x, label);
+    NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
     // NeuralNetwork<float> *net = new my_NN(x, label, isMLP);
     // NeuralNetwork<float> *net = Resnet14<float>(x, label);
 
@@ -31,9 +31,11 @@ int main(int argc, char const *argv[]) {
 
     net->PrintGraphShape();
 
+#if __CUDNN__
     x->SetDeviceGPU();
     label->SetDeviceGPU();
     net->SetDeviceGPU();
+#endif  // __CUDNN__
 
     // pytorch check하기
     for (int i = 0; i < EPOCH; i++) {
@@ -49,16 +51,16 @@ int main(int argc, char const *argv[]) {
             x->SetTensor(dataset->GetTrainFeedImage());
             label->SetTensor(dataset->GetTrainFeedLabel());
 
-            startTime  = clock();
+            startTime = clock();
 
             net->ResetParameterGradient();
             net->Training();
 
             endTime = clock();
 
-            train_accuracy += net->GetAccuracy();
-            train_avg_loss += net->GetLoss();
-            nProcessExcuteTime = ( (double)(endTime - startTime) ) / CLOCKS_PER_SEC;
+            train_accuracy    += net->GetAccuracy();
+            train_avg_loss    += net->GetLoss();
+            nProcessExcuteTime = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
 
             printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f (ExcuteTime : %f)",
                    j + 1, LOOP_FOR_TRAIN,
