@@ -11,7 +11,7 @@
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
-#define NUM_OF_THREAD     1
+#define NUM_OF_THREAD     2
 
 int main(int argc, char const *argv[]) {
     clock_t startTime, endTime;
@@ -22,8 +22,8 @@ int main(int argc, char const *argv[]) {
     Tensorholder<float> *label = new Tensorholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // ======================= Select net ===================
-    // NeuralNetwork<float> *net = new my_CNN(x, label);
-    NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
+    NeuralNetwork<float> *net = new my_CNN(x, label);
+    // NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
     // NeuralNetwork<float> *net = new my_NN(x, label, isMLP);
     // NeuralNetwork<float> *net = Resnet14<float>(x, label);
 

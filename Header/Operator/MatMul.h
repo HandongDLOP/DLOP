@@ -117,6 +117,97 @@ public:
 
         return TRUE;
     }
+
+    int ForwardPropagate(int pTime, int pThreadNum) {
+        Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
+        Tensor<DTYPE> *weight = this->GetInput()[1]->GetResult();
+        Tensor<DTYPE> *result = this->GetResult();
+
+        int timesize    = result->GetTimeSize();
+        int batchsize   = result->GetBatchSize();
+        int channelsize = result->GetChannelSize();
+        int rowsize     = result->GetRowSize();
+        int colsize     = result->GetColSize();
+
+        int hiddensize = input->GetColSize();
+
+        int input_index  = 0;
+        int weight_index = 0;
+        int result_index = 0;
+
+        Shape *inputTenShape  = input->GetShape();
+        Shape *weightTenShape = weight->GetShape();
+        Shape *resultTenShape = result->GetShape();
+
+        DTYPE temp = 0.f;
+
+        int ti = pTime;
+        int numOfThread = this->GetNumOfThread();
+
+        for(int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
+            for (int ch = 0; ch < channelsize; ch++) {
+                for (int ro = 0; ro < rowsize; ro++) {
+                    for (int co = 0; co < colsize; co++) {
+                        for (int hid = 0; hid < hiddensize; hid++) {
+                            (*result)[Index5D(resultTenShape, ti, ba, ch, ro, co)]
+                                += (*input)[Index5D(inputTenShape, ti, ba, ch, ro, hid)]
+                                   * (*weight)[Index5D(weightTenShape, 0, 0, 0, hid, co)];
+                        }
+                    }
+                }
+            }
+        }
+
+
+        return TRUE;
+    }
+
+    int BackPropagate(int pTime, int pThreadNum) {
+        Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
+        Tensor<DTYPE> *weight = this->GetInput()[1]->GetResult();
+
+        Tensor<DTYPE> *this_delta      = this->GetDelta();
+        Tensor<DTYPE> *input_delta     = this->GetInput()[0]->GetDelta();
+        Tensor<DTYPE> *weight_gradient = this->GetInput()[1]->GetGradient();
+
+        int timesize    = this_delta->GetTimeSize();
+        int batchsize   = this_delta->GetBatchSize();
+        int channelsize = this_delta->GetChannelSize();
+        int rowsize     = this_delta->GetRowSize();
+        int colsize     = this_delta->GetColSize();
+        int hiddensize  = input_delta->GetColSize();
+
+        Shape *inputTenShape  = input->GetShape();
+        Shape *weightTenShape = weight->GetShape();
+        Shape *resultTenShape = this_delta->GetShape();
+
+        int input_index  = 0;
+        int weight_index = 0;
+        int result_index = 0;
+
+        int ti = pTime;
+        int numOfThread = this->GetNumOfThread();
+
+        for(int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
+            for (int ch = 0; ch < channelsize; ch++) {
+                for (int ro = 0; ro < rowsize; ro++) {
+                    for (int co = 0; co < colsize; co++) {
+                        for (int hid = 0; hid < hiddensize; hid++) {
+                            input_index  = Index5D(inputTenShape, ti, ba, ch, ro, hid);
+                            weight_index = Index5D(weightTenShape, 0, 0, 0, hid, co);
+                            result_index = Index5D(resultTenShape, ti, ba, ch, ro, co);
+
+                            (*input_delta)[input_index]      += (*weight)[weight_index] * (*this_delta)[result_index];
+                            (*weight_gradient)[weight_index] += (*input)[input_index] * (*this_delta)[result_index];
+                        }
+                    }
+                }
+            }
+        }
+
+
+        return TRUE;
+    }
 };
 
 template<typename DTYPE> class BroadcastMatMul : public Operator<DTYPE>{

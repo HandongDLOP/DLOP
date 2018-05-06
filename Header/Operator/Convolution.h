@@ -235,6 +235,110 @@ public:
         return TRUE;
     }
 
+    int ForwardPropagate(int pTime, int pThreadNum) {
+        Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
+        Shape *shapeOfInput  = input->GetShape();
+
+        Tensor<DTYPE> *weight = this->GetInput()[1]->GetResult();
+        Shape *shapeOfWeight  = weight->GetShape();
+
+        Tensor<DTYPE> *result = this->GetResult();
+        Shape *shapeOfResult  = result->GetShape();
+
+        int batchsize   = (*shapeOfResult)[1];
+        int channelsize = (*shapeOfResult)[2];  // == shapeOfWeight[1]
+        int rowsize     = (*shapeOfResult)[3];
+        int colsize     = (*shapeOfResult)[4];
+
+        int channelsizeOfWeight = (*shapeOfWeight)[2];
+        int rowsizeOfWeight     = (*shapeOfWeight)[3];
+        int colsizeOfWeight     = (*shapeOfWeight)[4];
+
+        int rowsizeOfInput = (*shapeOfInput)[3];
+        int colsizeOfInput = (*shapeOfInput)[4];
+
+        int ti = pTime;
+        int numOfThread = this->GetNumOfThread();
+
+        for(int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
+            for (int ch = 0; ch < channelsize; ch++) {  // Batchsize of weight kernel
+                for (int ro = 0; ro < rowsize; ro++) {
+                    for (int co = 0; co < colsize; co++) {
+                        for (int wch = 0; wch < channelsizeOfWeight; wch++) {  // == (*shapeOfInput)[2];
+                            for (int wro = 0; wro < rowsizeOfWeight; wro++) {
+                                for (int wco = 0; wco < colsizeOfWeight; wco++) {
+                                    (*result)[Index4D(shapeOfResult, ba, ch, ro, co)]
+                                        += ((*input)[Index4D(shapeOfInput, ba, wch, m_stride[0] * ro + wro, m_stride[1] * co + wco)]
+                                            * (*weight)[Index4D(shapeOfWeight, ch, wch, wro, wco)]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return TRUE;
+    }
+
+    int BackPropagate(int pTime, int pThreadNum) {
+        Tensor<DTYPE> *input       = this->GetInput()[0]->GetResult();
+        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
+        Shape *shapeOfInput        = input->GetShape();
+
+        Tensor<DTYPE> *weight          = this->GetInput()[1]->GetResult();
+        Tensor<DTYPE> *weight_gradient = this->GetInput()[1]->GetGradient();
+        Shape *shapeOfWeight           = weight->GetShape();
+
+        Tensor<DTYPE> *this_delta = this->GetDelta();
+        Shape *shapeOfResult      = this_delta->GetShape();
+
+        int batchsize   = (*shapeOfResult)[1];
+        int channelsize = (*shapeOfResult)[2];  // == shapeOfWeight[1]
+        int rowsize     = (*shapeOfResult)[3];
+        int colsize     = (*shapeOfResult)[4];
+
+        int channelsizeOfWeight = (*shapeOfWeight)[2];
+        int rowsizeOfWeight     = (*shapeOfWeight)[3];
+        int colsizeOfWeight     = (*shapeOfWeight)[4];
+
+        int rowsizeOfInput = (*shapeOfInput)[3];
+        int colsizeOfInput = (*shapeOfInput)[4];
+
+        int input_index  = 0;
+        int weight_index = 0;
+        int result_index = 0;
+
+        int ti = pTime;
+        int numOfThread = this->GetNumOfThread();
+
+        for(int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
+            for (int ch = 0; ch < channelsize; ch++) {  // Batchsize of weight kernel
+                for (int ro = 0; ro < rowsize; ro++) {
+                    for (int co = 0; co < colsize; co++) {
+                        for (int wch = 0; wch < channelsizeOfWeight; wch++) {  // == (*shapeOfInput)[2];
+                            for (int wro = 0; wro < rowsizeOfWeight; wro++) {
+                                for (int wco = 0; wco < colsizeOfWeight; wco++) {
+                                    input_index  = Index4D(shapeOfInput, ba, wch, m_stride[0] * ro + wro, m_stride[1] * co + wco);
+                                    weight_index = Index4D(shapeOfWeight, ch, wch, wro, wco);
+                                    result_index = Index4D(shapeOfResult, ba, ch, ro, co);
+
+                                    (*input_delta)[input_index]
+                                        += ((*weight)[weight_index] * (*this_delta)[result_index]);
+
+                                    (*weight_gradient)[weight_index]
+                                        += ((*input)[input_index] * (*this_delta)[result_index]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return TRUE;
+    }
+
 #if __CUDNN__
     int ComputeForwardPropagateOnGPU() {
         Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
