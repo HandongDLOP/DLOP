@@ -58,9 +58,10 @@ public:
 
         int i = 0;
 
-        for(int ti = 0; ti < timesize; ti++){
-            for(int ba = 0; ba < batchsize; ba++){
+        for (int ti = 0; ti < timesize; ti++) {
+            for (int ba = 0; ba < batchsize; ba++) {
                 i = ti * batchsize + ba;
+
                 for (int j = 0; j < capacity; j++) {
                     index              = i * capacity + j;
                     (*result)[i]      += Error((*input)[index], (*label)[index]);
@@ -70,11 +71,11 @@ public:
         }
 
         // for (int i = 0; i < count; i++) {
-        //     for (int j = 0; j < capacity; j++) {
-        //         index              = i * capacity + j;
-        //         (*result)[i]      += Error((*input)[index], (*label)[index]);
-        //         (*gradient)[index] = ((*input)[index] - (*label)[index]);
-        //     }
+        // for (int j = 0; j < capacity; j++) {
+        // index              = i * capacity + j;
+        // (*result)[i]      += Error((*input)[index], (*label)[index]);
+        // (*gradient)[index] = ((*input)[index] - (*label)[index]);
+        // }
         // }
 
         return result;
@@ -94,12 +95,14 @@ public:
         int capacity    = channelsize * rowsize * colsize;
 
         int index = 0;
-        int i = 0;
-        for(int ti = 0; ti < timesize; ti++){
-            for(int ba = 0; ba < batchsize; ba++){
+        int i     = 0;
+
+        for (int ti = 0; ti < timesize; ti++) {
+            for (int ba = 0; ba < batchsize; ba++) {
                 i = ti * batchsize + ba;
+
                 for (int j = 0; j < capacity; j++) {
-                    index              = i * capacity + j;
+                    index                  = i * capacity + j;
                     (*input_delta)[index] += (*gradient)[index] / batchsize;
                 }
             }
@@ -109,7 +112,7 @@ public:
         // int capacity = input_delta->GetCapacity();
 
         // for (int i = 0; i < capacity; i++) {
-        //     (*input_delta)[i] += (*gradient)[i] / batchsize;
+        // (*input_delta)[i] += (*gradient)[i] / batchsize;
         // }
 
         return NULL;
@@ -134,11 +137,12 @@ public:
 
         int i = 0;
 
-        int ti = pTime;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
-        for(int ba = pThreadNum; ba < batchsize; ba += numOfThread){
+        for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
             i = ti * batchsize + ba;
+
             for (int j = 0; j < capacity; j++) {
                 index              = i * capacity + j;
                 (*result)[i]      += Error((*input)[index], (*label)[index]);
@@ -147,11 +151,11 @@ public:
         }
 
         // for (int i = 0; i < count; i++) {
-        //     for (int j = 0; j < capacity; j++) {
-        //         index              = i * capacity + j;
-        //         (*result)[i]      += Error((*input)[index], (*label)[index]);
-        //         (*gradient)[index] = ((*input)[index] - (*label)[index]);
-        //     }
+        // for (int j = 0; j < capacity; j++) {
+        // index              = i * capacity + j;
+        // (*result)[i]      += Error((*input)[index], (*label)[index]);
+        // (*gradient)[index] = ((*input)[index] - (*label)[index]);
+        // }
         // }
 
         return result;
@@ -171,15 +175,16 @@ public:
         int capacity    = channelsize * rowsize * colsize;
 
         int index = 0;
-        int i = 0;
+        int i     = 0;
 
-        int ti = pTime;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
-        for(int ba = pThreadNum; ba < batchsize; ba += numOfThread){
+        for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
             i = ti * batchsize + ba;
+
             for (int j = 0; j < capacity; j++) {
-                index              = i * capacity + j;
+                index                  = i * capacity + j;
                 (*input_delta)[index] += (*gradient)[index] / batchsize;
             }
         }
@@ -189,7 +194,7 @@ public:
         // int capacity = input_delta->GetCapacity();
 
         // for (int i = 0; i < capacity; i++) {
-        //     (*input_delta)[i] += (*gradient)[i] / batchsize;
+        // (*input_delta)[i] += (*gradient)[i] / batchsize;
         // }
 
         return NULL;

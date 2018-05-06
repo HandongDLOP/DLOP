@@ -141,10 +141,10 @@ public:
 
         DTYPE temp = 0.f;
 
-        int ti = pTime;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
-        for(int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
+        for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
             for (int ch = 0; ch < channelsize; ch++) {
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
@@ -185,10 +185,10 @@ public:
         int weight_index = 0;
         int result_index = 0;
 
-        int ti = pTime;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
-        for(int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
+        for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
             for (int ch = 0; ch < channelsize; ch++) {
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {

@@ -8,8 +8,8 @@ class SoftmaxCrossEntropy : public Objective<DTYPE>{
 private:
     Tensor<DTYPE> *m_aSoftmaxResult;
     DTYPE m_epsilon;  // for backprop
-    DTYPE ** sum;
-    DTYPE ** max;
+    DTYPE **sum;
+    DTYPE **max;
 
 public:
     SoftmaxCrossEntropy(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, DTYPE epsilon, std::string pName = "NO NAME") : Objective<DTYPE>(pOperator, pLabel, pName) {
@@ -38,11 +38,12 @@ public:
         int rowsize     = pInput->GetResult()->GetRowSize();
         int colsize     = pInput->GetResult()->GetColSize();
 
-        sum = new DTYPE*[timesize];
-        max = new DTYPE*[timesize];
-        for(int i = 0; i < timesize; i++){
-          sum[i] = new DTYPE[batchsize];
-          max[i] = new DTYPE[batchsize];
+        sum = new DTYPE *[timesize];
+        max = new DTYPE *[timesize];
+
+        for (int i = 0; i < timesize; i++) {
+            sum[i] = new DTYPE[batchsize];
+            max[i] = new DTYPE[batchsize];
         }
 
         this->SetResult(new Tensor<DTYPE>(timesize, batchsize, 1, 1, 1));
@@ -67,19 +68,19 @@ public:
         int batchsize        = input->GetBatchSize();
 
         if (sum) {
-          for(int i = 0; i < timesize; i++){
-            delete [] sum[i];
-            sum[i] = NULL;
-          }
-          delete [] sum;
+            for (int i = 0; i < timesize; i++) {
+                delete[] sum[i];
+                sum[i] = NULL;
+            }
+            delete[] sum;
         }
 
         if (max) {
-          for(int i = 0; i < timesize; i++){
-            delete [] max[i];
-            max[i] = NULL;
-          }
-          delete [] max;
+            for (int i = 0; i < timesize; i++) {
+                delete[] max[i];
+                max[i] = NULL;
+            }
+            delete[] max;
         }
     }
 
@@ -102,14 +103,14 @@ public:
 
         // DTYPE sum[timesize][batchsize] = { 0.f, };
         // DTYPE max[timesize][batchsize] = { 0.f, };
-        for(int ti = 0; ti < timesize; ti++){
-          for(int ba = 0; ba < batchsize; ba++){ // thread
-            sum[ti][ba] = 0.f;
-            max[ti][ba] = 0.f;
-          }
+        for (int ti = 0; ti < timesize; ti++) {
+            for (int ba = 0; ba < batchsize; ba++) { // thread
+                sum[ti][ba] = 0.f;
+                max[ti][ba] = 0.f;
+            }
         }
 
-        int   numOfOutputDim           = 0;
+        int numOfOutputDim = 0;
 
         int count    = timesize * batchsize;
         int capacity = colsize;
@@ -191,7 +192,7 @@ public:
         // int capacity = input_delta->GetCapacity();
         //
         // for (int i = 0; i < capacity; i++) {
-        //     (*input_delta)[i] = (*gradient)[i] / batchsize;
+        // (*input_delta)[i] = (*gradient)[i] / batchsize;
         // }
 
         return NULL;
@@ -214,17 +215,17 @@ public:
         int rowsize     = input->GetRowSize();
         int colsize     = input->GetColSize();
 
-        int ti = pTime;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
         // DTYPE sum[timesize][batchsize] = { 0.f, };
         // DTYPE max[timesize][batchsize] = { 0.f, };
-        for(int ba = pThreadNum; ba < batchsize; ba += numOfThread){ // thread
+        for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {  // thread
             sum[ti][ba] = 0.f;
             max[ti][ba] = 0.f;
         }
 
-        int   numOfOutputDim           = 0;
+        int numOfOutputDim = 0;
 
         int count    = timesize * batchsize;
         int capacity = colsize;
@@ -286,7 +287,7 @@ public:
         int start = 0;
         int end   = 0;
 
-        int ti = pTime;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
@@ -301,7 +302,7 @@ public:
         // int capacity = input_delta->GetCapacity();
         //
         // for (int i = 0; i < capacity; i++) {
-        //     (*input_delta)[i] = (*gradient)[i] / batchsize;
+        // (*input_delta)[i] = (*gradient)[i] / batchsize;
         // }
 
         return NULL;

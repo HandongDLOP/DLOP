@@ -101,10 +101,10 @@ public:
         Shape *inputTenShape  = input->GetShape();
         Shape *resultTenShape = result->GetShape();
 
-        int ti = pTime;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
-        for(int ba = pThreadNum; ba < m_batchsize; ba += numOfThread) {
+        for (int ba = pThreadNum; ba < m_batchsize; ba += numOfThread) {
             for (int ch = 0; ch < m_channelsize; ch++) {
                 for (int ro = 0; ro < m_rowsize; ro++) {
                     for (int co = 0; co < m_colsize; co++) {
@@ -132,10 +132,10 @@ public:
         Shape *resultTenShape = this_grad->GetShape();
         Shape *inputTenShape  = input_grad->GetShape();
 
-        int ti = pTime;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
-        for(int ba = pThreadNum; ba < m_batchsize; ba += numOfThread) {
+        for (int ba = pThreadNum; ba < m_batchsize; ba += numOfThread) {
             for (int ch = 0; ch < m_channelsize; ch++) {
                 for (int ro = 0; ro < m_rowsize; ro++) {
                     for (int co = 0; co < m_colsize; co++) {

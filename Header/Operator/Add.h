@@ -202,10 +202,10 @@ public:
         Tensor<DTYPE> *bias   = (*input_contatiner)[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
-        int m_ti = pTime;
+        int m_ti        = pTime;
         int numOfThread = this->GetNumOfThread();
 
-        for(m_ba = pThreadNum; m_ba < m_batchsize; m_ba += numOfThread) {
+        for (m_ba = pThreadNum; m_ba < m_batchsize; m_ba += numOfThread) {
             for (m_ch = 0; m_ch < m_channelsize; m_ch++) {
                 for (m_ro = 0; m_ro < m_rowsize; m_ro++) {
                     for (m_co = 0; m_co < m_colsize; m_co++) {
@@ -228,11 +228,11 @@ public:
         Tensor<DTYPE> *bias_grad  = (*input_contatiner)[1]->GetGradient();
         Tensor<DTYPE> *this_grad  = this->GetGradient();
 
-        int m_ti = pTime;
+        int m_ti        = pTime;
         int numOfThread = this->GetNumOfThread();
 
         // every thread share this part, so in this time occur segmentation error
-        for(m_ba = pThreadNum; m_ba < m_batchsize; m_ba += numOfThread) {
+        for (m_ba = pThreadNum; m_ba < m_batchsize; m_ba += numOfThread) {
             for (m_ch = 0; m_ch < m_channelsize; m_ch++) {
                 for (m_ro = 0; m_ro < m_rowsize; m_ro++) {
                     for (m_co = 0; m_co < m_colsize; m_co++) {

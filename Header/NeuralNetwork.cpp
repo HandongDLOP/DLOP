@@ -17,7 +17,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     m_aObjective = NULL;
     m_aOptimizer = NULL;
 
-    m_Device = CPU;
+    m_Device      = CPU;
     m_numOfThread = 1;
 
     Alloc();
@@ -161,7 +161,7 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::GetResult() {
     return m_aaOperator->GetLast();
 }
 
-template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::GetOperatorContainer(){
+template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::GetOperatorContainer() {
     return m_aaOperator;
 }
 
@@ -250,21 +250,23 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate() {
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
     m_aObjective->BackPropagate();
+
     for (int i = m_OperatorDegree - 1; i >= 0; i--) {
         (*m_aaOperator)[i]->BackPropagate();
     }
     return TRUE;
 }
 
-template<typename DTYPE> void *NeuralNetwork<DTYPE>::ForwardPropagate_T(void * param) {
-    ThreadInfo * pThreadInfo = (ThreadInfo *)param;
-    NeuralNetwork<DTYPE> * pNN = (NeuralNetwork<DTYPE> *)(pThreadInfo->m_NN);
-    int pTime = pThreadInfo->m_time;
-    int pThreadNum = pThreadInfo->m_threadNum;
+template<typename DTYPE> void *NeuralNetwork<DTYPE>::ForwardPropagate_T(void *param) {
+    ThreadInfo *pThreadInfo = (ThreadInfo *)param;
+
+    NeuralNetwork<DTYPE> *pNN = (NeuralNetwork<DTYPE> *)(pThreadInfo->m_NN);
+    int pTime                 = pThreadInfo->m_time;
+    int pThreadNum            = pThreadInfo->m_threadNum;
 
     Container<Operator<DTYPE> *> *m_aaOperator = pNN->GetOperatorContainer();
-    int m_OperatorDegree = m_aaOperator->GetSize();
-    Objective<DTYPE> *m_aObjective = pNN->GetObjective();
+    int m_OperatorDegree                       = m_aaOperator->GetSize();
+    Objective<DTYPE> *m_aObjective             = pNN->GetObjective();
 
     for (int i = 0; i < m_OperatorDegree; i++) {
         (*m_aaOperator)[i]->ForwardPropagate(pTime, pThreadNum);
@@ -273,17 +275,19 @@ template<typename DTYPE> void *NeuralNetwork<DTYPE>::ForwardPropagate_T(void * p
     return NULL;
 }
 
-template<typename DTYPE> void *NeuralNetwork<DTYPE>::BackPropagate_T(void * param) {
-    ThreadInfo * pThreadInfo = (ThreadInfo *)param;
-    NeuralNetwork<DTYPE> * pNN = (NeuralNetwork<DTYPE> *)(pThreadInfo->m_NN);
-    int pTime = pThreadInfo->m_time;
-    int pThreadNum = pThreadInfo->m_threadNum;
+template<typename DTYPE> void *NeuralNetwork<DTYPE>::BackPropagate_T(void *param) {
+    ThreadInfo *pThreadInfo = (ThreadInfo *)param;
+
+    NeuralNetwork<DTYPE> *pNN = (NeuralNetwork<DTYPE> *)(pThreadInfo->m_NN);
+    int pTime                 = pThreadInfo->m_time;
+    int pThreadNum            = pThreadInfo->m_threadNum;
 
     Container<Operator<DTYPE> *> *m_aaOperator = pNN->GetOperatorContainer();
-    int m_OperatorDegree = m_aaOperator->GetSize();
-    Objective<DTYPE> *m_aObjective = pNN->GetObjective();
+    int m_OperatorDegree                       = m_aaOperator->GetSize();
+    Objective<DTYPE> *m_aObjective             = pNN->GetObjective();
 
     m_aObjective->BackPropagate(pTime, pThreadNum);
+
     for (int i = m_OperatorDegree - 1; i >= 0; i--) {
         (*m_aaOperator)[i]->BackPropagate(pTime, pThreadNum);
     }
@@ -298,9 +302,9 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Training() {
     this->ResetObjectiveResult();
     this->ResetObjectiveGradient();
 
-    if (m_numOfThread > 1){
+    if (m_numOfThread > 1) {
         this->_Training_MT();
-    } else if(m_numOfThread == 1){
+    } else if (m_numOfThread == 1) {
         this->ForwardPropagate();
         this->BackPropagate();
     } else return FALSE;
@@ -314,9 +318,9 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Testing() {
     this->ResetOperatorResult();
     this->ResetObjectiveResult();
 
-    if (m_numOfThread > 1){
+    if (m_numOfThread > 1) {
         this->_Testing_MT();
-    } else if(m_numOfThread == 1){
+    } else if (m_numOfThread == 1) {
         this->ForwardPropagate();
     } else return FALSE;
 
@@ -324,25 +328,25 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Testing() {
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::_Training_MT() {
-    pthread_t * pThread = (pthread_t *)malloc(sizeof(pthread_t) * m_numOfThread);
-    ThreadInfo * pThreadInfo = (ThreadInfo *)malloc(sizeof(ThreadInfo) * m_numOfThread);
+    pthread_t  *pThread     = (pthread_t *)malloc(sizeof(pthread_t) * m_numOfThread);
+    ThreadInfo *pThreadInfo = (ThreadInfo *)malloc(sizeof(ThreadInfo) * m_numOfThread);
 
-    for(int i = 0; i < m_numOfThread; i++){
-        pThreadInfo[i].m_NN = (void*)this;
-        pThreadInfo[i].m_time = 0;
+    for (int i = 0; i < m_numOfThread; i++) {
+        pThreadInfo[i].m_NN        = (void *)this;
+        pThreadInfo[i].m_time      = 0;
         pThreadInfo[i].m_threadNum = i;
         pthread_create(&(pThread[i]), NULL, ForwardPropagate_T, (void *)&(pThreadInfo[i]));
     }
 
-    for(int i = 0; i < m_numOfThread; i++){
+    for (int i = 0; i < m_numOfThread; i++) {
         pthread_join(pThread[i], NULL);
     }
 
-    for(int i = 0; i < m_numOfThread; i++){
+    for (int i = 0; i < m_numOfThread; i++) {
         pthread_create(&(pThread[i]), NULL, BackPropagate_T, (void *)&(pThreadInfo[i]));
     }
 
-    for(int i = 0; i < m_numOfThread; i++){
+    for (int i = 0; i < m_numOfThread; i++) {
         pthread_join(pThread[i], NULL);
     }
 
@@ -353,17 +357,17 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::_Training_MT() {
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::_Testing_MT() {
-    pthread_t * pThread = (pthread_t *)malloc(sizeof(pthread_t) * m_numOfThread);
-    ThreadInfo * pThreadInfo = (ThreadInfo *)malloc(sizeof(ThreadInfo) * m_numOfThread);
+    pthread_t  *pThread     = (pthread_t *)malloc(sizeof(pthread_t) * m_numOfThread);
+    ThreadInfo *pThreadInfo = (ThreadInfo *)malloc(sizeof(ThreadInfo) * m_numOfThread);
 
-    for(int i = 0; i < m_numOfThread; i++){
-        pThreadInfo[i].m_NN = (void*)this;
-        pThreadInfo[i].m_time = 0;
+    for (int i = 0; i < m_numOfThread; i++) {
+        pThreadInfo[i].m_NN        = (void *)this;
+        pThreadInfo[i].m_time      = 0;
         pThreadInfo[i].m_threadNum = i;
         pthread_create(&(pThread[i]), NULL, ForwardPropagate_T, (void *)&(pThreadInfo[i]));
     }
 
-    for(int i = 0; i < m_numOfThread; i++){
+    for (int i = 0; i < m_numOfThread; i++) {
         pthread_join(pThread[i], NULL);
     }
 
@@ -411,6 +415,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceCPU() {
     m_Device = CPU;
+
     for (int i = 0; i < m_OperatorDegree; i++) {
         (*m_aaOperator)[i]->SetDeviceCPU();
     }
@@ -418,7 +423,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceCPU() {
 }
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceCPU(int pNumOfThread) {
-    m_Device = CPU;
+    m_Device      = CPU;
     m_numOfThread = pNumOfThread;
 
     for (int i = 0; i < m_OperatorDegree; i++) {
@@ -437,6 +442,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::CreateGraph() {
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::PrintGraphInformation() {
     std::cout << "Graph Structure: " << "\n\n";
+
     for (int i = 0; i < m_OperatorDegree; i++) {
         (*m_aaOperator)[i]->PrintInformation();
         std::cout << '\n';

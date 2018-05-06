@@ -36,11 +36,13 @@ public:
     int Alloc(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
         std::cout << "Reshape::Alloc(Operator *, Operator *)" << '\n';
 
-        Shape * pInputShape =  pInput->GetResult()->GetShape();
+        Shape *pInputShape = pInput->GetResult()->GetShape();
 
-        if(pTimeSize == 0) pTimeSize =  (*pInputShape)[0];
-        if(pBatchSize == 0) pBatchSize =  (*pInputShape)[1];
-        if(pChannelSize == 0) pChannelSize =  (*pInputShape)[2];
+        if (pTimeSize == 0) pTimeSize = (*pInputShape)[0];
+
+        if (pBatchSize == 0) pBatchSize = (*pInputShape)[1];
+
+        if (pChannelSize == 0) pChannelSize = (*pInputShape)[2];
 
 
         Tensor<DTYPE> *result = new Tensor<DTYPE>(pInput->GetResult());
@@ -83,7 +85,7 @@ public:
         // int capacity = result->GetCapacity();
         //
         // for (int i = 0; i < capacity; i++) {
-        //     (*result)[i] = (*input)[i];
+        // (*result)[i] = (*input)[i];
         // }
 
         return TRUE;
@@ -117,13 +119,13 @@ public:
         }
 
         // for (int i = 0; i < capacity; i++) {
-        //     (*input_delta)[i] += (*this_delta)[i];
+        // (*input_delta)[i] += (*this_delta)[i];
         // }
 
         return TRUE;
     }
 
-    int  ForwardPropagate(int pTime, int pThreadNum) {
+    int ForwardPropagate(int pTime, int pThreadNum) {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
@@ -135,10 +137,10 @@ public:
 
         Shape *resultTenShape = result->GetShape();
 
-        int ti = pTime;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
-        for(int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
+        for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
             for (int ch = 0; ch < channelsize; ch++) {
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
@@ -153,7 +155,7 @@ public:
         // int capacity = result->GetCapacity();
         //
         // for (int i = 0; i < capacity; i++) {
-        //     (*result)[i] = (*input)[i];
+        // (*result)[i] = (*input)[i];
         // }
 
         return TRUE;
@@ -173,10 +175,10 @@ public:
 
         Shape *deltaTenShape = this_delta->GetShape();
 
-        int ti = pTime;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
-        for(int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
+        for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
             for (int ch = 0; ch < channelsize; ch++) {
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
@@ -189,7 +191,7 @@ public:
 
 
         // for (int i = 0; i < capacity; i++) {
-        //     (*input_delta)[i] += (*this_delta)[i];
+        // (*input_delta)[i] += (*this_delta)[i];
         // }
 
         return TRUE;
