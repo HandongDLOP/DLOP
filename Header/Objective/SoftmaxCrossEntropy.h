@@ -8,6 +8,8 @@ class SoftmaxCrossEntropy : public Objective<DTYPE>{
 private:
     Tensor<DTYPE> *m_aSoftmaxResult;
     DTYPE m_epsilon;  // for backprop
+    DTYPE ** sum;
+    DTYPE ** max;
 
 public:
     SoftmaxCrossEntropy(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, DTYPE epsilon, std::string pName = "NO NAME") : Objective<DTYPE>(pOperator, pLabel, pName) {
@@ -36,6 +38,13 @@ public:
         int rowsize     = pInput->GetResult()->GetRowSize();
         int colsize     = pInput->GetResult()->GetColSize();
 
+        sum = new DTYPE*[timesize];
+        max = new DTYPE*[timesize];
+        for(int i = 0; i < timesize; i++){
+          sum[i] = new DTYPE[batchsize];
+          max[i] = new DTYPE[batchsize];
+        }
+
         this->SetResult(new Tensor<DTYPE>(timesize, batchsize, 1, 1, 1));
 
         m_aSoftmaxResult = new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize);
@@ -51,6 +60,26 @@ public:
         if (m_aSoftmaxResult) {
             delete m_aSoftmaxResult;
             m_aSoftmaxResult = NULL;
+        }
+
+        Tensor<DTYPE> *input = this->GetTensor();
+        int timesize         = input->GetTimeSize();
+        int batchsize        = input->GetBatchSize();
+
+        if (sum) {
+          for(int i = 0; i < timesize; i++){
+            delete [] sum[i];
+            sum[i] = NULL;
+          }
+          delete [] sum;
+        }
+
+        if (max) {
+          for(int i = 0; i < timesize; i++){
+            delete [] max[i];
+            max[i] = NULL;
+          }
+          delete [] max;
         }
     }
 
@@ -71,8 +100,15 @@ public:
         int rowsize     = input->GetRowSize();
         int colsize     = input->GetColSize();
 
-        DTYPE sum[timesize][batchsize] = { 0.f, };
-        DTYPE max[timesize][batchsize] = { 0.f, };
+        // DTYPE sum[timesize][batchsize] = { 0.f, };
+        // DTYPE max[timesize][batchsize] = { 0.f, };
+        for(int i = 0; i < timesize; i++){
+          for(int j = 0; j < batchsize; j++){
+            sum[i][j] = 0.f;
+            max[i][j] = 0.f;
+          }
+        }
+
         int   numOfOutputDim           = 0;
 
         int count    = timesize * batchsize;
