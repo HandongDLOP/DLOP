@@ -3,6 +3,12 @@
 
 #include "Layer_utils.h"
 
+typedef struct {
+    void * m_NN;
+    int m_time;
+    int m_threadNum;
+} ThreadInfo;
+
 template<typename DTYPE> class NeuralNetwork {
 private:
 #if __CUDNN__
@@ -60,9 +66,9 @@ public:
 
     // =======
     int                               ForwardPropagate();
-    static int                        ForwardPropagate_T(NeuralNetwork<DTYPE>* pNN, int pTime, int pThreadNum);
     int                               BackPropagate();
-    static int                        BackPropagate_T(NeuralNetwork<DTYPE>* pNN, int pTime, int pThreadNum);
+    static void *                     ForwardPropagate_T(void * param);
+    static void  *                    BackPropagate_T(void * param);
 
     // =======
     int                               Training();
