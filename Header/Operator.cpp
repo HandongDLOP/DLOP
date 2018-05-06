@@ -331,6 +331,8 @@ template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
     m_Device = GPU;
 }
 
+#endif  // __CUDNN__
+
 template<typename DTYPE> int Operator<DTYPE>::ResetResult() {
     int size = m_aaResult->GetSize();
 
@@ -350,9 +352,6 @@ template<typename DTYPE> int Operator<DTYPE>::ResetGradient() {
 
     return TRUE;
 }
-
-
-#endif  // __CUDNN__
 
 // int main(int argc, char const *argv[]) {
 // Operator<int> *temp1 = new Operator<int>("temp1");
