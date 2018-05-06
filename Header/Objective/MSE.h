@@ -56,13 +56,26 @@ public:
 
         int index = 0;
 
-        for (int i = 0; i < count; i++) {
-            for (int j = 0; j < capacity; j++) {
-                index              = i * capacity + j;
-                (*result)[i]      += Error((*input)[index], (*label)[index]);
-                (*gradient)[index] = ((*input)[index] - (*label)[index]);
+        int i = 0;
+
+        for(int ti = 0; ti < timesize; ti++){
+            for(int ba = 0; ba < batchsize; ba++){
+                i = ti * batchsize + ba;
+                for (int j = 0; j < capacity; j++) {
+                    index              = i * capacity + j;
+                    (*result)[i]      += Error((*input)[index], (*label)[index]);
+                    (*gradient)[index] = ((*input)[index] - (*label)[index]);
+                }
             }
         }
+
+        // for (int i = 0; i < count; i++) {
+        //     for (int j = 0; j < capacity; j++) {
+        //         index              = i * capacity + j;
+        //         (*result)[i]      += Error((*input)[index], (*label)[index]);
+        //         (*gradient)[index] = ((*input)[index] - (*label)[index]);
+        //     }
+        // }
 
         return result;
     }
@@ -71,13 +84,33 @@ public:
         Tensor<DTYPE> *gradient    = this->GetGradient();
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
 
+        int timesize  = gradient->GetTimeSize();
         int batchsize = gradient->GetBatchSize();
+        int count     = timesize * batchsize;
 
-        int capacity = input_delta->GetCapacity();
+        int channelsize = gradient->GetChannelSize();
+        int rowsize     = gradient->GetRowSize();
+        int colsize     = gradient->GetColSize();
+        int capacity    = channelsize * rowsize * colsize;
 
-        for (int i = 0; i < capacity; i++) {
-            (*input_delta)[i] += (*gradient)[i] / batchsize;
+        int index = 0;
+        int i = 0;
+        for(int ti = 0; ti < timesize; ti++){
+            for(int ba = 0; ba < batchsize; ba++){
+                i = ti * batchsize + ba;
+                for (int j = 0; j < capacity; j++) {
+                    index              = i * capacity + j;
+                    (*input_delta)[index] += (*gradient)[index] / batchsize;
+                }
+            }
         }
+        // int batchsize = gradient->GetBatchSize();
+        //
+        // int capacity = input_delta->GetCapacity();
+
+        // for (int i = 0; i < capacity; i++) {
+        //     (*input_delta)[i] += (*gradient)[i] / batchsize;
+        // }
 
         return NULL;
     }

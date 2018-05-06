@@ -102,10 +102,10 @@ public:
 
         // DTYPE sum[timesize][batchsize] = { 0.f, };
         // DTYPE max[timesize][batchsize] = { 0.f, };
-        for(int i = 0; i < timesize; i++){
-          for(int j = 0; j < batchsize; j++){
-            sum[i][j] = 0.f;
-            max[i][j] = 0.f;
+        for(int ti = 0; ti < timesize; ti++){
+          for(int ba = 0; ba < batchsize; ba++){ // thread
+            sum[ti][ba] = 0.f;
+            max[ti][ba] = 0.f;
           }
         }
 
@@ -113,7 +113,6 @@ public:
 
         int count    = timesize * batchsize;
         int capacity = colsize;
-
 
         int start = 0;
         int end   = 0;
@@ -168,14 +167,32 @@ public:
 
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
 
+        int timesize  = gradient->GetTimeSize();
         int batchsize = gradient->GetBatchSize();
+        int colsize   = gradient->GetColSize();
 
-        int capacity = input_delta->GetCapacity();
+        int count    = timesize * batchsize;
+        int capacity = colsize;
 
-        for (int i = 0; i < capacity; i++) {
-            (*input_delta)[i] = (*gradient)[i] / batchsize;
+        int start = 0;
+        int end   = 0;
+
+        for (int ti = 0; ti < timesize; ti++) {
+            for (int ba = 0; ba < batchsize; ba++) {
+                start = (ti * batchsize + ba) * capacity;
+                end   = start + capacity;
+
+                for (int i = start; i < end; i++) {
+                    (*input_delta)[i] = (*gradient)[i] / batchsize;
+                }
+            }
         }
 
+        // int capacity = input_delta->GetCapacity();
+        //
+        // for (int i = 0; i < capacity; i++) {
+        //     (*input_delta)[i] = (*gradient)[i] / batchsize;
+        // }
 
         return NULL;
     }
