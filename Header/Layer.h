@@ -13,6 +13,8 @@ private:
 
     Device m_Device;
 
+    int m_numOfThread;
+
 public:
     Layer(std::string pName = "No Name");
     virtual ~Layer();
@@ -46,19 +48,25 @@ public:
     Container<Tensor<DTYPE> *>      * GetDeltaContainer();
 
     int                               ForwardPropagate();
+    int                               ForwardPropagate(int pTime, int pThreadNum);
     int                               BackPropagate();
+    int                               BackPropagate(int pTime, int pThreadNum);
 
     Operator<DTYPE>                 * GetLastOperator();
 
     void                              SetDeviceCPU();
+    void                              SetDeviceCPU(int pnumOfThread);
 #if __CUDNN__
     void                              SetDeviceGPU();
     void                              SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
 #endif  // if __CUDNN__
 
-
     Device GetDevice() {
         return m_Device;
+    }
+
+    int GetNumOfThread() {
+        return m_numOfThread;
     }
 
     int ResetResult();

@@ -19,6 +19,9 @@ private:
     Objective<DTYPE> *m_aObjective;
     Optimizer<DTYPE> *m_aOptimizer;
 
+    Device m_Device;
+    int m_numOfThread;
+
 public:
     NeuralNetwork();
     virtual ~NeuralNetwork();
@@ -55,9 +58,9 @@ public:
 
     // =======
     int                               ForwardPropagate();
-    int                               ForwardPropagate(Operator<DTYPE> *pEnd);
-    int                               ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd);
+    int                               ForwardPropagate(int pTime, int pThreadNum);
     int                               BackPropagate();
+    int                               BackPropagate(int pTime, int pThreadNum);
 
     // =======
     int                               Training();
@@ -73,6 +76,7 @@ public:
 #endif  // __CUDNN__
 
     void                              SetDeviceCPU();
+    void                              SetDeviceCPU(int pNumOfThread);
 
     // =======
     int                               CreateGraph();

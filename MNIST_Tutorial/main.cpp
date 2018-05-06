@@ -11,6 +11,7 @@
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
+#define NUM_OF_THREAD     1
 
 int main(int argc, char const *argv[]) {
     clock_t startTime, endTime;
@@ -29,13 +30,15 @@ int main(int argc, char const *argv[]) {
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
 
-    net->PrintGraphInformation();
-
 #if __CUDNN__
     x->SetDeviceGPU();
     label->SetDeviceGPU();
     net->SetDeviceGPU();
+#else
+    net->SetDeviceCPU(NUM_OF_THREAD);
 #endif  // __CUDNN__
+
+    net->PrintGraphInformation();
 
     // pytorch check하기
     for (int i = 0; i < EPOCH; i++) {

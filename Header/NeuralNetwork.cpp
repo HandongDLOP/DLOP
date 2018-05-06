@@ -17,6 +17,9 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     m_aObjective = NULL;
     m_aOptimizer = NULL;
 
+    m_Device = CPU;
+    m_numOfThread = 1;
+
     Alloc();
 }
 
@@ -240,17 +243,24 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate() {
     return TRUE;
 }
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTYPE> *pEnd) {
-    return TRUE;
-}
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        (*m_aaOperator)[i]->ForwardPropagate(pTime, pThreadNum);
+    }
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(Operator<DTYPE> *pStart, Operator<DTYPE> *pEnd) {
     return TRUE;
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
     for (int i = m_OperatorDegree - 1; i >= 0; i--) {
         (*m_aaOperator)[i]->BackPropagate();
+    }
+    return TRUE;
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate(int pTime, int pThreadNum) {
+    for (int i = m_OperatorDegree - 1; i >= 0; i--) {
+        (*m_aaOperator)[i]->BackPropagate(pTime, pThreadNum);
     }
     return TRUE;
 }
@@ -263,11 +273,11 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Training() {
     this->ResetObjectiveResult();
     this->ResetObjectiveGradient();
 
-    this->ForwardPropagate();
-    m_aObjective->ForwardPropagate();
+    this->ForwardPropagate(0, 0);
+    m_aObjective->ForwardPropagate(0, 0);
 
-    m_aObjective->BackPropagate();
-    this->BackPropagate();
+    m_aObjective->BackPropagate(0, 0);
+    this->BackPropagate(0, 0);
 
     m_aOptimizer->UpdateVariable();
 
@@ -277,11 +287,12 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Training() {
 template<typename DTYPE> int NeuralNetwork<DTYPE>::Testing() {
     this->ResetOperatorResult();
     this->ResetObjectiveResult();
-    ForwardPropagate();
-    m_aObjective->ForwardPropagate();
+    ForwardPropagate(0, 0);
+    m_aObjective->ForwardPropagate(0, 0);
 
     return TRUE;
 }
+
 
 // =========
 
@@ -307,19 +318,34 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeInferencing() {
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
     // std::cout << "NeuralNetwork<DTYPE>::SetModeGPU()" << '\n';
+    m_Device = GPU;
+
     for (int i = 0; i < m_OperatorDegree; i++) {
         // important order
         (*m_aaOperator)[i]->SetDeviceGPU();
         (*m_aaOperator)[i]->SetCudnnHandle(m_cudnnHandle);
     }
+    m_aObjective->SetDeviceGPU();
 }
 
 #endif  // __CUDNN__
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceCPU() {
+    m_Device = CPU;
     for (int i = 0; i < m_OperatorDegree; i++) {
         (*m_aaOperator)[i]->SetDeviceCPU();
     }
+    m_aObjective->SetDeviceCPU();
+}
+
+template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceCPU(int pNumOfThread) {
+    m_Device = CPU;
+    m_numOfThread = pNumOfThread;
+
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        (*m_aaOperator)[i]->SetDeviceCPU(pNumOfThread);
+    }
+    m_aObjective->SetDeviceCPU(pNumOfThread);
 }
 
 // =========

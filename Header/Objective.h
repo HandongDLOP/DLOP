@@ -15,6 +15,10 @@ private:
 
     std::string m_name;
 
+    Device m_Device;
+
+    int m_numOfThread;
+
 public:
     Objective(std::string pName = "NO NAME");
     Objective(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName = "NO NAME");
@@ -36,11 +40,28 @@ public:
 
     // For Propagate
     virtual Tensor<DTYPE>* ForwardPropagate();
+    virtual Tensor<DTYPE>* ForwardPropagate(int pTime, int pThreadNum); //
 
     // For BackPropagate
     virtual Tensor<DTYPE>* BackPropagate();
+    virtual Tensor<DTYPE>* BackPropagate(int pTime, int pThreadNum); //
 
     DTYPE                & operator[](unsigned int index);
+
+    virtual void SetDeviceCPU(); //
+    virtual void SetDeviceCPU(int pNumOfThread); //
+#ifdef __CUDNN__
+    virtual void SetDeviceGPU(); //
+
+#endif  // if __CUDNN__
+
+    virtual Device GetDevice() {
+        return m_Device;
+    }
+
+    int GetNumOfThread() {
+        return m_numOfThread;
+    }
 
     // reset value
     int ResetResult();

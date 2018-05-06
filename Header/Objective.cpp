@@ -12,6 +12,8 @@ template<typename DTYPE> Objective<DTYPE>::Objective(std::string pName) {
     m_pInputTensor   = NULL;
     m_pLabel         = NULL;
     m_name           = pName;
+    m_Device         = CPU;
+    m_numOfThread    = 1;
 }
 
 template<typename DTYPE> Objective<DTYPE>::Objective(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName) {
@@ -22,6 +24,8 @@ template<typename DTYPE> Objective<DTYPE>::Objective(Operator<DTYPE> *pOperator,
     m_pInputTensor   = NULL;
     m_pLabel         = NULL;
     m_name           = pName;
+    m_Device         = CPU;
+    m_numOfThread    = 1;
     Alloc(pOperator, pLabel);
 }
 
@@ -89,14 +93,47 @@ template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::ForwardPropagate() {
     return NULL;
 }
 
+template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
+    std::cout << this->GetName() << '\n';
+    std::cout << "time : "  << pTime << '\n';
+    std::cout << "thread number : "  << pThreadNum << '\n';
+    std::cout << "number of thread : "  << this->GetNumOfThread() << '\n';
+    return NULL;
+}
+
 template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::BackPropagate() {
     std::cout << this->GetName() << '\n';
+    return NULL;
+}
+
+template<typename DTYPE> Tensor<DTYPE> *Objective<DTYPE>::BackPropagate(int pTime, int pThreadNum) {
+    std::cout << this->GetName() << '\n';
+    std::cout << "time : "  << pTime << '\n';
+    std::cout << "thread number : "  << pThreadNum << '\n';
+    std::cout << "number of thread : "  << this->GetNumOfThread() << '\n';
     return NULL;
 }
 
 template<typename DTYPE> DTYPE& Objective<DTYPE>::operator[](unsigned int index) {
     return (*m_aResult)[index];
 }
+
+template<typename DTYPE> void Objective<DTYPE>::SetDeviceCPU() {
+    m_Device = CPU;
+}
+
+template<typename DTYPE> void Objective<DTYPE>::SetDeviceCPU(int pNumOfThread) {
+    m_Device = CPU;
+    m_numOfThread = pNumOfThread;
+}
+
+#if __CUDNN__
+template<typename DTYPE> void Objective<DTYPE>::SetDeviceGPU() {
+    m_Device = GPU;
+}
+
+#endif  // __CUDNN__
+
 
 template<typename DTYPE> int Objective<DTYPE>::ResetResult() {
     m_aResult->Reset();

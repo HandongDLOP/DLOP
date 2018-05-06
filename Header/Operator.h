@@ -35,6 +35,11 @@ private:
 
     Device m_Device;
 
+    int m_isTensorholder;
+    int m_isTrainable;
+
+    int m_numOfThread;
+
 public:
 #if __CUDNN__
     cudnnHandle_t m_pCudnnHandle;
@@ -95,9 +100,11 @@ public:
 
     // For Propagate
     virtual int  ForwardPropagate();
+    virtual int  ForwardPropagate(int pTime, int pThreadNum);
 
     // For BackPropagate
     virtual int  BackPropagate();
+    virtual int  BackPropagate(int pTime, int pThreadNum);
 
     // reset value
     virtual int  ResetResult();
@@ -109,6 +116,7 @@ public:
 
 
     virtual void SetDeviceCPU();
+    virtual void SetDeviceCPU(int pNumOfThread);
 #ifdef __CUDNN__
     virtual void SetDeviceGPU();
 
@@ -116,6 +124,10 @@ public:
 
     virtual Device GetDevice() {
         return m_Device;
+    }
+
+    int GetNumOfThread() {
+        return m_numOfThread;
     }
 
     virtual int GetNumOfParameter() {
