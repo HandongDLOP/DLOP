@@ -12,6 +12,7 @@ private:
     int m_numOfParameter;
 
     Device m_Device;
+
 public:
     Layer(std::string pName = "No Name");
     virtual ~Layer();
@@ -31,7 +32,6 @@ public:
     Container<Tensorholder<DTYPE> *>* GetParameterContainer();
     int                               GetNumOfOperator();
     int                               GetNumOfParameter();
-    std::string                       GetName();
 
     Operator<DTYPE>                 * PopOperator();
     Tensorholder<DTYPE>             * PopParameter();
@@ -61,9 +61,10 @@ public:
         return m_Device;
     }
 
-    int    ResetResult();
-    int    ResetGradient();
+    int ResetResult();
+    int ResetGradient();
 
+    void PrintInformation();
 };
 
 #endif  // ifndef __LAYER__

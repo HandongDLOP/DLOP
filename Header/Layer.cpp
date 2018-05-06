@@ -193,3 +193,13 @@ template<typename DTYPE> int Layer<DTYPE>::ResetGradient() {
     }
     return TRUE;
 }
+
+template<typename DTYPE> void Layer<DTYPE>::PrintInformation() {
+    std::cout << this->GetName() << " : ";
+    std::cout << this->GetResult()->GetShape() << '\n';
+
+    for (int i = 0; i < m_numOfOperator; i++) {
+        std::cout << "-- ";
+        (*m_aaOperator)[i]->PrintInformation();
+    }
+}

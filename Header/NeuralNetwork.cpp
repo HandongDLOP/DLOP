@@ -127,17 +127,17 @@ template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddParameter
 }
 
 // template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddLayer(Layer<DTYPE> *pLayer) {
-//     int pNumOfParameter = pLayer->GetNumOfParameter();
+// int pNumOfParameter = pLayer->GetNumOfParameter();
 //
-//     m_aaOperator->Push(pLayer);
-//     m_OperatorDegree++;
+// m_aaOperator->Push(pLayer);
+// m_OperatorDegree++;
 //
-//     for (int i = 0; i < pNumOfParameter; i++) {
-//         m_aaTensorholder->Push(pLayer->PopParameter());
-//         m_TensorholderDegree++;
-//     }
+// for (int i = 0; i < pNumOfParameter; i++) {
+// m_aaTensorholder->Push(pLayer->PopParameter());
+// m_TensorholderDegree++;
+// }
 //
-//     return pLayer;
+// return pLayer;
 // }
 
 template<typename DTYPE> Objective<DTYPE> *NeuralNetwork<DTYPE>::SetObjective(Objective<DTYPE> *pObjective) {
@@ -232,7 +232,7 @@ template<typename DTYPE> float NeuralNetwork<DTYPE>::GetLoss() {
 
 // ===========================================================================================
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(){
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate() {
     for (int i = 0; i < m_OperatorDegree; i++) {
         (*m_aaOperator)[i]->ForwardPropagate();
     }
@@ -330,13 +330,12 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::CreateGraph() {
     return TRUE;
 }
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::PrintGraphShape() {
+template<typename DTYPE> void NeuralNetwork<DTYPE>::PrintGraphInformation() {
+    std::cout << "Graph Structure: " << "\n\n";
     for (int i = 0; i < m_OperatorDegree; i++) {
-        std::cout << (*m_aaOperator)[i]->GetName() << '\n';
-        // std::cout << (*m_aaOperator)[i]->GetResult()->GetShape() << '\n';
+        (*m_aaOperator)[i]->PrintInformation();
+        std::cout << '\n';
     }
-
-    return TRUE;
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ResetOperatorResult() {

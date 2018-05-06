@@ -54,8 +54,8 @@ template<typename DTYPE> Operator<DTYPE>::~Operator() {
 template<typename DTYPE> int Operator<DTYPE>::Alloc() {
     m_aaResult   = new Container<Tensor<DTYPE> *>();
     m_aaGradient = new Container<Tensor<DTYPE> *>();
-    m_apOutput = new Container<Operator<DTYPE> *>();
-    m_apInput  = new Container<Operator<DTYPE> *>();
+    m_apOutput   = new Container<Operator<DTYPE> *>();
+    m_apInput    = new Container<Operator<DTYPE> *>();
 
     return TRUE;
 }
@@ -351,6 +351,11 @@ template<typename DTYPE> int Operator<DTYPE>::ResetGradient() {
     }
 
     return TRUE;
+}
+
+template<typename DTYPE> void Operator<DTYPE>::PrintInformation() {
+    std::cout << this->GetName() << " : ";
+    std::cout << this->GetResult()->GetShape() << '\n';
 }
 
 // int main(int argc, char const *argv[]) {

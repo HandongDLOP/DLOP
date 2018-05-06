@@ -129,6 +129,9 @@ public:
     virtual Tensorholder<DTYPE>* PopParameter() {
         return NULL;
     }
+
+    virtual void PrintInformation();
+
 };
 
 #endif  // OPERATOR_H_
