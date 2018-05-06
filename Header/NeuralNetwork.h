@@ -44,6 +44,8 @@ public:
 
     Operator<DTYPE>                 * GetResultOperator();
     Operator<DTYPE>                 * GetResult();
+    Container<Operator<DTYPE> *>    * GetOperatorContainer();
+
 
     Container<Tensorholder<DTYPE> *>* GetTensorholder();
     Container<Tensorholder<DTYPE> *>* GetParameter();
@@ -58,13 +60,16 @@ public:
 
     // =======
     int                               ForwardPropagate();
-    int                               ForwardPropagate(int pTime, int pThreadNum);
+    static int                        ForwardPropagate_T(NeuralNetwork<DTYPE>* pNN, int pTime, int pThreadNum);
     int                               BackPropagate();
-    int                               BackPropagate(int pTime, int pThreadNum);
+    static int                        BackPropagate_T(NeuralNetwork<DTYPE>* pNN, int pTime, int pThreadNum);
 
     // =======
     int                               Training();
     int                               Testing();
+
+    int                               _Training_MT();
+    int                               _Testing_MT();
 
     // ============
     void                              SetModeTraining();
