@@ -1,6 +1,6 @@
 /*g++ -g -o testing -std=c++11 main.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/Objective_.cpp ../Header/Optimizer.cpp ../Header/NeuralNetwork_.cpp*/
 
-#include "net/my_CNN_BN_GPU.h"
+#include "net/my_CNN.h"
 #include "net/my_NN.h"
 #include "net/my_Resnet.h"
 #include "MNIST_Reader.h"
@@ -16,7 +16,6 @@
 int main(int argc, char const *argv[]) {
     clock_t startTime, endTime;
     double  nProcessExcuteTime;
-std:: cout<< RAND_MAX << std:: endl;
     // create input, label data placeholder -> Tensorholder
     Tensorholder<float> *x     = new Tensorholder<float>(1, BATCH, 1, 1, 784, "x");
     Tensorholder<float> *label = new Tensorholder<float>(1, BATCH, 1, 1, 10, "label");
