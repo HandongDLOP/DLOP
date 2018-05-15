@@ -6,7 +6,7 @@
 #include "MNIST_Reader.h"
 #include <time.h>
 
-#define BATCH             100
+#define BATCH             50
 #define EPOCH             100
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
