@@ -6,16 +6,17 @@
 #include "MNIST_Reader.h"
 #include <time.h>
 
-#define BATCH             50
+#define BATCH             100
 #define EPOCH             100
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
-#define NUM_OF_THREAD     2
+#define NUM_OF_THREAD     1
 
 int main(int argc, char const *argv[]) {
     clock_t startTime, endTime;
     double  nProcessExcuteTime;
+
     // create input, label data placeholder -> Tensorholder
     Tensorholder<float> *x     = new Tensorholder<float>(1, BATCH, 1, 1, 784, "x");
     Tensorholder<float> *label = new Tensorholder<float>(1, BATCH, 1, 1, 10, "label");
@@ -33,7 +34,7 @@ int main(int argc, char const *argv[]) {
     x->SetDeviceGPU();
     label->SetDeviceGPU();
     net->SetDeviceGPU();
-#else
+#else // if __CUDNN__
     net->SetDeviceCPU(NUM_OF_THREAD);
 #endif  // __CUDNN__
 
@@ -75,27 +76,26 @@ int main(int argc, char const *argv[]) {
         }
         std::cout << '\n';
 
-        float accum_accuracy = 0.f;
-        float accum_avg_loss = 0.f;
-        
-        net->SetModeAccumulating();
-       
-        for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
-        dataset->CreateTrainDataPair(BATCH);
-        x->SetTensor(dataset->GetTrainFeedImage());
-        label->SetTensor(dataset->GetTrainFeedLabel());
-        
-        net->Testing();
-        accum_accuracy += net->GetAccuracy();
-        accum_avg_loss += net->GetLoss();
-        
-        printf("\rAccumulating complete percentage is %d / %d -> loss : %f, acc : %f",
-        j + 1, LOOP_FOR_TRAIN,
-        accum_avg_loss / (j + 1),
-        accum_accuracy / (j + 1));
-        fflush(stdout);
-        }
-        std::cout << '\n';
+        // float accum_accuracy = 0.f;
+        // float accum_avg_loss = 0.f;
+        //
+        // net->SetModeAccumulating();
+        //
+        // for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
+        //     dataset->CreateTrainDataPair(BATCH);
+        //     x->SetTensor(dataset->GetTrainFeedImage());
+        //     label->SetTensor(dataset->GetTrainFeedLabel());
+        //     net->Testing();
+        //     accum_accuracy += net->GetAccuracy();
+        //     accum_avg_loss += net->GetLoss();
+        //
+        //     printf("\rAccumulating complete percentage is %d / %d -> loss : %f, acc : %f",
+        //            j + 1, LOOP_FOR_TRAIN,
+        //            accum_avg_loss / (j + 1),
+        //            accum_accuracy / (j + 1));
+        //     fflush(stdout);
+        // }
+        // std::cout << '\n';
 
         // Caution!
         // Actually, we need to split training set between two set for training set and validation set

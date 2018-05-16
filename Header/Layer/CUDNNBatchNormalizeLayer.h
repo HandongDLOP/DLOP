@@ -1,3 +1,5 @@
+#if __CUDNN__
+
 #ifndef __CUDNN_BATCH_NORMALIZE_LAYER__
 #define __CUDNN_BATCH_NORMALIZE_LAYER__ value
 
@@ -62,3 +64,5 @@ public:
 
 
 #endif  // __CUDNN_BATCH_NORMALIZE_LAYER__
+
+#endif // __CUDNN__

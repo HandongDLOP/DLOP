@@ -1,3 +1,5 @@
+#if __CUDNN__
+
 #ifndef __CUDNN_BATCH_NORMALIZE__
 #define __CUDNN_BATCH_NORMALIZE__ value
 
@@ -123,7 +125,7 @@ public:
 				break;
 			default:
 				break;
-		} 
+		}
 		checkCudaErrors( cudaDeviceSynchronize( ));
 
 		checkCudaErrors( cudaFree( CUDNNX));
@@ -156,7 +158,7 @@ public:
 		}
 		return TRUE;
 	}
-	int BackPropagate( ){	
+	int BackPropagate( ){
 		this->CopyTensorToFloat(m_pTenDerResult, m_aCUDNNDy);
 
 		float* CUDNNX= NULL;
@@ -488,3 +490,5 @@ private:
 };
 
 #endif  // __CUDNN_BATCH_NORMALIZE__
+
+#endif //_CUDNN__
