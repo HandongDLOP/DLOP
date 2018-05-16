@@ -15,18 +15,23 @@ public:
 
         // 1
         out = this->AddOperator(new ConvolutionLayer2D<DTYPE>(out, pNumInputChannel, pNumOutputChannel, 3, 3, pStride, pStride, 1, FALSE, "BasicBlock_Conv1" + pName));
-        // out = this->AddOperator(new BatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN1" + pName));
-
+#if __CUDNN__
+        out = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN1" + pName));
+#endif // __CUDNN__
         out = this->AddOperator(new Relu<DTYPE>(out, "BasicBlock_Relu1" + pName));
 
         // 2
         out = this->AddOperator(new ConvolutionLayer2D<DTYPE>(out, pNumOutputChannel, pNumOutputChannel, 3, 3, 1, 1, 1, FALSE, "BasicBlock_Conv2" + pName));
-        // out = this->AddOperator(new BatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN2" + pName));
+#if __CUDNN__
+        out = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN2" + pName));
+#endif // __CUDNN__
 
         // ShortCut
         if ((pStride != 1) || (pNumInputChannel != pNumOutputChannel)) {
             remember = this->AddOperator(new ConvolutionLayer2D<DTYPE>(remember, pNumInputChannel, pNumOutputChannel, 3, 3, pStride, pStride, 1, FALSE, "BasicBlock_Conv_Shortcut" + pName));
-            // remember = this->AddOperator(new BatchNormalizeLayer2D<DTYPE>(remember, pNumOutputChannel, "BasicBlock_BN_Shortcut" + pName));
+#if __CUDNN__
+            remember = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(remember, pNumOutputChannel, "BasicBlock_BN_Shortcut" + pName));
+#endif // __CUDNN__
         }
 
         // Add (for skip Connection)
@@ -109,7 +114,9 @@ public:
 
         // 1
         out = this->AddOperator(new ConvolutionLayer2D<DTYPE>(out, 1, m_numInputChannel, 1, 1, 1, 1, 0, TRUE, "Conv"));
-        // out = this->AddOperator(new BatchNormalizeLayer2D<DTYPE>(out, m_numInputChannel, "BasicBlock_BN1"));
+#if __CUDNN__
+        out = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(out, m_numInputChannel, "BasicBlock_BN1"));
+#endif // __CUDNN__
 
         out = this->MakeLayer(out, m_numInputChannel, pBlockType, pNumOfBlock1, 1, "Block1");
         out = this->MakeLayer(out, 32, pBlockType, pNumOfBlock2, 1, "Block2");
