@@ -24,7 +24,7 @@ public:
     int    GetTimeSize();
     int    GetCapacityPerTime();
 
-    DTYPE* GetRawData(unsigned int pTime = 0);
+    DTYPE* GetLowData(unsigned int pTime = 0);
     DTYPE& operator[](unsigned int index);
 };
 

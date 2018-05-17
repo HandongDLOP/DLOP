@@ -42,7 +42,7 @@ public:
 
     int          GetCapacity();
 
-    DTYPE      * GetRawData();
+    DTYPE      * GetLowData(unsigned int pTime = 0);
 
     ///////////////////////////////////////////////////////////////////
 

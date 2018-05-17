@@ -88,7 +88,7 @@ template<typename DTYPE> DTYPE& Data<DTYPE>::operator[](unsigned int index) {
     return m_aData[index / m_capacityPerTime][index % m_capacityPerTime];
 }
 
-template<typename DTYPE> DTYPE* Data<DTYPE>::GetRawData(unsigned int pTime) {
+template<typename DTYPE> DTYPE* Data<DTYPE>::GetLowData(unsigned int pTime) {
     return m_aData[pTime];
 }
 

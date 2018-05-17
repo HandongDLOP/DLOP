@@ -121,8 +121,8 @@ template<typename DTYPE> int Tensor<DTYPE>::GetCapacity() {
     return m_aData->GetCapacity();
 }
 
-template<typename DTYPE> DTYPE* Tensor<DTYPE>::GetRawData() {
-    return m_aData->GetRawData();
+template<typename DTYPE> DTYPE* Tensor<DTYPE>::GetLowData(unsigned int pTime) {
+    return m_aData->GetLowData(pTime);
 }
 
 //////////////////////////////////////////////////////////////////
