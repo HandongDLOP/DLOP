@@ -165,6 +165,10 @@ public:
         checkCudaErrors(cudaFree(m_pDevDelta));
         checkCudaErrors(cudaFree(m_pDevFilterDelta));
 
+        checkCudaErrors(cudaFree(m_devWorkSpace));
+        checkCudaErrors(cudaFree(m_dataDevWorkSpace));
+        checkCudaErrors(cudaFree(m_filterDevWorkSpace));
+
 #endif  // if __CUDNN__
     }
 
@@ -382,10 +386,6 @@ public:
                                            m_algo, m_devWorkSpace, m_sizeInBytes, &m_beta, outputTensorDesc, m_pDevOutput));
 
         checkCudaErrors(cudaMemcpy(m_pHostOutput, m_pDevOutput, (outputCapacity * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
-
-        for (int i = 0; i < outputCapacity; i++) {
-            (*result)[i] = m_pHostOutput[i];
-        }
 
         checkCudaErrors(cudaDeviceSynchronize());
 
