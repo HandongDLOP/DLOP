@@ -44,6 +44,7 @@ public:
 #if __CUDNN__
     cudnnHandle_t m_pCudnnHandle;
     cudnnHandle_t& GetCudnnHandle();
+    virtual void   InitializeAttributeForGPU();
     virtual void   SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
     void           cudnnResize(int size, float *data);
 #endif  // if __CUDNN__
@@ -143,7 +144,6 @@ public:
     }
 
     virtual void PrintInformation();
-
 };
 
 #endif  // OPERATOR_H_

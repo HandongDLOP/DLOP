@@ -150,8 +150,11 @@ template<typename DTYPE> void Operator<DTYPE>::Delete() {
 }
 
 #if __CUDNN__
+template<typename DTYPE> void Operator<DTYPE>::InitializeAttributeForGPU() {}
+
 template<typename DTYPE> void Operator<DTYPE>::SetCudnnHandle(cudnnHandle_t& pCudnnHandle) {
     m_pCudnnHandle = pCudnnHandle;
+    this->InitializeAttributeForGPU();
 }
 
 void cudnnResize(int size, float *data) {
@@ -319,9 +322,9 @@ template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate() {
 
 template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
     std::cout << this->GetName() << '\n';
-    std::cout << "time : "  << pTime << '\n';
-    std::cout << "thread number : "  << pThreadNum << '\n';
-    std::cout << "number of thread : "  << this->GetNumOfThread() << '\n';
+    std::cout << "time : " << pTime << '\n';
+    std::cout << "thread number : " << pThreadNum << '\n';
+    std::cout << "number of thread : " << this->GetNumOfThread() << '\n';
 
     return TRUE;
 }
@@ -333,9 +336,9 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagate() {
 
 template<typename DTYPE> int Operator<DTYPE>::BackPropagate(int pTime, int pThreadNum) {
     std::cout << this->GetName() << '\n';
-    std::cout << "time : "  << pTime << '\n';
-    std::cout << "thread number : "  << pThreadNum << '\n';
-    std::cout << "number of thread : "  << this->GetNumOfThread() << '\n';
+    std::cout << "time : " << pTime << '\n';
+    std::cout << "thread number : " << pThreadNum << '\n';
+    std::cout << "number of thread : " << this->GetNumOfThread() << '\n';
 
     return TRUE;
 }
@@ -357,11 +360,13 @@ template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU(int pNumOfThread) {
-    m_Device = CPU;
+    m_Device      = CPU;
     m_numOfThread = pNumOfThread;
 }
 
 #if __CUDNN__
+
+
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
     m_Device = GPU;
 }
