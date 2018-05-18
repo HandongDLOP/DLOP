@@ -5,7 +5,14 @@
 
 template<typename DTYPE> class Addall : public Operator<DTYPE>{
 private:
-    int m_capacity;
+    Shape *m_pLeftTenShape;
+    Shape *m_pRightTenShape;
+
+    int m_timesize;
+    int m_batchsize;
+    int m_channelsize;
+    int m_rowsize;
+    int m_colsize;
 
 public:
     Addall(Operator<DTYPE> *pLeftInput, Operator<DTYPE> *pRightInput, std::string pName) : Operator<DTYPE>(pLeftInput, pRightInput, pName) {
@@ -26,19 +33,18 @@ public:
         std::cout << "Addall::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
         #endif  // __DEBUG__
 
-        Shape *pInputTenShape = pLeftInput->GetResult()->GetShape();
+        m_pLeftTenShape  = pLeftInput->GetResult()->GetShape();
+        m_pRightTenShape = pRightInput->GetResult()->GetShape();
 
-        int timesize    = (*pInputTenShape)[0];
-        int batchsize   = (*pInputTenShape)[1];
-        int channelsize = (*pInputTenShape)[2];
-        int rowsize     = (*pInputTenShape)[3];
-        int colsize     = (*pInputTenShape)[4];
+        m_timesize    = (*m_pLeftTenShape)[0];
+        m_batchsize   = (*m_pLeftTenShape)[1];
+        m_channelsize = (*m_pLeftTenShape)[2];
+        m_rowsize     = (*m_pLeftTenShape)[3];
+        m_colsize     = (*m_pLeftTenShape)[4];
 
-        m_capacity = pLeftInput->GetResult()->GetCapacity();
+        this->SetResult(new Tensor<DTYPE>(m_timesize, m_batchsize, m_channelsize, m_rowsize, m_colsize));
 
-        this->SetResult(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
-
-        this->SetGradient(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
+        this->SetGradient(new Tensor<DTYPE>(m_timesize, m_batchsize, m_channelsize, m_rowsize, m_colsize));
 
         return TRUE;
     }
@@ -46,12 +52,22 @@ public:
     int ForwardPropagate(int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
-        Tensor<DTYPE> *left_input  = (*input_contatiner)[0]->GetResult();
-        Tensor<DTYPE> *right_input = (*input_contatiner)[1]->GetResult();
-        Tensor<DTYPE> *result      = this->GetResult();
+        Tensor<DTYPE> *left   = (*input_contatiner)[0]->GetResult();
+        Tensor<DTYPE> *right  = (*input_contatiner)[1]->GetResult();
+        Tensor<DTYPE> *result = this->GetResult();
 
-        for (int i = 0; i < m_capacity; i++) {
-            (*result)[i] = (*left_input)[i] + (*right_input)[i];
+        for (int m_ti = 0; m_ti < m_timesize; m_ti++) {
+            for (int m_ba = 0; m_ba < m_batchsize; m_ba++) {
+                for (int m_ch = 0; m_ch < m_channelsize; m_ch++) {
+                    for (int m_ro = 0; m_ro < m_rowsize; m_ro++) {
+                        for (int m_co = 0; m_co < m_colsize; m_co++) {
+                            (*result)[Index5D(m_pLeftTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                                = (*left)[Index5D(m_pLeftTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                                  + (*right)[Index5D(m_pRightTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
+                        }
+                    }
+                }
+            }
         }
 
         return TRUE;
@@ -60,13 +76,24 @@ public:
     int BackPropagate(int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
-        Tensor<DTYPE> *left_input_grad  = (*input_contatiner)[0]->GetGradient();
-        Tensor<DTYPE> *right_input_grad = (*input_contatiner)[1]->GetGradient();
-        Tensor<DTYPE> *this_grad        = this->GetGradient();
+        Tensor<DTYPE> *left_grad  = (*input_contatiner)[0]->GetGradient();
+        Tensor<DTYPE> *right_grad = (*input_contatiner)[1]->GetGradient();
+        Tensor<DTYPE> *this_grad  = this->GetGradient();
 
-        for (int i = 0; i < m_capacity; i++) {
-            (*left_input_grad)[i]  += (*this_grad)[i];
-            (*right_input_grad)[i] += (*this_grad)[i];
+        for (int m_ti = 0; m_ti < m_timesize; m_ti++) {
+            for (int m_ba = 0; m_ba < m_batchsize; m_ba++) {
+                for (int m_ch = 0; m_ch < m_channelsize; m_ch++) {
+                    for (int m_ro = 0; m_ro < m_rowsize; m_ro++) {
+                        for (int m_co = 0; m_co < m_colsize; m_co++) {
+                            (*left_grad)[Index5D(m_pLeftTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                                += (*this_grad)[Index5D(m_pLeftTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
+
+                            (*right_grad)[Index5D(m_pRightTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                                += (*this_grad)[Index5D(m_pLeftTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
+                        }
+                    }
+                }
+            }
         }
 
         return TRUE;
