@@ -148,15 +148,14 @@ public:
 
         Shape *resultTenShape = result->GetShape();
 
-        int ti          = 0;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
             for (int ch = 0; ch < channelsize; ch++) {
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
-                        (*result)[Index5D(resultTenShape, ti, ba, ch, ro, co)]
-                            = this->MAX((*input)[Index5D(resultTenShape, ti, ba, ch, ro, co)], 0.f);
+                        (*result)[Index4D(resultTenShape, ba, ch, ro, co)]
+                            = this->MAX((*input)[Index4D(resultTenShape, ba, ch, ro, co)], 0.f);
                     }
                 }
             }
@@ -178,18 +177,17 @@ public:
 
         Shape *resultTenShape = result->GetShape();
 
-        int ti          = 0;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
             for (int ch = 0; ch < channelsize; ch++) {
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
-                        if ((*result)[Index5D(resultTenShape, ti, ba, ch, ro, co)] > 0.0) {
-                            (*input_delta)[Index5D(resultTenShape, ti, ba, ch, ro, co)]
-                                += (*this_delta)[Index5D(resultTenShape, ti, ba, ch, ro, co)];
+                        if ((*result)[Index4D(resultTenShape, ba, ch, ro, co)] > 0.0) {
+                            (*input_delta)[Index4D(resultTenShape, ba, ch, ro, co)]
+                                += (*this_delta)[Index4D(resultTenShape, ba, ch, ro, co)];
                         } else {
-                            (*input_delta)[Index5D(resultTenShape, ti, ba, ch, ro, co)] += 0;
+                            (*input_delta)[Index4D(resultTenShape, ba, ch, ro, co)] += 0;
                         }
                     }
                 }
@@ -199,7 +197,6 @@ public:
 
         return TRUE;
     }
-
 
     inline DTYPE MAX(DTYPE data1, DTYPE data2) {
         if (data1 >= data2) return data1;

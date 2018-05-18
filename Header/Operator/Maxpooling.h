@@ -194,7 +194,6 @@ public:
         int temprow = 0;
         int tempcol = 0;
 
-        int ti          = 0;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
@@ -244,7 +243,6 @@ public:
 
         int indexOfDelta = 0;
 
-        int ti          = 0;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
