@@ -81,75 +81,7 @@ public:
 
         Shape *resultTenShape = result->GetShape();
 
-        for (int ti = 0; ti < timesize; ti++) {
-            for (int ba = 0; ba < batchsize; ba++) {
-                for (int ch = 0; ch < channelsize; ch++) {
-                    for (int ro = 0; ro < rowsize; ro++) {
-                        for (int co = 0; co < colsize; co++) {
-                            (*result)[Index5D(resultTenShape, ti, ba, ch, ro, co)]
-                                = (*input)[Index5D(resultTenShape, ti, ba, ch, ro, co)];
-                        }
-                    }
-                }
-            }
-        }
-
-        // int capacity = result->GetCapacity();
-        //
-        // for (int i = 0; i < capacity; i++) {
-        // (*result)[i] = (*input)[i];
-        // }
-
-        return TRUE;
-    }
-
-    int BackPropagate(int pThreadNum = 0) {
-        // int capacity = this->GetDelta()->GetCapacity();
-
-        Tensor<DTYPE> *this_delta  = this->GetDelta();
-        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-
-        int timesize    = this_delta->GetTimeSize();
-        int batchsize   = this_delta->GetBatchSize();
-        int channelsize = this_delta->GetChannelSize();
-        int rowsize     = this_delta->GetRowSize();
-        int colsize     = this_delta->GetColSize();
-
-        Shape *deltaTenShape = this_delta->GetShape();
-
-        for (int ti = 0; ti < timesize; ti++) {
-            for (int ba = 0; ba < batchsize; ba++) {
-                for (int ch = 0; ch < channelsize; ch++) {
-                    for (int ro = 0; ro < rowsize; ro++) {
-                        for (int co = 0; co < colsize; co++) {
-                            (*input_delta)[Index5D(deltaTenShape, ti, ba, ch, ro, co)]
-                                += (*this_delta)[Index5D(deltaTenShape, ti, ba, ch, ro, co)];
-                        }
-                    }
-                }
-            }
-        }
-
-        // for (int i = 0; i < capacity; i++) {
-        // (*input_delta)[i] += (*this_delta)[i];
-        // }
-
-        return TRUE;
-    }
-
-    int ForwardPropagate(int pTime, int pThreadNum) {
-        Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
-        Tensor<DTYPE> *result = this->GetResult();
-
-        int timesize    = result->GetTimeSize();
-        int batchsize   = result->GetBatchSize();
-        int channelsize = result->GetChannelSize();
-        int rowsize     = result->GetRowSize();
-        int colsize     = result->GetColSize();
-
-        Shape *resultTenShape = result->GetShape();
-
-        int ti          = pTime;
+        int ti          = 0;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
@@ -163,19 +95,10 @@ public:
             }
         }
 
-
-        // int capacity = result->GetCapacity();
-        //
-        // for (int i = 0; i < capacity; i++) {
-        // (*result)[i] = (*input)[i];
-        // }
-
         return TRUE;
     }
 
-    int BackPropagate(int pTime, int pThreadNum) {
-        // int capacity = this->GetDelta()->GetCapacity();
-
+    int BackPropagate(int pThreadNum = 0) {
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
 
@@ -187,7 +110,7 @@ public:
 
         Shape *deltaTenShape = this_delta->GetShape();
 
-        int ti          = pTime;
+        int ti          = 0;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
@@ -200,11 +123,6 @@ public:
                 }
             }
         }
-
-
-        // for (int i = 0; i < capacity; i++) {
-        // (*input_delta)[i] += (*this_delta)[i];
-        // }
 
         return TRUE;
     }

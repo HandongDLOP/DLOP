@@ -119,7 +119,7 @@ public:
     }
 
     int ForwardPropagate(int pThreadNum = 0) {
-        if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU();
+        if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU(pThreadNum);
 #ifdef __CUDNN__
         else if (this->GetDevice() == GPU) ComputeForwardPropagateOnGPU();
 #endif  // if __CUDNN__
@@ -128,7 +128,7 @@ public:
     }
 
     int BackPropagate(int pThreadNum = 0) {
-        if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU();
+        if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU(pThreadNum);
 #ifdef __CUDNN__
         else if (this->GetDevice() == GPU) ComputeBackPropagateOnGPU();
 #endif  // if __CUDNN__
@@ -136,7 +136,7 @@ public:
         return TRUE;
     }
 
-    int ComputeForwardPropagateOnCPU() {
+    int ComputeForwardPropagateOnCPU(int pThreadNum = 0) {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
@@ -148,68 +148,7 @@ public:
 
         Shape *resultTenShape = result->GetShape();
 
-        for (int ti = 0; ti < timesize; ti++) {
-            for (int ba = 0; ba < batchsize; ba++) {
-                for (int ch = 0; ch < channelsize; ch++) {
-                    for (int ro = 0; ro < rowsize; ro++) {
-                        for (int co = 0; co < colsize; co++) {
-                            (*result)[Index5D(resultTenShape, ti, ba, ch, ro, co)]
-                                = this->MAX((*input)[Index5D(resultTenShape, ti, ba, ch, ro, co)], 0.f);
-                        }
-                    }
-                }
-            }
-        }
-
-        return TRUE;
-    }
-
-    int ComputeBackPropagateOnCPU() {
-        Tensor<DTYPE> *result      = this->GetResult();
-        Tensor<DTYPE> *this_delta  = this->GetGradient();
-        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-
-        int timesize    = result->GetTimeSize();
-        int batchsize   = result->GetBatchSize();
-        int channelsize = result->GetChannelSize();
-        int rowsize     = result->GetRowSize();
-        int colsize     = result->GetColSize();
-
-        Shape *resultTenShape = result->GetShape();
-
-        for (int ti = 0; ti < timesize; ti++) {
-            for (int ba = 0; ba < batchsize; ba++) {
-                for (int ch = 0; ch < channelsize; ch++) {
-                    for (int ro = 0; ro < rowsize; ro++) {
-                        for (int co = 0; co < colsize; co++) {
-                            if ((*result)[Index5D(resultTenShape, ti, ba, ch, ro, co)] > 0.0) {
-                                (*input_delta)[Index5D(resultTenShape, ti, ba, ch, ro, co)]
-                                    += (*this_delta)[Index5D(resultTenShape, ti, ba, ch, ro, co)];
-                            } else {
-                                (*input_delta)[Index5D(resultTenShape, ti, ba, ch, ro, co)] += 0;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return TRUE;
-    }
-
-    int ForwardPropagate(int pTime, int pThreadNum) {
-        Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
-        Tensor<DTYPE> *result = this->GetResult();
-
-        int timesize    = result->GetTimeSize();
-        int batchsize   = result->GetBatchSize();
-        int channelsize = result->GetChannelSize();
-        int rowsize     = result->GetRowSize();
-        int colsize     = result->GetColSize();
-
-        Shape *resultTenShape = result->GetShape();
-
-        int ti          = pTime;
+        int ti          = 0;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
@@ -223,11 +162,10 @@ public:
             }
         }
 
-
         return TRUE;
     }
 
-    int BackPropagate(int pTime, int pThreadNum) {
+    int ComputeBackPropagateOnCPU(int pThreadNum = 0) {
         Tensor<DTYPE> *result      = this->GetResult();
         Tensor<DTYPE> *this_delta  = this->GetGradient();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
@@ -240,7 +178,7 @@ public:
 
         Shape *resultTenShape = result->GetShape();
 
-        int ti          = pTime;
+        int ti          = 0;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
@@ -261,6 +199,7 @@ public:
 
         return TRUE;
     }
+
 
     inline DTYPE MAX(DTYPE data1, DTYPE data2) {
         if (data1 >= data2) return data1;

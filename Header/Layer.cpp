@@ -134,26 +134,12 @@ template<typename DTYPE> Container<Tensor<DTYPE> *> *Layer<DTYPE>::GetDeltaConta
 
 template<typename DTYPE> int Layer<DTYPE>::ForwardPropagate(int pThreadNum) {
     for (int i = 0; i < m_numOfOperator; i++) {
-        (*m_aaOperator)[i]->ForwardPropagate();
-    }
-    return TRUE;
-}
-
-template<typename DTYPE> int Layer<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
-    for (int i = 0; i < m_numOfOperator; i++) {
         (*m_aaOperator)[i]->ForwardPropagate(pThreadNum);
     }
     return TRUE;
 }
 
 template<typename DTYPE> int Layer<DTYPE>::BackPropagate(int pThreadNum) {
-    for (int i = m_numOfOperator - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->BackPropagate();
-    }
-    return TRUE;
-}
-
-template<typename DTYPE> int Layer<DTYPE>::BackPropagate(int pTime, int pThreadNum) {
     for (int i = m_numOfOperator - 1; i >= 0; i--) {
         (*m_aaOperator)[i]->BackPropagate(pThreadNum);
     }

@@ -150,7 +150,7 @@ public:
     }
 
     int ForwardPropagate(int pThreadNum = 0) {
-        if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU();
+        if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU(pThreadNum);
 #ifdef __CUDNN__
         else if (this->GetDevice() == GPU) ComputeForwardPropagateOnGPU();
 #endif  // if __CUDNN__
@@ -159,7 +159,7 @@ public:
     }
 
     int BackPropagate(int pThreadNum = 0) {
-        if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU();
+        if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU(pThreadNum);
 #ifdef __CUDNN__
         else if (this->GetDevice() == GPU) ComputeBackPropagateOnGPU();
 #endif  // if __CUDNN__
@@ -167,7 +167,7 @@ public:
         return TRUE;
     }
 
-    int ComputeForwardPropagateOnCPU() {
+    int ComputeForwardPropagateOnCPU(int pThreadNum = 0) {
         Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
         Shape *shapeOfInput  = input->GetShape();
 
@@ -194,95 +194,7 @@ public:
         int temprow = 0;
         int tempcol = 0;
 
-        for (int ba = 0; ba < batchsize; ba++) {
-            for (int ch = 0; ch < channelsize; ch++) {  // Batchsize of weight kernel
-                for (int ro = 0; ro < rowsize; ro++) {
-                    for (int co = 0; co < colsize; co++) {
-                        for (int mro = 0; mro < rowsizeOfMask; mro++) {
-                            for (int mco = 0; mco < colsizeOfMask; mco++) {
-                                temprow = m_stride[0] * ro + mro;
-                                tempcol = m_stride[1] * co + mco;
-
-                                indexOfResult = Index4D(shapeOfResult, ba, ch, ro, co);
-                                indexOfInput  = Index4D(shapeOfInput, ba, ch, temprow, tempcol);
-
-                                if ((mro == 0) && (mco == 0)) {
-                                    max                               = (*input)[indexOfInput];
-                                    (*result)[indexOfResult]          = max;
-                                    (*indexOfMaxInput)[indexOfResult] = indexOfInput;
-                                } else {
-                                    if (max < (*input)[indexOfInput]) {
-                                        max                               = (*input)[indexOfInput];
-                                        (*result)[indexOfResult]          = max;
-                                        (*indexOfMaxInput)[indexOfResult] = indexOfInput;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return TRUE;
-    }
-
-    int ComputeBackPropagateOnCPU() {
-        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-        // input_delta->Reset();
-
-        Tensor<DTYPE> *this_delta = this->GetDelta();
-        Shape *shapeOfDelta       = this_delta->GetShape();
-
-        int batchsize   = (*shapeOfDelta)[1];
-        int channelsize = (*shapeOfDelta)[2];  // == shapeOfWeight[1]
-        int rowsize     = (*shapeOfDelta)[3];
-        int colsize     = (*shapeOfDelta)[4];
-
-        int indexOfDelta = 0;
-
-        for (int ba = 0; ba < batchsize; ba++) {
-            for (int ch = 0; ch < channelsize; ch++) {  // Batchsize of weight kernel
-                for (int ro = 0; ro < rowsize; ro++) {
-                    for (int co = 0; co < colsize; co++) {
-                        indexOfDelta                                      = Index4D(shapeOfDelta, ba, ch, ro, co);
-                        (*input_delta)[(*indexOfMaxInput)[indexOfDelta]] += (*this_delta)[indexOfDelta];
-                    }
-                }
-            }
-        }
-
-        return TRUE;
-    }
-
-    int ForwardPropagate(int pTime, int pThreadNum) {
-        Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
-        Shape *shapeOfInput  = input->GetShape();
-
-        Tensor<DTYPE> *result = this->GetResult();
-        Shape *shapeOfResult  = result->GetShape();
-        // result->Reset();
-
-        int batchsize   = (*shapeOfResult)[1];
-        int channelsize = (*shapeOfResult)[2];  // == shapeOfWeight[1]
-        int rowsize     = (*shapeOfResult)[3];
-        int colsize     = (*shapeOfResult)[4];
-
-        int rowsizeOfInput = (*shapeOfInput)[3];
-        int colsizeOfInput = (*shapeOfInput)[4];
-
-        int rowsizeOfMask = m_mask[0];
-        int colsizeOfMask = m_mask[1];
-
-        DTYPE max = 0.f;
-
-        int indexOfResult = 0;
-        int indexOfInput  = 0;
-
-        int temprow = 0;
-        int tempcol = 0;
-
-        int ti          = pTime;
+        int ti          = 0;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
@@ -318,7 +230,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate(int pTime, int pThreadNum) {
+    int ComputeBackPropagateOnCPU(int pThreadNum = 0) {
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
         // input_delta->Reset();
 
@@ -332,7 +244,7 @@ public:
 
         int indexOfDelta = 0;
 
-        int ti          = pTime;
+        int ti          = 0;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
