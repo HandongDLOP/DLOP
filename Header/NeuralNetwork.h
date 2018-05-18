@@ -43,7 +43,7 @@ public:
     Tensorholder<DTYPE>* AddParameter(Tensorholder<DTYPE> *pTensorholder);
     // Operator<DTYPE>    * AddLayer(Layer<DTYPE> *pLayer);
 
-    LossFunction<DTYPE>   * SetLossFunction(LossFunction<DTYPE> *pLossFunction);
+    LossFunction<DTYPE>* SetLossFunction(LossFunction<DTYPE> *pLossFunction);
     Optimizer<DTYPE>   * SetOptimizer(Optimizer<DTYPE> *pOptimizer);
 
     // =======
@@ -56,7 +56,7 @@ public:
     Container<Tensorholder<DTYPE> *>* GetTensorholder();
     Container<Tensorholder<DTYPE> *>* GetParameter();
 
-    LossFunction<DTYPE>                * GetLossFunction();
+    LossFunction<DTYPE>             * GetLossFunction();
     Optimizer<DTYPE>                * GetOptimizer();
 
     // =======
@@ -74,8 +74,20 @@ public:
     int                               Training();
     int                               Testing();
 
-    int                               _Training_MT();
-    int                               _Testing_MT();
+    int                               TrainingOnSingleThread();
+    int                               TestingOnSingleThread();
+
+    int                               TrainingOnMultiThread(); // Multi Threading
+    int                               TestingOnMultiThread(); // Multi Threading
+
+    // int                               TrainingOnMultiProcess(); // Multi Processing
+    // int                               TestingOnMultiProcess(); // Multi Processing
+
+    int                               TrainingOnSingleGPU();
+    int                               TestingOnSingleGPU();
+
+    // int                               TrainingOnMultiGPU();
+    // int                               TestingOnMultiGPU();
 
     // ============
     void                              SetModeTraining();
