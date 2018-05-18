@@ -5,7 +5,6 @@
 
 typedef struct {
     void *m_NN;
-    int   m_time;
     int   m_threadNum;
 } ThreadInfo;
 
@@ -71,8 +70,8 @@ public:
     int                               ForwardPropagateOnGPU();
     int                               BackPropagateOnGPU();
 
-    static void                     * ForwardPropagate_T(void *param);
-    static void                     * BackPropagate_T(void *param);
+    static void                     * ForwardPropagateForThread(void *param);
+    static void                     * BackPropagateForThread(void *param);
 
     // =======
     int                               Training();
