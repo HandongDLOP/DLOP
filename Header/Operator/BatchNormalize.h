@@ -32,7 +32,7 @@ public:
 		Delete();
 	}
 
-	int ForwardPropagate() {
+	int ForwardPropagate(int pThreadNum = 0) {
 		if (m_mode == INFERENCING) {
 			Transform(m_pTenInput);
 		} else {
@@ -47,7 +47,7 @@ public:
 		return TRUE;
 	}
 
-	int BackPropagate() {
+	int BackPropagate(int pThreadNum = 0) {
 		unsigned int inputIndex = 0;
 		unsigned int batchSummaryIndex = 0;
 

@@ -47,9 +47,9 @@ public:
     Tensor<DTYPE>                   * GetDelta() const;
     Container<Tensor<DTYPE> *>      * GetDeltaContainer();
 
-    int                               ForwardPropagate();
+    int                               ForwardPropagate(int pThreadNum = 0);
     int                               ForwardPropagate(int pTime, int pThreadNum);
-    int                               BackPropagate();
+    int                               BackPropagate(int pThreadNum = 0);
     int                               BackPropagate(int pTime, int pThreadNum);
 
     Operator<DTYPE>                 * GetLastOperator();

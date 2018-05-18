@@ -93,7 +93,7 @@ public:
         }
     }
 
-    virtual Tensor<DTYPE>* ForwardPropagate() {
+    virtual Tensor<DTYPE>* ForwardPropagate(int pThreadNum = 0) {
         // 추가로  backprop을 계속해서 구성해나가게 되면, 진행하는 것이 가능하다. label 값을 따로 저장하는 작업이 필요가 없어진다.
 
         Tensor<DTYPE> *input         = this->GetTensor();
@@ -170,7 +170,7 @@ public:
         return result;
     }
 
-    virtual Tensor<DTYPE>* BackPropagate() {
+    virtual Tensor<DTYPE>* BackPropagate(int pThreadNum = 0) {
         Tensor<DTYPE> *gradient = this->GetGradient();
 
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;

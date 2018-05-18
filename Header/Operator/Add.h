@@ -43,7 +43,7 @@ public:
         return TRUE;
     }
 
-    int ForwardPropagate() {
+    int ForwardPropagate(int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *left_input  = (*input_contatiner)[0]->GetResult();
@@ -57,7 +57,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate() {
+    int BackPropagate(int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *left_input_grad  = (*input_contatiner)[0]->GetGradient();
@@ -131,7 +131,7 @@ public:
         return TRUE;
     }
 
-    int ForwardPropagate() {
+    int ForwardPropagate(int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input  = (*input_contatiner)[0]->GetResult();
@@ -155,7 +155,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate() {
+    int BackPropagate(int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input_grad = (*input_contatiner)[0]->GetGradient();
@@ -293,7 +293,7 @@ public:
         return TRUE;
     }
 
-    int ForwardPropagate() {
+    int ForwardPropagate(int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input  = (*input_contatiner)[0]->GetResult();
@@ -317,7 +317,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate() {
+    int BackPropagate(int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input_grad = (*input_contatiner)[0]->GetGradient();
@@ -482,7 +482,7 @@ public:
         return TRUE;
     }
 
-    int ForwardPropagate() {
+    int ForwardPropagate(int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input  = (*input_contatiner)[0]->GetResult();
@@ -506,7 +506,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate() {
+    int BackPropagate(int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input_grad = (*input_contatiner)[0]->GetGradient();

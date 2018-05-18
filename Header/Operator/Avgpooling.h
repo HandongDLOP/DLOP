@@ -40,7 +40,7 @@ public:
         return TRUE;
     }
 
-    int ForwardPropagate() {
+    int ForwardPropagate(int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input  = (*input_contatiner)[0]->GetResult();
@@ -66,7 +66,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate() {
+    int BackPropagate(int pThreadNum = 0) {
         // Tensor<DTYPE> *this_grad = Tensor<DTYPE>::Constants(1, 2, 3, 1, 1, 2.0);
         Container<Operator<DTYPE> *> *input_contatiner         = this->GetInputContainer();
         Container<Tensor<DTYPE> *>   *input_gradient_container = (*input_contatiner)[0]->GetGradientContainer();

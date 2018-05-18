@@ -39,11 +39,11 @@ public:
     std::string            GetName() const;
 
     // For Propagate
-    virtual Tensor<DTYPE>* ForwardPropagate();
+    virtual Tensor<DTYPE>* ForwardPropagate(int pThreadNum = 0);
     virtual Tensor<DTYPE>* ForwardPropagate(int pTime, int pThreadNum); //
 
     // For BackPropagate
-    virtual Tensor<DTYPE>* BackPropagate();
+    virtual Tensor<DTYPE>* BackPropagate(int pThreadNum = 0);
     virtual Tensor<DTYPE>* BackPropagate(int pTime, int pThreadNum); //
 
     DTYPE                & operator[](unsigned int index);

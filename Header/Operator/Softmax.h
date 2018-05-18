@@ -42,11 +42,11 @@ public:
         return 1;
     }
 
-    virtual int ForwardPropagate() {
+    virtual int ForwardPropagate(int pThreadNum = 0) {
         return 1;
     }
 
-    virtual int BackPropagate() {
+    virtual int BackPropagate(int pThreadNum = 0) {
         return 1;
     }
 };

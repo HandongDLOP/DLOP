@@ -99,13 +99,11 @@ public:
 
     // Operator<DTYPE>             * Concatenate(Operator<DTYPE> *src, Operator<DTYPE> *dst, int axis = 0);
 
-    // For Propagate
-    virtual int  ForwardPropagate();
-    virtual int  ForwardPropagate(int pTime, int pThreadNum);
+    virtual int  ForwardPropagate(int pThreadNum = 0);
+    virtual int  BackPropagate(int pThreadNum = 0);
 
-    // For BackPropagate
-    virtual int  BackPropagate();
-    virtual int  BackPropagate(int pTime, int pThreadNum);
+    virtual int  ForwardPropagateOnGPU();
+    virtual int  BackPropagateOnGPU();
 
     // reset value
     virtual int  ResetResult();

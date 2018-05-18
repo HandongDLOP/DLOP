@@ -118,7 +118,7 @@ public:
 #endif  // if __CUDNN__
     }
 
-    int ForwardPropagate() {
+    int ForwardPropagate(int pThreadNum = 0) {
         if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU();
 #ifdef __CUDNN__
         else if (this->GetDevice() == GPU) ComputeForwardPropagateOnGPU();
@@ -127,7 +127,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate() {
+    int BackPropagate(int pThreadNum = 0) {
         if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU();
 #ifdef __CUDNN__
         else if (this->GetDevice() == GPU) ComputeBackPropagateOnGPU();

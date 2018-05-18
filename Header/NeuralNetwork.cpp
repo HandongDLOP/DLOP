@@ -261,9 +261,9 @@ template<typename DTYPE> void *NeuralNetwork<DTYPE>::ForwardPropagate_T(void *pa
     LossFunction<DTYPE> *m_aLossFunction       = pNN->GetLossFunction();
 
     for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->ForwardPropagate(pTime, pThreadNum);
+        (*m_aaOperator)[i]->ForwardPropagate(pThreadNum);
     }
-    m_aLossFunction->ForwardPropagate(pTime, pThreadNum);
+    m_aLossFunction->ForwardPropagate(pThreadNum);
     return NULL;
 }
 
@@ -278,10 +278,10 @@ template<typename DTYPE> void *NeuralNetwork<DTYPE>::BackPropagate_T(void *param
     int m_OperatorDegree                       = m_aaOperator->GetSize();
     LossFunction<DTYPE> *m_aLossFunction       = pNN->GetLossFunction();
 
-    m_aLossFunction->BackPropagate(pTime, pThreadNum);
+    m_aLossFunction->BackPropagate(pThreadNum);
 
     for (int i = m_OperatorDegree - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->BackPropagate(pTime, pThreadNum);
+        (*m_aaOperator)[i]->BackPropagate(pThreadNum);
     }
     return NULL;
 }
@@ -294,7 +294,6 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Training() {
     } else if (m_numOfThread == 1) {
         this->TrainingOnCPU();
     } else return FALSE;
-
 
     return TRUE;
 }

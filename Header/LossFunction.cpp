@@ -96,7 +96,7 @@ template<typename DTYPE> std::string LossFunction<DTYPE>::GetName() const {
     return m_name;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagate() {
+template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagate(int pThreadNum) {
     std::cout << this->GetName() << '\n';
     return NULL;
 }
@@ -109,7 +109,7 @@ template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagate(in
     return NULL;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::BackPropagate() {
+template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::BackPropagate(int pThreadNum) {
     std::cout << this->GetName() << '\n';
     return NULL;
 }

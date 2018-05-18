@@ -327,31 +327,33 @@ template<typename DTYPE> void Operator<DTYPE>::AddEdgebetweenOperators(Operator<
     pInput->_AddOutputEdge(this);
 }
 
-template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate() {
-    // std::cout << this->GetName() << '\n';
-    return TRUE;
-}
-
-template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
-    std::cout << this->GetName() << '\n';
-    std::cout << "time : " << pTime << '\n';
+template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate(int pThreadNum) {
+    #if __DEBUG__
     std::cout << "thread number : " << pThreadNum << '\n';
     std::cout << "number of thread : " << this->GetNumOfThread() << '\n';
-
+    #endif  // __DEBUG__
     return TRUE;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::BackPropagate() {
-    // std::cout << this->GetName() << '\n';
-    return TRUE;
-}
-
-template<typename DTYPE> int Operator<DTYPE>::BackPropagate(int pTime, int pThreadNum) {
-    std::cout << this->GetName() << '\n';
-    std::cout << "time : " << pTime << '\n';
+template<typename DTYPE> int Operator<DTYPE>::BackPropagate(int pThreadNum) {
+    #if __DEBUG__
     std::cout << "thread number : " << pThreadNum << '\n';
     std::cout << "number of thread : " << this->GetNumOfThread() << '\n';
+    #endif  // __DEBUG__
+    return TRUE;
+}
 
+template<typename DTYPE> int Operator<DTYPE>::ForwardPropagateOnGPU() {
+    #if __DEBUG__
+    std::cout << "Operator<DTYPE>::ForwardPropagateOnGPU()" << '\n';
+    #endif  // __DEBUG__
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU() {
+    #if __DEBUG__
+    std::cout << "Operator<DTYPE>::BackPropagateOnGPU()" << '\n';
+    #endif  // __DEBUG__
     return TRUE;
 }
 

@@ -69,7 +69,7 @@ public:
 
     void Delete() {}
 
-    int  ForwardPropagate() {
+    int  ForwardPropagate(int pThreadNum = 0) {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
@@ -103,7 +103,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate() {
+    int BackPropagate(int pThreadNum = 0) {
         // int capacity = this->GetDelta()->GetCapacity();
 
         Tensor<DTYPE> *this_delta  = this->GetDelta();

@@ -180,7 +180,7 @@ public:
 #endif  // if __CUDNN__
     }
 
-    int ForwardPropagate() {
+    int ForwardPropagate(int pThreadNum = 0) {
         if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU();
         // if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU_MT();
 #ifdef __CUDNN__
@@ -190,7 +190,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate() {
+    int BackPropagate(int pThreadNum = 0) {
         if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU();
         // if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU_MT();
 #ifdef __CUDNN__

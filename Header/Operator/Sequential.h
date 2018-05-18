@@ -46,11 +46,11 @@ public:
         return TRUE;
     }
 
-    int ForwardPropagate() {
+    int ForwardPropagate(int pThreadNum = 0) {
         return TRUE;
     }
 
-    int BackPropagate() {
+    int BackPropagate(int pThreadNum = 0) {
         return TRUE;
     }
 };
