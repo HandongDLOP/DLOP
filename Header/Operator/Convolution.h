@@ -167,6 +167,8 @@ public:
         checkCUDNN(cudnnGetConvolutionBackwardDataWorkspaceSize(this->GetCudnnHandle(), filterDesc, deltaDesc, convDesc, inputDeltaDesc, m_dataAlgo, &m_dataSizeInBytes));
 
         checkCUDNN(cudnnGetConvolutionBackwardFilterWorkspaceSize(this->GetCudnnHandle(), inputTensorDesc, deltaDesc, convDesc, filterDesc, m_filterAlgo, &m_filterSizeInBytes));
+
+        checkCudaErrors(cudaDeviceSynchronize());
     }
 
 #endif  // if __CUDNN__
@@ -440,7 +442,7 @@ public:
         checkCudaErrors(cudaMemcpy(m_pHostOutput, m_pDevOutput, (outputCapacity * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
 
 
-        checkCudaErrors(cudaDeviceSynchronize());
+
 
         return TRUE;
     }

@@ -11,6 +11,10 @@ private:
     DTYPE *m_pDevInput, *m_pDevOutput, *m_pDevInputDelta, *m_pDevDelta;
     DTYPE *m_aHostInput, *m_aHostOutput, *m_aHostInputDelta, *m_aHostDelta;
 
+    float m_alpha = 1.f;
+    float m_beta  = 0.f;
+    double m_coef = 0.0;
+
 #endif  // __CUDNN__
 
 public:
@@ -26,9 +30,8 @@ public:
 
     ~Relu() {
         std::cout << "Relu::~Relu()" << '\n';
-#if __CUDNN__
+
         Delete();
-#endif  // if __CUDNN__
     }
 
     int Alloc(Operator<DTYPE> *pInput) {
@@ -44,33 +47,52 @@ public:
 
         this->SetDelta(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
 
+        return TRUE;
+    }
+
 #if __CUDNN__
+    void InitializeAttributeForGPU() {
+        Operator<DTYPE> *pInput = this->GetInput()[0];
+
+        int batchsize   = pInput->GetResult()->GetBatchSize();
+        int channelsize = pInput->GetResult()->GetChannelSize();
+        int rowsize     = pInput->GetResult()->GetRowSize();
+        int colsize     = pInput->GetResult()->GetColSize();
+
+        int inputCapacity  = pInput->GetResult()->GetCapacity();
+        int outputCapacity = this->GetResult()->GetCapacity();
+
         checkCUDNN(cudnnCreateTensorDescriptor(&m_aInputTensorDesc));
         checkCUDNN(cudnnCreateTensorDescriptor(&m_aOutputTensorDesc));
         checkCUDNN(cudnnCreateTensorDescriptor(&m_aDeltaDesc));
         checkCUDNN(cudnnCreateTensorDescriptor(&m_aInputDeltaDesc));
         checkCUDNN(cudnnCreateActivationDescriptor(&actDesc));
 
-        int inputCapacity  = pInput->GetResult()->GetCapacity();
-        int outputCapacity = this->GetResult()->GetCapacity();
-
         checkCudaErrors(cudaMalloc((void **)&m_pDevInput, (inputCapacity * sizeof(DTYPE))));
         checkCudaErrors(cudaMalloc((void **)&m_pDevOutput, (outputCapacity * sizeof(DTYPE))));
         checkCudaErrors(cudaMalloc((void **)&m_pDevInputDelta, (inputCapacity * sizeof(DTYPE))));
         checkCudaErrors(cudaMalloc((void **)&m_pDevDelta, (outputCapacity * sizeof(DTYPE))));
 
-        m_aHostInput      = new DTYPE[inputCapacity];
-        m_aHostOutput     = new DTYPE[outputCapacity];
-        m_aHostInputDelta = new DTYPE[inputCapacity];
-        m_aHostDelta      = new DTYPE[outputCapacity];
+        checkCUDNN(cudnnSetActivationDescriptor(actDesc, CUDNN_ACTIVATION_RELU, CUDNN_PROPAGATE_NAN, m_coef));
+
+        checkCUDNN(cudnnSetTensor4dDescriptor(m_aInputTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                              batchsize, channelsize, rowsize, colsize));
+
+        checkCUDNN(cudnnSetTensor4dDescriptor(m_aOutputTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                              batchsize, channelsize, rowsize, colsize));
+
+        checkCUDNN(cudnnSetTensor4dDescriptor(m_aDeltaDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                              batchsize, channelsize, rowsize, colsize));
+
+        checkCUDNN(cudnnSetTensor4dDescriptor(m_aInputDeltaDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                              batchsize, channelsize, rowsize, colsize));
+
+    }
 
 #endif  // if __CUDNN__
 
-        return TRUE;
-    }
-
-#if __CUDNN__
     void Delete() {
+#if __CUDNN__
         checkCUDNN(cudnnDestroyTensorDescriptor(m_aInputTensorDesc));
         checkCUDNN(cudnnDestroyTensorDescriptor(m_aOutputTensorDesc));
         checkCUDNN(cudnnDestroyTensorDescriptor(m_aDeltaDesc));
@@ -82,13 +104,8 @@ public:
         checkCudaErrors(cudaFree(m_pDevInputDelta));
         checkCudaErrors(cudaFree(m_pDevDelta));
 
-        delete[] m_aHostInput;
-        delete[] m_aHostOutput;
-        delete[] m_aHostInputDelta;
-        delete[] m_aHostDelta;
-    }
-
 #endif  // if __CUDNN__
+    }
 
     int ForwardPropagate() {
         if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU();
@@ -243,40 +260,19 @@ public:
     int ComputeForwardPropagateOnGPU() {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
-        Shape *shapeOfInput   = input->GetShape();
-        int    inputCapacity  = input->GetCapacity();
+        int inputCapacity     = input->GetCapacity();
+        int outputCapacity    = result->GetCapacity();
 
-        int batchsize   = (*shapeOfInput)[1];
-        int channelsize = (*shapeOfInput)[2];
-        int rowsize     = (*shapeOfInput)[3];
-        int colsize     = (*shapeOfInput)[4];
-
-        float alpha = 1.f; float beta = 0.f; double coef = 0.0;
-
-        for (int i = 0; i < inputCapacity; i++) {
-            m_aHostInput[i] = (*input)[i];
-        }
-
-        checkCUDNN(cudnnSetActivationDescriptor(actDesc, CUDNN_ACTIVATION_RELU, CUDNN_PROPAGATE_NAN, coef));
-
-        checkCUDNN(cudnnSetTensor4dDescriptor(m_aInputTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
-                                              batchsize, channelsize, rowsize, colsize));
-
-        checkCUDNN(cudnnSetTensor4dDescriptor(m_aOutputTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
-                                              batchsize, channelsize, rowsize, colsize));
+        m_aHostInput  = input->GetLowData();
+        m_aHostOutput = result->GetLowData();
 
         checkCudaErrors(cudaMemcpy(m_pDevInput, m_aHostInput, (inputCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
 
-        // devInput and devOutput pointers may be equal but, identical Descriptor.
-        checkCUDNN(cudnnActivationForward(this->GetCudnnHandle(), actDesc, &alpha,
-                                          m_aInputTensorDesc, m_pDevInput, &beta,
-                                          m_aOutputTensorDesc, m_pDevInput));
+        checkCUDNN(cudnnActivationForward(this->GetCudnnHandle(), actDesc, &m_alpha,
+                                          m_aInputTensorDesc, m_pDevInput, &m_beta,
+                                          m_aOutputTensorDesc, m_pDevOutput));
 
-        checkCudaErrors(cudaMemcpy(m_aHostInput, m_pDevInput, (inputCapacity * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
-
-        for (int i = 0; i < inputCapacity; i++) {
-            (*result)[i] = m_aHostInput[i];
-        }
+        checkCudaErrors(cudaMemcpy(m_aHostOutput, m_pDevOutput, (outputCapacity * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
 
         return TRUE;
     }
@@ -286,45 +282,16 @@ public:
         Tensor<DTYPE> *this_delta  = this->GetGradient();
         Tensor<DTYPE> *input       = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-        Shape *shapeOfInput        = input->GetShape();
 
         int inputCapacity      = input->GetCapacity();
         int outputCapacity     = result->GetCapacity();
         int deltaCapacity      = this_delta->GetCapacity();
         int inputDeltaCapacity = input_delta->GetCapacity();
 
-        int batchsize   = (*shapeOfInput)[1];
-        int channelsize = (*shapeOfInput)[2];
-        int rowsize     = (*shapeOfInput)[3];
-        int colsize     = (*shapeOfInput)[4];
-
-        float alpha = 1; float beta = 0; double coef = 0.0;
-
-        for (int i = 0; i < inputCapacity; i++) {
-            m_aHostInput[i] = (*input)[i];
-        }
-
-        for (int i = 0; i < outputCapacity; i++) {
-            m_aHostOutput[i] = (*result)[i];
-        }
-
-        for (int i = 0; i < deltaCapacity; i++) {
-            m_aHostDelta[i] = (*this_delta)[i];
-        }
-
-        checkCUDNN(cudnnSetActivationDescriptor(actDesc, CUDNN_ACTIVATION_RELU, CUDNN_PROPAGATE_NAN, coef));
-
-        checkCUDNN(cudnnSetTensor4dDescriptor(m_aInputTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
-                                              batchsize, channelsize, rowsize, colsize));
-
-        checkCUDNN(cudnnSetTensor4dDescriptor(m_aOutputTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
-                                              batchsize, channelsize, rowsize, colsize));
-
-        checkCUDNN(cudnnSetTensor4dDescriptor(m_aDeltaDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
-                                              batchsize, channelsize, rowsize, colsize));
-
-        checkCUDNN(cudnnSetTensor4dDescriptor(m_aInputDeltaDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
-                                              batchsize, channelsize, rowsize, colsize));
+        m_aHostInput      = input->GetLowData();
+        m_aHostOutput     = result->GetLowData();
+        m_aHostDelta      = this_delta->GetLowData();
+        m_aHostInputDelta = input_delta->GetLowData();
 
         checkCudaErrors(cudaMemcpy(m_pDevInput, m_aHostInput, (inputCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
 
@@ -332,16 +299,14 @@ public:
 
         checkCudaErrors(cudaMemcpy(m_pDevDelta, m_aHostDelta, (deltaCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
 
-
-        checkCUDNN(cudnnActivationBackward(this->GetCudnnHandle(), actDesc, &alpha,
+        checkCUDNN(cudnnActivationBackward(this->GetCudnnHandle(), actDesc, &m_alpha,
                                            m_aOutputTensorDesc, m_pDevOutput,
-                                           m_aDeltaDesc, m_pDevDelta, m_aInputTensorDesc, m_pDevInput, &beta, m_aInputTensorDesc, m_pDevInputDelta));
+                                           m_aDeltaDesc, m_pDevDelta,
+                                           m_aInputTensorDesc, m_pDevInput, &m_beta,
+                                           m_aInputTensorDesc, m_pDevInputDelta));
 
         checkCudaErrors(cudaMemcpy(m_aHostInputDelta, m_pDevInputDelta, (inputDeltaCapacity * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
 
-        for (int i = 0; i < inputDeltaCapacity; i++) {
-            (*input_delta)[i] += m_aHostInputDelta[i];
-        }
 
         return TRUE;
     }
