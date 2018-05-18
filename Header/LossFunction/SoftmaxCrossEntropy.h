@@ -8,6 +8,9 @@ class SoftmaxCrossEntropy : public LossFunction<DTYPE>{
 private:
     Tensor<DTYPE> *m_aSoftmaxResult;
     DTYPE m_epsilon;  // for backprop
+
+    int m_timesize;
+
     DTYPE **sum;
     DTYPE **max;
 
@@ -46,6 +49,8 @@ public:
         int rowsize     = pInput->GetResult()->GetRowSize();
         int colsize     = pInput->GetResult()->GetColSize();
 
+        m_timesize = timesize;
+
         sum = new DTYPE *[timesize];
         max = new DTYPE *[timesize];
 
@@ -71,12 +76,8 @@ public:
             m_aSoftmaxResult = NULL;
         }
 
-        Tensor<DTYPE> *input = this->GetTensor();
-        int timesize         = input->GetTimeSize();
-        int batchsize        = input->GetBatchSize();
-
         if (sum) {
-            for (int i = 0; i < timesize; i++) {
+            for (int i = 0; i < m_timesize; i++) {
                 delete[] sum[i];
                 sum[i] = NULL;
             }
@@ -84,7 +85,7 @@ public:
         }
 
         if (max) {
-            for (int i = 0; i < timesize; i++) {
+            for (int i = 0; i < m_timesize; i++) {
                 delete[] max[i];
                 max[i] = NULL;
             }
@@ -112,7 +113,7 @@ public:
         // DTYPE sum[timesize][batchsize] = { 0.f, };
         // DTYPE max[timesize][batchsize] = { 0.f, };
         for (int ti = 0; ti < timesize; ti++) {
-            for (int ba = 0; ba < batchsize; ba++) { // thread
+            for (int ba = 0; ba < batchsize; ba++) {  // thread
                 sum[ti][ba] = 0.f;
                 max[ti][ba] = 0.f;
             }
