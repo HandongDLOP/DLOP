@@ -223,16 +223,14 @@ public:
 
         int numOfThread = this->GetNumOfThread();
 
-        int ti = 0;
-
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
             for (int ch = 0; ch < channelsize; ch++) {
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
                         for (int hid = 0; hid < hiddensize; hid++) {
-                            (*result)[Index5D(resultTenShape, ti, ba, ch, ro, co)]
-                                += (*weight)[Index5D(weightTenShape, 0, 0, 0, co, hid)]
-                                   * (*input)[Index5D(inputTenShape, ti, ba, ch, ro, hid)];
+                            (*result)[Index4D(resultTenShape, ba, ch, ro, co)]
+                                += (*weight)[Index4D(weightTenShape, 0, 0, co, hid)]
+                                   * (*input)[Index4D(inputTenShape, ba, ch, ro, hid)];
                         }
                     }
                 }
@@ -268,16 +266,14 @@ public:
 
         int numOfThread = this->GetNumOfThread();
 
-        int ti = 0;
-
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
             for (int ch = 0; ch < channelsize; ch++) {
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
                         for (int hid = 0; hid < hiddensize; hid++) {
-                            weight_index = Index5D(weightTenShape, 0, 0, 0, co, hid);
-                            input_index  = Index5D(inputTenShape, ti, ba, ch, ro, hid);
-                            result_index = Index5D(resultTenShape, ti, ba, ch, ro, co);
+                            weight_index = Index4D(weightTenShape, 0, 0, co, hid);
+                            input_index  = Index4D(inputTenShape, ba, ch, ro, hid);
+                            result_index = Index4D(resultTenShape, ba, ch, ro, co);
 
                             (*input_delta)[input_index]      += (*weight)[weight_index] * (*this_delta)[result_index];
                             (*weight_gradient)[weight_index] += (*input)[input_index] * (*this_delta)[result_index];
