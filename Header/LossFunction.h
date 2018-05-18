@@ -1,9 +1,9 @@
-#ifndef Objective_H_
-#define Objective_H_
+#ifndef LossFunction_H_
+#define LossFunction_H_
 
 #include "Operator_utils.h"
 
-template<typename DTYPE> class Objective {
+template<typename DTYPE> class LossFunction {
 private:
     Tensor<DTYPE> *m_aResult;
     Tensor<DTYPE> *m_aGradient;
@@ -20,10 +20,10 @@ private:
     int m_numOfThread;
 
 public:
-    Objective(std::string pName = "NO NAME");
-    Objective(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName = "NO NAME");
+    LossFunction(std::string pName = "NO NAME");
+    LossFunction(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName = "NO NAME");
 
-    virtual ~Objective();
+    virtual ~LossFunction();
 
     virtual int            Alloc(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel);
     virtual void           Delete();
@@ -68,4 +68,4 @@ public:
     int ResetGradient();
 };
 
-#endif  // Objective_H_
+#endif  // LossFunction_H_

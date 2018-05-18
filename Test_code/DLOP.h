@@ -16,7 +16,7 @@ enum DTYPE{
 #include "Relu.h"
 #include "Maxpooling.h"
 
-// Child Class of Objective
+// Child Class of LossFunction
 
 // Child Class of Optimization
 

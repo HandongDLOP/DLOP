@@ -22,7 +22,7 @@ private:
     int m_OperatorDegree;
     int m_TensorholderDegree;
 
-    Objective<DTYPE> *m_aObjective;
+    LossFunction<DTYPE> *m_aLossFunction;
     Optimizer<DTYPE> *m_aOptimizer;
 
     Device m_Device;
@@ -43,7 +43,7 @@ public:
     Tensorholder<DTYPE>* AddParameter(Tensorholder<DTYPE> *pTensorholder);
     // Operator<DTYPE>    * AddLayer(Layer<DTYPE> *pLayer);
 
-    Objective<DTYPE>   * SetObjective(Objective<DTYPE> *pObjective);
+    LossFunction<DTYPE>   * SetLossFunction(LossFunction<DTYPE> *pLossFunction);
     Optimizer<DTYPE>   * SetOptimizer(Optimizer<DTYPE> *pOptimizer);
 
     // =======
@@ -56,7 +56,7 @@ public:
     Container<Tensorholder<DTYPE> *>* GetTensorholder();
     Container<Tensorholder<DTYPE> *>* GetParameter();
 
-    Objective<DTYPE>                * GetObjective();
+    LossFunction<DTYPE>                * GetLossFunction();
     Optimizer<DTYPE>                * GetOptimizer();
 
     // =======
@@ -97,8 +97,8 @@ public:
     int                               ResetOperatorResult();
     int                               ResetOperatorGradient();
 
-    int                               ResetObjectiveResult();
-    int                               ResetObjectiveGradient();
+    int                               ResetLossFunctionResult();
+    int                               ResetLossFunctionGradient();
 
     int                               ResetParameterGradient();
 

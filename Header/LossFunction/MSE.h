@@ -1,12 +1,12 @@
 #ifndef MSE_H_
 #define MSE_H_    value
 
-#include "..//Objective.h"
+#include "..//LossFunction.h"
 
 template<typename DTYPE>
-class MSE : public Objective<DTYPE>{
+class MSE : public LossFunction<DTYPE>{
 public:
-    MSE(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName) : Objective<DTYPE>(pOperator, pLabel, pName) {
+    MSE(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName) : LossFunction<DTYPE>(pOperator, pLabel, pName) {
         std::cout << "MSE::MSE(Operator<DTYPE> *, MetaParameter *, std::string)" << '\n';
         this->Alloc(pOperator);
     }

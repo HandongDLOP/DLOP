@@ -33,9 +33,9 @@ public:
         // // ======================= layer 4=======================
         // out = AddOperator(new Linear<float>(out, 1024, 10, TRUE, "4"));
 
-        // ======================= Select Objective Function ===================
-        SetObjective(new SoftmaxCrossEntropy<float>(out, label, "SCE"));
-        // SetObjective(new MSE<float>(out, label, "MSE"));
+        // ======================= Select LossFunction Function ===================
+        SetLossFunction(new SoftmaxCrossEntropy<float>(out, label, "SCE"));
+        // SetLossFunction(new MSE<float>(out, label, "MSE"));
 
         // ======================= Select Optimizer ===================
         SetOptimizer(new GradientDescentOptimizer<float>(GetTensorholder(), 0.08, MINIMIZE));

@@ -16,21 +16,21 @@ public:
         // 1
         out = this->AddOperator(new ConvolutionLayer2D<DTYPE>(out, pNumInputChannel, pNumOutputChannel, 3, 3, pStride, pStride, 1, FALSE, "BasicBlock_Conv1" + pName));
 #if __CUDNN__
-        out = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN1" + pName));
+        // out = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN1" + pName));
 #endif // __CUDNN__
         out = this->AddOperator(new Relu<DTYPE>(out, "BasicBlock_Relu1" + pName));
 
         // 2
         out = this->AddOperator(new ConvolutionLayer2D<DTYPE>(out, pNumOutputChannel, pNumOutputChannel, 3, 3, 1, 1, 1, FALSE, "BasicBlock_Conv2" + pName));
 #if __CUDNN__
-        out = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN2" + pName));
+        // out = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(out, pNumOutputChannel, "BasicBlock_BN2" + pName));
 #endif // __CUDNN__
 
         // ShortCut
         if ((pStride != 1) || (pNumInputChannel != pNumOutputChannel)) {
             remember = this->AddOperator(new ConvolutionLayer2D<DTYPE>(remember, pNumInputChannel, pNumOutputChannel, 3, 3, pStride, pStride, 1, FALSE, "BasicBlock_Conv_Shortcut" + pName));
 #if __CUDNN__
-            remember = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(remember, pNumOutputChannel, "BasicBlock_BN_Shortcut" + pName));
+            // remember = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(remember, pNumOutputChannel, "BasicBlock_BN_Shortcut" + pName));
 #endif // __CUDNN__
         }
 
@@ -105,36 +105,40 @@ public:
     virtual ~ResNet() {}
 
     int Alloc(Tensorholder<DTYPE> *pInput, Tensorholder<DTYPE> *pLabel, std::string pBlockType, int pNumOfBlock1, int pNumOfBlock2, int pNumOfBlock3, int pNumOfBlock4, int pNumOfClass) {
-        m_numInputChannel = 16;
+        m_numInputChannel = 20;
 
         Operator<DTYPE> *out = pInput;
 
         // Reshape
         out = this->AddOperator(new Reshape<DTYPE>(out, 28, 28, "reshape"));
 
+#if __CUDNN__
+        // out = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(out, 1, "1"));
+#endif  // __CUDNN
+
         // 1
         out = this->AddOperator(new ConvolutionLayer2D<DTYPE>(out, 1, m_numInputChannel, 1, 1, 1, 1, 0, TRUE, "Conv"));
 #if __CUDNN__
-        out = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(out, m_numInputChannel, "BasicBlock_BN1"));
+        // out = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(out, m_numInputChannel, "BasicBlock_BN1"));
 #endif // __CUDNN__
 
         out = this->MakeLayer(out, m_numInputChannel, pBlockType, pNumOfBlock1, 1, "Block1");
-        out = this->MakeLayer(out, 32, pBlockType, pNumOfBlock2, 1, "Block2");
-        out = this->MakeLayer(out, 64, pBlockType, pNumOfBlock3, 2, "Block3");
-        out = this->MakeLayer(out, 128, pBlockType, pNumOfBlock3, 2, "Block4");
+        out = this->MakeLayer(out, 40, pBlockType, pNumOfBlock2, 1, "Block2");
+        out = this->MakeLayer(out, 80, pBlockType, pNumOfBlock3, 2, "Block3");
+        out = this->MakeLayer(out, 160, pBlockType, pNumOfBlock3, 2, "Block4");
 
         out = this->AddOperator(new GlobalAvaragePooling2D<DTYPE>(out, "Avg Pooling"));
 
-        out = this->AddOperator(new Reshape<DTYPE>(out, 1, 1, 128, "reshape"));
+        out = this->AddOperator(new Reshape<DTYPE>(out, 1, 1, 160, "reshape"));
 
-        out = this->AddOperator(new Linear<DTYPE>(out, 128, pNumOfClass, TRUE, "Classification"));
+        out = this->AddOperator(new Linear<DTYPE>(out, 160, pNumOfClass, TRUE, "Classification"));
 
-        // ======================= Select Objective Function ===================
-        this->SetObjective(new SoftmaxCrossEntropy<float>(out, pLabel, "SCE"));
-        // SetObjective(new MSE<float>(out, label, "MSE"));
+        // ======================= Select LossFunction Function ===================
+        this->SetLossFunction(new SoftmaxCrossEntropy<float>(out, pLabel, "SCE"));
+        // SetLossFunction(new MSE<float>(out, label, "MSE"));
 
         // ======================= Select Optimizer ===================
-        this->SetOptimizer(new GradientDescentOptimizer<float>(this->GetTensorholder(), 0.0001, 0.9, MINIMIZE));
+        this->SetOptimizer(new GradientDescentOptimizer<float>(this->GetTensorholder(), 0.0002, 0.9, MINIMIZE));
         // this->SetOptimizer(new GradientDescentOptimizer<float>(this->GetTensorholder(), 0.001, MINIMIZE));
 
         return TRUE;
