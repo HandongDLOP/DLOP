@@ -6,12 +6,12 @@
 #include "MNIST_Reader.h"
 #include <time.h>
 
-#define BATCH             25
-#define EPOCH             0
+#define BATCH             100
+#define EPOCH             10
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)
-#define NUM_OF_THREAD     1
+#define NUM_OF_THREAD     10
 
 int main(int argc, char const *argv[]) {
     clock_t startTime, endTime;
