@@ -11,9 +11,9 @@ private:
     DTYPE *m_pDevInput, *m_pDevOutput, *m_pDevInputDelta, *m_pDevDelta;
     DTYPE *m_aHostInput, *m_aHostOutput, *m_aHostInputDelta, *m_aHostDelta;
 
-    float m_alpha = 1.f;
-    float m_beta  = 0.f;
-    double m_coef = 0.0;
+    float m_alpha;
+    float m_beta;
+    double m_coef;
 
 #endif  // __CUDNN__
 
@@ -62,6 +62,10 @@ public:
         int inputCapacity  = pInput->GetResult()->GetCapacity();
         int outputCapacity = this->GetResult()->GetCapacity();
 
+        m_alpha = 1.f;
+        m_beta  = 0.f;
+        m_coef  = 0.0;
+
         checkCUDNN(cudnnCreateTensorDescriptor(&m_aInputTensorDesc));
         checkCUDNN(cudnnCreateTensorDescriptor(&m_aOutputTensorDesc));
         checkCUDNN(cudnnCreateTensorDescriptor(&m_aDeltaDesc));
@@ -86,7 +90,6 @@ public:
 
         checkCUDNN(cudnnSetTensor4dDescriptor(m_aInputDeltaDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
                                               batchsize, channelsize, rowsize, colsize));
-
     }
 
 #endif  // if __CUDNN__
