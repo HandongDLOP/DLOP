@@ -67,6 +67,10 @@ public:
     // =======
     int                               ForwardPropagate();
     int                               BackPropagate();
+
+    int                               ForwardPropagateOnGPU();
+    int                               BackPropagateOnGPU();
+
     static void                     * ForwardPropagate_T(void *param);
     static void                     * BackPropagate_T(void *param);
 
@@ -74,48 +78,48 @@ public:
     int                               Training();
     int                               Testing();
 
-    int                               TrainingOnSingleThread();
-    int                               TestingOnSingleThread();
+    int                               TrainingOnCPU();
+    int                               TestingOnCPU();
 
     int                               TrainingOnMultiThread(); // Multi Threading
     int                               TestingOnMultiThread(); // Multi Threading
 
+    int                               TrainingOnGPU();
+    int                               TestingOnGPU();
+
     // int                               TrainingOnMultiProcess(); // Multi Processing
     // int                               TestingOnMultiProcess(); // Multi Processing
-
-    int                               TrainingOnSingleGPU();
-    int                               TestingOnSingleGPU();
 
     // int                               TrainingOnMultiGPU();
     // int                               TestingOnMultiGPU();
 
     // ============
-    void                              SetModeTraining();
-    void                              SetModeAccumulating();
-    void                              SetModeInferencing();
+    void             SetModeTraining();
+    void             SetModeAccumulating();
+    void             SetModeInferencing();
 
 #if __CUDNN__
-    void                              SetDeviceGPU();
+    void             SetDeviceGPU();
 #endif  // __CUDNN__
 
-    void                              SetDeviceCPU();
-    void                              SetDeviceCPU(int pNumOfThread);
+    void             SetDeviceCPU();
+    void             SetDeviceCPU(int pNumOfThread);
 
     // =======
-    int                               CreateGraph();
-    void                              PrintGraphInformation();
+    int              CreateGraph();
+    void             PrintGraphInformation();
 
     // reset value
-    int                               ResetOperatorResult();
-    int                               ResetOperatorGradient();
+    int              ResetOperatorResult();
+    int              ResetOperatorGradient();
 
-    int                               ResetLossFunctionResult();
-    int                               ResetLossFunctionGradient();
+    int              ResetLossFunctionResult();
+    int              ResetLossFunctionGradient();
 
-    int                               ResetParameterGradient();
+    int              ResetParameterGradient();
 
     // debug
-    Operator<DTYPE>                 * SerchOperator(std::string pName);
+    Operator<DTYPE>* SerchOperator(std::string pName);
 };
 
 #endif  // NEURALNETWORK_H_

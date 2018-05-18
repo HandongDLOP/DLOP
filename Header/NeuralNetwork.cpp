@@ -292,7 +292,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Training() {
     if (m_numOfThread > 1) {
         this->TrainingOnMultiThread();
     } else if (m_numOfThread == 1) {
-        this->TrainingOnSingleThread();
+        this->TrainingOnCPU();
     } else return FALSE;
 
 
@@ -303,13 +303,13 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Testing() {
     if (m_numOfThread > 1) {
         this->TestingOnMultiThread();
     } else if (m_numOfThread == 1) {
-        this->TestingOnSingleThread();
+        this->TestingOnCPU();
     } else return FALSE;
 
     return TRUE;
 }
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::TrainingOnSingleThread() {
+template<typename DTYPE> int NeuralNetwork<DTYPE>::TrainingOnCPU() {
     this->ResetOperatorResult();
     this->ResetOperatorGradient();
     this->ResetLossFunctionResult();
@@ -323,7 +323,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::TrainingOnSingleThread() {
     return TRUE;
 }
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::TestingOnSingleThread() {
+template<typename DTYPE> int NeuralNetwork<DTYPE>::TestingOnCPU() {
     this->ResetOperatorResult();
     this->ResetLossFunctionResult();
 
@@ -391,11 +391,11 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::TestingOnMultiThread() {
     return TRUE;
 }
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::TrainingOnSingleGPU() {
+template<typename DTYPE> int NeuralNetwork<DTYPE>::TrainingOnGPU() {
     return TRUE;
 }
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::TestingOnSingleGPU() {
+template<typename DTYPE> int NeuralNetwork<DTYPE>::TestingOnGPU() {
     return TRUE;
 }
 
