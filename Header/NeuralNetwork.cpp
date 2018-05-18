@@ -5,7 +5,9 @@ template class NeuralNetwork<float>;
 template class NeuralNetwork<double>;
 
 template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
+    #if __DEBUG__
     std::cout << "NeuralNetwork<DTYPE>::NeuralNetwork()" << '\n';
+    #endif  // __DEBUG__
 
     m_aaOperator     = NULL;
     m_aaTensorholder = NULL;
@@ -24,7 +26,9 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
 }
 
 template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
+    #if __DEBUG__
     std::cout << "NeuralNetwork<DTYPE>::~NeuralNetwork()" << '\n';
+    #endif  // __DEBUG__
 
     this->Delete();
 }
@@ -42,7 +46,9 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
 }
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
+    #if __DEBUG__
     std::cout << "NeuralNetwork<DTYPE>::Delete()" << '\n';
+    #endif  // __DEBUG__
     int size = 0;
 
     if (m_aaOperator) {

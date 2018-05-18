@@ -11,17 +11,23 @@ template< typename DTYPE>
 class CUDNNBatchNormalize: public Operator< DTYPE>{
 public:
 	CUDNNBatchNormalize( Operator< DTYPE>* pInput, Operator< DTYPE>* pScale, Operator< DTYPE>* pBias, int pIsChannelwise, std:: string pName): Operator< DTYPE>( pName){
+		#if __DEBUG__
 		std:: cout<< "CUDNNBatchNormalize:: CUDNNBatchNormalize( Operator< DTYPE>*, Operator< DTYPE>*, Operator< DTYPE>*, int, std:: string)"<< '\n';
+	    #endif  // __DEBUG__
 
 		Allocate( pInput, pScale, pBias, pIsChannelwise, CUDNN_BN_MIN_EPSILON);
 	}
 	CUDNNBatchNormalize( Operator< DTYPE> *pInput, Operator< DTYPE> *pScale, Operator< DTYPE> *pBias, int pIsChannelwise, float pEpsilon, std:: string pName): Operator< DTYPE>( pName){
+		#if __DEBUG__
 		std:: cout<< "CUDNNBatchNormalize:: CUDNNBatchNormalize( Operator< DTYPE>*, Operator< DTYPE>*, Operator< DTYPE>*, int, float, std:: string)" << '\n';
+	    #endif  // __DEBUG__
 
 		Allocate(pInput, pScale, pBias, pIsChannelwise, pEpsilon);
 	}
 	~ CUDNNBatchNormalize( ){
+		#if __DEBUG__
 		std:: cout<< "CUDNNBatchNormalize:: ~ CUDNNBatchNormalize()"<< '\n';
+	    #endif  // __DEBUG__
 
 		Delete( );
 	}

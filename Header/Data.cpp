@@ -11,7 +11,9 @@ template<typename DTYPE> Data<DTYPE>::Data() {
 }
 
 template<typename DTYPE> Data<DTYPE>::Data(unsigned int pTimeSize, unsigned int pCapacity) {
-    // std::cout << "Data<DTYPE>::Data(Shape *)" << '\n';
+    #if __DEBUG__
+    std::cout << "Data<DTYPE>::Data(Shape *)" << '\n';
+    #endif  // __DEBUG__
     m_timeSize        = pTimeSize;
     m_capacityPerTime = pCapacity;
     m_aData           = NULL;
@@ -19,7 +21,9 @@ template<typename DTYPE> Data<DTYPE>::Data(unsigned int pTimeSize, unsigned int 
 }
 
 template<typename DTYPE> Data<DTYPE>::Data(Data *pData) {
+    #if __DEBUG__
     std::cout << "Data<DTYPE>::Data(Data *)" << '\n';
+    #endif  // __DEBUG__
     m_timeSize        = pData->GetTimeSize();
     m_capacityPerTime = pData->GetCapacityPerTime();
     m_aData           = NULL;
@@ -27,7 +31,9 @@ template<typename DTYPE> Data<DTYPE>::Data(Data *pData) {
 }
 
 template<typename DTYPE> Data<DTYPE>::~Data() {
-    // std::cout << "Data<DTYPE>::~Data()" << '\n';
+    #if __DEBUG__
+    std::cout << "Data<DTYPE>::~Data()" << '\n';
+    #endif  // __DEBUG__
     Delete();
 }
 

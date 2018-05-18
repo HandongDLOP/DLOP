@@ -10,7 +10,9 @@ class Sequential : public Operator<DTYPE>{
 
 public:
     Sequential(int numOfOperator, ...) {
+        #if __DEBUG__
         std::cout << "Sequential::Sequential(Operator<DTYPE> *)" << '\n';
+        #endif  // __DEBUG__
 
         m_listOfOperator = NULL;
         m_numOfOperator  = 0;
@@ -24,11 +26,15 @@ public:
     }
 
     ~Sequential() {
+        #if __DEBUG__
         std::cout << "Sequential::~Sequential()" << '\n';
+        #endif  // __DEBUG__
     }
 
     int Alloc(int numOfOperator, va_list *ap) {
+        #if __DEBUG__
         std::cout << "Sequential::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
+        #endif  // __DEBUG__
 
         m_listOfOperator = new Operator<DTYPE> *[numOfOperator];
         m_numOfOperator  = numOfOperator;

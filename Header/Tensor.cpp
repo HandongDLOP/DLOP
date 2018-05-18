@@ -6,34 +6,45 @@ template class Tensor<double>;
 
 ////////////////////////////////////////////////////////////////////Class Tensor
 template<typename DTYPE> Tensor<DTYPE>::Tensor() {
+    #if __DEBUG__
     std::cout << "Tensor::Tensor()" << '\n';
+    #endif  // __DEBUG__
+
     m_aShape = NULL;
     m_aData  = NULL;
 }
 
 template<typename DTYPE> Tensor<DTYPE>::Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
-    // std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
+    #if __DEBUG__
+    std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
+    #endif  // __DEBUG__
     m_aShape = NULL;
     m_aData  = NULL;
     Alloc(new Shape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize));
 }
 
 template<typename DTYPE> Tensor<DTYPE>::Tensor(Shape *pShape) {
+    #if __DEBUG__
     std::cout << "Tensor::Tensor(Shape*)" << '\n';
+    #endif  // __DEBUG__
     m_aShape = NULL;
     m_aData  = NULL;
     Alloc(pShape);
 }
 
 template<typename DTYPE> Tensor<DTYPE>::Tensor(Tensor *pTensor) {
+    #if __DEBUG__
     std::cout << "Tensor::Tensor(Shape*)" << '\n';
+    #endif  // __DEBUG__
     m_aShape = NULL;
     m_aData  = NULL;
     Alloc(pTensor);
 }
 
 template<typename DTYPE> Tensor<DTYPE>::~Tensor() {
-    // std::cout << "Tensor::~Tensor()" << '\n';
+    #if __DEBUG__
+    std::cout << "Tensor::~Tensor()" << '\n';
+    #endif  // __DEBUG__
     Delete();
 }
 
@@ -52,7 +63,7 @@ template<typename DTYPE> int Tensor<DTYPE>::Alloc(Shape *pShape) {
             printf("Receive invalid rank value %d in %s (%s %d)\n", rank, __FUNCTION__, __FILE__, __LINE__);
             return FALSE;
         } else {
-            int pTime = (*pShape)[0];
+            int pTime            = (*pShape)[0];
             int pCapacityPerTime = 1;
 
             for (int i = 0; i < rank; i++) {
@@ -121,7 +132,7 @@ template<typename DTYPE> int Tensor<DTYPE>::GetCapacity() {
     return m_aData->GetCapacity();
 }
 
-template<typename DTYPE> DTYPE* Tensor<DTYPE>::GetLowData(unsigned int pTime) {
+template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetLowData(unsigned int pTime) {
     return m_aData->GetLowData(pTime);
 }
 
@@ -162,7 +173,9 @@ template<typename DTYPE> DTYPE& Tensor<DTYPE>::operator[](unsigned int index) {
 //////////////////////////////////////////////////////////////////static method
 
 template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, float mean, float stddev) {
+    #if __DEBUG__
     std::cout << "Tensor<DTYPE>::Truncated_normal()" << '\n';
+    #endif  // __DEBUG__
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -180,13 +193,17 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTim
 }
 
 template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Zeros(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
+    #if __DEBUG__
     std::cout << "Tensor<DTYPE>::Zero()" << '\n';
+    #endif  // __DEBUG__
 
     return new Tensor<DTYPE>(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
 }
 
 template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, DTYPE constant) {
+    #if __DEBUG__
     std::cout << "Tensor<DTYPE>::Constant()" << '\n';
+    #endif  // __DEBUG__
 
     Tensor<DTYPE> *temp = new Tensor<DTYPE>(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
 
@@ -279,7 +296,6 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::BroadcastAdd(Tensor<DTYPE
     return pDestTensor;
 }
 
-
 template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Multiply(Tensor<DTYPE> *pLeftTensor, float pMultiplier, Tensor<DTYPE> *pDestTensor) {
     Shape *leftTenShape = pLeftTensor->GetShape();
     int    capacity     = pLeftTensor->GetCapacity();
@@ -302,6 +318,7 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Multiply(Tensor<DTYPE> *p
 
     return pDestTensor;
 }
+
 // example code
 // int main(int argc, char const *argv[]) {
 // Tensor<float> *left  = Tensor<float>::Constants(1, 2, 3, 3, 3, 2);

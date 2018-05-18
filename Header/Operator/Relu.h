@@ -19,23 +19,31 @@ private:
 
 public:
     Relu(Operator<DTYPE> *pInput) : Operator<DTYPE>(pInput) {
+        #if __DEBUG__
         std::cout << "Relu::Relu(Operator<DTYPE> *)" << '\n';
+        #endif  // __DEBUG__
         this->Alloc(pInput);
     }
 
     Relu(Operator<DTYPE> *pInput, std::string pName) : Operator<DTYPE>(pInput, pName) {
+        #if __DEBUG__
         std::cout << "Relu::Relu(Operator<DTYPE> *)" << '\n';
+        #endif  // __DEBUG__
         this->Alloc(pInput);
     }
 
     ~Relu() {
+        #if __DEBUG__
         std::cout << "Relu::~Relu()" << '\n';
+        #endif  // __DEBUG__
 
         Delete();
     }
 
     int Alloc(Operator<DTYPE> *pInput) {
+        #if __DEBUG__
         std::cout << "Relu::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
+        #endif  // __DEBUG__
 
         int timesize    = pInput->GetResult()->GetTimeSize();
         int batchsize   = pInput->GetResult()->GetBatchSize();

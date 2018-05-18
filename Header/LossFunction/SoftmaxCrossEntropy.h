@@ -13,22 +13,30 @@ private:
 
 public:
     SoftmaxCrossEntropy(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, DTYPE epsilon, std::string pName = "NO NAME") : LossFunction<DTYPE>(pOperator, pLabel, pName) {
+        #if __DEBUG__
         std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
+        #endif  // __DEBUG__
         Alloc(pOperator, epsilon);
     }
 
     SoftmaxCrossEntropy(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName = "NO NAME") : LossFunction<DTYPE>(pOperator, pLabel, pName) {
+        #if __DEBUG__
         std::cout << "SoftmaxCrossEntropy::SoftmaxCrossEntropy(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
+        #endif  // __DEBUG__
         Alloc(pOperator, 1e-6f);
     }
 
     virtual ~SoftmaxCrossEntropy() {
+        #if __DEBUG__
         std::cout << "SoftmaxCrossEntropy::~SoftmaxCrossEntropy()" << '\n';
+        #endif  // __DEBUG__
         Delete();
     }
 
     virtual int Alloc(Operator<DTYPE> *pOperator, DTYPE epsilon) {
+        #if __DEBUG__
         std::cout << "SoftmaxCrossEntropy::Alloc(Operator<DTYPE> *, Operator<DTYPE> *, int)" << '\n';
+        #endif  // __DEBUG__
 
         Operator<DTYPE> *pInput = pOperator;
 

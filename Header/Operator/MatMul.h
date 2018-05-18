@@ -32,17 +32,23 @@ private:
 
 public:
     MatMul(Operator<DTYPE> *pWeight, Operator<DTYPE> *pInput, std::string pName) : Operator<DTYPE>(pWeight, pInput, pName) {
+        #if __DEBUG__
         std::cout << "MatMul::MatMul(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
+        #endif  // __DEBUG__
         this->Alloc(pWeight, pInput);
     }
 
     virtual ~MatMul() {
+        #if __DEBUG__
         std::cout << "Convolution2D::~Convolution2D()" << '\n';
+        #endif  // __DEBUG__
         Delete();
     }
 
     int Alloc(Operator<DTYPE> *pWeight, Operator<DTYPE> *pInput) {
+        #if __DEBUG__
         std::cout << "MatMul::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
+        #endif  // __DEBUG__
 
         int timesize    = pInput->GetResult()->GetTimeSize();
         int batchsize   = pInput->GetResult()->GetBatchSize();

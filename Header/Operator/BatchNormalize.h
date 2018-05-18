@@ -9,19 +9,25 @@ public:
 	// enum class Mode;
 
 	BatchNormalize(Operator<DTYPE> *pInput, Operator<DTYPE> *pScale, Operator<DTYPE> *pBias, int pIsChannelwise, std::string pName) : Operator<DTYPE>(pName) {
+		#if __DEBUG__
 		std::cout << "BatchNormalize:: BatchNormalize( Operator< DTYPE>*, Operator< DTYPE>*, Operator< DTYPE>*, int, std:: string)" << '\n';
+	    #endif  // __DEBUG__
 
 		Allocate(pInput, pScale, pBias, pIsChannelwise, 1e-6f);
 	}
 
 	BatchNormalize(Operator<DTYPE> *pInput, Operator<DTYPE> *pScale, Operator<DTYPE> *pBias, int pIsChannelwise, float pEpsilon, std::string pName) : Operator<DTYPE>(pName) {
+		#if __DEBUG__
 		std::cout << "BatchNormalize:: BatchNormalize( Operator< DTYPE>*, Operator< DTYPE>*, Operator< DTYPE>*, int, float, std:: string)" << '\n';
+	    #endif  // __DEBUG__
 
 		Allocate(pInput, pScale, pBias, pIsChannelwise, pEpsilon);
 	}
 
 	~BatchNormalize() {
+		#if __DEBUG__
 		std::cout << "BatchNormalize:: ~ BatchNormalize()" << '\n';
+	    #endif  // __DEBUG__
 
 		Delete();
 	}

@@ -46,7 +46,9 @@ public:
     }
 
     virtual ~Convolution2D() {
+        #if __DEBUG__
         std::cout << "Convolution2D::~Convolution2D()" << '\n';
+        #endif  // __DEBUG__
         Delete();
     }
 

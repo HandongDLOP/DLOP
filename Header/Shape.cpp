@@ -6,7 +6,9 @@ Shape::Shape() {
 }
 
 Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
-    // std::cout << "Shape::Shape(int, int, int, int, int)" << '\n';
+    #if __DEBUG__
+    std::cout << "Shape::Shape(int, int, int, int, int)" << '\n';
+    #endif  // __DEBUG__
     m_Rank = 0;
     m_aDim = NULL;
 
@@ -14,7 +16,9 @@ Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
 }
 
 Shape::Shape(Shape *pShape) {
+    #if __DEBUG__
     std::cout << "Shape::Shape(Shape *)" << '\n';
+    #endif  // __DEBUG__
     Alloc(pShape);
 }
 

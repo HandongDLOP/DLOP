@@ -5,7 +5,9 @@ template class Operator<float>;
 template class Operator<double>;
 
 template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
+    #if __DEBUG__
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
+    #endif  // __DEBUG__
     m_aaResult            = NULL;
     m_aaGradient          = NULL;
     m_apOutput            = NULL;
@@ -23,7 +25,9 @@ template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
 }
 
 template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std::string pName) {
+    #if __DEBUG__
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
+    #endif  // __DEBUG__
     m_aaResult            = NULL;
     m_aaGradient          = NULL;
     m_apOutput            = NULL;
@@ -41,7 +45,9 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std:
 }
 
 template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) {
+    #if __DEBUG__
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
+    #endif  // __DEBUG__
     m_aaResult            = NULL;
     m_aaGradient          = NULL;
     m_apOutput            = NULL;
@@ -59,7 +65,9 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Ope
 }
 
 template<typename DTYPE> Operator<DTYPE>::~Operator() {
+    #if __DEBUG__
     std::cout << "Operator<DTYPE>::~Operator()" << '\n';
+    #endif  // __DEBUG__
     this->Delete();
 }
 
@@ -73,7 +81,9 @@ template<typename DTYPE> int Operator<DTYPE>::Alloc() {
 }
 
 template<typename DTYPE> int Operator<DTYPE>::Alloc(int numInput, ...) {
+    #if __DEBUG__
     std::cout << "Operator<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
+    #endif  // __DEBUG__
     Operator<DTYPE> *temp = NULL;
 
     m_aaResult   = new Container<Tensor<DTYPE> *>();
@@ -107,7 +117,9 @@ template<typename DTYPE> int Operator<DTYPE>::Alloc(int numInput, ...) {
 }
 
 template<typename DTYPE> void Operator<DTYPE>::Delete() {
+    #if __DEBUG__
     std::cout << "Operator<DTYPE>::Delete()" << '\n';
+    #endif  // __DEBUG__
     int size = 0;
 
     if (m_aaResult) {

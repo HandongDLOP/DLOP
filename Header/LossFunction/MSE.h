@@ -7,16 +7,22 @@ template<typename DTYPE>
 class MSE : public LossFunction<DTYPE>{
 public:
     MSE(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName) : LossFunction<DTYPE>(pOperator, pLabel, pName) {
+        #if __DEBUG__
         std::cout << "MSE::MSE(Operator<DTYPE> *, MetaParameter *, std::string)" << '\n';
+        #endif  // __DEBUG__
         this->Alloc(pOperator);
     }
 
     virtual ~MSE() {
+        #if __DEBUG__
         std::cout << "MSE::~MSE()" << '\n';
+        #endif  // __DEBUG__
     }
 
     virtual int Alloc(Operator<DTYPE> *pOperator) {
+        #if __DEBUG__
         std::cout << "MSE::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
+        #endif  // __DEBUG__
 
         Operator<DTYPE> *pInput = pOperator;
 

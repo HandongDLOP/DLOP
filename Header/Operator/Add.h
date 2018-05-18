@@ -9,16 +9,22 @@ private:
 
 public:
     Addall(Operator<DTYPE> *pLeftInput, Operator<DTYPE> *pRightInput, std::string pName) : Operator<DTYPE>(pLeftInput, pRightInput, pName) {
+        #if __DEBUG__
         std::cout << "Addall::Addall(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
+        #endif  // __DEBUG__
         this->Alloc(pLeftInput, pRightInput);
     }
 
     ~Addall() {
+        #if __DEBUG__
         std::cout << "Addall::~Addall()" << '\n';
+        #endif  // __DEBUG__
     }
 
     int Alloc(Operator<DTYPE> *pLeftInput, Operator<DTYPE> *pRightInput) {
+        #if __DEBUG__
         std::cout << "Addall::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
+        #endif  // __DEBUG__
 
         Shape *pInputTenShape = pLeftInput->GetResult()->GetShape();
 
@@ -94,16 +100,22 @@ private:
 
 public:
     Add(Operator<DTYPE> *pInput, Operator<DTYPE> *pBias, std::string pName) : Operator<DTYPE>(pInput, pBias, pName) {
+        #if __DEBUG__
         std::cout << "Add::Add(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
+        #endif  // __DEBUG__
         this->Alloc(pInput, pBias);
     }
 
     ~Add() {
+        #if __DEBUG__
         std::cout << "Add::~Add()" << '\n';
+        #endif  // __DEBUG__
     }
 
     int Alloc(Operator<DTYPE> *pInput, Operator<DTYPE> *pBias) {
+        #if __DEBUG__
         std::cout << "Add::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
+        #endif  // __DEBUG__
 
         m_pInputTenShape = pInput->GetResult()->GetShape();
         m_pBiasTenShape  = pBias->GetResult()->GetShape();

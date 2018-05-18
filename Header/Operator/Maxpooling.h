@@ -24,24 +24,32 @@ private:
 
 public:
     Maxpooling2D(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol, std::string pName) : Operator<DTYPE>(pInput, pName) {
+        #if __DEBUG__
         std::cout << "Maxpooling2D::Maxpooling2D(Operator<DTYPE> *, int, int)" << '\n';
+        #endif  // __DEBUG__
         this->Alloc(pInput, strideRow, strideCol, maskRow, maskCol);
     }
 
     Maxpooling2D(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol, int padding, std::string pName) : Operator<DTYPE>(pInput, pName) {
+        #if __DEBUG__
         std::cout << "Maxpooling2D::Maxpooling2D(Operator<DTYPE> *, int, int, std::string)" << '\n';
+        #endif  // __DEBUG__
         this->Alloc(pInput, strideRow, strideCol, maskRow, maskCol, padding, padding);
     }
 
     ~Maxpooling2D() {
+        #if __DEBUG__
         std::cout << "Maxpooling2D::~Maxpooling2D()" << '\n';
+        #endif  // __DEBUG__
 #if __CUDNN__
         Delete();
 #endif  // if __CUDNN__
     }
 
     int Alloc(Operator<DTYPE> *pInput, int strideRow, int strideCol, int maskRow, int maskCol, int padding1 = 0, int padding2 = 0) {
+        #if __DEBUG__
         std::cout << "Maxpooling2D::Alloc(Operator<DTYPE> *, int, int)" << '\n';
+        #endif  // __DEBUG__
 
         Shape *shapeOfInput = pInput->GetResult()->GetShape();
 

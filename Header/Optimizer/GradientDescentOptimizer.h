@@ -13,7 +13,9 @@ private:
 
 public:
     GradientDescentOptimizer(Container<Tensorholder<DTYPE> *> *pParameterContainer, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pParameterContainer, pLearningRate, pOptimizeDirection) {
+        #if __DEBUG__
         std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(LossFunction<DTYPE> *, float, OptimizeDirection)" << '\n';
+        #endif  // __DEBUG__
         m_ppParameter    = NULL;
         m_aaVelocity     = NULL;
         m_numOfParameter = 0;
@@ -23,7 +25,9 @@ public:
     }
 
     GradientDescentOptimizer(Container<Tensorholder<DTYPE> *> *pParameterContainer, float pLearningRate, float momentum, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pParameterContainer, pLearningRate, pOptimizeDirection) {
+        #if __DEBUG__
         std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(LossFunction<DTYPE> *, float, OptimizeDirection)" << '\n';
+        #endif  // __DEBUG__
         m_ppParameter    = NULL;
         m_aaVelocity     = NULL;
         m_numOfParameter = 0;
@@ -33,7 +37,9 @@ public:
     }
 
     ~GradientDescentOptimizer() {
+        #if __DEBUG__
         std::cout << "GradientDescentOptimizer::~GradientDescentOptimizer()" << '\n';
+        #endif  // __DEBUG__
     }
 
     int Alloc() {

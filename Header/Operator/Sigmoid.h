@@ -7,7 +7,9 @@ template<typename DTYPE>
 class Sigmoid : public Operator<DTYPE>{
 public:
     Sigmoid(Operator<DTYPE> *pInput, std::string pName) : Operator<DTYPE>(pInput, pName) {
+        #if __DEBUG__
         std::cout << "Sigmoid::Sigmoid(Operator *)" << '\n';
+        #endif  // __DEBUG__
         this->Alloc(pInput);
     }
 
@@ -16,7 +18,9 @@ public:
     }
 
     int Alloc(Operator<DTYPE> *pInput) {
+        #if __DEBUG__
         std::cout << "Sigmoid::Alloc(Operator *, Operator *)" << '\n';
+        #endif  // __DEBUG__
 
         int timesize    = pInput->GetResult()->GetTimeSize();
         int batchsize   = pInput->GetResult()->GetBatchSize();

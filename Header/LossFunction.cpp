@@ -5,7 +5,9 @@ template class LossFunction<float>;
 template class LossFunction<double>;
 
 template<typename DTYPE> LossFunction<DTYPE>::LossFunction(std::string pName) {
+    #if __DEBUG__
     std::cout << "LossFunction<DTYPE>::LossFunction()" << '\n';
+    #endif  // __DEBUG__
     m_aResult        = NULL;
     m_aGradient      = NULL;
     m_pInputOperator = NULL;
@@ -17,7 +19,9 @@ template<typename DTYPE> LossFunction<DTYPE>::LossFunction(std::string pName) {
 }
 
 template<typename DTYPE> LossFunction<DTYPE>::LossFunction(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName) {
+    #if __DEBUG__
     std::cout << "LossFunction<DTYPE>::LossFunction()" << '\n';
+    #endif  // __DEBUG__
     m_aResult        = NULL;
     m_aGradient      = NULL;
     m_pInputOperator = NULL;
@@ -30,12 +34,16 @@ template<typename DTYPE> LossFunction<DTYPE>::LossFunction(Operator<DTYPE> *pOpe
 }
 
 template<typename DTYPE> LossFunction<DTYPE>::~LossFunction() {
+    #if __DEBUG__
     std::cout << "LossFunction<DTYPE>::~LossFunction()" << '\n';
+    #endif  // __DEBUG__
     this->Delete();
 }
 
 template<typename DTYPE> int LossFunction<DTYPE>::Alloc(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel) {
+    #if __DEBUG__
     std::cout << "LossFunction<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
+    #endif  // __DEBUG__
 
     m_pInputOperator = pOperator;
     m_pInputTensor   = m_pInputOperator->GetResult();

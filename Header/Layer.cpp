@@ -5,7 +5,9 @@ template class Layer<float>;
 template class Layer<double>;
 
 template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) : Operator<DTYPE>(pName) {
+    #if __DEBUG__
     std::cout << "Layer<DTYPE>::Layer()" << '\n';
+    #endif  // __DEBUG__
     m_aaOperator  = NULL;
     m_aaParameter = NULL;
 
@@ -18,7 +20,9 @@ template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) : Operator<DTYPE
 }
 
 template<typename DTYPE> Layer<DTYPE>::~Layer() {
+    #if __DEBUG__
     std::cout << "Layer<DTYPE>::~Layer()" << '\n';
+    #endif  // __DEBUG__
 
     this->Delete();
 }
@@ -30,7 +34,9 @@ template<typename DTYPE> int Layer<DTYPE>::Alloc() {
 }
 
 template<typename DTYPE> void Layer<DTYPE>::Delete() {
+    #if __DEBUG__
     std::cout << "Layer<DTYPE>::Delete()" << '\n';
+    #endif  // __DEBUG__
 
     if (m_aaOperator) {
         Operator<DTYPE> **OperatorContainer = m_aaOperator->GetRawData();
@@ -54,20 +60,6 @@ template<typename DTYPE> void Layer<DTYPE>::Delete() {
         m_aaParameter = NULL;
     }
 }
-
-// template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::AddLayer(Layer<DTYPE> *pLayer) {
-// int pNumOfParameter = pLayer->GetNumOfParameter();
-//
-// m_numOfOperator++;
-// m_aaOperator->Push(pLayer);
-//
-// for (int i = 0; i < pNumOfParameter; i++) {
-// m_aaParameter->Push(pLayer->PopParameter());
-// m_numOfParameter++;
-// }
-//
-// return pLayer;
-// }
 
 template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::AddOperator(Operator<DTYPE> *pOperator) {
     int pNumOfParameter = pOperator->GetNumOfParameter();
@@ -181,7 +173,7 @@ template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU() {
 }
 
 template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU(int pNumOfThread) {
-    m_Device = CPU;
+    m_Device      = CPU;
     m_numOfThread = pNumOfThread;
 
     for (int i = 0; i < m_numOfOperator; i++) {

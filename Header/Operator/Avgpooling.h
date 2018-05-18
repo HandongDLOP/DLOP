@@ -15,7 +15,9 @@ private:
 
 public:
     GlobalAvaragePooling2D(Operator<DTYPE> *pInput, std::string pName) : Operator<DTYPE>(pInput, pName) {
+        #if __DEBUG__
         std::cout << "GlobalAvaragePooling2D::GlobalAvaragePooling2D(Operator<DTYPE> *, std::string)" << '\n';
+        #endif  // __DEBUG__
         Alloc(pInput);
     }
 

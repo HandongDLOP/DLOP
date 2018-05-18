@@ -5,7 +5,9 @@ template class Optimizer<float>;
 template class Optimizer<double>;
 
 template<typename DTYPE> Optimizer<DTYPE>::Optimizer(Container<Tensorholder<DTYPE> *> *pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+    #if __DEBUG__
     std::cout << "Optimizer::Optimizer(Operator<DTYPE> *, float, OptimizeDirection)" << '\n';
+    #endif  // __DEBUG__
     m_LearningRate          = 0.f;
     m_OptimizeDirection     = 1;
     m_ppTrainableTensors    = NULL;
@@ -15,12 +17,17 @@ template<typename DTYPE> Optimizer<DTYPE>::Optimizer(Container<Tensorholder<DTYP
 }
 
 template<typename DTYPE> Optimizer<DTYPE>::~Optimizer() {
+    #if __DEBUG__
     std::cout << "Optimizer::~Optimizer()" << '\n';
+    #endif  // __DEBUG__
 
     this->Delete();
 }
 
 template<typename DTYPE> int Optimizer<DTYPE>::Alloc(Container<Tensorholder<DTYPE> *> *pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection) {
+    #if __DEBUG__
+    std::cout << "Optimizer::Alloc(Container<Tensorholder<DTYPE> *> *, float , OptimizeDirection )" << '\n';
+    #endif  // __DEBUG__
     m_ppTrainableTensors = pTrainableTensors;
     m_TrainableTensorDegree = pTrainableTensors->GetSize();
 
