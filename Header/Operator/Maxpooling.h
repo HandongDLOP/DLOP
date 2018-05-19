@@ -137,7 +137,7 @@ public:
         delete indexOfMaxInput;
 #if __CUDNN__
 
-        if (inputTensorDesc) checkCUDNN(cudnnDestroyTensorDescriptor(m_aInputTensorDesc));
+        if (m_aInputTensorDesc) checkCUDNN(cudnnDestroyTensorDescriptor(m_aInputTensorDesc));
         m_aInputTensorDesc = NULL;
 
         if (m_aOutputTensorDesc) checkCUDNN(cudnnDestroyTensorDescriptor(m_aOutputTensorDesc));
@@ -165,7 +165,6 @@ public:
         m_pDevDelta = NULL;
 
         checkCudaErrors(cudaThreadSynchronize());
-
 
 #endif  // if __CUDNN__
     }

@@ -170,11 +170,11 @@ public:
 
         checkCUDNN(cudnnGetConvolutionBackwardFilterWorkspaceSize(this->GetCudnnHandle(), inputTensorDesc, deltaDesc, convDesc, filterDesc, m_filterAlgo, &m_filterSizeInBytes));
 
-        if (m_sizeInBytes != 0) checkCUDA(cudaMalloc(&m_devWorkSpace, m_sizeInBytes));
+        if (m_sizeInBytes != 0) checkCUDNN(cudaMalloc(&m_devWorkSpace, m_sizeInBytes));
 
-        if (m_dataSizeInBytes != 0) checkCUDA(cudaMalloc(&m_dataDevWorkSpace, m_dataSizeInBytes));
+        if (m_dataSizeInBytes != 0) checkCUDNN(cudaMalloc(&m_dataDevWorkSpace, m_dataSizeInBytes));
 
-        if (m_filterSizeInBytes != 0) checkCUDA(cudaMalloc(&m_filterDevWorkSpace, m_filterSizeInBytes));
+        if (m_filterSizeInBytes != 0) checkCUDNN(cudaMalloc(&m_filterDevWorkSpace, m_filterSizeInBytes));
 
         checkCudaErrors(cudaDeviceSynchronize());
     }
