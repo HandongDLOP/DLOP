@@ -104,6 +104,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
     }
 
 #if __CUDNN__
+    checkCudaErrors(cudaThreadSynchronize());
     checkCudaErrors(cudaDeviceSynchronize());
     checkCUDNN(cudnnDestroy(m_cudnnHandle));
 #endif  // if __CUDNN__

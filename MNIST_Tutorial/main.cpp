@@ -7,7 +7,7 @@
 #include <time.h>
 
 #define BATCH             100
-#define EPOCH             10
+#define EPOCH             100
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
 #define LOOP_FOR_TEST     (10000 / BATCH)

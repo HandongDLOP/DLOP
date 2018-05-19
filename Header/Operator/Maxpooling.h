@@ -136,16 +136,37 @@ public:
     void Delete() {
         delete indexOfMaxInput;
 #if __CUDNN__
-        checkCUDNN(cudnnDestroyTensorDescriptor(m_aInputTensorDesc));
-        checkCUDNN(cudnnDestroyTensorDescriptor(m_aOutputTensorDesc));
-        checkCUDNN(cudnnDestroyTensorDescriptor(m_aDeltaDesc));
-        checkCUDNN(cudnnDestroyTensorDescriptor(m_aInputDeltaDesc));
-        checkCUDNN(cudnnDestroyPoolingDescriptor(m_aPoolingDesc));
 
-        checkCudaErrors(cudaFree(m_pDevInput));
-        checkCudaErrors(cudaFree(m_pDevOutput));
-        checkCudaErrors(cudaFree(m_pDevInputDelta));
-        checkCudaErrors(cudaFree(m_pDevDelta));
+        if (inputTensorDesc) checkCUDNN(cudnnDestroyTensorDescriptor(m_aInputTensorDesc));
+        m_aInputTensorDesc = NULL;
+
+        if (m_aOutputTensorDesc) checkCUDNN(cudnnDestroyTensorDescriptor(m_aOutputTensorDesc));
+        m_aOutputTensorDesc = NULL;
+
+        if (m_aDeltaDesc) checkCUDNN(cudnnDestroyTensorDescriptor(m_aDeltaDesc));
+        m_aDeltaDesc = NULL;
+
+        if (m_aInputDeltaDesc) checkCUDNN(cudnnDestroyTensorDescriptor(m_aInputDeltaDesc));
+        m_aInputDeltaDesc = NULL;
+
+        if (m_aPoolingDesc) checkCUDNN(cudnnDestroyPoolingDescriptor(m_aPoolingDesc));
+        m_aPoolingDesc = NULL;
+
+        if (m_pDevInput) checkCudaErrors(cudaFree(m_pDevInput));
+        m_pDevInput = NULL;
+
+        if (m_pDevOutput) checkCudaErrors(cudaFree(m_pDevOutput));
+        m_pDevOutput = NULL;
+
+        if (m_pDevInputDelta) checkCudaErrors(cudaFree(m_pDevInputDelta));
+        m_pDevInputDelta = NULL;
+
+        if (m_pDevDelta) checkCudaErrors(cudaFree(m_pDevDelta));
+        m_pDevDelta = NULL;
+
+        checkCudaErrors(cudaThreadSynchronize());
+
+
 #endif  // if __CUDNN__
     }
 
@@ -277,6 +298,7 @@ public:
 
         checkCudaErrors(cudaMemcpy(m_aHostOutput, m_pDevOutput, (resultCapacity * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
 
+        checkCudaErrors(cudaDeviceSynchronize());
         return TRUE;
     }
 
@@ -306,6 +328,7 @@ public:
 
         checkCudaErrors(cudaMemcpy(m_aHostInputDelta, m_pDevInputDelta, (inputDeltaCapacity * sizeof(float)), cudaMemcpyDeviceToHost));
 
+        checkCudaErrors(cudaDeviceSynchronize());
         return TRUE;
     }
 

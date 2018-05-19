@@ -170,6 +170,12 @@ public:
 
         checkCUDNN(cudnnGetConvolutionBackwardFilterWorkspaceSize(this->GetCudnnHandle(), inputTensorDesc, deltaDesc, convDesc, filterDesc, m_filterAlgo, &m_filterSizeInBytes));
 
+        if (m_sizeInBytes != 0) checkCUDA(cudaMalloc(&m_devWorkSpace, m_sizeInBytes));
+
+        if (m_dataSizeInBytes != 0) checkCUDA(cudaMalloc(&m_dataDevWorkSpace, m_dataSizeInBytes));
+
+        if (m_filterSizeInBytes != 0) checkCUDA(cudaMalloc(&m_filterDevWorkSpace, m_filterSizeInBytes));
+
         checkCudaErrors(cudaDeviceSynchronize());
     }
 
@@ -177,25 +183,56 @@ public:
 
     void Delete() {
 #if __CUDNN__
-        checkCUDNN(cudnnDestroyTensorDescriptor(inputTensorDesc));
-        checkCUDNN(cudnnDestroyTensorDescriptor(outputTensorDesc));
-        checkCUDNN(cudnnDestroyTensorDescriptor(deltaDesc));
-        checkCUDNN(cudnnDestroyTensorDescriptor(inputDeltaDesc));
-        checkCUDNN(cudnnDestroyConvolutionDescriptor(convDesc));
-        checkCUDNN(cudnnDestroyFilterDescriptor(filterDesc));
-        checkCUDNN(cudnnDestroyFilterDescriptor(filterDeltaDesc));
 
-        checkCudaErrors(cudaFree(m_pDevInput));
-        checkCudaErrors(cudaFree(m_pDevOutput));
-        checkCudaErrors(cudaFree(m_pDevFilter));
-        checkCudaErrors(cudaFree(m_pDevInputDelta));
-        checkCudaErrors(cudaFree(m_pDevDelta));
-        checkCudaErrors(cudaFree(m_pDevFilterDelta));
+        if (inputTensorDesc) checkCUDNN(cudnnDestroyTensorDescriptor(inputTensorDesc));
+        inputTensorDesc = NULL;
 
-        checkCudaErrors(cudaFree(m_devWorkSpace));
-        checkCudaErrors(cudaFree(m_dataDevWorkSpace));
-        checkCudaErrors(cudaFree(m_filterDevWorkSpace));
+        if (outputTensorDesc) checkCUDNN(cudnnDestroyTensorDescriptor(outputTensorDesc));
+        outputTensorDesc = NULL;
 
+        if (deltaDesc) checkCUDNN(cudnnDestroyTensorDescriptor(deltaDesc));
+        deltaDesc = NULL;
+
+        if (inputDeltaDesc) checkCUDNN(cudnnDestroyTensorDescriptor(inputDeltaDesc));
+        inputDeltaDesc = NULL;
+
+        if (convDesc) checkCUDNN(cudnnDestroyConvolutionDescriptor(convDesc));
+        convDesc = NULL;
+
+        if (filterDesc) checkCUDNN(cudnnDestroyFilterDescriptor(filterDesc));
+        filterDesc = NULL;
+
+        if (filterDeltaDesc) checkCUDNN(cudnnDestroyFilterDescriptor(filterDeltaDesc));
+        filterDeltaDesc = NULL;
+
+        if (m_pDevInput) checkCudaErrors(cudaFree(m_pDevInput));
+        m_pDevInput = NULL;
+
+        if (m_pDevOutput) checkCudaErrors(cudaFree(m_pDevOutput));
+        m_pDevOutput = NULL;
+
+        if (m_pDevFilter) checkCudaErrors(cudaFree(m_pDevFilter));
+        m_pDevFilter = NULL;
+
+        if (m_pDevInputDelta) checkCudaErrors(cudaFree(m_pDevInputDelta));
+        m_pDevInputDelta = NULL;
+
+        if (m_pDevDelta) checkCudaErrors(cudaFree(m_pDevDelta));
+        m_pDevDelta = NULL;
+
+        if (m_pDevFilterDelta) checkCudaErrors(cudaFree(m_pDevFilterDelta));
+        m_pDevFilterDelta = NULL;
+
+        if (m_devWorkSpace) checkCudaErrors(cudaFree(m_devWorkSpace));
+        m_devWorkSpace = NULL;
+
+        if (m_dataDevWorkSpace) checkCudaErrors(cudaFree(m_dataDevWorkSpace));
+        m_dataDevWorkSpace = NULL;
+
+        if (m_filterDevWorkSpace) checkCudaErrors(cudaFree(m_filterDevWorkSpace));
+        m_filterDevWorkSpace = NULL;
+
+        checkCudaErrors(cudaThreadSynchronize());
 #endif  // if __CUDNN__
     }
 
@@ -343,6 +380,7 @@ public:
 
         checkCudaErrors(cudaMemcpy(m_pHostOutput, m_pDevOutput, (outputCapacity * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
 
+        checkCudaErrors(cudaDeviceSynchronize());
 
         return TRUE;
     }
@@ -380,6 +418,8 @@ public:
 
         checkCudaErrors(cudaMemcpy(m_pHostInputDelta, m_pDevInputDelta, (inputDeltaCapacity) * sizeof(DTYPE), cudaMemcpyDeviceToHost));
         checkCudaErrors(cudaMemcpy(m_pHostFilterDelta, m_pDevFilterDelta, (filterDeltaCapacity) * sizeof(DTYPE), cudaMemcpyDeviceToHost));
+
+        checkCudaErrors(cudaDeviceSynchronize());
 
         return TRUE;
     }
