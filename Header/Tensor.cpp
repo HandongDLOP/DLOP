@@ -136,16 +136,15 @@ template<typename DTYPE> int Tensor<DTYPE>::GetCapacity() {
     return m_aData->GetCapacity();
 }
 
-template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetLowData(unsigned int pTime) {
+template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetHostData(unsigned int pTime) {
     #if __DEBUG__
 
     if (m_Device == GPU) {
-        printf("Tensor is allocated in Device(GPU)\n");
-        exit(-1);
+        printf("Warning! Tensor is allocated in Device(GPU) latest time\n");
     }
     #endif  // __DEBUG__
 
-    return m_aData->GetLowData(pTime);
+    return m_aData->GetHostData(pTime);
 }
 
 #ifdef __CUDNN__
@@ -154,7 +153,7 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetDeviceData(unsigned int pTime)
     # if __DEBUG__
 
     if (m_Device == CPU) {
-        printf("Tensor is allocated in Host(CPU)\n");
+        printf("Warning! Tensor is allocated in Host(CPU) latest time\n");
         exit(-1);
     }
     # endif // __DEBUG__

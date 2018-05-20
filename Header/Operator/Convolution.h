@@ -374,9 +374,9 @@ public:
         int outputCapacity = result->GetCapacity();
         int filterCapacity = weight->GetCapacity();
 
-        m_pHostInput  = input->GetLowData();
-        m_pHostFilter = weight->GetLowData();
-        m_pHostOutput = result->GetLowData();
+        m_pHostInput  = input->GetHostData();
+        m_pHostFilter = weight->GetHostData();
+        m_pHostOutput = result->GetHostData();
 
         checkCudaErrors(cudaMemcpy(m_pDevInput, m_pHostInput, (inputCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
         checkCudaErrors(cudaMemcpy(m_pDevFilter, m_pHostFilter, (filterCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
@@ -406,11 +406,11 @@ public:
         int deltaCapacity       = this_delta->GetCapacity();
         int filterDeltaCapacity = weight_gradient->GetCapacity();
 
-        m_pHostInput       = input->GetLowData();
-        m_pHostFilter      = weight->GetLowData();
-        m_pHostDelta       = this_delta->GetLowData();
-        m_pHostInputDelta  = input_delta->GetLowData();
-        m_pHostFilterDelta = weight_gradient->GetLowData();
+        m_pHostInput       = input->GetHostData();
+        m_pHostFilter      = weight->GetHostData();
+        m_pHostDelta       = this_delta->GetHostData();
+        m_pHostInputDelta  = input_delta->GetHostData();
+        m_pHostFilterDelta = weight_gradient->GetHostData();
 
         checkCudaErrors(cudaMemcpy(m_pDevInput, m_pHostInput, (inputCapacity) * sizeof(DTYPE), cudaMemcpyHostToDevice));
         checkCudaErrors(cudaMemcpy(m_pDevFilter, m_pHostFilter, (filterCapacity) * sizeof(DTYPE), cudaMemcpyHostToDevice));

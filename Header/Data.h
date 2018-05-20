@@ -29,7 +29,7 @@ public:
     int    GetTimeSize();
     int    GetCapacityPerTime();
 
-    DTYPE* GetLowData(unsigned int pTime = 0);
+    DTYPE* GetHostData(unsigned int pTime = 0);
 
 #ifdef __CUDNN__
     DTYPE* GetDeviceData(unsigned int pTime = 0);

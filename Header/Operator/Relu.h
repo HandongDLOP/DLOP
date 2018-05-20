@@ -213,8 +213,8 @@ public:
         int inputCapacity     = input->GetCapacity();
         int outputCapacity    = result->GetCapacity();
 
-        m_aHostInput  = input->GetLowData();
-        m_aHostOutput = result->GetLowData();
+        m_aHostInput  = input->GetHostData();
+        m_aHostOutput = result->GetHostData();
 
         checkCudaErrors(cudaMemcpy(m_pDevInput, m_aHostInput, (inputCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
 
@@ -239,10 +239,10 @@ public:
         int deltaCapacity      = this_delta->GetCapacity();
         int inputDeltaCapacity = input_delta->GetCapacity();
 
-        m_aHostInput      = input->GetLowData();
-        m_aHostOutput     = result->GetLowData();
-        m_aHostDelta      = this_delta->GetLowData();
-        m_aHostInputDelta = input_delta->GetLowData();
+        m_aHostInput      = input->GetHostData();
+        m_aHostOutput     = result->GetHostData();
+        m_aHostDelta      = this_delta->GetHostData();
+        m_aHostInputDelta = input_delta->GetHostData();
 
         checkCudaErrors(cudaMemcpy(m_pDevInput, m_aHostInput, (inputCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
 
