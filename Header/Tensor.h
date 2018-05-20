@@ -45,6 +45,7 @@ public:
     void         MemcpyDeviceToHost();
     void         MemcpyHostToDevice();
 
+    cudnnTensorDescriptor_t& GetDescriptor();
 #endif  // if __CUDNN__
 
     ///////////////////////////////////////////////////////////////////

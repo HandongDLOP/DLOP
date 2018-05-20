@@ -190,6 +190,10 @@ template<typename DTYPE> void Tensor<DTYPE>::MemcpyHostToDevice() {
     m_aData->MemcpyHostToDevice();
 }
 
+template<typename DTYPE> cudnnTensorDescriptor_t& Tensor<DTYPE>::GetDescriptor() {
+    return m_aShape->GetDescriptor();
+}
+
 #endif  // if __CUDNN__
 
 
