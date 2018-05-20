@@ -81,7 +81,7 @@ public:
 
         Shape *resultTenShape = result->GetShape();
 
-        int ti = pTime;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
@@ -110,7 +110,7 @@ public:
 
         Shape *deltaTenShape = this_delta->GetShape();
 
-        int ti = pTime;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
@@ -129,12 +129,42 @@ public:
 
 #if __CUDNN__
     int ForwardPropagateOnGPU(int pTime) {
-        this->ForwardPropagate(pTime);
+        Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
+        Tensor<DTYPE> *result = this->GetResult();
+
+        DTYPE *pDevInput  = input->GetDeviceData();
+        DTYPE *pDevResult = result->GetDeviceData();
+
+        cudnnTensorDescriptor_t pDesc = input->GetDescriptor();
+
+        float alpha = 1.f;
+        float beta  = 0.f;
+
+        checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
+                                  &alpha, pDesc, pDevInput,
+                                  &beta, pDesc, pDevResult));
+
+        // this->ForwardPropagate(pTime);
         return TRUE;
     }
 
     int BackPropagateOnGPU(int pTime) {
-        this->BackPropagate(pTime);
+        Tensor<DTYPE> *this_delta  = this->GetDelta();
+        Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
+
+        DTYPE *pDevDelta  = this_delta->GetDeviceData();
+        DTYPE *pDevInputDelta = input_delta->GetDeviceData();
+
+        cudnnTensorDescriptor_t pDesc = this_delta->GetDescriptor();
+
+        float alpha = 1.f;
+        float beta  = 0.f;
+
+        checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
+                                  &alpha, pDesc, pDevDelta,
+                                  &beta, pDesc, pDevInputDelta));
+
+        // this->BackPropagate(pTime);
 
         return TRUE;
     }
