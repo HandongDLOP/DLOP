@@ -448,9 +448,21 @@ template<typename DTYPE> int Operator<DTYPE>::ResetResult() {
     // Tensorholder의 경우는 하면 안된다.
     int size = m_aaResult->GetSize();
 
-    for (int i = 0; i < size; i++) {
-        (*m_aaResult)[i]->Reset();
+    if (m_Device == CPU) {
+        for (int i = 0; i < size; i++) {
+            (*m_aaResult)[i]->Reset();
+        }
     }
+
+#if __CUDNN__
+    else if (m_Device == GPU) {
+        for (int i = 0; i < size; i++) {
+            (*m_aaResult)[i]->Reset(this->GetCudnnHandle());
+        }
+    }
+#endif // if __CUDNN__
+
+    else return FALSE;
 
     return TRUE;
 }
@@ -458,9 +470,21 @@ template<typename DTYPE> int Operator<DTYPE>::ResetResult() {
 template<typename DTYPE> int Operator<DTYPE>::ResetGradient() {
     int size = m_aaGradient->GetSize();
 
-    for (int i = 0; i < size; i++) {
-        (*m_aaGradient)[i]->Reset();
+    if (m_Device == CPU) {
+        for (int i = 0; i < size; i++) {
+            (*m_aaGradient)[i]->Reset();
+        }
     }
+
+#if __CUDNN__
+    else if (m_Device == GPU) {
+        for (int i = 0; i < size; i++) {
+            (*m_aaGradient)[i]->Reset(this->GetCudnnHandle());
+        }
+    }
+#endif // if __CUDNN__
+
+    else return FALSE;
 
     return TRUE;
 }

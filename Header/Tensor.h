@@ -15,6 +15,7 @@ private:
     Data<DTYPE> *m_aData;
 
     Device m_Device;
+
 public:
     Tensor();
     Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);  // For 5D-Tensor
@@ -23,27 +24,27 @@ public:
 
     virtual ~Tensor();
 
-    int          Alloc(Shape *pShape);
-    int          Alloc(Tensor *pTensor);
-    void         Delete();
+    int                      Alloc(Shape *pShape);
+    int                      Alloc(Tensor *pTensor);
+    void                     Delete();
 
-    Shape      * GetShape();
-    Data<DTYPE>* GetData();
+    Shape                  * GetShape();
+    Data<DTYPE>            * GetData();
 
-    int          GetTimeSize();
-    int          GetBatchSize();
-    int          GetChannelSize();
-    int          GetRowSize();
-    int          GetColSize();
+    int                      GetTimeSize();
+    int                      GetBatchSize();
+    int                      GetChannelSize();
+    int                      GetRowSize();
+    int                      GetColSize();
 
-    int          GetCapacity();
+    int                      GetCapacity();
 
-    DTYPE      * GetHostData(unsigned int pTime = 0);
+    DTYPE                  * GetHostData(unsigned int pTime = 0);
 
 #ifdef __CUDNN__
-    DTYPE      * GetDeviceData(unsigned int pTime = 0);
-    void         MemcpyDeviceToHost();
-    void         MemcpyHostToDevice();
+    DTYPE                  * GetDeviceData(unsigned int pTime = 0);
+    void                     MemcpyDeviceToHost();
+    void                     MemcpyHostToDevice();
 
     cudnnTensorDescriptor_t& GetDescriptor();
 #endif  // if __CUDNN__
@@ -51,7 +52,12 @@ public:
     ///////////////////////////////////////////////////////////////////
 
     int  Reshape(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
+
     void Reset();
+#ifdef __CUDNN__
+    void Reset(cudnnHandle_t& pCudnnHandle);
+#endif  // ifdef __CUDNN__
+
 
     ///////////////////////////////////////////////////////////////////
 

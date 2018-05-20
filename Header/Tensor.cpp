@@ -239,6 +239,26 @@ template<typename DTYPE> void Tensor<DTYPE>::Reset() {
     }
 }
 
+#if __CUDNN__
+
+template<typename DTYPE> void Tensor<DTYPE>::Reset(cudnnHandle_t& pCudnnHandle) {
+    int pTime = this->GetTimeSize();
+    cudnnTensorDescriptor_t pDesc = this->GetDescriptor();
+    DTYPE * pDevData = NULL;
+    float zero = 0.f;
+
+    for(int i = 0; i < pTime; i++){
+        pDevData = this->GetDeviceData(i);
+        checkCUDNN(cudnnAddTensor(pCudnnHandle,
+                                  &zero, pDesc, pDevData,
+                                  &zero, pDesc, pDevData));
+    }
+
+}
+
+#endif // if __CUDNN__
+
+
 ///////////////////////////////////////////////////////////////////
 
 template<typename DTYPE> DTYPE& Tensor<DTYPE>::operator[](unsigned int index) {
