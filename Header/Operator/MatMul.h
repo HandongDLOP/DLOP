@@ -11,7 +11,7 @@ private:
     cudnnConvolutionDescriptor_t convDesc;
     cudnnFilterDescriptor_t filterDesc, filterDeltaDesc;
     DTYPE *m_pDevInput, *m_pDevOutput, *m_pDevFilter, *m_pDevInputDelta, *m_pDevDelta, *m_pDevFilterDelta;
-    DTYPE *m_pHostInput, *m_pHostOutput, *m_pHostFilter, *m_pHostInputDelta, *m_pHostDelta, *m_pHostFilterDelta;
+    // DTYPE *m_pHostInput, *m_pHostOutput, *m_pHostFilter, *m_pHostInputDelta, *m_pHostDelta, *m_pHostFilterDelta;
 
     cudnnConvolutionFwdAlgo_t m_algo;
     cudnnConvolutionBwdFilterAlgo_t m_filterAlgo;
@@ -107,12 +107,12 @@ public:
         checkCUDNN(cudnnCreateFilterDescriptor(&filterDesc));
         checkCUDNN(cudnnCreateFilterDescriptor(&filterDeltaDesc));
 
-        checkCudaErrors(cudaMalloc((void **)&m_pDevInput, (inputCapacity * sizeof(DTYPE))));
-        checkCudaErrors(cudaMalloc((void **)&m_pDevOutput, (outputCapacity * sizeof(DTYPE))));
-        checkCudaErrors(cudaMalloc((void **)&m_pDevFilter, (filterCapacity * sizeof(DTYPE))));
-        checkCudaErrors(cudaMalloc((void **)&m_pDevInputDelta, (inputCapacity * sizeof(DTYPE))));
-        checkCudaErrors(cudaMalloc((void **)&m_pDevDelta, (outputCapacity * sizeof(DTYPE))));
-        checkCudaErrors(cudaMalloc((void **)&m_pDevFilterDelta, (filterCapacity * sizeof(DTYPE))));
+        // checkCudaErrors(cudaMalloc((void **)&m_pDevInput, (inputCapacity * sizeof(DTYPE))));
+        // checkCudaErrors(cudaMalloc((void **)&m_pDevOutput, (outputCapacity * sizeof(DTYPE))));
+        // checkCudaErrors(cudaMalloc((void **)&m_pDevFilter, (filterCapacity * sizeof(DTYPE))));
+        // checkCudaErrors(cudaMalloc((void **)&m_pDevInputDelta, (inputCapacity * sizeof(DTYPE))));
+        // checkCudaErrors(cudaMalloc((void **)&m_pDevDelta, (outputCapacity * sizeof(DTYPE))));
+        // checkCudaErrors(cudaMalloc((void **)&m_pDevFilterDelta, (filterCapacity * sizeof(DTYPE))));
 
         checkCUDNN(cudnnSetTensor4dDescriptor(inputTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
                                               batchsizeOfInput, 1, 1, colsizeOfInput));
@@ -208,23 +208,23 @@ public:
         if (filterDeltaDesc) checkCUDNN(cudnnDestroyFilterDescriptor(filterDeltaDesc));
         filterDeltaDesc = NULL;
 
-        if (m_pDevInput) checkCudaErrors(cudaFree(m_pDevInput));
-        m_pDevInput = NULL;
-
-        if (m_pDevOutput) checkCudaErrors(cudaFree(m_pDevOutput));
-        m_pDevOutput = NULL;
-
-        if (m_pDevFilter) checkCudaErrors(cudaFree(m_pDevFilter));
-        m_pDevFilter = NULL;
-
-        if (m_pDevInputDelta) checkCudaErrors(cudaFree(m_pDevInputDelta));
-        m_pDevInputDelta = NULL;
-
-        if (m_pDevDelta) checkCudaErrors(cudaFree(m_pDevDelta));
-        m_pDevDelta = NULL;
-
-        if (m_pDevFilterDelta) checkCudaErrors(cudaFree(m_pDevFilterDelta));
-        m_pDevFilterDelta = NULL;
+        // if (m_pDevInput) checkCudaErrors(cudaFree(m_pDevInput));
+        // m_pDevInput = NULL;
+        //
+        // if (m_pDevOutput) checkCudaErrors(cudaFree(m_pDevOutput));
+        // m_pDevOutput = NULL;
+        //
+        // if (m_pDevFilter) checkCudaErrors(cudaFree(m_pDevFilter));
+        // m_pDevFilter = NULL;
+        //
+        // if (m_pDevInputDelta) checkCudaErrors(cudaFree(m_pDevInputDelta));
+        // m_pDevInputDelta = NULL;
+        //
+        // if (m_pDevDelta) checkCudaErrors(cudaFree(m_pDevDelta));
+        // m_pDevDelta = NULL;
+        //
+        // if (m_pDevFilterDelta) checkCudaErrors(cudaFree(m_pDevFilterDelta));
+        // m_pDevFilterDelta = NULL;
 
         if (m_sizeInBytes != 0) {
             checkCudaErrors(cudaFree(m_devWorkSpace));
