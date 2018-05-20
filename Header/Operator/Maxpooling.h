@@ -169,6 +169,7 @@ public:
 #endif  // if __CUDNN__
     }
 
+    // 메모리 효율을 생각하면 time에 따라 취해야 할 액션이 다르다.
     int ForwardPropagate(int pTime = 0, int pThreadNum = 0) {
         Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
         Shape *shapeOfInput  = input->GetShape();
@@ -196,6 +197,7 @@ public:
         int temprow = 0;
         int tempcol = 0;
 
+        int ti = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
@@ -207,8 +209,8 @@ public:
                                 temprow = m_stride[0] * ro + mro;
                                 tempcol = m_stride[1] * co + mco;
 
-                                indexOfResult = Index4D(shapeOfResult, ba, ch, ro, co);
-                                indexOfInput  = Index4D(shapeOfInput, ba, ch, temprow, tempcol);
+                                indexOfResult = Index5D(shapeOfResult, ti, ba, ch, ro, co);
+                                indexOfInput  = Index5D(shapeOfInput, ti, ba, ch, temprow, tempcol);
 
                                 if ((mro == 0) && (mco == 0)) {
                                     max                               = (*input)[indexOfInput];
@@ -233,7 +235,6 @@ public:
 
     int BackPropagate(int pTime = 0, int pThreadNum = 0) {
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
-        // input_delta->Reset();
 
         Tensor<DTYPE> *this_delta = this->GetDelta();
         Shape *shapeOfDelta       = this_delta->GetShape();
@@ -245,13 +246,14 @@ public:
 
         int indexOfDelta = 0;
 
+        int ti = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
             for (int ch = 0; ch < channelsize; ch++) {  // Batchsize of weight kernel
                 for (int ro = 0; ro < rowsize; ro++) {
                     for (int co = 0; co < colsize; co++) {
-                        indexOfDelta                                      = Index4D(shapeOfDelta, ba, ch, ro, co);
+                        indexOfDelta                                      = Index5D(shapeOfDelta, ti, ba, ch, ro, co);
                         (*input_delta)[(*indexOfMaxInput)[indexOfDelta]] += (*this_delta)[indexOfDelta];
                     }
                 }

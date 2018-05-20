@@ -49,17 +49,18 @@ public:
         Shape *inputTenShape  = input->GetShape();
         Shape *resultTenShape = result->GetShape();
 
+        int ti = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < m_batchsize; ba += numOfThread) {
             for (int ch = 0; ch < m_channelsize; ch++) {
                 for (int ro = 0; ro < m_rowsize; ro++) {
                     for (int co = 0; co < m_colsize; co++) {
-                        (*result)[Index4D(resultTenShape, ba, ch, 0, 0)]
-                            += (*input)[Index4D(inputTenShape, ba, ch, ro, co)];
+                        (*result)[Index5D(resultTenShape, ti, ba, ch, 0, 0)]
+                            += (*input)[Index5D(inputTenShape, ti, ba, ch, ro, co)];
                     }
                 }
-                (*result)[Index4D(resultTenShape, ba, ch, 0, 0)] /= m_divisor;
+                (*result)[Index5D(resultTenShape, ti, ba, ch, 0, 0)] /= m_divisor;
             }
         }
 
@@ -78,14 +79,15 @@ public:
         Shape *resultTenShape = this_grad->GetShape();
         Shape *inputTenShape  = input_grad->GetShape();
 
+        int ti = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < m_batchsize; ba += numOfThread) {
             for (int ch = 0; ch < m_channelsize; ch++) {
                 for (int ro = 0; ro < m_rowsize; ro++) {
                     for (int co = 0; co < m_colsize; co++) {
-                        (*input_grad)[Index4D(inputTenShape, ba, ch, ro, co)]
-                            += (*this_grad)[Index4D(resultTenShape, ba, ch, 0, 0)] / m_divisor;
+                        (*input_grad)[Index5D(inputTenShape, ti, ba, ch, ro, co)]
+                            += (*this_grad)[Index5D(resultTenShape, ti, ba, ch, 0, 0)] / m_divisor;
                     }
                 }
             }
@@ -101,7 +103,7 @@ public:
         return TRUE;
     }
 
-     int BackPropagateOnGPU(int pTime) {
+    int BackPropagateOnGPU(int pTime) {
         this->BackPropagate();
 
         return TRUE;

@@ -56,15 +56,16 @@ public:
         Tensor<DTYPE> *right  = (*input_contatiner)[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
+        int m_ti        = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int m_ba = pThreadNum; m_ba < m_batchsize; m_ba += numOfThread) {
             for (int m_ch = 0; m_ch < m_channelsize; m_ch++) {
                 for (int m_ro = 0; m_ro < m_rowsize; m_ro++) {
                     for (int m_co = 0; m_co < m_colsize; m_co++) {
-                        (*result)[Index4D(m_pLeftTenShape, m_ba, m_ch, m_ro, m_co)]
-                            = (*left)[Index4D(m_pLeftTenShape, m_ba, m_ch, m_ro, m_co)]
-                              + (*right)[Index4D(m_pRightTenShape, m_ba, m_ch, m_ro, m_co)];
+                        (*result)[Index5D(m_pLeftTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                            = (*left)[Index5D(m_pLeftTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                              + (*right)[Index5D(m_pRightTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
                     }
                 }
             }
@@ -80,17 +81,18 @@ public:
         Tensor<DTYPE> *right_grad = (*input_contatiner)[1]->GetGradient();
         Tensor<DTYPE> *this_grad  = this->GetGradient();
 
+        int m_ti        = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int m_ba = pThreadNum; m_ba < m_batchsize; m_ba += numOfThread) {
             for (int m_ch = 0; m_ch < m_channelsize; m_ch++) {
                 for (int m_ro = 0; m_ro < m_rowsize; m_ro++) {
                     for (int m_co = 0; m_co < m_colsize; m_co++) {
-                        (*left_grad)[Index4D(m_pLeftTenShape, m_ba, m_ch, m_ro, m_co)]
-                            += (*this_grad)[Index4D(m_pLeftTenShape, m_ba, m_ch, m_ro, m_co)];
+                        (*left_grad)[Index5D(m_pLeftTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                            += (*this_grad)[Index5D(m_pLeftTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
 
-                        (*right_grad)[Index4D(m_pRightTenShape, m_ba, m_ch, m_ro, m_co)]
-                            += (*this_grad)[Index4D(m_pLeftTenShape, m_ba, m_ch, m_ro, m_co)];
+                        (*right_grad)[Index5D(m_pRightTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                            += (*this_grad)[Index5D(m_pLeftTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
                     }
                 }
             }
@@ -179,14 +181,15 @@ public:
         Tensor<DTYPE> *bias   = (*input_contatiner)[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
+        int m_ti        = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int m_ba = pThreadNum; m_ba < m_batchsize; m_ba += numOfThread) {
             for (int m_ch = 0; m_ch < m_channelsize; m_ch++) {
                 for (int m_ro = 0; m_ro < m_rowsize; m_ro++) {
                     for (int m_co = 0; m_co < m_colsize; m_co++) {
-                        (*result)[Index4D(m_pInputTenShape, m_ba, m_ch, m_ro, m_co)]
-                            = (*input)[Index4D(m_pInputTenShape, m_ba, m_ch, m_ro, m_co)]
+                        (*result)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                            = (*input)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
                               + (*bias)[m_co];
                     }
                 }
@@ -204,17 +207,18 @@ public:
         Tensor<DTYPE> *bias_grad  = (*input_contatiner)[1]->GetGradient();
         Tensor<DTYPE> *this_grad  = this->GetGradient();
 
+        int m_ti        = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int m_ba = pThreadNum; m_ba < m_batchsize; m_ba += numOfThread) {
             for (int m_ch = 0; m_ch < m_channelsize; m_ch++) {
                 for (int m_ro = 0; m_ro < m_rowsize; m_ro++) {
                     for (int m_co = 0; m_co < m_colsize; m_co++) {
-                        (*input_grad)[Index4D(m_pInputTenShape, m_ba, m_ch, m_ro, m_co)]
-                            += (*this_grad)[Index4D(m_pInputTenShape, m_ba, m_ch, m_ro, m_co)];
+                        (*input_grad)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                            += (*this_grad)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
 
                         (*bias_grad)[m_co]
-                            += (*this_grad)[Index4D(m_pInputTenShape, m_ba, m_ch, m_ro, m_co)];
+                            += (*this_grad)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
                     }
                 }
             }
@@ -303,14 +307,15 @@ public:
         Tensor<DTYPE> *bias   = (*input_contatiner)[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
+        int m_ti        = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int m_ba = pThreadNum; m_ba < m_batchsize; m_ba += numOfThread) {
             for (int m_ch = 0; m_ch < m_channelsize; m_ch++) {
                 for (int m_ro = 0; m_ro < m_rowsize; m_ro++) {
                     for (int m_co = 0; m_co < m_colsize; m_co++) {
-                        (*result)[Index4D(m_pInputTenShape, m_ba, m_ch, m_ro, m_co)]
-                            = (*input)[Index4D(m_pInputTenShape, m_ba, m_ch, m_ro, m_co)]
+                        (*result)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                            = (*input)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
                               + (*bias)[m_ch];
                     }
                 }
@@ -328,17 +333,18 @@ public:
         Tensor<DTYPE> *bias_grad  = (*input_contatiner)[1]->GetGradient();
         Tensor<DTYPE> *this_grad  = this->GetGradient();
 
+        int m_ti        = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int m_ba = pThreadNum; m_ba < m_batchsize; m_ba += numOfThread) {
             for (int m_ch = 0; m_ch < m_channelsize; m_ch++) {
                 for (int m_ro = 0; m_ro < m_rowsize; m_ro++) {
                     for (int m_co = 0; m_co < m_colsize; m_co++) {
-                        (*input_grad)[Index4D(m_pInputTenShape, m_ba, m_ch, m_ro, m_co)]
-                            += (*this_grad)[Index4D(m_pInputTenShape, m_ba, m_ch, m_ro, m_co)];
+                        (*input_grad)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)]
+                            += (*this_grad)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
 
                         (*bias_grad)[m_ch]
-                            += (*this_grad)[Index4D(m_pInputTenShape, m_ba, m_ch, m_ro, m_co)];
+                            += (*this_grad)[Index5D(m_pInputTenShape, m_ti, m_ba, m_ch, m_ro, m_co)];
                     }
                 }
             }

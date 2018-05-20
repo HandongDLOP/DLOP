@@ -282,6 +282,7 @@ public:
         int rowsizeOfInput = (*shapeOfInput)[3];
         int colsizeOfInput = (*shapeOfInput)[4];
 
+        int ti = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
@@ -291,9 +292,9 @@ public:
                         for (int wch = 0; wch < channelsizeOfWeight; wch++) {  // == (*shapeOfInput)[2];
                             for (int wro = 0; wro < rowsizeOfWeight; wro++) {
                                 for (int wco = 0; wco < colsizeOfWeight; wco++) {
-                                    (*result)[Index4D(shapeOfResult, ba, ch, ro, co)]
-                                        += ((*input)[Index4D(shapeOfInput, ba, wch, m_stride[0] * ro + wro, m_stride[1] * co + wco)]
-                                            * (*weight)[Index4D(shapeOfWeight, ch, wch, wro, wco)]);
+                                    (*result)[Index5D(shapeOfResult, ti, ba, ch, ro, co)]
+                                        += ((*input)[Index5D(shapeOfInput, ti, ba, wch, m_stride[0] * ro + wro, m_stride[1] * co + wco)]
+                                            * (*weight)[Index5D(shapeOfWeight, 0, ch, wch, wro, wco)]);
                                 }
                             }
                         }
@@ -333,6 +334,7 @@ public:
         int weight_index = 0;
         int result_index = 0;
 
+        int ti = pTime;
         int numOfThread = this->GetNumOfThread();
 
         for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
@@ -342,9 +344,9 @@ public:
                         for (int wch = 0; wch < channelsizeOfWeight; wch++) {  // == (*shapeOfInput)[2];
                             for (int wro = 0; wro < rowsizeOfWeight; wro++) {
                                 for (int wco = 0; wco < colsizeOfWeight; wco++) {
-                                    input_index  = Index4D(shapeOfInput, ba, wch, m_stride[0] * ro + wro, m_stride[1] * co + wco);
-                                    weight_index = Index4D(shapeOfWeight, ch, wch, wro, wco);
-                                    result_index = Index4D(shapeOfResult, ba, ch, ro, co);
+                                    input_index  = Index5D(shapeOfInput, ti, ba, wch, m_stride[0] * ro + wro, m_stride[1] * co + wco);
+                                    weight_index = Index5D(shapeOfWeight, 0, ch, wch, wro, wco);
+                                    result_index = Index5D(shapeOfResult, ti, ba, ch, ro, co);
 
                                     (*input_delta)[input_index]
                                         += ((*weight)[weight_index] * (*this_delta)[result_index]);
