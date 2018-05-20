@@ -43,7 +43,7 @@ public:
         return TRUE;
     }
 
-    virtual Tensor<DTYPE>* ForwardPropagate(int pThreadNum = 0) {
+    Tensor<DTYPE>* ForwardPropagate(int pThreadNum = 0) {
         Tensor<DTYPE> *input    = this->GetTensor();
         Tensor<DTYPE> *label    = this->GetLabel()->GetResult();
         Tensor<DTYPE> *result   = this->GetResult();
@@ -78,7 +78,7 @@ public:
         return result;
     }
 
-    virtual Tensor<DTYPE>* BackPropagate(int pThreadNum = 0) {
+    Tensor<DTYPE>* BackPropagate(int pThreadNum = 0) {
         Tensor<DTYPE> *gradient    = this->GetGradient();
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
 
@@ -108,6 +108,21 @@ public:
 
         return NULL;
     }
+
+#if __CUDNN__
+
+    Tensor<DTYPE>* ForwardPropagateOnGPU(int pTime = 0) {
+        this->ForwardPropagate();
+        return NULL;
+    }
+
+    Tensor<DTYPE>* BackPropagateOnGPU(int pTime = 0) {
+        this->BackPropagate();
+        return NULL;
+    }
+
+#endif  // __CUDNN__
+
 
     inline DTYPE Error(DTYPE pred, DTYPE ans) {
         return (pred - ans) * (pred - ans) / 2;

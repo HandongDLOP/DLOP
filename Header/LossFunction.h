@@ -40,13 +40,12 @@ public:
 
     // For Propagate
     virtual Tensor<DTYPE>* ForwardPropagate(int pThreadNum = 0);
-    virtual Tensor<DTYPE>* ForwardPropagate(int pTime, int pThreadNum); //
-
-    // For BackPropagate
     virtual Tensor<DTYPE>* BackPropagate(int pThreadNum = 0);
-    virtual Tensor<DTYPE>* BackPropagate(int pTime, int pThreadNum); //
 
-    DTYPE                & operator[](unsigned int index);
+    virtual Tensor<DTYPE>* ForwardPropagateOnGPU(int pTime = 0);
+    virtual Tensor<DTYPE>* BackPropagateOnGPU(int pTime = 0);
+
+    DTYPE      & operator[](unsigned int index);
 
     virtual void SetDeviceCPU(); //
     virtual void SetDeviceCPU(int pNumOfThread); //

@@ -93,8 +93,7 @@ public:
         }
     }
 
-    virtual Tensor<DTYPE>* ForwardPropagate(int pThreadNum = 0) {
-
+    Tensor<DTYPE>* ForwardPropagate(int pThreadNum = 0) {
         Tensor<DTYPE> *input         = this->GetTensor();
         Tensor<DTYPE> *label         = this->GetLabel()->GetResult();
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
@@ -161,7 +160,7 @@ public:
         return result;
     }
 
-    virtual Tensor<DTYPE>* BackPropagate(int pThreadNum = 0) {
+    Tensor<DTYPE>* BackPropagate(int pThreadNum = 0) {
         Tensor<DTYPE> *gradient = this->GetGradient();
 
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
@@ -193,6 +192,19 @@ public:
 
         return NULL;
     }
+
+#if __CUDNN__
+
+    Tensor<DTYPE>* ForwardPropagateOnGPU(int pTime = 0) {
+        return NULL;
+    }
+
+    Tensor<DTYPE>* BackPropagateOnGPU(int pTime = 0) {
+        return NULL;
+    }
+
+#endif  // __CUDNN__
+
 
     DTYPE Max(Tensor<DTYPE> *input, int start, int end) {
         DTYPE max = (*input)[start];

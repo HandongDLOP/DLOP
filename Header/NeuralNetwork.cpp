@@ -250,24 +250,6 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
     return TRUE;
 }
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagateOnGPU(int pTime) {
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->ForwardPropagateOnGPU(pTime);
-    }
-    m_aLossFunction->ForwardPropagate();
-
-    return TRUE;
-}
-
-template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagateOnGPU(int pTime) {
-    m_aLossFunction->BackPropagate();
-
-    for (int i = m_OperatorDegree - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->BackPropagateOnGPU(pTime);
-    }
-    return TRUE;
-}
-
 template<typename DTYPE> void *NeuralNetwork<DTYPE>::ForwardPropagateForThread(void *param) {
     ThreadInfo *pThreadInfo = (ThreadInfo *)param;
 
@@ -302,6 +284,28 @@ template<typename DTYPE> void *NeuralNetwork<DTYPE>::BackPropagateForThread(void
     }
     return NULL;
 }
+
+#if __CUDNN__
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagateOnGPU(int pTime) {
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        (*m_aaOperator)[i]->ForwardPropagateOnGPU(pTime);
+    }
+    m_aLossFunction->ForwardPropagateOnGPU();
+
+    return TRUE;
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagateOnGPU(int pTime) {
+    m_aLossFunction->BackPropagate();
+
+    for (int i = m_OperatorDegree - 1; i >= 0; i--) {
+        (*m_aaOperator)[i]->ForwardPropagateOnGPU(pTime);
+    }
+    return TRUE;
+}
+
+#endif  // __CUDNN__
+
 
 // =========
 

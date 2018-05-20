@@ -343,19 +343,22 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagate(int pThreadNum) {
     return TRUE;
 }
 
+#if __CUDNN__
 template<typename DTYPE> int Operator<DTYPE>::ForwardPropagateOnGPU(int pTime) {
-    #if __DEBUG__
+    # if __DEBUG__
     std::cout << "Operator<DTYPE>::ForwardPropagateOnGPU(int)" << '\n';
-    #endif  // __DEBUG__
+    # endif // __DEBUG__
     return TRUE;
 }
 
 template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU(int pTime) {
-    #if __DEBUG__
+    # if __DEBUG__
     std::cout << "Operator<DTYPE>::BackPropagateOnGPU(int pTime)" << '\n';
-    #endif  // __DEBUG__
+    # endif // __DEBUG__
     return TRUE;
 }
+
+#endif  // __CUDNN__
 
 template<typename DTYPE> void Operator<DTYPE>::SetModeTraining() {
     // std::cout << "Operator<DTYPE>::SetModeTraining()" << '\n';

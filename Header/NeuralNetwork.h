@@ -67,24 +67,26 @@ public:
     int                               ForwardPropagate();
     int                               BackPropagate();
 
-    int                               ForwardPropagateOnGPU(int pTime = 0);
-    int                               BackPropagateOnGPU(int pTime = 0);
-
     static void                     * ForwardPropagateForThread(void *param);
     static void                     * BackPropagateForThread(void *param);
 
+#if __CUDNN__
+    int                               ForwardPropagateOnGPU(int pTime = 0);
+    int                               BackPropagateOnGPU(int pTime = 0);
+#endif  // __CUDNN__
+
     // =======
-    int                               Training();
-    int                               Testing();
+    int Training();
+    int Testing();
 
-    int                               TrainingOnCPU();
-    int                               TestingOnCPU();
+    int TrainingOnCPU();
+    int TestingOnCPU();
 
-    int                               TrainingOnMultiThread(); // Multi Threading
-    int                               TestingOnMultiThread(); // Multi Threading
+    int TrainingOnMultiThread();  // Multi Threading
+    int TestingOnMultiThread();  // Multi Threading
 
-    int                               TrainingOnGPU();
-    int                               TestingOnGPU();
+    int TrainingOnGPU();
+    int TestingOnGPU();
 
     // int                               TrainingOnMultiProcess(); // Multi Processing
     // int                               TestingOnMultiProcess(); // Multi Processing

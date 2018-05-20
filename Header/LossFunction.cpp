@@ -101,26 +101,25 @@ template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagate(in
     return NULL;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
-    std::cout << this->GetName() << '\n';
-    std::cout << "time : "  << pTime << '\n';
-    std::cout << "thread number : "  << pThreadNum << '\n';
-    std::cout << "number of thread : "  << this->GetNumOfThread() << '\n';
-    return NULL;
-}
-
 template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::BackPropagate(int pThreadNum) {
     std::cout << this->GetName() << '\n';
     return NULL;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::BackPropagate(int pTime, int pThreadNum) {
+#if __CUDNN__
+
+template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagateOnGPU(int pTime) {
     std::cout << this->GetName() << '\n';
-    std::cout << "time : "  << pTime << '\n';
-    std::cout << "thread number : "  << pThreadNum << '\n';
-    std::cout << "number of thread : "  << this->GetNumOfThread() << '\n';
     return NULL;
 }
+
+template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::BackPropagateOnGPU(int pTime) {
+    std::cout << this->GetName() << '\n';
+    return NULL;
+}
+
+#endif  // __CUDNN__
+
 
 template<typename DTYPE> DTYPE& LossFunction<DTYPE>::operator[](unsigned int index) {
     return (*m_aResult)[index];
@@ -131,7 +130,7 @@ template<typename DTYPE> void LossFunction<DTYPE>::SetDeviceCPU() {
 }
 
 template<typename DTYPE> void LossFunction<DTYPE>::SetDeviceCPU(int pNumOfThread) {
-    m_Device = CPU;
+    m_Device      = CPU;
     m_numOfThread = pNumOfThread;
 }
 
