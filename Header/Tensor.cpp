@@ -137,12 +137,16 @@ template<typename DTYPE> int Tensor<DTYPE>::GetCapacity() {
 }
 
 template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetHostData(unsigned int pTime) {
-    #if __DEBUG__
+    #if __CUDNN__
+    # if __DEBUG__
 
     if (m_Device == GPU) {
         printf("Warning! Tensor is allocated in Device(GPU) latest time\n");
+        printf("Change mode GPU to CPU\n");
+        this->MemcpyDeviceToHost();
     }
-    #endif  // __DEBUG__
+    # endif // __DEBUG__
+    #endif  // __CUDNN__
 
     return m_aData->GetHostData(pTime);
 }
@@ -154,7 +158,8 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetDeviceData(unsigned int pTime)
 
     if (m_Device == CPU) {
         printf("Warning! Tensor is allocated in Host(CPU) latest time\n");
-        exit(-1);
+        printf("Change mode CPU toGPU\n");
+        this->MemcpyHostToDevice();
     }
     # endif // __DEBUG__
 
@@ -205,6 +210,17 @@ template<typename DTYPE> void Tensor<DTYPE>::Reset() {
 ///////////////////////////////////////////////////////////////////
 
 template<typename DTYPE> DTYPE& Tensor<DTYPE>::operator[](unsigned int index) {
+    #if __CUDNN__
+    # if __DEBUG__
+
+    if (m_Device == GPU) {
+        printf("Warning! Tensor is allocated in Device(GPU) latest time\n");
+        printf("Change mode GPU to CPU\n");
+        this->MemcpyDeviceToHost();
+    }
+    # endif // __DEBUG__
+    #endif  // __CUDNN__
+
     return (*m_aData)[index];
 }
 

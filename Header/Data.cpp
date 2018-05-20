@@ -7,7 +7,7 @@ template class Data<double>;
 template<typename DTYPE> Data<DTYPE>::Data() {
     m_timeSize        = 0;
     m_capacityPerTime = 0;
-    m_aHostData           = NULL;
+    m_aHostData       = NULL;
 #if __CUDNN__
     m_aDevData = NULL;
     m_Device   = CPU;
@@ -20,7 +20,7 @@ template<typename DTYPE> Data<DTYPE>::Data(unsigned int pTimeSize, unsigned int 
     #endif  // __DEBUG__
     m_timeSize        = pTimeSize;
     m_capacityPerTime = pCapacity;
-    m_aHostData           = NULL;
+    m_aHostData       = NULL;
 #if __CUDNN__
     m_aDevData = NULL;
 #endif  // __CUDNN
@@ -34,7 +34,7 @@ template<typename DTYPE> Data<DTYPE>::Data(Data *pData) {
     #endif  // __DEBUG__
     m_timeSize        = pData->GetTimeSize();
     m_capacityPerTime = pData->GetCapacityPerTime();
-    m_aHostData           = NULL;
+    m_aHostData       = NULL;
 #if __CUDNN__
     m_aDevData = NULL;
 #endif  // __CUDNN
@@ -117,8 +117,10 @@ template<typename DTYPE> DTYPE *Data<DTYPE>::GetDeviceData(unsigned int pTime) {
 }
 
 template<typename DTYPE> void Data<DTYPE>::MemcpyDeviceToHost() {
-    for (int i = 0; i < m_timeSize; i++) {
-        checkCudaErrors(cudaMemcpy(m_aDevData[i], m_aHostData[i], (m_capacityPerTime * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
+    if (m_aDevData != NULL) {
+        for (int i = 0; i < m_timeSize; i++) {
+            checkCudaErrors(cudaMemcpy(m_aHostData[i], m_aDevData[i], (m_capacityPerTime * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
+        }
     }
 }
 

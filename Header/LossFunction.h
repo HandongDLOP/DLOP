@@ -49,10 +49,19 @@ public:
 
     DTYPE      & operator[](unsigned int index);
 
-    virtual void SetDeviceCPU(); //
-    virtual void SetDeviceCPU(int pNumOfThread); //
+    virtual void SetDeviceCPU();
+    virtual void SetDeviceCPU(int pNumOfThread);
 #ifdef __CUDNN__
-    virtual void SetDeviceGPU(); //
+
+    // Setting Supporter
+    virtual int  SetResultCPU();
+    virtual int  SetGradientCPU();
+
+    virtual void SetDeviceGPU();
+
+    // Setting Supporter
+    virtual int  SetResulGPU();
+    virtual int  SetGradientGPU();
 
 #endif  // if __CUDNN__
 

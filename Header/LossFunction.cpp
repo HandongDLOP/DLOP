@@ -98,7 +98,7 @@ template<typename DTYPE> std::string LossFunction<DTYPE>::GetName() const {
 
 template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
     #if __DEBUG__
-    std::cout << "LossFunction<DTYPE>::ForwardPropagate(int pTime, int pThreadNum)"<< '\n';
+    std::cout << "LossFunction<DTYPE>::ForwardPropagate(int pTime, int pThreadNum)" << '\n';
     std::cout << this->GetName() << '\n';
     #endif  // __DEBUG__
     return NULL;
@@ -106,7 +106,7 @@ template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagate(in
 
 template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::BackPropagate(int pTime, int pThreadNum) {
     #if __DEBUG__
-    std::cout << "LossFunction<DTYPE>::BackPropagate(int pTime, int pThreadNum)"<< '\n';
+    std::cout << "LossFunction<DTYPE>::BackPropagate(int pTime, int pThreadNum)" << '\n';
     std::cout << this->GetName() << '\n';
     #endif  // __DEBUG__
     return NULL;
@@ -137,29 +137,65 @@ template<typename DTYPE> DTYPE& LossFunction<DTYPE>::operator[](unsigned int ind
 
 template<typename DTYPE> void LossFunction<DTYPE>::SetDeviceCPU() {
     m_Device = CPU;
+
+#if __CUDNN__
+    this->SetResultCPU();
+    this->SetGradientCPU();
+#endif  // __CUDNN__
 }
 
 template<typename DTYPE> void LossFunction<DTYPE>::SetDeviceCPU(int pNumOfThread) {
     m_Device      = CPU;
     m_numOfThread = pNumOfThread;
+
+#if __CUDNN__
+    this->SetResultCPU();
+    this->SetGradientCPU();
+#endif  // __CUDNN__
 }
 
 #if __CUDNN__
+template<typename DTYPE> int LossFunction<DTYPE>::SetResultCPU() {
+    if (m_aResult) m_aResult->MemcpyDeviceToHost();
+
+    return TRUE;
+}
+
+template<typename DTYPE> int LossFunction<DTYPE>::SetGradientCPU() {
+    if (m_aGradient) m_aGradient->MemcpyDeviceToHost();
+
+    return TRUE;
+}
+
 template<typename DTYPE> void LossFunction<DTYPE>::SetDeviceGPU() {
     m_Device = GPU;
+    this->SetResulGPU();
+    this->SetGradientGPU();
+}
+
+template<typename DTYPE> int LossFunction<DTYPE>::SetResulGPU() {
+    if (m_aResult) m_aResult->Reset();
+
+    return TRUE;
+}
+
+template<typename DTYPE> int LossFunction<DTYPE>::SetGradientGPU() {
+    if (m_aGradient) m_aGradient->Reset();
+
+    return TRUE;
 }
 
 #endif  // __CUDNN__
 
 
 template<typename DTYPE> int LossFunction<DTYPE>::ResetResult() {
-    if(m_aResult) m_aResult->Reset();
+    if (m_aResult) m_aResult->Reset();
 
     return TRUE;
 }
 
 template<typename DTYPE> int LossFunction<DTYPE>::ResetGradient() {
-    if(m_aGradient) m_aGradient->Reset();
+    if (m_aGradient) m_aGradient->Reset();
 
     return TRUE;
 }

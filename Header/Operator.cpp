@@ -376,18 +376,70 @@ template<typename DTYPE> void Operator<DTYPE>::SetModeInferencing() {
 
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
     m_Device = CPU;
+
+#if __CUDNN__
+    this->SetResultCPU();
+    this->SetGradientCPU();
+#endif  // __CUDNN__
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU(int pNumOfThread) {
     m_Device      = CPU;
     m_numOfThread = pNumOfThread;
+
+#if __CUDNN__
+    this->SetResultCPU();
+    this->SetGradientCPU();
+#endif  // __CUDNN__
 }
 
 #if __CUDNN__
+template<typename DTYPE> int Operator<DTYPE>::SetResultCPU() {
+    // Tensorholder의 경우는 하면 안된다.
+    int size = m_aaResult->GetSize();
 
+    for (int i = 0; i < size; i++) {
+        (*m_aaResult)[i]->MemcpyDeviceToHost();
+    }
+
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetGradientCPU() {
+    int size = m_aaGradient->GetSize();
+
+    for (int i = 0; i < size; i++) {
+        (*m_aaGradient)[i]->MemcpyDeviceToHost();
+    }
+
+    return TRUE;
+}
 
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
     m_Device = GPU;
+    this->SetResulGPU();
+    this->SetGradientGPU();
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetResulGPU() {
+    // Tensorholder의 경우는 하면 안된다.
+    int size = m_aaResult->GetSize();
+
+    for (int i = 0; i < size; i++) {
+        (*m_aaResult)[i]->MemcpyHostToDevice();
+    }
+
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetGradientGPU() {
+    int size = m_aaGradient->GetSize();
+
+    for (int i = 0; i < size; i++) {
+        (*m_aaGradient)[i]->MemcpyHostToDevice();
+    }
+
+    return TRUE;
 }
 
 #endif  // __CUDNN__

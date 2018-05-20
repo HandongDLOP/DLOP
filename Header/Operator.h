@@ -110,11 +110,19 @@ public:
     virtual void SetModeAccumulating();
     virtual void SetModeInferencing();
 
-
     virtual void SetDeviceCPU();
     virtual void SetDeviceCPU(int pNumOfThread);
 #ifdef __CUDNN__
+
+    // Setting Supporter
+    virtual int  SetResultCPU();
+    virtual int  SetGradientCPU();
+
     virtual void SetDeviceGPU();
+
+    // Setting Supporter
+    virtual int  SetResulGPU();
+    virtual int  SetGradientGPU();
 
 #endif  // if __CUDNN__
 
