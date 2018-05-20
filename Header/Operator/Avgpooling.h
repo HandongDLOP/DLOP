@@ -99,12 +99,12 @@ public:
 
 #if __CUDNN__
     int ForwardPropagateOnGPU(int pTime) {
-        this->ForwardPropagate();
+        this->ForwardPropagate(pTime);
         return TRUE;
     }
 
     int BackPropagateOnGPU(int pTime) {
-        this->BackPropagate();
+        this->BackPropagate(pTime);
 
         return TRUE;
     }
