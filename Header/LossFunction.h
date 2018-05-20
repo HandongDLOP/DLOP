@@ -42,8 +42,10 @@ public:
     virtual Tensor<DTYPE>* ForwardPropagate(int pThreadNum = 0);
     virtual Tensor<DTYPE>* BackPropagate(int pThreadNum = 0);
 
+#ifdef __CUDNN__
     virtual Tensor<DTYPE>* ForwardPropagateOnGPU(int pTime = 0);
     virtual Tensor<DTYPE>* BackPropagateOnGPU(int pTime = 0);
+#endif  // if __CUDNN__
 
     DTYPE      & operator[](unsigned int index);
 

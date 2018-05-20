@@ -136,25 +136,8 @@ public:
 #endif  // if __CUDNN__
     }
 
+
     int ForwardPropagate(int pThreadNum = 0) {
-        if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU(pThreadNum);
-#ifdef __CUDNN__
-        else if (this->GetDevice() == GPU) ForwardPropagateOnGPU();
-#endif  // if __CUDNN__
-        else return FALSE;
-        return TRUE;
-    }
-
-    int BackPropagate(int pThreadNum = 0) {
-        if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU(pThreadNum);
-#ifdef __CUDNN__
-        else if (this->GetDevice() == GPU) BackPropagateOnGPU();
-#endif  // if __CUDNN__
-        else return FALSE;
-        return TRUE;
-    }
-
-    int ComputeForwardPropagateOnCPU(int pThreadNum = 0) {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
@@ -182,7 +165,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagateOnCPU(int pThreadNum = 0) {
+    int BackPropagate(int pThreadNum = 0) {
         Tensor<DTYPE> *result      = this->GetResult();
         Tensor<DTYPE> *this_delta  = this->GetGradient();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
