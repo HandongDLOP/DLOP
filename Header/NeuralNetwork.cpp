@@ -437,7 +437,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::TrainingOnGPU() {
 template<typename DTYPE> int NeuralNetwork<DTYPE>::TestingOnGPU() {
 #ifdef __CUDNN__
     this->ResetOperatorResult();
-    this->ResetOperatorGradient();
+    this->ResetLossFunctionResult();
 
     this->ForwardPropagateOnGPU();
 #else  // __CUDNN__

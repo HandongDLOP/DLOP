@@ -145,6 +145,13 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetHostData(unsigned int pTime) {
         printf("Change mode GPU to CPU\n");
         this->MemcpyDeviceToHost();
     }
+
+    # else // if __DEBUG__
+
+    if (m_Device == GPU) {
+        this->MemcpyDeviceToHost();
+    }
+
     # endif // __DEBUG__
     #endif  // __CUDNN__
 
@@ -161,6 +168,13 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetDeviceData(unsigned int pTime)
         printf("Change mode CPU toGPU\n");
         this->MemcpyHostToDevice();
     }
+
+    # else // if __DEBUG__
+
+    if (m_Device == CPU) {
+        this->MemcpyHostToDevice();
+    }
+
     # endif // __DEBUG__
 
     return m_aData->GetDeviceData(pTime);
@@ -202,6 +216,24 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pTimeSize, int pBatchSiz
 template<typename DTYPE> void Tensor<DTYPE>::Reset() {
     int capacity = GetCapacity();
 
+    #if __CUDNN__
+    # if __DEBUG__
+
+    if (m_Device == GPU) {
+        printf("Warning! Tensor is allocated in Device(GPU) latest time\n");
+        printf("Change mode GPU to CPU\n");
+        this->MemcpyDeviceToHost();
+    }
+
+    # else // if __DEBUG__
+
+    if (m_Device == GPU) {
+        this->MemcpyDeviceToHost();
+    }
+
+    # endif // __DEBUG__
+    #endif  // __CUDNN__
+
     for (int i = 0; i < capacity; i++) {
         (*m_aData)[i] = 0;
     }
@@ -218,6 +250,13 @@ template<typename DTYPE> DTYPE& Tensor<DTYPE>::operator[](unsigned int index) {
         printf("Change mode GPU to CPU\n");
         this->MemcpyDeviceToHost();
     }
+
+    # else // if __DEBUG__
+
+    if (m_Device == GPU) {
+        this->MemcpyDeviceToHost();
+    }
+
     # endif // __DEBUG__
     #endif  // __CUDNN__
 
