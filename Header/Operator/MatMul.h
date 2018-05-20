@@ -313,16 +313,12 @@ public:
         Tensor<DTYPE> *input  = this->GetInput()[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
-
-        m_pDevFilter = weight->GetDeviceData();
-        m_pDevInput  = input->GetDeviceData();
-        m_pDevOutput = result->GetDeviceData();
-
+        m_pDevFilter = weight->GetDeviceData(0);
+        m_pDevInput  = input->GetDeviceData(pTime);
+        m_pDevOutput = result->GetDeviceData(pTime);
 
         checkCUDNN(cudnnConvolutionForward(this->GetCudnnHandle(), &m_alpha, inputTensorDesc, m_pDevInput, filterDesc, m_pDevFilter, convDesc,
                                            m_algo, m_devWorkSpace, m_sizeInBytes, &m_beta, outputTensorDesc, m_pDevOutput));
-
-        // checkCudaErrors(cudaMemcpy(m_pHostOutput, m_pDevOutput, (outputCapacity * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
 
         checkCudaErrors(cudaDeviceSynchronize());
 
@@ -336,11 +332,11 @@ public:
         Tensor<DTYPE> *input_delta     = this->GetInput()[1]->GetDelta();
         Tensor<DTYPE> *this_delta      = this->GetDelta();
 
-        m_pDevFilter      = weight->GetDeviceData();
-        m_pDevInput       = input->GetDeviceData();
-        m_pDevDelta       = this_delta->GetDeviceData();
-        m_pDevFilterDelta = weight_gradient->GetDeviceData();
-        m_pDevInputDelta  = input_delta->GetDeviceData();
+        m_pDevFilter      = weight->GetDeviceData(0);
+        m_pDevInput       = input->GetDeviceData(pTime);
+        m_pDevDelta       = this_delta->GetDeviceData(pTime);
+        m_pDevFilterDelta = weight_gradient->GetDeviceData(0);
+        m_pDevInputDelta  = input_delta->GetDeviceData(pTime);
 
         checkCUDNN(cudnnConvolutionBackwardData(this->GetCudnnHandle(), &m_alpha, filterDesc, m_pDevFilter, deltaDesc, m_pDevDelta, convDesc,
                                                 m_dataAlgo, m_dataDevWorkSpace, m_dataSizeInBytes, &m_beta, inputDeltaDesc, m_pDevInputDelta));
