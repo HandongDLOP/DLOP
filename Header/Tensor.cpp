@@ -12,6 +12,7 @@ template<typename DTYPE> Tensor<DTYPE>::Tensor() {
 
     m_aShape = NULL;
     m_aData  = NULL;
+    m_Device = CPU;
 }
 
 template<typename DTYPE> Tensor<DTYPE>::Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
@@ -20,6 +21,7 @@ template<typename DTYPE> Tensor<DTYPE>::Tensor(int pTimeSize, int pBatchSize, in
     #endif  // __DEBUG__
     m_aShape = NULL;
     m_aData  = NULL;
+    m_Device = CPU;
     Alloc(new Shape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize));
 }
 
@@ -29,6 +31,7 @@ template<typename DTYPE> Tensor<DTYPE>::Tensor(Shape *pShape) {
     #endif  // __DEBUG__
     m_aShape = NULL;
     m_aData  = NULL;
+    m_Device = CPU;
     Alloc(pShape);
 }
 
@@ -38,6 +41,7 @@ template<typename DTYPE> Tensor<DTYPE>::Tensor(Tensor *pTensor) {
     #endif  // __DEBUG__
     m_aShape = NULL;
     m_aData  = NULL;
+    m_Device = CPU;
     Alloc(pTensor);
 }
 
@@ -133,8 +137,43 @@ template<typename DTYPE> int Tensor<DTYPE>::GetCapacity() {
 }
 
 template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetLowData(unsigned int pTime) {
+    #if __DEBUG__
+
+    if (m_Device == GPU) {
+        printf("Tensor is allocated in Device(GPU)\n");
+        exit(-1);
+    }
+    #endif  // __DEBUG__
+
     return m_aData->GetLowData(pTime);
 }
+
+#ifdef __CUDNN__
+
+template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetDeviceData(unsigned int pTime) {
+    # if __DEBUG__
+
+    if (m_Device == CPU) {
+        printf("Tensor is allocated in Host(CPU)\n");
+        exit(-1);
+    }
+    # endif // __DEBUG__
+
+    return m_aData->GetDeviceData(pTime);
+}
+
+template<typename DTYPE> void Tensor<DTYPE>::MemcpyDeviceToHost() {
+    m_Device = CPU;
+    m_aData->MemcpyDeviceToHost();
+}
+
+template<typename DTYPE> void Tensor<DTYPE>::MemcpyHostToDevice() {
+    m_Device = GPU;
+    m_aData->MemcpyHostToDevice();
+}
+
+#endif  // if __CUDNN__
+
 
 //////////////////////////////////////////////////////////////////
 
@@ -214,109 +253,6 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pTimeSize, 
     }
 
     return temp;
-}
-
-template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Add(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor) {
-    Shape *leftTenShape = pLeftTensor->GetShape();
-    int    capacity     = pLeftTensor->GetCapacity();
-
-    int timesize    = (*leftTenShape)[0];
-    int batchsize   = (*leftTenShape)[1];
-    int channelsize = (*leftTenShape)[2];
-    int rowsize     = (*leftTenShape)[3];
-    int colsize     = (*leftTenShape)[4];
-
-    if (pDestTensor == NULL) pDestTensor = new Tensor<DTYPE>(timesize,
-                                                             batchsize,
-                                                             channelsize,
-                                                             rowsize,
-                                                             colsize);
-
-    for (int i = 0; i < capacity; i++) {
-        (*pDestTensor)[i] = (*pLeftTensor)[i] + (*pRightTensor)[i];
-    }
-
-    return pDestTensor;
-}
-
-template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::BroadcastAdd(Tensor<DTYPE> *pLeftTensor, Tensor<DTYPE> *pRightTensor, Tensor<DTYPE> *pDestTensor, int is_inverse) {
-    Shape *leftTenShape  = pLeftTensor->GetShape();
-    Shape *rightTenShape = pRightTensor->GetShape();
-
-    int timesize    = (*leftTenShape)[0];
-    int batchsize   = (*leftTenShape)[1];
-    int channelsize = (*leftTenShape)[2];
-    int rowsize     = (*leftTenShape)[3];
-    int colsize     = (*leftTenShape)[4];
-
-    if (pDestTensor == NULL) pDestTensor = new Tensor<DTYPE>(timesize,
-                                                             batchsize,
-                                                             channelsize,
-                                                             rowsize,
-                                                             colsize);
-
-    int ti = 0;
-    int ba = 0;
-    int ch = 0;
-    int ro = 0;
-    int co = 0;
-
-    int zero = 0;
-
-    int *ti_right = &ti;
-    int *ba_right = &ba;
-    int *ch_right = &ch;
-    int *ro_right = &ro;
-    int *co_right = &co;
-
-    if ((*rightTenShape)[0] == 1) ti_right = &zero;
-
-    if ((*rightTenShape)[1] == 1) ba_right = &zero;
-
-    if ((*rightTenShape)[2] == 1) ch_right = &zero;
-
-    if ((*rightTenShape)[3] == 1) ro_right = &zero;
-
-    if ((*rightTenShape)[4] == 1) co_right = &zero;
-
-    for (ti = 0; ti < timesize; ti++) {
-        for (ba = 0; ba < batchsize; ba++) {
-            for (ch = 0; ch < channelsize; ch++) {
-                for (ro = 0; ro < rowsize; ro++) {
-                    for (co = 0; co < colsize; co++) {
-                        (*pDestTensor)[Index5D(leftTenShape, ti, ba, ch, ro, co)]
-                            = (*pLeftTensor)[Index5D(leftTenShape, ti, ba, ch, ro, co)]
-                              + (*pRightTensor)[Index5D(rightTenShape, *ti_right, *ba_right, *ch_right, *ro_right, *co_right)];
-                    }
-                }
-            }
-        }
-    }
-
-    return pDestTensor;
-}
-
-template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Multiply(Tensor<DTYPE> *pLeftTensor, float pMultiplier, Tensor<DTYPE> *pDestTensor) {
-    Shape *leftTenShape = pLeftTensor->GetShape();
-    int    capacity     = pLeftTensor->GetCapacity();
-
-    int timesize    = (*leftTenShape)[0];
-    int batchsize   = (*leftTenShape)[1];
-    int channelsize = (*leftTenShape)[2];
-    int rowsize     = (*leftTenShape)[3];
-    int colsize     = (*leftTenShape)[4];
-
-    if (pDestTensor == NULL) pDestTensor = new Tensor<DTYPE>(timesize,
-                                                             batchsize,
-                                                             channelsize,
-                                                             rowsize,
-                                                             colsize);
-
-    for (int i = 0; i < capacity; i++) {
-        (*pDestTensor)[i] = (*pLeftTensor)[i] * pMultiplier;
-    }
-
-    return pDestTensor;
 }
 
 // example code

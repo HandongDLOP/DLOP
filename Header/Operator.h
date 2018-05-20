@@ -10,11 +10,6 @@ enum Mode {
     INFERENCING,
 };
 
-enum Device {
-    CPU,
-    GPU,
-};
-
 template<typename DTYPE> class Operator {
 private:
     Container<Tensor<DTYPE> *> *m_aaResult;
