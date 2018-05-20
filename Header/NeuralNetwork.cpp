@@ -425,7 +425,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::TrainingOnGPU() {
     this->ForwardPropagateOnGPU();
     this->BackPropagateOnGPU();
 
-    m_aOptimizer->UpdateVariable();
+    m_aOptimizer->UpdateVariableOnGPU();
 #else  // __CUDNN__
     std::cout << "There is no GPU option!" << '\n';
     exit(-1);
@@ -480,6 +480,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
         (*m_aaOperator)[i]->SetCudnnHandle(m_cudnnHandle);
     }
     m_aLossFunction->SetDeviceGPU();
+    m_aOptimizer->SetCudnnHandle(m_cudnnHandle);
 }
 
 #endif  // __CUDNN__

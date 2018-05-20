@@ -21,6 +21,7 @@ private:
     int m_OperatorDegree;
     int m_TensorholderDegree;
 
+    // 중간에 Loss Function이나 Optimizer가 바뀌는 상황 생각해두기
     LossFunction<DTYPE> *m_aLossFunction;
     Optimizer<DTYPE> *m_aOptimizer;
 
