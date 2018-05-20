@@ -39,8 +39,8 @@ public:
     std::string            GetName() const;
 
     // For Propagate
-    virtual Tensor<DTYPE>* ForwardPropagate(int pThreadNum = 0);
-    virtual Tensor<DTYPE>* BackPropagate(int pThreadNum = 0);
+    virtual Tensor<DTYPE>* ForwardPropagate(int pTime = 0, int pThreadNum = 0);
+    virtual Tensor<DTYPE>* BackPropagate(int pTime = 0, int pThreadNum = 0);
 
 #ifdef __CUDNN__
     virtual Tensor<DTYPE>* ForwardPropagateOnGPU(int pTime = 0);

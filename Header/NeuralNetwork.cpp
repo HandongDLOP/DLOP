@@ -232,20 +232,20 @@ template<typename DTYPE> float NeuralNetwork<DTYPE>::GetLoss() {
 
 // ===========================================================================================
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate() {
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(int pTime) {
     for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->ForwardPropagate();
+        (*m_aaOperator)[i]->ForwardPropagate(pTime);
     }
-    m_aLossFunction->ForwardPropagate();
+    m_aLossFunction->ForwardPropagate(pTime);
 
     return TRUE;
 }
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
-    m_aLossFunction->BackPropagate();
+template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate(int pTime) {
+    m_aLossFunction->BackPropagate(pTime);
 
     for (int i = m_OperatorDegree - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->BackPropagate();
+        (*m_aaOperator)[i]->BackPropagate(pTime);
     }
     return TRUE;
 }
@@ -254,6 +254,7 @@ template<typename DTYPE> void *NeuralNetwork<DTYPE>::ForwardPropagateForThread(v
     ThreadInfo *pThreadInfo = (ThreadInfo *)param;
 
     NeuralNetwork<DTYPE> *pNN = (NeuralNetwork<DTYPE> *)(pThreadInfo->m_NN);
+    int pTime                 = 0;
     int pThreadNum            = pThreadInfo->m_threadNum;
 
     Container<Operator<DTYPE> *> *m_aaOperator = pNN->GetOperatorContainer();
@@ -261,9 +262,9 @@ template<typename DTYPE> void *NeuralNetwork<DTYPE>::ForwardPropagateForThread(v
     LossFunction<DTYPE> *m_aLossFunction       = pNN->GetLossFunction();
 
     for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->ForwardPropagate(pThreadNum);
+        (*m_aaOperator)[i]->ForwardPropagate(pTime, pThreadNum);
     }
-    m_aLossFunction->ForwardPropagate(pThreadNum);
+    m_aLossFunction->ForwardPropagate(pTime, pThreadNum);
     return NULL;
 }
 
@@ -271,16 +272,17 @@ template<typename DTYPE> void *NeuralNetwork<DTYPE>::BackPropagateForThread(void
     ThreadInfo *pThreadInfo = (ThreadInfo *)param;
 
     NeuralNetwork<DTYPE> *pNN = (NeuralNetwork<DTYPE> *)(pThreadInfo->m_NN);
+    int pTime                 = 0;
     int pThreadNum            = pThreadInfo->m_threadNum;
 
     Container<Operator<DTYPE> *> *m_aaOperator = pNN->GetOperatorContainer();
     int m_OperatorDegree                       = m_aaOperator->GetSize();
     LossFunction<DTYPE> *m_aLossFunction       = pNN->GetLossFunction();
 
-    m_aLossFunction->BackPropagate(pThreadNum);
+    m_aLossFunction->BackPropagate(pTime, pThreadNum);
 
     for (int i = m_OperatorDegree - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->BackPropagate(pThreadNum);
+        (*m_aaOperator)[i]->BackPropagate(pTime, pThreadNum);
     }
     return NULL;
 }

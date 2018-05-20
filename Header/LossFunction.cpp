@@ -96,25 +96,35 @@ template<typename DTYPE> std::string LossFunction<DTYPE>::GetName() const {
     return m_name;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagate(int pThreadNum) {
+template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
+    #if __DEBUG__
+    std::cout << "LossFunction<DTYPE>::ForwardPropagate(int pTime, int pThreadNum)"<< '\n';
     std::cout << this->GetName() << '\n';
+    #endif  // __DEBUG__
     return NULL;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::BackPropagate(int pThreadNum) {
+template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::BackPropagate(int pTime, int pThreadNum) {
+    #if __DEBUG__
+    std::cout << "LossFunction<DTYPE>::BackPropagate(int pTime, int pThreadNum)"<< '\n';
     std::cout << this->GetName() << '\n';
+    #endif  // __DEBUG__
     return NULL;
 }
 
 #if __CUDNN__
 
 template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagateOnGPU(int pTime) {
+    # if __DEBUG__
     std::cout << this->GetName() << '\n';
+    # endif // __DEBUG__
     return NULL;
 }
 
 template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::BackPropagateOnGPU(int pTime) {
+    # if __DEBUG__
     std::cout << this->GetName() << '\n';
+    # endif // __DEBUG__
     return NULL;
 }
 

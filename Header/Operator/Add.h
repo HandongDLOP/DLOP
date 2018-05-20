@@ -49,7 +49,7 @@ public:
         return TRUE;
     }
 
-    int ForwardPropagate(int pThreadNum = 0) {
+    int ForwardPropagate(int pTime = 0, int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *left   = (*input_contatiner)[0]->GetResult();
@@ -73,7 +73,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate(int pThreadNum = 0) {
+    int BackPropagate(int pTime = 0, int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *left_grad  = (*input_contatiner)[0]->GetGradient();
@@ -172,7 +172,7 @@ public:
         return TRUE;
     }
 
-    int ForwardPropagate(int pThreadNum = 0) {
+    int ForwardPropagate(int pTime = 0, int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input  = (*input_contatiner)[0]->GetResult();
@@ -197,7 +197,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate(int pThreadNum = 0) {
+    int BackPropagate(int pTime = 0, int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input_grad = (*input_contatiner)[0]->GetGradient();
@@ -296,7 +296,7 @@ public:
         return TRUE;
     }
 
-    int ForwardPropagate(int pThreadNum = 0) {
+    int ForwardPropagate(int pTime = 0, int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input  = (*input_contatiner)[0]->GetResult();
@@ -321,7 +321,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate(int pThreadNum = 0) {
+    int BackPropagate(int pTime = 0, int pThreadNum = 0) {
         Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
 
         Tensor<DTYPE> *input_grad = (*input_contatiner)[0]->GetGradient();

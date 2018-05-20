@@ -1,4 +1,4 @@
-debug_main:
+debug_main_cpu:
 	g++ -g -o testing -std=c++11 -D__DEBUG__ main.cpp ../Header/Shape.cpp ../Header/Data.cpp ../Header/Tensor.cpp ../Header/Operator.cpp ../Header/LossFunction.cpp ../Header/Optimizer.cpp ../Header/Layer.cpp ../Header/NeuralNetwork.cpp -lcudart -lcudnn -lpthread
 
 debug_main_gpu:

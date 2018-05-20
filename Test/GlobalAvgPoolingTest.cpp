@@ -8,8 +8,8 @@ int main(int argc, char const *argv[]) {
 
     GlobalAvaragePooling2D<float> *avg = new GlobalAvaragePooling2D<float>(x, "avg");
 
-    avg->ForwardPropagate(int pThreadNum = 0);
-    avg->BackPropagate(int pThreadNum = 0);
+    avg->ForwardPropagate(int pTime = 0, int pThreadNum = 0);
+    avg->BackPropagate(int pTime = 0, int pThreadNum = 0);
 
     std::cout << _x << '\n';
     std::cout << avg->GetResult() << '\n';

@@ -243,7 +243,7 @@ public:
 #endif  // if __CUDNN__
     }
 
-    int ForwardPropagate(int pThreadNum = 0) {
+    int ForwardPropagate(int pTime = 0, int pThreadNum = 0) {
         Tensor<DTYPE> *weight = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *input  = this->GetInput()[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
@@ -284,7 +284,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate(int pThreadNum = 0) {
+    int BackPropagate(int pTime = 0, int pThreadNum = 0) {
         Tensor<DTYPE> *weight = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *input  = this->GetInput()[1]->GetResult();
 

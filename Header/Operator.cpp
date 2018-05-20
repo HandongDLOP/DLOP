@@ -327,7 +327,7 @@ template<typename DTYPE> void Operator<DTYPE>::AddEdgebetweenOperators(Operator<
     pInput->_AddOutputEdge(this);
 }
 
-template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate(int pThreadNum) {
+template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
     #if __DEBUG__
     std::cout << "thread number : " << pThreadNum << '\n';
     std::cout << "number of thread : " << this->GetNumOfThread() << '\n';
@@ -335,7 +335,7 @@ template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate(int pThreadNum) {
     return TRUE;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::BackPropagate(int pThreadNum) {
+template<typename DTYPE> int Operator<DTYPE>::BackPropagate(int pTime, int pThreadNum) {
     #if __DEBUG__
     std::cout << "thread number : " << pThreadNum << '\n';
     std::cout << "number of thread : " << this->GetNumOfThread() << '\n';

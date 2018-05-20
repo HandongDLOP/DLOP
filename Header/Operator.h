@@ -99,8 +99,8 @@ public:
 
     // Operator<DTYPE>             * Concatenate(Operator<DTYPE> *src, Operator<DTYPE> *dst, int axis = 0);
 
-    virtual int ForwardPropagate(int pThreadNum = 0);
-    virtual int BackPropagate(int pThreadNum = 0);
+    virtual int ForwardPropagate(int pTime = 0, int pThreadNum = 0);
+    virtual int BackPropagate(int pTime = 0, int pThreadNum = 0);
 
 #if __CUDNN__
     virtual int ForwardPropagateOnGPU(int pTime = 0);

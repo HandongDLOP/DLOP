@@ -43,7 +43,7 @@ public:
         return TRUE;
     }
 
-    Tensor<DTYPE>* ForwardPropagate(int pThreadNum = 0) {
+    Tensor<DTYPE>* ForwardPropagate(int pTime = 0, int pThreadNum = 0) {
         Tensor<DTYPE> *input    = this->GetTensor();
         Tensor<DTYPE> *label    = this->GetLabel()->GetResult();
         Tensor<DTYPE> *result   = this->GetResult();
@@ -78,7 +78,7 @@ public:
         return result;
     }
 
-    Tensor<DTYPE>* BackPropagate(int pThreadNum = 0) {
+    Tensor<DTYPE>* BackPropagate(int pTime = 0, int pThreadNum = 0) {
         Tensor<DTYPE> *gradient    = this->GetGradient();
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
 

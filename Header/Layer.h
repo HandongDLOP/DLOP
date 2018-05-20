@@ -47,8 +47,8 @@ public:
     Tensor<DTYPE>                   * GetDelta() const;
     Container<Tensor<DTYPE> *>      * GetDeltaContainer();
 
-    int                               ForwardPropagate(int pThreadNum = 0);
-    int                               BackPropagate(int pThreadNum = 0);
+    int                               ForwardPropagate(int pTime = 0, int pThreadNum = 0);
+    int                               BackPropagate(int pTime = 0, int pThreadNum = 0);
 
 #if __CUDNN__
     int                               ForwardPropagateOnGPU(int pTime = 0);

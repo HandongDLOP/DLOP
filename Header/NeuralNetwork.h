@@ -64,8 +64,8 @@ public:
     float                             GetLoss();
 
     // =======
-    int                               ForwardPropagate();
-    int                               BackPropagate();
+    int                               ForwardPropagate(int pTime = 0);
+    int                               BackPropagate(int pTime = 0);
 
     static void                     * ForwardPropagateForThread(void *param);
     static void                     * BackPropagateForThread(void *param);

@@ -169,7 +169,7 @@ public:
 #endif  // if __CUDNN__
     }
 
-    int ForwardPropagate(int pThreadNum = 0) {
+    int ForwardPropagate(int pTime = 0, int pThreadNum = 0) {
         Tensor<DTYPE> *input = this->GetInput()[0]->GetResult();
         Shape *shapeOfInput  = input->GetShape();
 
@@ -231,7 +231,7 @@ public:
         return TRUE;
     }
 
-    int BackPropagate(int pThreadNum = 0) {
+    int BackPropagate(int pTime = 0, int pThreadNum = 0) {
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
         // input_delta->Reset();
 
