@@ -14,6 +14,15 @@ private:
     int m_rowsize;
     int m_colsize;
 
+#if __CUDNN__
+    cudnnTensorDescriptor_t leftTensorDesc, rightTensorDesc, outputTensorDesc, leftDeltaDesc, rightDeltaDesc, deltaDesc;
+    DTYPE *m_pDevLeft, *m_pDevRight, *m_pDevOutput, *m_pDevLeftDelta, *m_pDevRightDelta, *m_pDevDelta;
+
+    DTYPE m_alpha;
+    DTYPE m_beta;
+
+#endif  // __CUDNN__
+
 public:
     Addall(Operator<DTYPE> *pLeftInput, Operator<DTYPE> *pRightInput, std::string pName) : Operator<DTYPE>(pLeftInput, pRightInput, pName) {
         #if __DEBUG__
@@ -47,6 +56,71 @@ public:
         this->SetGradient(new Tensor<DTYPE>(m_timesize, m_batchsize, m_channelsize, m_rowsize, m_colsize));
 
         return TRUE;
+    }
+
+#if __CUDNN__
+    void InitializeAttributeForGPU() {
+        m_batchsize   = (*m_pLeftTenShape)[1];
+        m_channelsize = (*m_pLeftTenShape)[2];
+        m_rowsize     = (*m_pLeftTenShape)[3];
+        m_colsize     = (*m_pLeftTenShape)[4];
+
+        m_alpha = 1;
+        m_beta  = 0;
+
+        checkCUDNN(cudnnCreateTensorDescriptor(&leftTensorDesc));
+        checkCUDNN(cudnnCreateTensorDescriptor(&rightTensorDesc));
+        checkCUDNN(cudnnCreateTensorDescriptor(&outputTensorDesc));
+        checkCUDNN(cudnnCreateTensorDescriptor(&leftDeltaDesc));
+        checkCUDNN(cudnnCreateTensorDescriptor(&rightDeltaDesc));
+        checkCUDNN(cudnnCreateTensorDescriptor(&deltaDesc));
+
+        checkCUDNN(cudnnSetTensor4dDescriptor(leftTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                              m_batchsize, m_channelsize, m_rowsize, m_colsize));
+
+        checkCUDNN(cudnnSetTensor4dDescriptor(rightTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                              m_batchsize, m_channelsize, m_rowsize, m_colsize));
+
+        checkCUDNN(cudnnSetTensor4dDescriptor(outputTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                              m_batchsize, m_channelsize, m_rowsize, m_colsize));
+
+        checkCUDNN(cudnnSetTensor4dDescriptor(leftDeltaDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                              m_batchsize, m_channelsize, m_rowsize, m_colsize));
+
+        checkCUDNN(cudnnSetTensor4dDescriptor(rightDeltaDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                              m_batchsize, m_channelsize, m_rowsize, m_colsize));
+
+        checkCUDNN(cudnnSetTensor4dDescriptor(deltaDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                              m_batchsize, m_channelsize, m_rowsize, m_colsize));
+
+        checkCudaErrors(cudaDeviceSynchronize());
+    }
+
+#endif  // if __CUDNN__
+
+    void Delete() {
+#if __CUDNN__
+
+        if (leftTensorDesc) checkCUDNN(cudnnDestroyTensorDescriptor(leftTensorDesc));
+        leftTensorDesc = NULL;
+
+        if (rightTensorDesc) checkCUDNN(cudnnDestroyTensorDescriptor(rightTensorDesc));
+        rightTensorDesc = NULL;
+
+        if (outputTensorDesc) checkCUDNN(cudnnDestroyTensorDescriptor(outputTensorDesc));
+        outputTensorDesc = NULL;
+
+        if (leftDeltaDesc) checkCUDNN(cudnnDestroyTensorDescriptor(leftDeltaDesc));
+        leftDeltaDesc = NULL;
+
+        if (rightDeltaDesc) checkCUDNN(cudnnDestroyTensorDescriptor(rightDeltaDesc));
+        rightDeltaDesc = NULL;
+
+        if (deltaDesc) checkCUDNN(cudnnDestroyTensorDescriptor(deltaDesc));
+        deltaDesc = NULL;
+
+        checkCudaErrors(cudaThreadSynchronize());
+#endif  // if __CUDNN__
     }
 
     int ForwardPropagate(int pTime = 0, int pThreadNum = 0) {
@@ -103,12 +177,48 @@ public:
 
 #if __CUDNN__
     int ForwardPropagateOnGPU(int pTime) {
-        this->ForwardPropagate();
+        Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
+
+        Tensor<DTYPE> *left   = (*input_contatiner)[0]->GetResult();
+        Tensor<DTYPE> *right  = (*input_contatiner)[1]->GetResult();
+        Tensor<DTYPE> *result = this->GetResult();
+
+        m_pDevLeft   = left->GetDeviceData(pTime);
+        m_pDevRight  = right->GetDeviceData(pTime);
+        m_pDevOutput = result->GetDeviceData(pTime);
+
+        checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
+                                  &m_alpha, leftTensorDesc, m_pDevLeft,
+                                  &m_beta, outputTensorDesc, m_pDevOutput));
+
+        checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
+                                  &m_alpha, rightTensorDesc, m_pDevRight,
+                                  &m_alpha, outputTensorDesc, m_pDevOutput));
+
+        // this->ForwardPropagate();
         return TRUE;
     }
 
     int BackPropagateOnGPU(int pTime) {
-        this->BackPropagate();
+        Container<Operator<DTYPE> *> *input_contatiner = this->GetInputContainer();
+
+        Tensor<DTYPE> *left_grad  = (*input_contatiner)[0]->GetGradient();
+        Tensor<DTYPE> *right_grad = (*input_contatiner)[1]->GetGradient();
+        Tensor<DTYPE> *this_grad  = this->GetGradient();
+
+        m_pDevLeftDelta  = left_grad->GetDeviceData(pTime);
+        m_pDevRightDelta = right_grad->GetDeviceData(pTime);
+        m_pDevDelta      = this_grad->GetDeviceData(pTime);
+
+        checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
+                                  &m_alpha, deltaDesc, m_pDevDelta,
+                                  &m_beta, leftDeltaDesc, m_pDevLeftDelta));
+
+        checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
+                                  &m_alpha, deltaDesc, m_pDevDelta,
+                                  &m_beta, rightDeltaDesc, m_pDevRightDelta));
+
+        // this->BackPropagate();
 
         return TRUE;
     }
