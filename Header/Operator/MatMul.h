@@ -226,14 +226,17 @@ public:
         if (m_pDevFilterDelta) checkCudaErrors(cudaFree(m_pDevFilterDelta));
         m_pDevFilterDelta = NULL;
 
-        if (m_devWorkSpace) checkCudaErrors(cudaFree(m_devWorkSpace));
-        m_devWorkSpace = NULL;
+        if (m_sizeInBytes != 0) {
+            checkCudaErrors(cudaFree(m_devWorkSpace));
+        }
 
-        if (m_dataDevWorkSpace) checkCudaErrors(cudaFree(m_dataDevWorkSpace));
-        m_dataDevWorkSpace = NULL;
+        if (m_dataSizeInBytes != 0) {
+            checkCudaErrors(cudaFree(m_dataDevWorkSpace));
+        }
 
-        if (m_filterDevWorkSpace) checkCudaErrors(cudaFree(m_filterDevWorkSpace));
-        m_filterDevWorkSpace = NULL;
+        if (m_filterSizeInBytes != 0) {
+            checkCudaErrors(cudaFree(m_filterDevWorkSpace));
+        }
 
         checkCudaErrors(cudaThreadSynchronize());
 
