@@ -88,14 +88,12 @@ public:
         Tensor<DTYPE> *trainable_data = pParameter->GetResult();
         Tensor<DTYPE> *gradient       = pParameter->GetGradient();
 
-        int batchsize = gradient->GetBatchSize();
-
         float learning_rate = this->GetOptimizeDirection() * this->GetLearningRate();
 
         int capacity = trainable_data->GetCapacity();
 
         for (int i = 0; i < capacity; i++) {
-            (*trainable_data)[i] += learning_rate * (*gradient)[i] / batchsize;
+            (*trainable_data)[i] += learning_rate * (*gradient)[i];
         }
 
         return TRUE;
@@ -144,11 +142,10 @@ public:
         DTYPE *m_pDevData = trainable_data->GetDeviceData();
         DTYPE *m_pDevGrad = gradient->GetDeviceData();
 
-        int   batchsize     = gradient->GetBatchSize();
         float learning_rate = this->GetOptimizeDirection() * this->GetLearningRate();
 
         float alpha = 1.f;
-        float beta  = learning_rate / batchsize;
+        float beta  = learning_rate;
 
         checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
                                   &beta, gradDesc, m_pDevGrad,
