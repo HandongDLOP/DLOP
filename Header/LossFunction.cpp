@@ -153,13 +153,13 @@ template<typename DTYPE> void LossFunction<DTYPE>::SetDeviceGPU() {
 
 
 template<typename DTYPE> int LossFunction<DTYPE>::ResetResult() {
-    m_aResult->Reset();
+    if(m_aResult) m_aResult->Reset();
 
     return TRUE;
 }
 
 template<typename DTYPE> int LossFunction<DTYPE>::ResetGradient() {
-    m_aGradient->Reset();
+    if(m_aGradient) m_aGradient->Reset();
 
     return TRUE;
 }

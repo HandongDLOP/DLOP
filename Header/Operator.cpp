@@ -393,6 +393,7 @@ template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
 #endif  // __CUDNN__
 
 template<typename DTYPE> int Operator<DTYPE>::ResetResult() {
+    // Tensorholder의 경우는 하면 안된다.
     int size = m_aaResult->GetSize();
 
     for (int i = 0; i < size; i++) {

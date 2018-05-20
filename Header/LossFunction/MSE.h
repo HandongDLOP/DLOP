@@ -36,10 +36,6 @@ public:
             new Tensor<DTYPE>(timesize, batchsize, 1, 1, 1)
             );
 
-        this->SetGradient(
-            new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize)
-            );
-
         return TRUE;
     }
 
@@ -47,31 +43,23 @@ public:
         Tensor<DTYPE> *input    = this->GetTensor();
         Tensor<DTYPE> *label    = this->GetLabel()->GetResult();
         Tensor<DTYPE> *result   = this->GetResult();
-        Tensor<DTYPE> *gradient = this->GetGradient();
 
-        int timesize  = input->GetTimeSize();
         int batchsize = input->GetBatchSize();
-        int count     = timesize * batchsize;
 
         int channelsize = input->GetChannelSize();
         int rowsize     = input->GetRowSize();
         int colsize     = input->GetColSize();
         int capacity    = channelsize * rowsize * colsize;
 
-        int index = 0;
-
-        int i = 0;
-
-        int ti          = 0;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
-        for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
+        for (int ba = pThreadNum, i = 0; ba < batchsize; ba += numOfThread) {
             i = ti * batchsize + ba;
 
-            for (int j = 0; j < capacity; j++) {
+            for (int j = 0, index = 0; j < capacity; j++) {
                 index              = i * capacity + j;
                 (*result)[i]      += Error((*input)[index], (*label)[index]);
-                (*gradient)[index] = ((*input)[index] - (*label)[index]);
             }
         }
 
@@ -79,30 +67,26 @@ public:
     }
 
     Tensor<DTYPE>* BackPropagate(int pTime = 0, int pThreadNum = 0) {
-        Tensor<DTYPE> *gradient    = this->GetGradient();
+        Tensor<DTYPE> *input    = this->GetTensor();
+        Tensor<DTYPE> *label    = this->GetLabel()->GetResult();
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
 
-        int timesize  = gradient->GetTimeSize();
-        int batchsize = gradient->GetBatchSize();
-        int count     = timesize * batchsize;
+        int batchsize = input->GetBatchSize();
 
-        int channelsize = gradient->GetChannelSize();
-        int rowsize     = gradient->GetRowSize();
-        int colsize     = gradient->GetColSize();
+        int channelsize = input->GetChannelSize();
+        int rowsize     = input->GetRowSize();
+        int colsize     = input->GetColSize();
         int capacity    = channelsize * rowsize * colsize;
 
-        int index = 0;
-        int i     = 0;
-
-        int ti          = 0;
+        int ti          = pTime;
         int numOfThread = this->GetNumOfThread();
 
-        for (int ba = pThreadNum; ba < batchsize; ba += numOfThread) {
+        for (int ba = pThreadNum, i = 0; ba < batchsize; ba += numOfThread) {
             i = ti * batchsize + ba;
 
-            for (int j = 0; j < capacity; j++) {
+            for (int j = 0, index = 0; j < capacity; j++) {
                 index                  = i * capacity + j;
-                (*input_delta)[index] += (*gradient)[index] / batchsize;
+                (*input_delta)[index] += ((*input)[index] - (*label)[index]) / batchsize;
             }
         }
 

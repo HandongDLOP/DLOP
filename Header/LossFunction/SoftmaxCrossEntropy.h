@@ -63,8 +63,6 @@ public:
 
         m_aSoftmaxResult = new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize);
 
-        this->SetGradient(new Tensor<DTYPE>(timesize, batchsize, channelsize, rowsize, colsize));
-
         m_epsilon = epsilon;
 
         return TRUE;
@@ -98,15 +96,13 @@ public:
         Tensor<DTYPE> *label         = this->GetLabel()->GetResult();
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
         Tensor<DTYPE> *result        = this->GetResult();
-        Tensor<DTYPE> *gradient      = this->GetGradient();
 
-        int timesize    = input->GetTimeSize();
         int batchsize   = input->GetBatchSize();
         int channelsize = input->GetChannelSize();
         int rowsize     = input->GetRowSize();
         int colsize     = input->GetColSize();
 
-        int ti = 0;
+        int ti = pTime;
 
         int numOfThread = this->GetNumOfThread();
 
@@ -118,7 +114,6 @@ public:
 
         int numOfOutputDim = 0;
 
-        int count    = timesize * batchsize;
         int capacity = colsize;
 
         int start = 0;
@@ -153,7 +148,6 @@ public:
 
                 (*result)[ti * batchsize + ba] += -(*label)[i] * log((*softmaxresult)[i] + m_epsilon);
 
-                (*gradient)[i] = (*softmaxresult)[i] - (*label)[i];
             }
         }
 
@@ -161,23 +155,20 @@ public:
     }
 
     Tensor<DTYPE>* BackPropagate(int pTime = 0, int pThreadNum = 0) {
-        Tensor<DTYPE> *gradient = this->GetGradient();
-
+        Tensor<DTYPE> *label    = this->GetLabel()->GetResult();
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
 
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
 
-        int timesize  = gradient->GetTimeSize();
-        int batchsize = gradient->GetBatchSize();
-        int colsize   = gradient->GetColSize();
+        int batchsize = input_delta->GetBatchSize();
+        int colsize   = input_delta->GetColSize();
 
-        int count    = timesize * batchsize;
         int capacity = colsize;
 
         int start = 0;
         int end   = 0;
 
-        int ti = 0;
+        int ti = pTime;
 
         int numOfThread = this->GetNumOfThread();
 
@@ -186,7 +177,7 @@ public:
             end   = start + capacity;
 
             for (int i = start; i < end; i++) {
-                (*input_delta)[i] = (*gradient)[i] / batchsize;
+                (*input_delta)[i] = ((*softmaxresult)[i] - (*label)[i]) / batchsize;
             }
         }
 
