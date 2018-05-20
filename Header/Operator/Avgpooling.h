@@ -68,7 +68,6 @@ public:
     }
 
     int BackPropagate(int pThreadNum = 0) {
-        // Tensor<DTYPE> *this_grad = Tensor<DTYPE>::Constants(1, 2, 3, 1, 1, 2.0);
         Container<Operator<DTYPE> *> *input_contatiner         = this->GetInputContainer();
         Container<Tensor<DTYPE> *>   *input_gradient_container = (*input_contatiner)[0]->GetGradientContainer();
         Container<Tensor<DTYPE> *>   *this_gradient_container  = this->GetGradientContainer();
@@ -95,6 +94,20 @@ public:
 
         return TRUE;
     }
+
+#if __CUDNN__
+    int ForwardPropagateOnGPU(int pTime) {
+        this->ForwardPropagate();
+        return TRUE;
+    }
+
+     int BackPropagateOnGPU(int pTime) {
+        this->BackPropagate();
+
+        return TRUE;
+    }
+
+#endif  // __CUDNN__
 };
 //
 #endif  // __AVGPOOLING__

@@ -66,14 +66,6 @@ public:
         return TRUE;
     }
 
-    int ForwardPropagate(int pThreadNum = 0) {
-        return TRUE;
-    }
-
-    int BackPropagate(int pThreadNum = 0) {
-        return TRUE;
-    }
-
     void SetTensor(Tensor<DTYPE> *pTensor) {
         this->SetResult(pTensor);
     }

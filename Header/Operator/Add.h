@@ -98,6 +98,20 @@ public:
 
         return TRUE;
     }
+
+#if __CUDNN__
+    int ForwardPropagateOnGPU(int pTime) {
+        this->ForwardPropagate();
+        return TRUE;
+    }
+
+    int BackPropagateOnGPU(int pTime) {
+        this->BackPropagate();
+
+        return TRUE;
+    }
+
+#endif  // __CUDNN__
 };
 
 
@@ -209,6 +223,20 @@ public:
 
         return TRUE;
     }
+
+#if __CUDNN__
+    int ForwardPropagateOnGPU(int pTime) {
+        this->ForwardPropagate();
+        return TRUE;
+    }
+
+    int BackPropagateOnGPU(int pTime) {
+        this->BackPropagate();
+
+        return TRUE;
+    }
+
+#endif  // __CUDNN__
 };
 
 template<typename DTYPE> class AddChannelWise : public Operator<DTYPE>{
@@ -318,6 +346,20 @@ public:
 
         return TRUE;
     }
+
+#if __CUDNN__
+    int ForwardPropagateOnGPU(int pTime) {
+        this->ForwardPropagate();
+        return TRUE;
+    }
+
+    int BackPropagateOnGPU(int pTime) {
+        this->BackPropagate();
+
+        return TRUE;
+    }
+
+#endif  // __CUDNN__
 };
 
 

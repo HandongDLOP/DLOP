@@ -95,6 +95,20 @@ public:
         return TRUE;
     }
 
+#if __CUDNN__
+    int ForwardPropagateOnGPU(int pTime) {
+        this->ForwardPropagate();
+        return TRUE;
+    }
+
+    int BackPropagateOnGPU(int pTime) {
+        this->BackPropagate();
+
+        return TRUE;
+    }
+
+#endif  // __CUDNN__
+
     inline DTYPE SIGMOID(DTYPE data) {
         return 1.F / (1.F + (DTYPE)exp(-data));
     }

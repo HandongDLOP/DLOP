@@ -290,16 +290,16 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagateOnGPU(int pTi
     for (int i = 0; i < m_OperatorDegree; i++) {
         (*m_aaOperator)[i]->ForwardPropagateOnGPU(pTime);
     }
-    m_aLossFunction->ForwardPropagateOnGPU();
+    m_aLossFunction->ForwardPropagateOnGPU(pTime);
 
     return TRUE;
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagateOnGPU(int pTime) {
-    m_aLossFunction->BackPropagate();
+    m_aLossFunction->BackPropagateOnGPU(pTime);
 
     for (int i = m_OperatorDegree - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->ForwardPropagateOnGPU(pTime);
+        (*m_aaOperator)[i]->BackPropagateOnGPU(pTime);
     }
     return TRUE;
 }
@@ -310,20 +310,24 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagateOnGPU(int pTime)
 // =========
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::Training() {
-    if (m_numOfThread > 1) {
+    if ((m_Device == CPU) && (m_numOfThread > 1)) {
         this->TrainingOnMultiThread();
-    } else if (m_numOfThread == 1) {
+    } else if ((m_Device == CPU) && (m_numOfThread == 1)) {
         this->TrainingOnCPU();
+    } else if (m_Device == GPU) {
+        this->TrainingOnGPU();
     } else return FALSE;
 
     return TRUE;
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::Testing() {
-    if (m_numOfThread > 1) {
+    if ((m_Device == CPU) && (m_numOfThread > 1)) {
         this->TestingOnMultiThread();
-    } else if (m_numOfThread == 1) {
+    } else if ((m_Device == CPU) && (m_numOfThread == 1)) {
         this->TestingOnCPU();
+    } else if (m_Device == GPU) {
+        this->TestingOnGPU();
     } else return FALSE;
 
     return TRUE;
@@ -410,10 +414,35 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::TestingOnMultiThread() {
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::TrainingOnGPU() {
+#ifdef __CUDNN__
+    this->ResetOperatorResult();
+    this->ResetOperatorGradient();
+    this->ResetLossFunctionResult();
+    this->ResetLossFunctionGradient();
+
+    this->ForwardPropagateOnGPU();
+    this->BackPropagateOnGPU();
+
+    m_aOptimizer->UpdateVariable();
+#else  // __CUDNN__
+    std::cout << "There is no GPU option!" << '\n';
+    exit(-1);
+#endif  // __CUDNN__
+
     return TRUE;
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::TestingOnGPU() {
+#ifdef __CUDNN__
+    this->ResetOperatorResult();
+    this->ResetOperatorGradient();
+
+    this->ForwardPropagateOnGPU();
+#else  // __CUDNN__
+    std::cout << "There is no GPU option!" << '\n';
+    exit(-1);
+#endif  // __CUDNN__
+
     return TRUE;
 }
 

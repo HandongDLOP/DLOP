@@ -172,7 +172,7 @@ public:
     int ForwardPropagate(int pThreadNum = 0) {
         if (this->GetDevice() == CPU) ComputeForwardPropagateOnCPU(pThreadNum);
 #ifdef __CUDNN__
-        else if (this->GetDevice() == GPU) ComputeForwardPropagateOnGPU();
+        else if (this->GetDevice() == GPU) ForwardPropagateOnGPU();
 #endif  // if __CUDNN__
         else return FALSE;
         return TRUE;
@@ -181,7 +181,7 @@ public:
     int BackPropagate(int pThreadNum = 0) {
         if (this->GetDevice() == CPU) ComputeBackPropagateOnCPU(pThreadNum);
 #ifdef __CUDNN__
-        else if (this->GetDevice() == GPU) ComputeBackPropagateOnGPU();
+        else if (this->GetDevice() == GPU) BackPropagateOnGPU();
 #endif  // if __CUDNN__
         else return FALSE;
         return TRUE;
@@ -280,7 +280,7 @@ public:
     }
 
 #if __CUDNN__
-    int ComputeForwardPropagateOnGPU(int pTime = 0) {
+    int ForwardPropagateOnGPU(int pTime = 0) {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
@@ -301,7 +301,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagateOnGPU(int pTime = 0) {
+    int BackPropagateOnGPU(int pTime = 0) {
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input       = this->GetInput()[0]->GetResult();

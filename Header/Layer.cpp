@@ -146,6 +146,23 @@ template<typename DTYPE> int Layer<DTYPE>::BackPropagate(int pThreadNum) {
     return TRUE;
 }
 
+#if __CUDNN__
+template<typename DTYPE> int Layer<DTYPE>::ForwardPropagateOnGPU(int pTime) {
+    for (int i = 0; i < m_numOfOperator; i++) {
+        (*m_aaOperator)[i]->ForwardPropagateOnGPU(pTime);
+    }
+    return TRUE;
+}
+
+template<typename DTYPE> int Layer<DTYPE>::BackPropagateOnGPU(int pTime) {
+    for (int i = m_numOfOperator - 1; i >= 0; i--) {
+        (*m_aaOperator)[i]->BackPropagateOnGPU(pTime);
+    }
+    return TRUE;
+}
+
+#endif  // __CUDNN__
+
 template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::GetLastOperator() {
     return m_aaOperator->GetLast();
 }

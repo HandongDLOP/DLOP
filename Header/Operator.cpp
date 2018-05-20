@@ -347,13 +347,15 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagate(int pThreadNum) {
 template<typename DTYPE> int Operator<DTYPE>::ForwardPropagateOnGPU(int pTime) {
     # if __DEBUG__
     std::cout << "Operator<DTYPE>::ForwardPropagateOnGPU(int)" << '\n';
+    std::cout << this->GetName() << '\n';
     # endif // __DEBUG__
     return TRUE;
 }
 
 template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU(int pTime) {
     # if __DEBUG__
-    std::cout << "Operator<DTYPE>::BackPropagateOnGPU(int pTime)" << '\n';
+    std::cout << "Operator<DTYPE>::BackPropagateOnGPU(int)" << '\n';
+    std::cout << this->GetName() << '\n';
     # endif // __DEBUG__
     return TRUE;
 }

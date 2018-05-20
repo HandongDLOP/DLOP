@@ -124,6 +124,20 @@ public:
 
         return TRUE;
     }
+
+#if __CUDNN__
+    int ForwardPropagateOnGPU(int pTime) {
+        this->ForwardPropagate();
+        return TRUE;
+    }
+
+    int BackPropagateOnGPU(int pTime) {
+        this->BackPropagate();
+
+        return TRUE;
+    }
+
+#endif  // __CUDNN__
 };
 
 #endif  // RESHAPE_H_

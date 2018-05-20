@@ -196,10 +196,12 @@ public:
 #if __CUDNN__
 
     Tensor<DTYPE>* ForwardPropagateOnGPU(int pTime = 0) {
+        this->ForwardPropagate();
         return NULL;
     }
 
     Tensor<DTYPE>* BackPropagateOnGPU(int pTime = 0) {
+        this->BackPropagate();
         return NULL;
     }
 
