@@ -480,6 +480,8 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
         (*m_aaOperator)[i]->SetCudnnHandle(m_cudnnHandle);
     }
     m_aLossFunction->SetDeviceGPU();
+    m_aLossFunction->SetCudnnHandle(m_cudnnHandle);
+    
     m_aOptimizer->SetCudnnHandle(m_cudnnHandle);
 }
 

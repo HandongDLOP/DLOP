@@ -417,11 +417,11 @@ template<typename DTYPE> int Operator<DTYPE>::SetGradientCPU() {
 
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
     m_Device = GPU;
-    this->SetResulGPU();
+    this->SetResultGPU();
     this->SetGradientGPU();
 }
 
-template<typename DTYPE> int Operator<DTYPE>::SetResulGPU() {
+template<typename DTYPE> int Operator<DTYPE>::SetResultGPU() {
     // Tensorholder의 경우는 하면 안된다.
     int size = m_aaResult->GetSize();
 

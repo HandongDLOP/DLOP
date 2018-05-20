@@ -121,7 +121,7 @@ public:
     virtual void SetDeviceGPU();
 
     // Setting Supporter
-    virtual int  SetResulGPU();
+    virtual int  SetResultGPU();
     virtual int  SetGradientGPU();
 
 #endif  // if __CUDNN__

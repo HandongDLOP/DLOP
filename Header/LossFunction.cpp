@@ -169,20 +169,28 @@ template<typename DTYPE> int LossFunction<DTYPE>::SetGradientCPU() {
 
 template<typename DTYPE> void LossFunction<DTYPE>::SetDeviceGPU() {
     m_Device = GPU;
-    this->SetResulGPU();
+    this->SetResultGPU();
     this->SetGradientGPU();
 }
 
-template<typename DTYPE> int LossFunction<DTYPE>::SetResulGPU() {
-    if (m_aResult) m_aResult->Reset();
+template<typename DTYPE> int LossFunction<DTYPE>::SetResultGPU() {
+    if (m_aResult) m_aResult->MemcpyHostToDevice();
 
     return TRUE;
 }
 
 template<typename DTYPE> int LossFunction<DTYPE>::SetGradientGPU() {
-    if (m_aGradient) m_aGradient->Reset();
+    if (m_aGradient) m_aGradient->MemcpyHostToDevice();
 
     return TRUE;
+}
+
+template<typename DTYPE> void LossFunction<DTYPE>::SetCudnnHandle(cudnnHandle_t& pCudnnHandle) {
+    m_pCudnnHandle = pCudnnHandle;
+}
+
+template<typename DTYPE> cudnnHandle_t& LossFunction<DTYPE>::GetCudnnHandle() {
+    return m_pCudnnHandle;
 }
 
 #endif  // __CUDNN__

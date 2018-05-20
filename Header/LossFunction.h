@@ -19,6 +19,10 @@ private:
 
     int m_numOfThread;
 
+#if __CUDNN__
+    cudnnHandle_t m_pCudnnHandle;
+#endif  // if __CUDNN__
+
 public:
     LossFunction(std::string pName = "NO NAME");
     LossFunction(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName = "NO NAME");
@@ -47,21 +51,24 @@ public:
     virtual Tensor<DTYPE>* BackPropagateOnGPU(int pTime = 0);
 #endif  // if __CUDNN__
 
-    DTYPE      & operator[](unsigned int index);
+    DTYPE                & operator[](unsigned int index);
 
-    virtual void SetDeviceCPU();
-    virtual void SetDeviceCPU(int pNumOfThread);
+    virtual void           SetDeviceCPU();
+    virtual void           SetDeviceCPU(int pNumOfThread);
 #ifdef __CUDNN__
 
     // Setting Supporter
-    virtual int  SetResultCPU();
-    virtual int  SetGradientCPU();
+    virtual int    SetResultCPU();
+    virtual int    SetGradientCPU();
 
-    virtual void SetDeviceGPU();
+    virtual void   SetDeviceGPU();
+
+    virtual void   SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
+    cudnnHandle_t& GetCudnnHandle();
 
     // Setting Supporter
-    virtual int  SetResulGPU();
-    virtual int  SetGradientGPU();
+    virtual int    SetResultGPU();
+    virtual int    SetGradientGPU();
 
 #endif  // if __CUDNN__
 
