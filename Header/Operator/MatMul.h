@@ -342,18 +342,18 @@ public:
         int outputCapacity = result->GetCapacity();
         int filterCapacity = weight->GetCapacity();
 
-        m_pHostFilter = weight->GetHostData();
-        m_pHostInput  = input->GetHostData();
-        m_pHostOutput = result->GetHostData();
+        m_pDevFilter = weight->GetDeviceData();
+        m_pDevInput  = input->GetDeviceData();
+        m_pDevOutput = result->GetDeviceData();
 
-        checkCudaErrors(cudaMemcpy(m_pDevInput, m_pHostInput, (inputCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
-        checkCudaErrors(cudaMemcpy(m_pDevFilter, m_pHostFilter, (filterCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
+        // checkCudaErrors(cudaMemcpy(m_pDevInput, m_pHostInput, (inputCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
+        // checkCudaErrors(cudaMemcpy(m_pDevFilter, m_pHostFilter, (filterCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
 
 
         checkCUDNN(cudnnConvolutionForward(this->GetCudnnHandle(), &m_alpha, inputTensorDesc, m_pDevInput, filterDesc, m_pDevFilter, convDesc,
                                            m_algo, m_devWorkSpace, m_sizeInBytes, &m_beta, outputTensorDesc, m_pDevOutput));
 
-        checkCudaErrors(cudaMemcpy(m_pHostOutput, m_pDevOutput, (outputCapacity * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
+        // checkCudaErrors(cudaMemcpy(m_pHostOutput, m_pDevOutput, (outputCapacity * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
 
         checkCudaErrors(cudaDeviceSynchronize());
 
@@ -375,24 +375,24 @@ public:
         int deltaCapacity       = this_delta->GetCapacity();
         int filterDeltaCapacity = weight_gradient->GetCapacity();
 
-        m_pHostFilter      = weight->GetHostData();
-        m_pHostInput       = input->GetHostData();
-        m_pHostDelta       = this_delta->GetHostData();
-        m_pHostFilterDelta = weight_gradient->GetHostData();
-        m_pHostInputDelta  = input_delta->GetHostData();
+        m_pDevFilter      = weight->GetDeviceData();
+        m_pDevInput       = input->GetDeviceData();
+        m_pDevDelta       = this_delta->GetDeviceData();
+        m_pDevFilterDelta = weight_gradient->GetDeviceData();
+        m_pDevInputDelta  = input_delta->GetDeviceData();
 
-        checkCudaErrors(cudaMemcpy(m_pDevInput, m_pHostInput, (inputCapacity) * sizeof(DTYPE), cudaMemcpyHostToDevice));
-        checkCudaErrors(cudaMemcpy(m_pDevFilter, m_pHostFilter, (filterCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
-        checkCudaErrors(cudaMemcpy(m_pDevDelta, m_pHostDelta, (deltaCapacity) * sizeof(DTYPE), cudaMemcpyHostToDevice));
+        // checkCudaErrors(cudaMemcpy(m_pDevInput, m_pHostInput, (inputCapacity) * sizeof(DTYPE), cudaMemcpyHostToDevice));
+        // checkCudaErrors(cudaMemcpy(m_pDevFilter, m_pHostFilter, (filterCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
+        // checkCudaErrors(cudaMemcpy(m_pDevDelta, m_pHostDelta, (deltaCapacity) * sizeof(DTYPE), cudaMemcpyHostToDevice));
 
         checkCUDNN(cudnnConvolutionBackwardData(this->GetCudnnHandle(), &m_alpha, filterDesc, m_pDevFilter, deltaDesc, m_pDevDelta, convDesc,
                                                 m_dataAlgo, m_dataDevWorkSpace, m_dataSizeInBytes, &m_beta, inputDeltaDesc, m_pDevInputDelta));
 
         checkCUDNN(cudnnConvolutionBackwardFilter(this->GetCudnnHandle(), &m_alpha, inputTensorDesc, m_pDevInput, deltaDesc, m_pDevDelta, convDesc,
                                                   m_filterAlgo, m_filterDevWorkSpace, m_filterSizeInBytes, &m_beta, filterDesc, m_pDevFilterDelta));
-
-        checkCudaErrors(cudaMemcpy(m_pHostInputDelta, m_pDevInputDelta, (inputDeltaCapacity) * sizeof(DTYPE), cudaMemcpyDeviceToHost));
-        checkCudaErrors(cudaMemcpy(m_pHostFilterDelta, m_pDevFilterDelta, (filterDeltaCapacity) * sizeof(DTYPE), cudaMemcpyDeviceToHost));
+        //
+        // checkCudaErrors(cudaMemcpy(m_pHostInputDelta, m_pDevInputDelta, (inputDeltaCapacity) * sizeof(DTYPE), cudaMemcpyDeviceToHost));
+        // checkCudaErrors(cudaMemcpy(m_pHostFilterDelta, m_pDevFilterDelta, (filterDeltaCapacity) * sizeof(DTYPE), cudaMemcpyDeviceToHost));
 
         checkCudaErrors(cudaDeviceSynchronize());
         return TRUE;
