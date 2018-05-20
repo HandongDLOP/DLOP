@@ -250,20 +250,20 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate() {
     return TRUE;
 }
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagateOnGPU() {
+template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagateOnGPU(int pTime) {
     for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->ForwardPropagateOnGPU();
+        (*m_aaOperator)[i]->ForwardPropagateOnGPU(pTime);
     }
     m_aLossFunction->ForwardPropagate();
 
     return TRUE;
 }
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagateOnGPU() {
+template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagateOnGPU(int pTime) {
     m_aLossFunction->BackPropagate();
 
     for (int i = m_OperatorDegree - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->BackPropagateOnGPU();
+        (*m_aaOperator)[i]->BackPropagateOnGPU(pTime);
     }
     return TRUE;
 }

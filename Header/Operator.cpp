@@ -343,16 +343,16 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagate(int pThreadNum) {
     return TRUE;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::ForwardPropagateOnGPU() {
+template<typename DTYPE> int Operator<DTYPE>::ForwardPropagateOnGPU(int pTime) {
     #if __DEBUG__
-    std::cout << "Operator<DTYPE>::ForwardPropagateOnGPU()" << '\n';
+    std::cout << "Operator<DTYPE>::ForwardPropagateOnGPU(int)" << '\n';
     #endif  // __DEBUG__
     return TRUE;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU() {
+template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU(int pTime) {
     #if __DEBUG__
-    std::cout << "Operator<DTYPE>::BackPropagateOnGPU()" << '\n';
+    std::cout << "Operator<DTYPE>::BackPropagateOnGPU(int pTime)" << '\n';
     #endif  // __DEBUG__
     return TRUE;
 }

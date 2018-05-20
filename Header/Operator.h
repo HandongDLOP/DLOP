@@ -102,8 +102,8 @@ public:
     virtual int  ForwardPropagate(int pThreadNum = 0);
     virtual int  BackPropagate(int pThreadNum = 0);
 
-    virtual int  ForwardPropagateOnGPU();
-    virtual int  BackPropagateOnGPU();
+    virtual int  ForwardPropagateOnGPU(int pTime = 0);
+    virtual int  BackPropagateOnGPU(int pTime = 0);
 
     // reset value
     virtual int  ResetResult();

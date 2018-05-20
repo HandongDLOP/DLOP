@@ -67,8 +67,8 @@ public:
     int                               ForwardPropagate();
     int                               BackPropagate();
 
-    int                               ForwardPropagateOnGPU();
-    int                               BackPropagateOnGPU();
+    int                               ForwardPropagateOnGPU(int pTime = 0);
+    int                               BackPropagateOnGPU(int pTime = 0);
 
     static void                     * ForwardPropagateForThread(void *param);
     static void                     * BackPropagateForThread(void *param);

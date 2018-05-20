@@ -351,7 +351,7 @@ public:
     }
 
 #if __CUDNN__
-    int ComputeForwardPropagateOnGPU() {
+    int ComputeForwardPropagateOnGPU(int pTime = 0) {
         Tensor<DTYPE> *weight = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *input  = this->GetInput()[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
@@ -378,7 +378,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagateOnGPU() {
+    int ComputeBackPropagateOnGPU(int pTime = 0) {
         Tensor<DTYPE> *weight          = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *weight_gradient = this->GetInput()[0]->GetGradient();
 

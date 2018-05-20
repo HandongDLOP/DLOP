@@ -222,7 +222,7 @@ public:
     }
 
 #if __CUDNN__
-    int ComputeForwardPropagateOnGPU() {
+    int ComputeForwardPropagateOnGPU(int pTime = 0) {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
         int inputCapacity     = input->GetCapacity();
@@ -243,7 +243,7 @@ public:
         return TRUE;
     }
 
-    int ComputeBackPropagateOnGPU() {
+    int ComputeBackPropagateOnGPU(int pTime = 0) {
         Tensor<DTYPE> *result      = this->GetResult();
         Tensor<DTYPE> *this_delta  = this->GetGradient();
         Tensor<DTYPE> *input       = this->GetInput()[0]->GetResult();
