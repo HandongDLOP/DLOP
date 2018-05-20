@@ -197,13 +197,33 @@ template<typename DTYPE> cudnnHandle_t& LossFunction<DTYPE>::GetCudnnHandle() {
 
 
 template<typename DTYPE> int LossFunction<DTYPE>::ResetResult() {
-    if (m_aResult) m_aResult->Reset();
+    if (m_Device == CPU) {
+        if (m_aResult) m_aResult->Reset();
+    }
+
+#if __CUDNN__
+    else if (m_Device == GPU) {
+        if (m_aResult) m_aResult->Reset(this->GetCudnnHandle());
+    }
+#endif  // if __CUDNN__
+
+    else return FALSE;
 
     return TRUE;
 }
 
 template<typename DTYPE> int LossFunction<DTYPE>::ResetGradient() {
-    if (m_aGradient) m_aGradient->Reset();
+    if (m_Device == CPU) {
+        if (m_aGradient) m_aGradient->Reset();
+    }
+
+#if __CUDNN__
+    else if (m_Device == GPU) {
+        if (m_aGradient) m_aGradient->Reset(this->GetCudnnHandle());
+    }
+#endif  // if __CUDNN__
+
+    else return FALSE;
 
     return TRUE;
 }

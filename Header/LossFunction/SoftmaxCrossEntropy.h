@@ -147,7 +147,6 @@ public:
                 (*softmaxresult)[i] = (exp((*input)[i] - max[ti][ba]) + m_epsilon) / sum[ti][ba];
 
                 (*result)[ti * batchsize + ba] += -(*label)[i] * log((*softmaxresult)[i] + m_epsilon);
-
             }
         }
 
@@ -155,7 +154,7 @@ public:
     }
 
     Tensor<DTYPE>* BackPropagate(int pTime = 0, int pThreadNum = 0) {
-        Tensor<DTYPE> *label    = this->GetLabel()->GetResult();
+        Tensor<DTYPE> *label         = this->GetLabel()->GetResult();
         Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
 
         Tensor<DTYPE> *input_delta = this->GetOperator()->GetDelta();
@@ -187,13 +186,44 @@ public:
 #if __CUDNN__
 
     Tensor<DTYPE>* ForwardPropagateOnGPU(int pTime = 0) {
-        this->ForwardPropagate();
-        return NULL;
+        Tensor<DTYPE> *input         = this->GetTensor();
+        Tensor<DTYPE> *label         = this->GetLabel()->GetResult();
+        Tensor<DTYPE> *softmaxresult = m_aSoftmaxResult;
+        Tensor<DTYPE> *result        = this->GetResult();
+
+        int batchsize = input->GetBatchSize();
+        int colsize   = input->GetColSize();
+
+        float alpha = 1.f;
+        float beta  = 0.f;
+
+        cudnnTensorDescriptor_t pInputDesc   = input->GetDescriptor();
+        cudnnTensorDescriptor_t pSoftMaxDesc = softmaxresult->GetDescriptor();
+
+        DTYPE *pDevInput   = input->GetDeviceData(pTime);
+        DTYPE *pDevSoftMax = softmaxresult->GetDeviceData(pTime);
+
+        checkCUDNN(cudnnSoftmaxForward(this->GetCudnnHandle(), CUDNN_SOFTMAX_ACCURATE, CUDNN_SOFTMAX_MODE_INSTANCE,
+                                       &alpha, pInputDesc, pDevInput,
+                                       &beta, pSoftMaxDesc, pDevSoftMax));
+
+        int start = 0;
+        int end   = 0;
+
+        for (int ba = 0; ba < batchsize; ba++) {
+            start = (pTime * batchsize + ba) * colsize;
+            end   = start + colsize;
+
+            for (int i = start; i < end; i++) {
+                (*result)[pTime * batchsize + ba] += -(*label)[i] * log((*softmaxresult)[i] + m_epsilon);
+            }
+        }
+
+        return result;
     }
 
     Tensor<DTYPE>* BackPropagateOnGPU(int pTime = 0) {
-        this->BackPropagate();
-        return NULL;
+        return this->BackPropagate(pTime);
     }
 
 #endif  // __CUDNN__
