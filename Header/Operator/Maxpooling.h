@@ -15,7 +15,7 @@ private:
     cudnnTensorDescriptor_t m_aInputTensorDesc, m_aOutputTensorDesc, m_aDeltaDesc, m_aInputDeltaDesc;
     cudnnPoolingDescriptor_t m_aPoolingDesc;
     DTYPE *m_pDevInput, *m_pDevOutput, *m_pDevInputDelta, *m_pDevDelta;
-    DTYPE *m_aHostInput, *m_aHostOutput, *m_aHostInputDelta, *m_aHostDelta;
+    // DTYPE *m_aHostInput, *m_aHostOutput, *m_aHostInputDelta, *m_aHostDelta;
 
     float m_alpha;
     float m_beta;
@@ -107,10 +107,10 @@ public:
         checkCUDNN(cudnnCreateTensorDescriptor(&m_aInputDeltaDesc));
         checkCUDNN(cudnnCreatePoolingDescriptor(&m_aPoolingDesc));
 
-        checkCudaErrors(cudaMalloc((void **)&m_pDevInput, (inputCapacity * sizeof(DTYPE))));
-        checkCudaErrors(cudaMalloc((void **)&m_pDevOutput, (outputCapacity * sizeof(DTYPE))));
-        checkCudaErrors(cudaMalloc((void **)&m_pDevInputDelta, (inputCapacity * sizeof(DTYPE))));
-        checkCudaErrors(cudaMalloc((void **)&m_pDevDelta, (outputCapacity * sizeof(DTYPE))));
+        // checkCudaErrors(cudaMalloc((void **)&m_pDevInput, (inputCapacity * sizeof(DTYPE))));
+        // checkCudaErrors(cudaMalloc((void **)&m_pDevOutput, (outputCapacity * sizeof(DTYPE))));
+        // checkCudaErrors(cudaMalloc((void **)&m_pDevInputDelta, (inputCapacity * sizeof(DTYPE))));
+        // checkCudaErrors(cudaMalloc((void **)&m_pDevDelta, (outputCapacity * sizeof(DTYPE))));
 
         checkCUDNN(cudnnSetPooling2dDescriptor(m_aPoolingDesc, CUDNN_POOLING_MAX, CUDNN_PROPAGATE_NAN,
                                                m_mask[0], m_mask[1], m_padding[0], m_padding[1], m_stride[0], m_stride[1]));
@@ -152,17 +152,17 @@ public:
         if (m_aPoolingDesc) checkCUDNN(cudnnDestroyPoolingDescriptor(m_aPoolingDesc));
         m_aPoolingDesc = NULL;
 
-        if (m_pDevInput) checkCudaErrors(cudaFree(m_pDevInput));
-        m_pDevInput = NULL;
-
-        if (m_pDevOutput) checkCudaErrors(cudaFree(m_pDevOutput));
-        m_pDevOutput = NULL;
-
-        if (m_pDevInputDelta) checkCudaErrors(cudaFree(m_pDevInputDelta));
-        m_pDevInputDelta = NULL;
-
-        if (m_pDevDelta) checkCudaErrors(cudaFree(m_pDevDelta));
-        m_pDevDelta = NULL;
+        // if (m_pDevInput) checkCudaErrors(cudaFree(m_pDevInput));
+        // m_pDevInput = NULL;
+        //
+        // if (m_pDevOutput) checkCudaErrors(cudaFree(m_pDevOutput));
+        // m_pDevOutput = NULL;
+        //
+        // if (m_pDevInputDelta) checkCudaErrors(cudaFree(m_pDevInputDelta));
+        // m_pDevInputDelta = NULL;
+        //
+        // if (m_pDevDelta) checkCudaErrors(cudaFree(m_pDevDelta));
+        // m_pDevDelta = NULL;
 
         checkCudaErrors(cudaThreadSynchronize());
 
@@ -271,15 +271,15 @@ public:
         int inputCapacity  = input->GetCapacity();
         int resultCapacity = result->GetCapacity();
 
-        m_aHostInput  = input->GetHostData();
-        m_aHostOutput = result->GetHostData();
+        m_pDevInput  = input->GetDeviceData();
+        m_pDevOutput = result->GetDeviceData();
 
-        checkCudaErrors(cudaMemcpy(m_pDevInput, m_aHostInput, (inputCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
+        // checkCudaErrors(cudaMemcpy(m_pDevInput, m_aHostInput, (inputCapacity * sizeof(DTYPE)), cudaMemcpyHostToDevice));
 
         checkCUDNN(cudnnPoolingForward(this->GetCudnnHandle(), m_aPoolingDesc, &m_alpha, m_aInputTensorDesc, m_pDevInput,
                                        &m_beta, m_aOutputTensorDesc, m_pDevOutput));
 
-        checkCudaErrors(cudaMemcpy(m_aHostOutput, m_pDevOutput, (resultCapacity * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
+        // checkCudaErrors(cudaMemcpy(m_aHostOutput, m_pDevOutput, (resultCapacity * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
 
         checkCudaErrors(cudaDeviceSynchronize());
         return TRUE;
@@ -296,20 +296,20 @@ public:
         int deltaCapacity      = this_delta->GetCapacity();
         int inputDeltaCapacity = inputCapacity;
 
-        m_aHostInput      = input->GetHostData();
-        m_aHostOutput     = result->GetHostData();
-        m_aHostDelta      = this_delta->GetHostData();
-        m_aHostInputDelta = input_delta->GetHostData();
+        m_pDevInput      = input->GetDeviceData();
+        m_pDevOutput     = result->GetDeviceData();
+        m_pDevDelta      = this_delta->GetDeviceData();
+        m_pDevInputDelta = input_delta->GetDeviceData();
 
-        checkCudaErrors(cudaMemcpy(m_pDevInput, m_aHostInput, (inputCapacity * sizeof(float)), cudaMemcpyHostToDevice));
-        checkCudaErrors(cudaMemcpy(m_pDevOutput, m_aHostOutput, (resultCapacity * sizeof(float)), cudaMemcpyHostToDevice));
+        // checkCudaErrors(cudaMemcpy(m_pDevInput, m_aHostInput, (inputCapacity * sizeof(float)), cudaMemcpyHostToDevice));
+        // checkCudaErrors(cudaMemcpy(m_pDevOutput, m_aHostOutput, (resultCapacity * sizeof(float)), cudaMemcpyHostToDevice));
 
         checkCUDNN(cudnnPoolingBackward(this->GetCudnnHandle(), m_aPoolingDesc,
                                         &m_alpha, m_aOutputTensorDesc, m_pDevOutput,
                                         m_aDeltaDesc, m_pDevDelta, m_aInputTensorDesc, m_pDevInput,
                                         &m_beta, m_aInputDeltaDesc, m_pDevInputDelta));
 
-        checkCudaErrors(cudaMemcpy(m_aHostInputDelta, m_pDevInputDelta, (inputDeltaCapacity * sizeof(float)), cudaMemcpyDeviceToHost));
+        // checkCudaErrors(cudaMemcpy(m_aHostInputDelta, m_pDevInputDelta, (inputDeltaCapacity * sizeof(float)), cudaMemcpyDeviceToHost));
 
         checkCudaErrors(cudaDeviceSynchronize());
         return TRUE;
