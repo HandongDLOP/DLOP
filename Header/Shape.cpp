@@ -3,6 +3,9 @@
 Shape::Shape() {
     m_Rank = 0;
     m_aDim = NULL;
+#if __CUDNN__
+    m_desc = NULL;
+#endif  // if __CUDNN__
 }
 
 Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
@@ -11,7 +14,9 @@ Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
     #endif  // __DEBUG__
     m_Rank = 0;
     m_aDim = NULL;
-
+#if __CUDNN__
+    m_desc = NULL;
+#endif  // if __CUDNN__
     Alloc(5, pSize0, pSize1, pSize2, pSize3, pSize4);
 }
 
@@ -19,6 +24,11 @@ Shape::Shape(Shape *pShape) {
     #if __DEBUG__
     std::cout << "Shape::Shape(Shape *)" << '\n';
     #endif  // __DEBUG__
+    m_Rank = 0;
+    m_aDim = NULL;
+#if __CUDNN__
+    m_desc = NULL;
+#endif  // if __CUDNN__
     Alloc(pShape);
 }
 
@@ -30,6 +40,9 @@ Shape::~Shape() {
 int Shape::Alloc() {
     m_Rank = 0;
     m_aDim = NULL;
+#if __CUDNN__
+    checkCUDNN(cudnnCreateTensorDescriptor(&m_desc));
+#endif  // if __CUDNN__
     return TRUE;
 }
 
@@ -59,6 +72,16 @@ int Shape::Alloc(int pRank, ...) {
     }
     va_end(ap);
 
+#if __CUDNN__
+
+    if (m_Rank == 5) {
+        checkCUDNN(cudnnCreateTensorDescriptor(&m_desc));
+        checkCUDNN(cudnnSetTensor4dDescriptor(m_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                              m_aDim[1], m_aDim[2], m_aDim[3], m_aDim[4]));
+    }
+
+#endif  // if __CUDNN__
+
     return TRUE;
 }
 
@@ -70,6 +93,16 @@ int Shape::Alloc(Shape *pShape) {
         for (int i = 0; i < m_Rank; i++) {
             m_aDim[i] = (*pShape)[i];
         }
+
+#if __CUDNN__
+
+        if (m_Rank == 5) {
+            checkCUDNN(cudnnCreateTensorDescriptor(&m_desc));
+            checkCUDNN(cudnnSetTensor4dDescriptor(m_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                                  m_aDim[1], m_aDim[2], m_aDim[3], m_aDim[4]));
+        }
+
+#endif  // if __CUDNN__
     } catch (...) {
         printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
@@ -83,6 +116,12 @@ void Shape::Delete() {
         delete[] m_aDim;
         m_aDim = NULL;
     }
+
+#if __CUDNN__
+
+    if (m_desc) checkCUDNN(cudnnDestroyTensorDescriptor(m_desc));
+    m_desc = NULL;
+#endif  // if __CUDNN__
 }
 
 void Shape::SetRank(int pRank) {
@@ -92,6 +131,32 @@ void Shape::SetRank(int pRank) {
 int Shape::GetRank() {
     return m_Rank;
 }
+
+int Shape::ReShape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
+    m_aDim[0] = pSize0;
+    m_aDim[1] = pSize1;
+    m_aDim[2] = pSize2;
+    m_aDim[3] = pSize3;
+    m_aDim[4] = pSize4;
+
+#if __CUDNN__
+
+    if (m_desc) checkCUDNN(cudnnDestroyTensorDescriptor(m_desc));
+    m_desc = NULL;
+    checkCUDNN(cudnnCreateTensorDescriptor(&m_desc));
+    checkCUDNN(cudnnSetTensor4dDescriptor(m_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                          pSize1, pSize2, pSize3, pSize4));
+#endif  // if __CUDNN__
+
+    return TRUE;
+}
+
+#if __CUDNN__
+cudnnTensorDescriptor_t& Shape::GetDescriptor() {
+    return m_desc;
+}
+
+#endif  // __CUDNN__
 
 int& Shape::operator[](int pRanknum) {
     try {

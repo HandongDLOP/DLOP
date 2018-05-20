@@ -203,11 +203,7 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pTimeSize, int pBatchSiz
         printf("Receive invalid shape value in %s (%s %d), cannot Reshape\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
     } else {
-        (*m_aShape)[0] = pTimeSize;
-        (*m_aShape)[1] = pBatchSize;
-        (*m_aShape)[2] = pChannelSize;
-        (*m_aShape)[3] = pRowSize;
-        (*m_aShape)[4] = pColSize;
+        m_aShape->ReShape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
     }
 
     return TRUE;
