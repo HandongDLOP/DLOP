@@ -88,6 +88,19 @@ template<typename DTYPE> void Data<DTYPE>::Delete() {
         delete[] m_aHostData;
         m_aHostData = NULL;
     }
+
+#if __CUDNN__
+    if (m_aDevData) {
+        for (int i = 0; i < m_timeSize; i++) {
+            if (m_aDevData[i]) {
+                checkCudaErrors(cudaFree(m_aDevData[i]));
+                m_aDevData[i] = NULL;
+            }
+        }
+        delete[] m_aDevData;
+        m_aDevData = NULL;
+    }
+#endif // __CUDNN__
 }
 
 template<typename DTYPE> int Data<DTYPE>::GetCapacity() {
