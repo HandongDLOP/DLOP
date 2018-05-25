@@ -511,7 +511,7 @@ template<typename DTYPE> void Tensor<DTYPE>::Reset(cudnnHandle_t& pCudnnHandle) 
 
 ////////////////////////////////////////////////////////////////////////////////static method
 
-template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, float mean, float stddev) {
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, float mean, float stddev, IsUseTime pAnswer) {
     #if __DEBUG__
     std::cout << "Tensor<DTYPE>::Truncated_normal()" << '\n';
     #endif  // __DEBUG__
@@ -520,7 +520,7 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pSiz
     std::mt19937 gen(rd());
     std::normal_distribution<float> rand(mean, stddev);
 
-    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pSize0, pSize1, pSize2, pSize3, pSize4);
+    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pSize0, pSize1, pSize2, pSize3, pSize4, pAnswer);
 
     int capacity = temp->GetCapacity();
 
@@ -531,20 +531,64 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pSiz
     return temp;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Zeros(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(Shape *pShape, float mean, float stddev, IsUseTime pAnswer) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Truncated_normal()" << '\n';
+    #endif  // __DEBUG__
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<float> rand(mean, stddev);
+
+    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pShape, pAnswer);
+
+    int capacity = temp->GetCapacity();
+
+    for (int i = 0; i < capacity; i++) {
+        (*temp)[i] = rand(gen);
+    }
+
+    return temp;
+}
+
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Zeros(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, IsUseTime pAnswer) {
     #if __DEBUG__
     std::cout << "Tensor<DTYPE>::Zero()" << '\n';
     #endif  // __DEBUG__
 
-    return new Tensor<DTYPE>(pSize0, pSize1, pSize2, pSize3, pSize4);
+    return new Tensor<DTYPE>(pSize0, pSize1, pSize2, pSize3, pSize4, pAnswer);
 }
 
-template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, DTYPE constant) {
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Zeros(Shape *pShape, IsUseTime pAnswer) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Zero()" << '\n';
+    #endif  // __DEBUG__
+
+    return new Tensor<DTYPE>(pShape, pAnswer);
+}
+
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, DTYPE constant, IsUseTime pAnswer) {
     #if __DEBUG__
     std::cout << "Tensor<DTYPE>::Constant()" << '\n';
     #endif  // __DEBUG__
 
-    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pSize0, pSize1, pSize2, pSize3, pSize4);
+    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pSize0, pSize1, pSize2, pSize3, pSize4, pAnswer);
+
+    int capacity = temp->GetCapacity();
+
+    for (int i = 0; i < capacity; i++) {
+        (*temp)[i] = constant;
+    }
+
+    return temp;
+}
+
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(Shape *pShape, DTYPE constant, IsUseTime pAnswer) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Constant()" << '\n';
+    #endif  // __DEBUG__
+
+    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pShape, pAnswer);
 
     int capacity = temp->GetCapacity();
 
