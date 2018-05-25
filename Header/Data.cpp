@@ -4,27 +4,118 @@ template class Data<int>;
 template class Data<float>;
 template class Data<double>;
 
-template<typename DTYPE> Data<DTYPE>::Data() {
-    m_timeSize        = 0;
-    m_capacityPerTime = 0;
-    m_aHostData       = NULL;
-#if __CUDNN__
-    m_aDevData = NULL;
-    m_Device   = CPU;
-#endif  // __CUDNN
+template<typename DTYPE> int Data<DTYPE>::Alloc() {
+    m_aaHostData = new DTYPE *[m_TimeSize];
+
+    for (int i = 0; i < m_TimeSize; i++) {
+        m_aaHostData[i] = new DTYPE[m_CapacityPerTime];
+
+        for (int j = 0; j < m_CapacityPerTime; j++) {
+            m_aaHostData[i][j] = 0.f;
+        }
+    }
+
+    m_Device = CPU;
+
+    return TRUE;
 }
+
+template<typename DTYPE> int Data<DTYPE>::Alloc(Data *pData) {
+    m_aaHostData = new DTYPE *[m_TimeSize];
+
+    for (int i = 0; i < m_TimeSize; i++) {
+        m_aaHostData[i] = new DTYPE[m_CapacityPerTime];
+
+        for (int j = 0; j < m_CapacityPerTime; j++) {
+            m_aaHostData[i][j] = (*pData)[i * m_CapacityPerTime + j];
+        }
+    }
+
+    m_Device = pData->GetDevice();
+
+#ifdef __CUDNN__
+
+    if (m_Device == GPU) pData->SetDeviceGPU();
+#endif  // if __CUDNN__
+
+    return TRUE;
+}
+
+template<typename DTYPE> void Data<DTYPE>::Delete() {
+    if (m_aaHostData) {
+        for (int i = 0; i < m_TimeSize; i++) {
+            if (m_aaHostData[i]) {
+                delete[] m_aaHostData[i];
+                m_aaHostData[i] = NULL;
+            }
+        }
+        delete[] m_aaHostData;
+        m_aaHostData = NULL;
+    }
+
+#if __CUDNN__
+
+    this->DeleteOnGPU();
+#endif  // __CUDNN__
+}
+
+#ifdef __CUDNN__
+
+template<typename DTYPE> int Data<DTYPE>::AllocOnGPU() {
+    if (m_aaDevData == NULL) {
+        m_aaDevData = new DTYPE *[m_TimeSize];
+
+        for (int i = 0; i < m_TimeSize; i++) {
+            checkCudaErrors(cudaMalloc((void **)&(m_aaDevData[i]), (m_CapacityPerTime * sizeof(DTYPE))));
+        }
+    }
+    return TRUE;
+}
+
+template<typename DTYPE> void Data<DTYPE>::DeleteOnGPU() {
+    if (m_aaDevData) {
+        for (int i = 0; i < m_TimeSize; i++) {
+            if (m_aaDevData[i]) {
+                checkCudaErrors(cudaFree(m_aaDevData[i]));
+                m_aaDevData[i] = NULL;
+            }
+        }
+        delete[] m_aaDevData;
+        m_aaDevData = NULL;
+    }
+}
+
+template<typename DTYPE> int Data<DTYPE>::MemcpyCPU2GPU() {
+    if (m_aaDevData != NULL) {
+        for (int i = 0; i < m_TimeSize; i++) {
+            checkCudaErrors(cudaMemcpy(m_aaDevData[i], m_aaHostData[i], (m_CapacityPerTime * sizeof(DTYPE)), cudaMemcpyHostToDevice));
+        }
+    }
+    return TRUE;
+}
+
+template<typename DTYPE> int Data<DTYPE>::MemcpyGPU2CPU() {
+    if (m_aaDevData != NULL) {
+        for (int i = 0; i < m_TimeSize; i++) {
+            checkCudaErrors(cudaMemcpy(m_aaHostData[i], m_aaDevData[i], (m_CapacityPerTime * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
+        }
+    }
+    return TRUE;
+}
+
+#endif  // if __CUDNN__
 
 template<typename DTYPE> Data<DTYPE>::Data(unsigned int pTimeSize, unsigned int pCapacity) {
     #if __DEBUG__
     std::cout << "Data<DTYPE>::Data(Shape *)" << '\n';
     #endif  // __DEBUG__
-    m_timeSize        = pTimeSize;
-    m_capacityPerTime = pCapacity;
-    m_aHostData       = NULL;
+    m_TimeSize        = pTimeSize;
+    m_CapacityPerTime = pCapacity;
+    m_aaHostData      = NULL;
+    m_Device          = CPU;
 #if __CUDNN__
-    m_aDevData = NULL;
+    m_aaDevData = NULL;
 #endif  // __CUDNN
-    m_Device = CPU;
     Alloc();
 }
 
@@ -32,13 +123,13 @@ template<typename DTYPE> Data<DTYPE>::Data(Data *pData) {
     #if __DEBUG__
     std::cout << "Data<DTYPE>::Data(Data *)" << '\n';
     #endif  // __DEBUG__
-    m_timeSize        = pData->GetTimeSize();
-    m_capacityPerTime = pData->GetCapacityPerTime();
-    m_aHostData       = NULL;
+    m_TimeSize        = pData->GetTimeSize();
+    m_CapacityPerTime = pData->GetCapacityPerTime();
+    m_aaHostData      = NULL;
+    m_Device          = CPU;
 #if __CUDNN__
-    m_aDevData = NULL;
+    m_aaDevData = NULL;
 #endif  // __CUDNN
-    m_Device = CPU;
     Alloc(pData);
 }
 
@@ -49,107 +140,45 @@ template<typename DTYPE> Data<DTYPE>::~Data() {
     Delete();
 }
 
-template<typename DTYPE> int Data<DTYPE>::Alloc() {
-    m_aHostData = new DTYPE *[m_timeSize];
-
-    for (int i = 0; i < m_timeSize; i++) {
-        m_aHostData[i] = new DTYPE[m_capacityPerTime];
-
-        for (int j = 0; j < m_capacityPerTime; j++) {
-            m_aHostData[i][j] = 0.f;
-        }
-    }
-
-    return TRUE;
-}
-
-template<typename DTYPE> int Data<DTYPE>::Alloc(Data *pData) {
-    m_aHostData = new DTYPE *[m_timeSize];
-
-    for (int i = 0; i < m_timeSize; i++) {
-        m_aHostData[i] = new DTYPE[m_capacityPerTime];
-
-        for (int j = 0; j < m_capacityPerTime; j++) {
-            m_aHostData[i][j] = (*pData)[i * m_capacityPerTime + j];
-        }
-    }
-
-    return TRUE;
-}
-
-template<typename DTYPE> void Data<DTYPE>::Delete() {
-    if (m_aHostData) {
-        for (int i = 0; i < m_timeSize; i++) {
-            if (m_aHostData[i]) {
-                delete[] m_aHostData[i];
-                m_aHostData[i] = NULL;
-            }
-        }
-        delete[] m_aHostData;
-        m_aHostData = NULL;
-    }
-
-#if __CUDNN__
-    if (m_aDevData) {
-        for (int i = 0; i < m_timeSize; i++) {
-            if (m_aDevData[i]) {
-                checkCudaErrors(cudaFree(m_aDevData[i]));
-                m_aDevData[i] = NULL;
-            }
-        }
-        delete[] m_aDevData;
-        m_aDevData = NULL;
-    }
-#endif // __CUDNN__
-}
-
 template<typename DTYPE> int Data<DTYPE>::GetCapacity() {
-    return m_timeSize * m_capacityPerTime;
+    return m_TimeSize * m_CapacityPerTime;
 }
 
 template<typename DTYPE> int Data<DTYPE>::GetTimeSize() {
-    return m_timeSize;
+    return m_TimeSize;
 }
 
 template<typename DTYPE> int Data<DTYPE>::GetCapacityPerTime() {
-    return m_capacityPerTime;
+    return m_CapacityPerTime;
 }
 
 template<typename DTYPE> DTYPE& Data<DTYPE>::operator[](unsigned int index) {
-    return m_aHostData[index / m_capacityPerTime][index % m_capacityPerTime];
+    return m_aaHostData[index / m_CapacityPerTime][index % m_CapacityPerTime];
+}
+
+template<typename DTYPE> Device Data<DTYPE>::GetDevice() {
+    return m_Device;
 }
 
 template<typename DTYPE> DTYPE *Data<DTYPE>::GetCPUData(unsigned int pTime) {
-    return m_aHostData[pTime];
+    return m_aaHostData[pTime];
 }
 
 #ifdef __CUDNN__
 
 template<typename DTYPE> DTYPE *Data<DTYPE>::GetGPUData(unsigned int pTime) {
-    return m_aDevData[pTime];
+    return m_aaDevData[pTime];
 }
 
-template<typename DTYPE> void Data<DTYPE>::SetDeviceCPU() {
-    if (m_aDevData != NULL) {
-        for (int i = 0; i < m_timeSize; i++) {
-            checkCudaErrors(cudaMemcpy(m_aHostData[i], m_aDevData[i], (m_capacityPerTime * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
-        }
-    }
+template<typename DTYPE> int Data<DTYPE>::SetDeviceCPU() {
+    this->MemcpyGPU2CPU();
+    return TRUE;
 }
 
-template<typename DTYPE> void Data<DTYPE>::SetDeviceGPU() {
-    if (m_aDevData == NULL) {
-        m_aDevData = new DTYPE *[m_timeSize];
-
-        for (int i = 0; i < m_timeSize; i++) {
-            checkCudaErrors(cudaMalloc((void **)&(m_aDevData[i]), (m_capacityPerTime * sizeof(DTYPE))));
-            checkCudaErrors(cudaMemcpy(m_aDevData[i], m_aHostData[i], (m_capacityPerTime * sizeof(DTYPE)), cudaMemcpyHostToDevice));
-        }
-    } else {
-        for (int i = 0; i < m_timeSize; i++) {
-            checkCudaErrors(cudaMemcpy(m_aDevData[i], m_aHostData[i], (m_capacityPerTime * sizeof(DTYPE)), cudaMemcpyHostToDevice));
-        }
-    }
+template<typename DTYPE> int Data<DTYPE>::SetDeviceGPU() {
+    if (m_aaDevData == NULL) this->AllocOnGPU();
+    this->MemcpyCPU2GPU();
+    return TRUE;
 }
 
 #endif  // if __CUDNN__
