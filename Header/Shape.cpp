@@ -35,10 +35,6 @@ int Shape::Alloc(int pRank, ...) {
 
     m_Device = CPU;
 
-#if __CUDNN__
-    AllocOnGPU();
-#endif  // if __CUDNN__
-
     return TRUE;
 }
 
@@ -90,14 +86,16 @@ int Shape::AllocOnGPU() {
     std::cout << "Shape::AllocOnGPU()" << '\n';
     # endif // __DEBUG__
 
-    if (m_Rank == 5) {
-        checkCUDNN(cudnnCreateTensorDescriptor(&m_desc));
-        checkCUDNN(cudnnSetTensor4dDescriptor(m_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
-                                              m_aDim[1], m_aDim[2], m_aDim[3], m_aDim[4]));
-    } else if (m_Rank == 4) {
-        checkCUDNN(cudnnCreateTensorDescriptor(&m_desc));
-        checkCUDNN(cudnnSetTensor4dDescriptor(m_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
-                                              m_aDim[0], m_aDim[1], m_aDim[2], m_aDim[3]));
+    if (m_desc == NULL) {
+        if (m_Rank == 5) {
+            checkCUDNN(cudnnCreateTensorDescriptor(&m_desc));
+            checkCUDNN(cudnnSetTensor4dDescriptor(m_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                                  m_aDim[1], m_aDim[2], m_aDim[3], m_aDim[4]));
+        } else if (m_Rank == 4) {
+            checkCUDNN(cudnnCreateTensorDescriptor(&m_desc));
+            checkCUDNN(cudnnSetTensor4dDescriptor(m_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+                                                  m_aDim[0], m_aDim[1], m_aDim[2], m_aDim[3]));
+        } else ;
     } else ;
 
     return TRUE;
@@ -119,20 +117,9 @@ int Shape::ReShapeOnGPU() {
     std::cout << "Shape::ReShapeOnGPU()" << '\n';
     # endif // __DEBUG__
 
-    if (m_desc) {
-        checkCUDNN(cudnnDestroyTensorDescriptor(m_desc));
-        m_desc = NULL;
-    } else ;
+    DeleteOnGPU();
 
-    if (m_Rank == 5) {
-        checkCUDNN(cudnnCreateTensorDescriptor(&m_desc));
-        checkCUDNN(cudnnSetTensor4dDescriptor(m_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
-                                              m_aDim[1], m_aDim[2], m_aDim[3], m_aDim[4]));
-    } else if (m_Rank == 4) {
-        checkCUDNN(cudnnCreateTensorDescriptor(&m_desc));
-        checkCUDNN(cudnnSetTensor4dDescriptor(m_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
-                                              m_aDim[0], m_aDim[1], m_aDim[2], m_aDim[3]));
-    } else ;
+    AllocOnGPU();
 
     return TRUE;
 }
@@ -324,7 +311,7 @@ int Shape::ReShape(int pRank, ...) {
 
 #if __CUDNN__
 
-    if (m_Device == GPU) ReShapeOnGPU();
+    if (m_desc == NULL) ReShapeOnGPU();
 #endif  // if __CUDNN__
 
     return TRUE;
@@ -339,6 +326,8 @@ int Shape::SetDeviceCPU() {
 
     m_Device = CPU;
 
+    DeleteOnGPU();
+
     return TRUE;
 }
 
@@ -347,9 +336,9 @@ int Shape::SetDeviceGPU() {
     std::cout << "Shape::SetDeviceGPU()" << '\n';
     # endif // __DEBUG__
 
-    m_Device = CPU;
+    m_Device = GPU;
 
-    if (m_desc == NULL) AllocOnGPU();
+    AllocOnGPU();
 
     return TRUE;
 }
@@ -358,6 +347,8 @@ cudnnTensorDescriptor_t& Shape::GetDescriptor() {
     # if __DEBUG__
     std::cout << "Shape::GetDescriptor()" << '\n';
     # endif // __DEBUG__
+
+    if (m_Device == CPU) this->SetDeviceGPU();
 
     return m_desc;
 }
