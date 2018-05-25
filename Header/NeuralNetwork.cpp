@@ -39,6 +39,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
     m_aaLayer        = new Container<Layer<DTYPE> *>();
 
 #if __CUDNN__
+    checkCudaErrors(cudaSetDevice(2));
     checkCUDNN(cudnnCreate(&m_cudnnHandle));
 #endif  // if __CUDNN__
 
@@ -481,7 +482,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
     }
     m_aLossFunction->SetDeviceGPU();
     m_aLossFunction->SetCudnnHandle(m_cudnnHandle);
-    
+
     m_aOptimizer->SetCudnnHandle(m_cudnnHandle);
 }
 

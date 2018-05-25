@@ -58,8 +58,8 @@ public:
 #ifdef __CUDNN__
 
     // Setting Supporter
-    virtual int    SetResultCPU();
-    virtual int    SetGradientCPU();
+    virtual int    SetResultOnCPU();
+    virtual int    SetGradientOnCPU();
 
     virtual void   SetDeviceGPU();
 
@@ -67,8 +67,8 @@ public:
     cudnnHandle_t& GetCudnnHandle();
 
     // Setting Supporter
-    virtual int    SetResultGPU();
-    virtual int    SetGradientGPU();
+    virtual int    SetResultOnGPU();
+    virtual int    SetGradientOnGPU();
 
 #endif  // if __CUDNN__
 

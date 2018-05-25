@@ -297,6 +297,26 @@ template<typename DTYPE> std::string Operator<DTYPE>::GetName() const {
     return m_name;
 }
 
+template<typename DTYPE> Device Operator<DTYPE>::GetDevice() {
+    return m_Device;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::GetNumOfThread() {
+    return m_numOfThread;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::GetNumOfParameter() {
+    return 0;
+}
+
+template<typename DTYPE> Container<Tensorholder<DTYPE> *> *Operator<DTYPE>::GetParameterContainer() {
+    return NULL;
+}
+
+template<typename DTYPE> Tensorholder<DTYPE> *Operator<DTYPE>::PopParameter() {
+    return NULL;
+}
+
 // Add Graph Edge
 template<typename DTYPE> int Operator<DTYPE>::_AddInputEdge(Operator<DTYPE> *pInput) {
     try {
@@ -378,8 +398,8 @@ template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
     m_Device = CPU;
 
 #if __CUDNN__
-    this->SetResultCPU();
-    this->SetGradientCPU();
+    this->SetResultOnCPU();
+    this->SetGradientOnCPU();
 #endif  // __CUDNN__
 }
 
@@ -388,28 +408,28 @@ template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU(int pNumOfThread) {
     m_numOfThread = pNumOfThread;
 
 #if __CUDNN__
-    this->SetResultCPU();
-    this->SetGradientCPU();
+    this->SetResultOnCPU();
+    this->SetGradientOnCPU();
 #endif  // __CUDNN__
 }
 
 #if __CUDNN__
-template<typename DTYPE> int Operator<DTYPE>::SetResultCPU() {
+template<typename DTYPE> int Operator<DTYPE>::SetResultOnCPU() {
     // Tensorholder의 경우는 하면 안된다.
     int size = m_aaResult->GetSize();
 
     for (int i = 0; i < size; i++) {
-        (*m_aaResult)[i]->MemcpyDeviceToHost();
+        (*m_aaResult)[i]->SetDeviceCPU();
     }
 
     return TRUE;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::SetGradientCPU() {
+template<typename DTYPE> int Operator<DTYPE>::SetGradientOnCPU() {
     int size = m_aaGradient->GetSize();
 
     for (int i = 0; i < size; i++) {
-        (*m_aaGradient)[i]->MemcpyDeviceToHost();
+        (*m_aaGradient)[i]->SetDeviceCPU();
     }
 
     return TRUE;
@@ -417,26 +437,26 @@ template<typename DTYPE> int Operator<DTYPE>::SetGradientCPU() {
 
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
     m_Device = GPU;
-    this->SetResultGPU();
-    this->SetGradientGPU();
+    this->SetResultOnGPU();
+    this->SetGradientOnGPU();
 }
 
-template<typename DTYPE> int Operator<DTYPE>::SetResultGPU() {
+template<typename DTYPE> int Operator<DTYPE>::SetResultOnGPU() {
     // Tensorholder의 경우는 하면 안된다.
     int size = m_aaResult->GetSize();
 
     for (int i = 0; i < size; i++) {
-        (*m_aaResult)[i]->MemcpyHostToDevice();
+        (*m_aaResult)[i]->SetDeviceGPU();
     }
 
     return TRUE;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::SetGradientGPU() {
+template<typename DTYPE> int Operator<DTYPE>::SetGradientOnGPU() {
     int size = m_aaGradient->GetSize();
 
     for (int i = 0; i < size; i++) {
-        (*m_aaGradient)[i]->MemcpyHostToDevice();
+        (*m_aaGradient)[i]->SetDeviceGPU();
     }
 
     return TRUE;
@@ -460,7 +480,7 @@ template<typename DTYPE> int Operator<DTYPE>::ResetResult() {
             (*m_aaResult)[i]->Reset(this->GetCudnnHandle());
         }
     }
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
 
     else return FALSE;
 
@@ -482,7 +502,7 @@ template<typename DTYPE> int Operator<DTYPE>::ResetGradient() {
             (*m_aaGradient)[i]->Reset(this->GetCudnnHandle());
         }
     }
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
 
     else return FALSE;
 

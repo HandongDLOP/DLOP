@@ -43,8 +43,8 @@ public:
 
 #ifdef __CUDNN__
     DTYPE                  * GetDeviceData(unsigned int pTime = 0);
-    void                     MemcpyDeviceToHost();
-    void                     MemcpyHostToDevice();
+    void                     SetDeviceCPU();
+    void                     SetDeviceGPU();
 
     cudnnTensorDescriptor_t& GetDescriptor();
 #endif  // if __CUDNN__

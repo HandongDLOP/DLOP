@@ -139,8 +139,8 @@ template<typename DTYPE> void LossFunction<DTYPE>::SetDeviceCPU() {
     m_Device = CPU;
 
 #if __CUDNN__
-    this->SetResultCPU();
-    this->SetGradientCPU();
+    this->SetResultOnCPU();
+    this->SetGradientOnCPU();
 #endif  // __CUDNN__
 }
 
@@ -149,38 +149,38 @@ template<typename DTYPE> void LossFunction<DTYPE>::SetDeviceCPU(int pNumOfThread
     m_numOfThread = pNumOfThread;
 
 #if __CUDNN__
-    this->SetResultCPU();
-    this->SetGradientCPU();
+    this->SetResultOnCPU();
+    this->SetGradientOnCPU();
 #endif  // __CUDNN__
 }
 
 #if __CUDNN__
-template<typename DTYPE> int LossFunction<DTYPE>::SetResultCPU() {
-    if (m_aResult) m_aResult->MemcpyDeviceToHost();
+template<typename DTYPE> int LossFunction<DTYPE>::SetResultOnCPU() {
+    if (m_aResult) m_aResult->SetDeviceCPU();
 
     return TRUE;
 }
 
-template<typename DTYPE> int LossFunction<DTYPE>::SetGradientCPU() {
-    if (m_aGradient) m_aGradient->MemcpyDeviceToHost();
+template<typename DTYPE> int LossFunction<DTYPE>::SetGradientOnCPU() {
+    if (m_aGradient) m_aGradient->SetDeviceCPU();
 
     return TRUE;
 }
 
 template<typename DTYPE> void LossFunction<DTYPE>::SetDeviceGPU() {
     m_Device = GPU;
-    this->SetResultGPU();
-    this->SetGradientGPU();
+    this->SetResultOnGPU();
+    this->SetGradientOnGPU();
 }
 
-template<typename DTYPE> int LossFunction<DTYPE>::SetResultGPU() {
-    if (m_aResult) m_aResult->MemcpyHostToDevice();
+template<typename DTYPE> int LossFunction<DTYPE>::SetResultOnGPU() {
+    if (m_aResult) m_aResult->SetDeviceGPU();
 
     return TRUE;
 }
 
-template<typename DTYPE> int LossFunction<DTYPE>::SetGradientGPU() {
-    if (m_aGradient) m_aGradient->MemcpyHostToDevice();
+template<typename DTYPE> int LossFunction<DTYPE>::SetGradientOnGPU() {
+    if (m_aGradient) m_aGradient->SetDeviceGPU();
 
     return TRUE;
 }

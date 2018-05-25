@@ -129,7 +129,7 @@ template<typename DTYPE> DTYPE *Data<DTYPE>::GetDeviceData(unsigned int pTime) {
     return m_aDevData[pTime];
 }
 
-template<typename DTYPE> void Data<DTYPE>::MemcpyDeviceToHost() {
+template<typename DTYPE> void Data<DTYPE>::SetDeviceCPU() {
     if (m_aDevData != NULL) {
         for (int i = 0; i < m_timeSize; i++) {
             checkCudaErrors(cudaMemcpy(m_aHostData[i], m_aDevData[i], (m_capacityPerTime * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
@@ -137,7 +137,7 @@ template<typename DTYPE> void Data<DTYPE>::MemcpyDeviceToHost() {
     }
 }
 
-template<typename DTYPE> void Data<DTYPE>::MemcpyHostToDevice() {
+template<typename DTYPE> void Data<DTYPE>::SetDeviceGPU() {
     if (m_aDevData == NULL) {
         m_aDevData = new DTYPE *[m_timeSize];
 

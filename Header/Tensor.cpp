@@ -143,13 +143,13 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetHostData(unsigned int pTime) {
     if (m_Device == GPU) {
         printf("Warning! Tensor is allocated in Device(GPU) latest time\n");
         printf("Change mode GPU to CPU\n");
-        this->MemcpyDeviceToHost();
+        this->SetDeviceCPU();
     }
 
     # else // if __DEBUG__
 
     if (m_Device == GPU) {
-        this->MemcpyDeviceToHost();
+        this->SetDeviceCPU();
     }
 
     # endif // __DEBUG__
@@ -166,13 +166,13 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetDeviceData(unsigned int pTime)
     if (m_Device == CPU) {
         printf("Warning! Tensor is allocated in Host(CPU) latest time\n");
         printf("Change mode CPU toGPU\n");
-        this->MemcpyHostToDevice();
+        this->SetDeviceGPU();
     }
 
     # else // if __DEBUG__
 
     if (m_Device == CPU) {
-        this->MemcpyHostToDevice();
+        this->SetDeviceGPU();
     }
 
     # endif // __DEBUG__
@@ -180,14 +180,14 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetDeviceData(unsigned int pTime)
     return m_aData->GetDeviceData(pTime);
 }
 
-template<typename DTYPE> void Tensor<DTYPE>::MemcpyDeviceToHost() {
+template<typename DTYPE> void Tensor<DTYPE>::SetDeviceCPU() {
     m_Device = CPU;
-    m_aData->MemcpyDeviceToHost();
+    m_aData->SetDeviceCPU();
 }
 
-template<typename DTYPE> void Tensor<DTYPE>::MemcpyHostToDevice() {
+template<typename DTYPE> void Tensor<DTYPE>::SetDeviceGPU() {
     m_Device = GPU;
-    m_aData->MemcpyHostToDevice();
+    m_aData->SetDeviceGPU();
 }
 
 template<typename DTYPE> cudnnTensorDescriptor_t& Tensor<DTYPE>::GetDescriptor() {
@@ -222,13 +222,13 @@ template<typename DTYPE> void Tensor<DTYPE>::Reset() {
     if (m_Device == GPU) {
         printf("Warning! Tensor is allocated in Device(GPU) latest time\n");
         printf("Change mode GPU to CPU\n");
-        this->MemcpyDeviceToHost();
+        this->SetDeviceCPU();
     }
 
     # else // if __DEBUG__
 
     if (m_Device == GPU) {
-        this->MemcpyDeviceToHost();
+        this->SetDeviceCPU();
     }
 
     # endif // __DEBUG__
@@ -268,13 +268,13 @@ template<typename DTYPE> DTYPE& Tensor<DTYPE>::operator[](unsigned int index) {
     if (m_Device == GPU) {
         printf("Warning! Tensor is allocated in Device(GPU) latest time\n");
         printf("Change mode GPU to CPU\n");
-        this->MemcpyDeviceToHost();
+        this->SetDeviceCPU();
     }
 
     # else // if __DEBUG__
 
     if (m_Device == GPU) {
-        this->MemcpyDeviceToHost();
+        this->SetDeviceCPU();
     }
 
     # endif // __DEBUG__

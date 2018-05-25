@@ -41,17 +41,6 @@ public:
 
     virtual int UpdateVariable(Tensorholder<DTYPE> *pTrainableTensor) = 0;
 
-#if __CUDNN__
-
-    virtual void   SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
-
-    cudnnHandle_t& GetCudnnHandle();
-
-    virtual int    UpdateVariableOnGPU();
-
-    virtual int    UpdateVariableOnGPU(Tensorholder<DTYPE> *pTrainableTensor) = 0;
-
-#endif  // if __CUDNN__
     // ===============
 
     void                              SetLearningRate(float pLearningRate);
@@ -67,6 +56,18 @@ public:
     int                               GetTrainableTensorDegree() const;
 
     int                               ResetParameterGradient();
+
+#if __CUDNN__
+
+    virtual void   SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
+
+    cudnnHandle_t& GetCudnnHandle();
+
+    virtual int    UpdateVariableOnGPU();
+
+    virtual int    UpdateVariableOnGPU(Tensorholder<DTYPE> *pTrainableTensor) = 0;
+
+#endif  // if __CUDNN__
 };
 
 #endif  // OPTIMIZER_H_

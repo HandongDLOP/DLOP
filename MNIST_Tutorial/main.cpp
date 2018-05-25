@@ -22,10 +22,10 @@ int main(int argc, char const *argv[]) {
     Tensorholder<float> *label = new Tensorholder<float>(1, BATCH, 1, 1, 10, "label");
 
     // ======================= Select net ===================
-    // NeuralNetwork<float> *net = new my_CNN(x, label);
+    NeuralNetwork<float> *net = new my_CNN(x, label);
     // NeuralNetwork<float> *net = new my_NN(x, label, isSLP);
     // NeuralNetwork<float> *net = new my_NN(x, label, isMLP);
-    NeuralNetwork<float> *net = Resnet14<float>(x, label);
+    // NeuralNetwork<float> *net = Resnet14<float>(x, label);
 
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
@@ -56,8 +56,8 @@ int main(int argc, char const *argv[]) {
             Tensor<float> * l_t = dataset->GetTrainFeedLabel();
 
 #if __CUDNN__
-            x_t->MemcpyHostToDevice();
-            l_t->MemcpyHostToDevice();
+            x_t->SetDeviceGPU();
+            l_t->SetDeviceGPU();
 #endif  // __CUDNN__s
 
             x->SetTensor(x_t);
@@ -122,8 +122,8 @@ int main(int argc, char const *argv[]) {
             Tensor<float> * l_t = dataset->GetTestFeedLabel();
 
 #if __CUDNN__
-            x_t->MemcpyHostToDevice();
-            l_t->MemcpyHostToDevice();
+            x_t->SetDeviceGPU();
+            l_t->SetDeviceGPU();
 #endif  // __CUDNN__
 
             x->SetTensor(x_t);
