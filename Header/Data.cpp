@@ -5,6 +5,10 @@ template class Data<float>;
 template class Data<double>;
 
 template<typename DTYPE> int Data<DTYPE>::Alloc() {
+    #if __DEBUG__
+    std::cout << "Data<DTYPE>::Alloc()" << '\n';
+    #endif  // __DEBUG__
+
     m_aaHostData = new DTYPE *[m_TimeSize];
 
     for (int i = 0; i < m_TimeSize; i++) {
@@ -21,6 +25,10 @@ template<typename DTYPE> int Data<DTYPE>::Alloc() {
 }
 
 template<typename DTYPE> int Data<DTYPE>::Alloc(Data *pData) {
+    #if __DEBUG__
+    std::cout << "Data<DTYPE>::Alloc(Data *pData)" << '\n';
+    #endif  // __DEBUG__
+
     m_aaHostData = new DTYPE *[m_TimeSize];
 
     for (int i = 0; i < m_TimeSize; i++) {
@@ -42,6 +50,10 @@ template<typename DTYPE> int Data<DTYPE>::Alloc(Data *pData) {
 }
 
 template<typename DTYPE> void Data<DTYPE>::Delete() {
+    #if __DEBUG__
+    std::cout << "Data<DTYPE>::Delete()" << '\n';
+    #endif  // __DEBUG__
+
     if (m_aaHostData) {
         for (int i = 0; i < m_TimeSize; i++) {
             if (m_aaHostData[i]) {
@@ -62,6 +74,10 @@ template<typename DTYPE> void Data<DTYPE>::Delete() {
 #ifdef __CUDNN__
 
 template<typename DTYPE> int Data<DTYPE>::AllocOnGPU() {
+    # if __DEBUG__
+    std::cout << "Data<DTYPE>::AllocOnGPU()" << '\n';
+    # endif // __DEBUG__
+
     if (m_aaDevData == NULL) {
         m_aaDevData = new DTYPE *[m_TimeSize];
 
@@ -73,6 +89,10 @@ template<typename DTYPE> int Data<DTYPE>::AllocOnGPU() {
 }
 
 template<typename DTYPE> void Data<DTYPE>::DeleteOnGPU() {
+    # if __DEBUG__
+    std::cout << "Data<DTYPE>::DeleteOnGPU()" << '\n';
+    # endif // __DEBUG__
+
     if (m_aaDevData) {
         for (int i = 0; i < m_TimeSize; i++) {
             if (m_aaDevData[i]) {
@@ -86,6 +106,10 @@ template<typename DTYPE> void Data<DTYPE>::DeleteOnGPU() {
 }
 
 template<typename DTYPE> int Data<DTYPE>::MemcpyCPU2GPU() {
+    # if __DEBUG__
+    std::cout << "Data<DTYPE>::MemcpyCPU2GPU()" << '\n';
+    # endif // __DEBUG__
+
     if (m_aaDevData != NULL) {
         for (int i = 0; i < m_TimeSize; i++) {
             checkCudaErrors(cudaMemcpy(m_aaDevData[i], m_aaHostData[i], (m_CapacityPerTime * sizeof(DTYPE)), cudaMemcpyHostToDevice));
@@ -95,6 +119,10 @@ template<typename DTYPE> int Data<DTYPE>::MemcpyCPU2GPU() {
 }
 
 template<typename DTYPE> int Data<DTYPE>::MemcpyGPU2CPU() {
+    # if __DEBUG__
+    std::cout << "Data<DTYPE>::MemcpyGPU2CPU()" << '\n';
+    # endif // __DEBUG__
+
     if (m_aaDevData != NULL) {
         for (int i = 0; i < m_TimeSize; i++) {
             checkCudaErrors(cudaMemcpy(m_aaHostData[i], m_aaDevData[i], (m_CapacityPerTime * sizeof(DTYPE)), cudaMemcpyDeviceToHost));
@@ -107,7 +135,7 @@ template<typename DTYPE> int Data<DTYPE>::MemcpyGPU2CPU() {
 
 template<typename DTYPE> Data<DTYPE>::Data(unsigned int pTimeSize, unsigned int pCapacity) {
     #if __DEBUG__
-    std::cout << "Data<DTYPE>::Data(Shape *)" << '\n';
+    std::cout << "Data<DTYPE>::Data(unsigned int pTimeSize, unsigned int pCapacity)" << '\n';
     #endif  // __DEBUG__
     m_TimeSize        = pTimeSize;
     m_CapacityPerTime = pCapacity;
@@ -121,7 +149,7 @@ template<typename DTYPE> Data<DTYPE>::Data(unsigned int pTimeSize, unsigned int 
 
 template<typename DTYPE> Data<DTYPE>::Data(Data *pData) {
     #if __DEBUG__
-    std::cout << "Data<DTYPE>::Data(Data *)" << '\n';
+    std::cout << "Data<DTYPE>::Data(Data *pData)" << '\n';
     #endif  // __DEBUG__
     m_TimeSize        = pData->GetTimeSize();
     m_CapacityPerTime = pData->GetCapacityPerTime();
@@ -201,23 +229,67 @@ template<typename DTYPE> Device Data<DTYPE>::GetDevice() {
 }
 
 template<typename DTYPE> DTYPE *Data<DTYPE>::GetCPUData(unsigned int pTime) {
+    #if __CUDNN__
+    # if __DEBUG__
+
+    if (m_Device == GPU) {
+        printf("Warning! Data is allocated in Device(GPU) latest time\n");
+        printf("Change mode GPU to CPU\n");
+        this->SetDeviceCPU();
+    }
+
+    # else // if __DEBUG__
+
+    if (m_Device == GPU) {
+        this->SetDeviceCPU();
+    }
+
+    # endif // __DEBUG__
+    #endif  // __CUDNN__
+
     return m_aaHostData[pTime];
 }
 
 #ifdef __CUDNN__
 
 template<typename DTYPE> int Data<DTYPE>::SetDeviceCPU() {
+    # if __DEBUG__
+    std::cout << "Data<DTYPE>::SetDeviceCPU()" << '\n';
+    # endif // __DEBUG__
     this->MemcpyGPU2CPU();
     return TRUE;
 }
 
 template<typename DTYPE> int Data<DTYPE>::SetDeviceGPU() {
+    # if __DEBUG__
+    std::cout << "Data<DTYPE>::SetDeviceGPU()" << '\n';
+    # endif // __DEBUG__
+
     if (m_aaDevData == NULL) this->AllocOnGPU();
     this->MemcpyCPU2GPU();
     return TRUE;
 }
 
 template<typename DTYPE> DTYPE *Data<DTYPE>::GetGPUData(unsigned int pTime) {
+    # if __DEBUG__
+
+    if (m_Device == CPU) {
+        printf("Warning! Data is allocated in Host(CPU) latest time\n");
+        printf("Change mode CPU toGPU\n");
+        this->SetDeviceGPU();
+    }
+
+    # else // if __DEBUG__
+
+    #  if __ACCURATE__
+
+    if (m_Device == CPU) {
+        this->SetDeviceGPU();
+    }
+    #  endif // __ACCURATE__
+
+    # endif // __DEBUG__
+
     return m_aaDevData[pTime];
 }
 
