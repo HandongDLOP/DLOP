@@ -152,7 +152,47 @@ template<typename DTYPE> int Data<DTYPE>::GetCapacityPerTime() {
     return m_CapacityPerTime;
 }
 
+template<typename DTYPE> DTYPE Data<DTYPE>::GetElement(unsigned int index) {
+    #if __CUDNN__
+    # if __DEBUG__
+
+    if (m_Device == GPU) {
+        printf("Warning! Data is allocated in Device(GPU) latest time\n");
+        printf("Change mode GPU to CPU\n");
+        this->SetDeviceCPU();
+    }
+
+    # else // if __DEBUG__
+
+    if (m_Device == GPU) {
+        this->SetDeviceCPU();
+    }
+
+    # endif // __DEBUG__
+    #endif  // __CUDNN__
+
+    return m_aaHostData[index / m_CapacityPerTime][index % m_CapacityPerTime];
+}
+
 template<typename DTYPE> DTYPE& Data<DTYPE>::operator[](unsigned int index) {
+    #if __CUDNN__
+    # if __DEBUG__
+
+    if (m_Device == GPU) {
+        printf("Warning! Data is allocated in Device(GPU) latest time\n");
+        printf("Change mode GPU to CPU\n");
+        this->SetDeviceCPU();
+    }
+
+    # else // if __DEBUG__
+
+    if (m_Device == GPU) {
+        this->SetDeviceCPU();
+    }
+
+    # endif // __DEBUG__
+    #endif  // __CUDNN__
+
     return m_aaHostData[index / m_CapacityPerTime][index % m_CapacityPerTime];
 }
 
@@ -166,10 +206,6 @@ template<typename DTYPE> DTYPE *Data<DTYPE>::GetCPUData(unsigned int pTime) {
 
 #ifdef __CUDNN__
 
-template<typename DTYPE> DTYPE *Data<DTYPE>::GetGPUData(unsigned int pTime) {
-    return m_aaDevData[pTime];
-}
-
 template<typename DTYPE> int Data<DTYPE>::SetDeviceCPU() {
     this->MemcpyGPU2CPU();
     return TRUE;
@@ -179,6 +215,10 @@ template<typename DTYPE> int Data<DTYPE>::SetDeviceGPU() {
     if (m_aaDevData == NULL) this->AllocOnGPU();
     this->MemcpyCPU2GPU();
     return TRUE;
+}
+
+template<typename DTYPE> DTYPE *Data<DTYPE>::GetGPUData(unsigned int pTime) {
+    return m_aaDevData[pTime];
 }
 
 #endif  // if __CUDNN__

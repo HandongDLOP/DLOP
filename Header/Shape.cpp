@@ -344,9 +344,20 @@ int Shape::SetDeviceGPU() {
 cudnnTensorDescriptor_t& Shape::GetDescriptor() {
     # if __DEBUG__
     std::cout << "Shape::GetDescriptor()" << '\n';
-    # endif // __DEBUG__
 
-    if (m_Device == CPU) this->SetDeviceGPU();
+    if (m_Device == CPU) {
+        printf("Warning! Tensor is allocated in Host(CPU) latest time\n");
+        printf("Change mode CPU toGPU\n");
+        this->SetDeviceGPU();
+    }
+
+    # else // if __DEBUG__
+
+    if (m_Device == CPU) {
+        this->SetDeviceGPU();
+    }
+
+    # endif // __DEBUG__
 
     return m_desc;
 }

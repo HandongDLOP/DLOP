@@ -37,13 +37,14 @@ public:
     int    GetCapacity();
     int    GetTimeSize();
     int    GetCapacityPerTime();
+    DTYPE  GetElement(unsigned int index);
     DTYPE& operator[](unsigned int index);
     Device GetDevice();
     DTYPE* GetCPUData(unsigned int pTime = 0);
 
 #ifdef __CUDNN__
-    int   SetDeviceCPU();
-    int   SetDeviceGPU();
+    int    SetDeviceCPU();
+    int    SetDeviceGPU();
 
     DTYPE* GetGPUData(unsigned int pTime = 0);
 
