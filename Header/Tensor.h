@@ -27,7 +27,11 @@ private:
     void Delete();
 
 public:
-    Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, IsUseTime pAnswer = UseTime);  // For 5D-Tensor
+    Tensor(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, IsUseTime pAnswer = UseTime);  // For 5D-Tensor
+    Tensor(int pSize0, int pSize1, int pSize2, int pSize3, IsUseTime pAnswer = UseTime);  // For 4D-Tensor
+    Tensor(int pSize0, int pSize1, int pSize2, IsUseTime pAnswer = UseTime);  // For 3D-Tensor
+    Tensor(int pSize0, int pSize1, IsUseTime pAnswer = UseTime);  // For 2D-Tensor
+    Tensor(int pSize0, IsUseTime pAnswer = UseTime);  // For 1D-Tensor
     Tensor(Shape *pShape, IsUseTime pAnswer = UseTime);
     Tensor(Tensor<DTYPE> *pTensor);  // Copy Constructor
 

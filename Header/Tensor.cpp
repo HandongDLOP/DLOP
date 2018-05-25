@@ -67,20 +67,66 @@ template<typename DTYPE> void Tensor<DTYPE>::Delete() {
 
 //////////////////////////////////////////////////////////////////////////////// for public method
 
-template<typename DTYPE> Tensor<DTYPE>::Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, IsUseTime pAnswer) {
+template<typename DTYPE> Tensor<DTYPE>::Tensor(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, IsUseTime pAnswer) {
     #if __DEBUG__
-    std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
+    std::cout << "Tensor<DTYPE>::Tensor(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, IsUseTime pAnswer)" << '\n';
     #endif  // __DEBUG__
+
     m_aShape = NULL;
     m_aData  = NULL;
     m_Device = CPU;
-    Alloc(new Shape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize), pAnswer);
+    Alloc(new Shape(pSize0, pSize1, pSize2, pSize3, pSize4), pAnswer);
+}
+
+template<typename DTYPE> Tensor<DTYPE>::Tensor(int pSize0, int pSize1, int pSize2, int pSize3, IsUseTime pAnswer) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Tensor(int pSize0, int pSize1, int pSize2, int pSize3, IsUseTime pAnswer)" << '\n';
+    #endif  // __DEBUG__
+
+    m_aShape = NULL;
+    m_aData  = NULL;
+    m_Device = CPU;
+    Alloc(new Shape(pSize0, pSize1, pSize2, pSize3), pAnswer);
+}
+
+template<typename DTYPE> Tensor<DTYPE>::Tensor(int pSize0, int pSize1, int pSize2, IsUseTime pAnswer) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Tensor(int pSize0, int pSize1, int pSize2, IsUseTime pAnswer)" << '\n';
+    #endif  // __DEBUG__
+
+    m_aShape = NULL;
+    m_aData  = NULL;
+    m_Device = CPU;
+    Alloc(new Shape(pSize0, pSize1, pSize2), pAnswer);
+}
+
+template<typename DTYPE> Tensor<DTYPE>::Tensor(int pSize0, int pSize1, IsUseTime pAnswer) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Tensor(int pSize0, int pSize1, IsUseTime pAnswer)" << '\n';
+    #endif  // __DEBUG__
+
+    m_aShape = NULL;
+    m_aData  = NULL;
+    m_Device = CPU;
+    Alloc(new Shape(pSize0, pSize1), pAnswer);
+}
+
+template<typename DTYPE> Tensor<DTYPE>::Tensor(int pSize0, IsUseTime pAnswer) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Tensor(int pSize0, IsUseTime pAnswer)" << '\n';
+    #endif  // __DEBUG__
+
+    m_aShape = NULL;
+    m_aData  = NULL;
+    m_Device = CPU;
+    Alloc(new Shape(pSize0), pAnswer);
 }
 
 template<typename DTYPE> Tensor<DTYPE>::Tensor(Shape *pShape, IsUseTime pAnswer) {
     #if __DEBUG__
-    std::cout << "Tensor::Tensor(Shape*)" << '\n';
+    std::cout << "Tensor<DTYPE>::Tensor(Shape *pShape, IsUseTime pAnswer)" << '\n';
     #endif  // __DEBUG__
+
     m_aShape = NULL;
     m_aData  = NULL;
     m_Device = CPU;
@@ -89,8 +135,9 @@ template<typename DTYPE> Tensor<DTYPE>::Tensor(Shape *pShape, IsUseTime pAnswer)
 
 template<typename DTYPE> Tensor<DTYPE>::Tensor(Tensor *pTensor) {
     #if __DEBUG__
-    std::cout << "Tensor::Tensor(Shape*)" << '\n';
+    std::cout << "Tensor<DTYPE>::Tensor(Tensor *pTensor)" << '\n';
     #endif  // __DEBUG__
+
     m_aShape = NULL;
     m_aData  = NULL;
     m_Device = CPU;
@@ -99,8 +146,9 @@ template<typename DTYPE> Tensor<DTYPE>::Tensor(Tensor *pTensor) {
 
 template<typename DTYPE> Tensor<DTYPE>::~Tensor() {
     #if __DEBUG__
-    std::cout << "Tensor::~Tensor()" << '\n';
+    std::cout << "Tensor<DTYPE>::~Tensor()" << '\n';
     #endif  // __DEBUG__
+
     Delete();
 }
 
