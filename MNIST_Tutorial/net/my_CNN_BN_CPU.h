@@ -9,7 +9,7 @@ public:
     my_CNN(Tensorholder<float> *x, Tensorholder<float> *label) {
         Operator<float> *out = NULL;
 
-        out = AddOperator(new Reshape<float>(x, 28, 28, "reshape"));
+        out = AddOperator(new ReShape<float>(x, 28, 28, "ReShape"));
 
         // ======================= layer 1=======================
         out = AddOperator(new ConvolutionLayer2D<float>(out, 1, 10, 3, 3, 1, 1, 0, TRUE, "1"));
@@ -23,7 +23,7 @@ public:
         out = AddOperator(new Relu<float>(out, "Relu_2"));
         out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, "MaxPool_2"));
 
-        out = AddOperator(new Reshape<float>(out, 1, 1, 5 * 5 * 20, "Flat"));
+        out = AddOperator(new ReShape<float>(out, 1, 1, 5 * 5 * 20, "Flat"));
 
         // ======================= layer 3=======================
         out = AddOperator(new Linear<float>(out, 5 * 5 * 20, 10, TRUE, "3"));

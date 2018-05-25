@@ -4,40 +4,40 @@
 #include "..//Operator.h"
 
 template<typename DTYPE>
-class Reshape : public Operator<DTYPE>{
+class ReShape : public Operator<DTYPE>{
 private:
 public:
-    Reshape(Operator<DTYPE> *pInput, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
+    ReShape(Operator<DTYPE> *pInput, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
         #if __DEBUG__
-        std::cout << "Reshape::Reshape(Operator *)" << '\n';
+        std::cout << "ReShape::ReShape(Operator *)" << '\n';
         #endif  // __DEBUG__
         this->Alloc(pInput, 0, 0, 0, pRowSize, pColSize);
     }
 
-    Reshape(Operator<DTYPE> *pInput, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
+    ReShape(Operator<DTYPE> *pInput, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
         #if __DEBUG__
-        std::cout << "Reshape::Reshape(Operator *)" << '\n';
+        std::cout << "ReShape::ReShape(Operator *)" << '\n';
         #endif  // __DEBUG__
         this->Alloc(pInput, 0, 0, pChannelSize, pRowSize, pColSize);
     }
 
-    Reshape(Operator<DTYPE> *pInput, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
+    ReShape(Operator<DTYPE> *pInput, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
         #if __DEBUG__
-        std::cout << "Reshape::Reshape(Operator *)" << '\n';
+        std::cout << "ReShape::ReShape(Operator *)" << '\n';
         #endif  // __DEBUG__
         this->Alloc(pInput, 0, pBatchSize, pChannelSize, pRowSize, pColSize);
     }
 
-    Reshape(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
+    ReShape(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
         #if __DEBUG__
-        std::cout << "Reshape::Reshape(Operator *)" << '\n';
+        std::cout << "ReShape::ReShape(Operator *)" << '\n';
         #endif  // __DEBUG__
         this->Alloc(pInput, pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
     }
 
-    ~Reshape() {
+    ~ReShape() {
         #if __DEBUG__
-        std::cout << "Reshape::~Reshape()" << '\n';
+        std::cout << "ReShape::~ReShape()" << '\n';
         #endif  // __DEBUG__
 
         Delete();
@@ -45,7 +45,7 @@ public:
 
     int Alloc(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
         #if __DEBUG__
-        std::cout << "Reshape::Alloc(Operator *, Operator *)" << '\n';
+        std::cout << "ReShape::Alloc(Operator *, Operator *)" << '\n';
         #endif  // __DEBUG__
 
         Shape *pInputShape = pInput->GetResult()->GetShape();
@@ -58,7 +58,7 @@ public:
 
 
         Tensor<DTYPE> *result = new Tensor<DTYPE>(pInput->GetResult());
-        result->Reshape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
+        result->ReShape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
 
         this->SetResult(result);  // copy data
 

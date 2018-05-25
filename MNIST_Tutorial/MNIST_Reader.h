@@ -301,7 +301,7 @@ void LABEL_Reader(string DATAPATH, DTYPE **pLabel) {
 }
 
 template<typename DTYPE>
-DTYPE** ReshapeData(OPTION pOption) {
+DTYPE** ReShapeData(OPTION pOption) {
     if (pOption == TESTIMAGE) {
         DTYPE **TestImage = new DTYPE *[NUMOFTESTDATA];
         IMAGE_Reader(TEST_IMAGE_FILE, TestImage);
@@ -329,10 +329,10 @@ template<typename DTYPE>
 MNISTDataSet<DTYPE>* CreateMNISTDataSet() {
     MNISTDataSet<DTYPE> *dataset = new MNISTDataSet<DTYPE>();
 
-    dataset->SetTestImage(ReshapeData<DTYPE>(TESTIMAGE));
-    dataset->SetTestLabel(ReshapeData<DTYPE>(TESTLABEL));
-    dataset->SetTrainImage(ReshapeData<DTYPE>(TRAINIMAGE));
-    dataset->SetTrainLabel(ReshapeData<DTYPE>(TRAINLABEL));
+    dataset->SetTestImage(ReShapeData<DTYPE>(TESTIMAGE));
+    dataset->SetTestLabel(ReShapeData<DTYPE>(TESTLABEL));
+    dataset->SetTrainImage(ReShapeData<DTYPE>(TRAINIMAGE));
+    dataset->SetTrainLabel(ReShapeData<DTYPE>(TRAINLABEL));
 
     return dataset;
 }

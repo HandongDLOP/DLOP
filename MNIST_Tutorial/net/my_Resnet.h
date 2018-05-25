@@ -109,8 +109,8 @@ public:
 
         Operator<DTYPE> *out = pInput;
 
-        // Reshape
-        out = this->AddOperator(new Reshape<DTYPE>(out, 28, 28, "reshape"));
+        // ReShape
+        out = this->AddOperator(new ReShape<DTYPE>(out, 28, 28, "ReShape"));
 
 #if __CUDNN__
         // out = this->AddOperator(new CUDNNBatchNormalizeLayer2D<DTYPE>(out, 1, "1"));
@@ -129,7 +129,7 @@ public:
 
         out = this->AddOperator(new GlobalAvaragePooling2D<DTYPE>(out, "Avg Pooling"));
 
-        out = this->AddOperator(new Reshape<DTYPE>(out, 1, 1, 160, "reshape"));
+        out = this->AddOperator(new ReShape<DTYPE>(out, 1, 1, 160, "ReShape"));
 
         out = this->AddOperator(new Linear<DTYPE>(out, 160, pNumOfClass, TRUE, "Classification"));
 

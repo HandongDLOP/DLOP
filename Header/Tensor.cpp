@@ -319,16 +319,16 @@ template<typename DTYPE> int Tensor<DTYPE>::GetColSize() {
     else return 0;
 }
 
-template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
+template<typename DTYPE> int Tensor<DTYPE>::ReShape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
     #if __DEBUG__
-    std::cout << "Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4)" << '\n';
+    std::cout << "Tensor<DTYPE>::ReShape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4)" << '\n';
     #endif  // __DEBUG__
 
     int cur_capacity = GetCapacity();
     int new_capacity = pSize0 * pSize1 * pSize2 * pSize3 * pSize4;
 
     if (cur_capacity != new_capacity) {
-        printf("Receive invalid shape value in %s (%s %d), cannot Reshape\n", __FUNCTION__, __FILE__, __LINE__);
+        printf("Receive invalid shape value in %s (%s %d), cannot ReShape\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
     } else {
         m_aShape->ReShape(5, pSize0, pSize1, pSize2, pSize3, pSize4);
@@ -337,16 +337,16 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int 
     return TRUE;
 }
 
-template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2, int pSize3) {
+template<typename DTYPE> int Tensor<DTYPE>::ReShape(int pSize0, int pSize1, int pSize2, int pSize3) {
     #if __DEBUG__
-    std::cout << "Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2, int pSize3)" << '\n';
+    std::cout << "Tensor<DTYPE>::ReShape(int pSize0, int pSize1, int pSize2, int pSize3)" << '\n';
     #endif  // __DEBUG__
 
     int cur_capacity = GetCapacity();
     int new_capacity = pSize0 * pSize1 * pSize2 * pSize3;
 
     if (cur_capacity != new_capacity) {
-        printf("Receive invalid shape value in %s (%s %d), cannot Reshape\n", __FUNCTION__, __FILE__, __LINE__);
+        printf("Receive invalid shape value in %s (%s %d), cannot ReShape\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
     } else {
         m_aShape->ReShape(4, pSize0, pSize1, pSize2, pSize3);
@@ -355,16 +355,16 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int 
     return TRUE;
 }
 
-template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2) {
+template<typename DTYPE> int Tensor<DTYPE>::ReShape(int pSize0, int pSize1, int pSize2) {
     #if __DEBUG__
-    std::cout << "Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2)" << '\n';
+    std::cout << "Tensor<DTYPE>::ReShape(int pSize0, int pSize1, int pSize2)" << '\n';
     #endif  // __DEBUG__
 
     int cur_capacity = GetCapacity();
     int new_capacity = pSize0 * pSize1 * pSize2;
 
     if (cur_capacity != new_capacity) {
-        printf("Receive invalid shape value in %s (%s %d), cannot Reshape\n", __FUNCTION__, __FILE__, __LINE__);
+        printf("Receive invalid shape value in %s (%s %d), cannot ReShape\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
     } else {
         m_aShape->ReShape(3, pSize0, pSize1, pSize2);
@@ -373,16 +373,16 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int 
     return TRUE;
 }
 
-template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1) {
+template<typename DTYPE> int Tensor<DTYPE>::ReShape(int pSize0, int pSize1) {
     #if __DEBUG__
-    std::cout << "Tensor<DTYPE>::Reshape(int pSize0, int pSize1)" << '\n';
+    std::cout << "Tensor<DTYPE>::ReShape(int pSize0, int pSize1)" << '\n';
     #endif  // __DEBUG__
 
     int cur_capacity = GetCapacity();
     int new_capacity = pSize0 * pSize1;
 
     if (cur_capacity != new_capacity) {
-        printf("Receive invalid shape value in %s (%s %d), cannot Reshape\n", __FUNCTION__, __FILE__, __LINE__);
+        printf("Receive invalid shape value in %s (%s %d), cannot ReShape\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
     } else {
         m_aShape->ReShape(2, pSize0, pSize1);
@@ -391,16 +391,16 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1) {
     return TRUE;
 }
 
-template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0) {
+template<typename DTYPE> int Tensor<DTYPE>::ReShape(int pSize0) {
     #if __DEBUG__
-    std::cout << "Tensor<DTYPE>::Reshape(int pSize0)" << '\n';
+    std::cout << "Tensor<DTYPE>::ReShape(int pSize0)" << '\n';
     #endif  // __DEBUG__
 
     int cur_capacity = GetCapacity();
     int new_capacity = pSize0;
 
     if (cur_capacity != new_capacity) {
-        printf("Receive invalid shape value in %s (%s %d), cannot Reshape\n", __FUNCTION__, __FILE__, __LINE__);
+        printf("Receive invalid shape value in %s (%s %d), cannot ReShape\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
     } else {
         m_aShape->ReShape(1, pSize0);

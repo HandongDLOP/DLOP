@@ -53,11 +53,11 @@ public:
     int       GetColSize();     // 삭제 예정
 
 
-    int       Reshape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4);
-    int       Reshape(int pSize0, int pSize1, int pSize2, int pSize3);
-    int       Reshape(int pSize0, int pSize1, int pSize2);
-    int       Reshape(int pSize0, int pSize1);
-    int       Reshape(int pSize0);
+    int       ReShape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4);
+    int       ReShape(int pSize0, int pSize1, int pSize2, int pSize3);
+    int       ReShape(int pSize0, int pSize1, int pSize2);
+    int       ReShape(int pSize0, int pSize1);
+    int       ReShape(int pSize0);
 
     void      Reset();
 
