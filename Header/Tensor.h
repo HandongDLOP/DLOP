@@ -1,8 +1,6 @@
 #ifndef TENSOR_H_
 #define TENSOR_H_
 
-#include <time.h>
-#include <math.h>
 #include <chrono>
 #include <random>
 
