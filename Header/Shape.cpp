@@ -59,7 +59,7 @@ int Shape::Alloc(Shape *pShape) {
 
 #if __CUDNN__
 
-    if (pShape->GetDescriptor()) AllocOnGPU();
+    if (m_Device == GPU) SetDeviceGPU();
 #endif  // if __CUDNN__
 
     return TRUE;

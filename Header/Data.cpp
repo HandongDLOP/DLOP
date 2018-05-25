@@ -4,12 +4,14 @@ template class Data<int>;
 template class Data<float>;
 template class Data<double>;
 
-template<typename DTYPE> int Data<DTYPE>::Alloc() {
+template<typename DTYPE> int Data<DTYPE>::Alloc(unsigned int pTimeSize, unsigned int pCapacityPerTime) {
     #if __DEBUG__
     std::cout << "Data<DTYPE>::Alloc()" << '\n';
     #endif  // __DEBUG__
 
-    m_aaHostData = new DTYPE *[m_TimeSize];
+    m_TimeSize        = pTimeSize;
+    m_CapacityPerTime = pCapacityPerTime;
+    m_aaHostData      = new DTYPE *[m_TimeSize];
 
     for (int i = 0; i < m_TimeSize; i++) {
         m_aaHostData[i] = new DTYPE[m_CapacityPerTime];
@@ -18,6 +20,8 @@ template<typename DTYPE> int Data<DTYPE>::Alloc() {
             m_aaHostData[i][j] = 0.f;
         }
     }
+
+    m_CapacityOfData = m_TimeSize * m_CapacityPerTime;
 
     m_Device = CPU;
 
@@ -29,7 +33,9 @@ template<typename DTYPE> int Data<DTYPE>::Alloc(Data *pData) {
     std::cout << "Data<DTYPE>::Alloc(Data *pData)" << '\n';
     #endif  // __DEBUG__
 
-    m_aaHostData = new DTYPE *[m_TimeSize];
+    m_TimeSize        = pData->GetTimeSize();
+    m_CapacityPerTime = pData->GetCapacityPerTime();
+    m_aaHostData      = new DTYPE *[m_TimeSize];
 
     for (int i = 0; i < m_TimeSize; i++) {
         m_aaHostData[i] = new DTYPE[m_CapacityPerTime];
@@ -38,6 +44,8 @@ template<typename DTYPE> int Data<DTYPE>::Alloc(Data *pData) {
             m_aaHostData[i][j] = (*pData)[i * m_CapacityPerTime + j];
         }
     }
+
+    m_CapacityOfData = m_TimeSize * m_CapacityPerTime;
 
     m_Device = pData->GetDevice();
 
@@ -137,22 +145,22 @@ template<typename DTYPE> Data<DTYPE>::Data(unsigned int pTimeSize, unsigned int 
     #if __DEBUG__
     std::cout << "Data<DTYPE>::Data(unsigned int pTimeSize, unsigned int pCapacity)" << '\n';
     #endif  // __DEBUG__
-    m_TimeSize        = pTimeSize;
-    m_CapacityPerTime = pCapacity;
+    m_TimeSize        = 0;
+    m_CapacityPerTime = 0;
     m_aaHostData      = NULL;
     m_Device          = CPU;
 #if __CUDNN__
     m_aaDevData = NULL;
 #endif  // __CUDNN
-    Alloc();
+    Alloc(pTimeSize, pCapacity);
 }
 
 template<typename DTYPE> Data<DTYPE>::Data(Data *pData) {
     #if __DEBUG__
     std::cout << "Data<DTYPE>::Data(Data *pData)" << '\n';
     #endif  // __DEBUG__
-    m_TimeSize        = pData->GetTimeSize();
-    m_CapacityPerTime = pData->GetCapacityPerTime();
+    m_TimeSize        = 0;
+    m_CapacityPerTime = 0;
     m_aaHostData      = NULL;
     m_Device          = CPU;
 #if __CUDNN__
@@ -256,6 +264,9 @@ template<typename DTYPE> int Data<DTYPE>::SetDeviceCPU() {
     # if __DEBUG__
     std::cout << "Data<DTYPE>::SetDeviceCPU()" << '\n';
     # endif // __DEBUG__
+
+    m_Device = CPU;
+
     this->MemcpyGPU2CPU();
     return TRUE;
 }
@@ -264,6 +275,8 @@ template<typename DTYPE> int Data<DTYPE>::SetDeviceGPU() {
     # if __DEBUG__
     std::cout << "Data<DTYPE>::SetDeviceGPU()" << '\n';
     # endif // __DEBUG__
+
+    m_Device = GPU;
 
     if (m_aaDevData == NULL) this->AllocOnGPU();
     this->MemcpyCPU2GPU();

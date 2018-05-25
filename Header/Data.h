@@ -7,6 +7,7 @@ template<typename DTYPE> class Data {
 private:
     DTYPE **m_aaHostData;
 
+    int m_CapacityOfData;
     int m_TimeSize;
     int m_CapacityPerTime;
 
@@ -17,7 +18,7 @@ private:
 #endif  // __CUDNN
 
 private:
-    int  Alloc();
+    int  Alloc(unsigned int pTimeSize, unsigned int pCapacityPerTime);
     int  Alloc(Data *pData);
     void Delete();
 
