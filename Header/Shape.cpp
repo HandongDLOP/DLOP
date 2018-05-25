@@ -326,8 +326,6 @@ int Shape::SetDeviceCPU() {
 
     m_Device = CPU;
 
-    DeleteOnGPU();
-
     return TRUE;
 }
 
@@ -338,7 +336,7 @@ int Shape::SetDeviceGPU() {
 
     m_Device = GPU;
 
-    AllocOnGPU();
+    if(m_desc == NULL) AllocOnGPU();
 
     return TRUE;
 }
