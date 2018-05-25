@@ -9,33 +9,41 @@
 #include "Shape.h"
 #include "Data.h"
 
+enum IsUseTime {
+    UseTime,
+    NoUseTime
+};
+
 template<typename DTYPE> class Tensor {
 private:
     Shape *m_aShape;
     Data<DTYPE> *m_aData;
     Device m_Device;
+    IsUseTime m_IsUseTime;
+
+private:
+    int  Alloc(Shape *pShape, IsUseTime pAnswer);
+    int  Alloc(Tensor *pTensor);
+    void Delete();
 
 public:
-    Tensor();
-    Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);  // For 5D-Tensor
-    Tensor(Shape *pShape);
+    Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, IsUseTime pAnswer = UseTime);  // For 5D-Tensor
+    Tensor(Shape *pShape, IsUseTime pAnswer = UseTime);
     Tensor(Tensor<DTYPE> *pTensor);  // Copy Constructor
 
     virtual ~Tensor();
 
-    int                      Alloc(Shape *pShape);
-    int                      Alloc(Tensor *pTensor);
-    void                     Delete();
-
     Shape                  * GetShape();
     Data<DTYPE>            * GetData();
-    int                      GetTimeSize();
-    int                      GetBatchSize();
-    int                      GetChannelSize();
-    int                      GetRowSize();
-    int                      GetColSize();
     int                      GetCapacity();
+    int                      GetTimeSize(); // 삭제 예정
+    int                      GetBatchSize(); // 삭제 예정
+    int                      GetChannelSize(); // 삭제 예정
+    int                      GetRowSize(); // 삭제 예정
+    int                      GetColSize(); // 삭제 예정
     DTYPE                  * GetCPUData(unsigned int pTime = 0);
+    Device                   GetDevice();
+    IsUseTime                GetIsUseTime();
 
     int                      Reshape(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
 

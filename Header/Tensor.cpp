@@ -4,35 +4,87 @@ template class Tensor<int>;
 template class Tensor<float>;
 template class Tensor<double>;
 
-////////////////////////////////////////////////////////////////////Class Tensor
-template<typename DTYPE> Tensor<DTYPE>::Tensor() {
-    #if __DEBUG__
-    std::cout << "Tensor::Tensor()" << '\n';
-    #endif  // __DEBUG__
+//////////////////////////////////////////////////////////////////////////////// for private method
 
-    m_aShape = NULL;
-    m_aData  = NULL;
+template<typename DTYPE> int Tensor<DTYPE>::Alloc(Shape *pShape, IsUseTime pAnswer) {
+    if (pShape == NULL) {
+        printf("Receive NULL pointer of Shape class in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
+        return FALSE;
+    } else {
+        m_aShape    = pShape;
+        m_IsUseTime = pAnswer;
+
+        int rank = pShape->GetRank();
+
+        int pTime            = 1;
+        int pCapacityPerTime = 1;
+
+        if (m_IsUseTime == UseTime) {
+            pTime = (*pShape)[0];
+
+            for (int i = 1; i < rank; i++) {
+                pCapacityPerTime *= (*pShape)[i];
+            }
+        } else if (m_IsUseTime == NoUseTime) {
+            for (int i = 0; i < rank; i++) {
+                pCapacityPerTime *= (*pShape)[i];
+            }
+        } else return FALSE;
+
+        m_aData = new Data<DTYPE>(pTime, pCapacityPerTime);
+    }
+
     m_Device = CPU;
+
+    return TRUE;
 }
 
-template<typename DTYPE> Tensor<DTYPE>::Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
+template<typename DTYPE> int Tensor<DTYPE>::Alloc(Tensor<DTYPE> *pTensor) {
+    if (pTensor == NULL) {
+        printf("Receive NULL pointer of Tensor<DTYPE> class in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
+        return FALSE;
+    } else {
+        m_aShape    = new Shape(pTensor->GetShape());
+        m_aData     = new Data<DTYPE>(pTensor->GetData());
+        m_Device    = pTensor->GetDevice();
+        m_IsUseTime = pTensor->GetIsUseTime();
+    }
+
+    return TRUE;
+}
+
+template<typename DTYPE> void Tensor<DTYPE>::Delete() {
+    if (m_aShape) {
+        delete m_aShape;
+        m_aShape = NULL;
+    }
+
+    if (m_aData) {
+        delete m_aData;
+        m_aData = NULL;
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////// for public method
+
+template<typename DTYPE> Tensor<DTYPE>::Tensor(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, IsUseTime pAnswer) {
     #if __DEBUG__
     std::cout << "Tensor::Tensor(int, int, int, int, int)" << '\n';
     #endif  // __DEBUG__
     m_aShape = NULL;
     m_aData  = NULL;
     m_Device = CPU;
-    Alloc(new Shape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize));
+    Alloc(new Shape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize), pAnswer);
 }
 
-template<typename DTYPE> Tensor<DTYPE>::Tensor(Shape *pShape) {
+template<typename DTYPE> Tensor<DTYPE>::Tensor(Shape *pShape, IsUseTime pAnswer) {
     #if __DEBUG__
     std::cout << "Tensor::Tensor(Shape*)" << '\n';
     #endif  // __DEBUG__
     m_aShape = NULL;
     m_aData  = NULL;
     m_Device = CPU;
-    Alloc(pShape);
+    Alloc(pShape, pAnswer);
 }
 
 template<typename DTYPE> Tensor<DTYPE>::Tensor(Tensor *pTensor) {
@@ -50,58 +102,6 @@ template<typename DTYPE> Tensor<DTYPE>::~Tensor() {
     std::cout << "Tensor::~Tensor()" << '\n';
     #endif  // __DEBUG__
     Delete();
-}
-
-template<typename DTYPE> int Tensor<DTYPE>::Alloc(Shape *pShape) {
-    if (pShape == NULL) {
-        printf("Receive NULL pointer of Shape class in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
-        return FALSE;
-    } else {
-        m_aShape = pShape;
-
-        int rank = pShape->GetRank();
-
-        if (rank < 5) {
-            delete m_aShape;
-            m_aShape = NULL;
-            printf("Receive invalid rank value %d in %s (%s %d)\n", rank, __FUNCTION__, __FILE__, __LINE__);
-            return FALSE;
-        } else {
-            int pTime            = (*pShape)[0];
-            int pCapacityPerTime = 1;
-
-            for (int i = 0; i < rank; i++) {
-                pCapacityPerTime *= (*pShape)[i];
-            }
-            m_aData = new Data<DTYPE>(pTime, pCapacityPerTime);
-        }
-    }
-
-    return TRUE;
-}
-
-template<typename DTYPE> int Tensor<DTYPE>::Alloc(Tensor<DTYPE> *pTensor) {
-    if (pTensor == NULL) {
-        printf("Receive NULL pointer of Tensor<DTYPE> class in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
-        return FALSE;
-    } else {
-        m_aShape = new Shape(pTensor->GetShape());
-        m_aData  = new Data<DTYPE>(pTensor->GetData());
-    }
-
-    return TRUE;
-}
-
-template<typename DTYPE> void Tensor<DTYPE>::Delete() {
-    if (m_aShape) {
-        delete m_aShape;
-        m_aShape = NULL;
-    }
-
-    if (m_aData) {
-        delete m_aData;
-        m_aData = NULL;
-    }
 }
 
 template<typename DTYPE> Shape *Tensor<DTYPE>::GetShape() {
@@ -134,6 +134,14 @@ template<typename DTYPE> int Tensor<DTYPE>::GetColSize() {
 
 template<typename DTYPE> int Tensor<DTYPE>::GetCapacity() {
     return m_aData->GetCapacity();
+}
+
+template<typename DTYPE> Device Tensor<DTYPE>::GetDevice() {
+    return m_Device;
+}
+
+template<typename DTYPE> IsUseTime Tensor<DTYPE>::GetIsUseTime() {
+    return m_IsUseTime;
 }
 
 template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetCPUData(unsigned int pTime) {
@@ -183,11 +191,13 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetGPUData(unsigned int pTime) {
 template<typename DTYPE> void Tensor<DTYPE>::SetDeviceCPU() {
     m_Device = CPU;
     m_aData->SetDeviceCPU();
+    m_aShape->SetDeviceCPU();
 }
 
 template<typename DTYPE> void Tensor<DTYPE>::SetDeviceGPU() {
     m_Device = GPU;
     m_aData->SetDeviceGPU();
+    m_aShape->SetDeviceGPU();
 }
 
 template<typename DTYPE> cudnnTensorDescriptor_t& Tensor<DTYPE>::GetDescriptor() {
@@ -242,21 +252,20 @@ template<typename DTYPE> void Tensor<DTYPE>::Reset() {
 #if __CUDNN__
 
 template<typename DTYPE> void Tensor<DTYPE>::Reset(cudnnHandle_t& pCudnnHandle) {
-    int pTime = this->GetTimeSize();
+    int pTime                     = this->GetTimeSize();
     cudnnTensorDescriptor_t pDesc = this->GetDescriptor();
-    DTYPE * pDevData = NULL;
-    float zero = 0.f;
+    DTYPE *pDevData               = NULL;
+    float  zero                   = 0.f;
 
-    for(int i = 0; i < pTime; i++){
+    for (int i = 0; i < pTime; i++) {
         pDevData = this->GetGPUData(i);
         checkCUDNN(cudnnAddTensor(pCudnnHandle,
                                   &zero, pDesc, pDevData,
                                   &zero, pDesc, pDevData));
     }
-
 }
 
-#endif // if __CUDNN__
+#endif  // if __CUDNN__
 
 
 ///////////////////////////////////////////////////////////////////
