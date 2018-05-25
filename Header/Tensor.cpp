@@ -156,32 +156,46 @@ template<typename DTYPE> Shape *Tensor<DTYPE>::GetShape() {
     return m_aShape;
 }
 
+template<typename DTYPE> int Tensor<DTYPE>::GetRank() {
+    return m_aShape->GetRank();
+}
+
+template<typename DTYPE> int Tensor<DTYPE>::GetDim(int pRanknum) {
+    return m_aShape->GetDim(pRanknum);
+}
+
 template<typename DTYPE> Data<DTYPE> *Tensor<DTYPE>::GetData() {
     return m_aData;
 }
 
-template<typename DTYPE> int Tensor<DTYPE>::GetTimeSize() {
-    return (*m_aShape)[0];
-}
-
-template<typename DTYPE> int Tensor<DTYPE>::GetBatchSize() {
-    return (*m_aShape)[1];
-}
-
-template<typename DTYPE> int Tensor<DTYPE>::GetChannelSize() {
-    return (*m_aShape)[2];
-}
-
-template<typename DTYPE> int Tensor<DTYPE>::GetRowSize() {
-    return (*m_aShape)[3];
-}
-
-template<typename DTYPE> int Tensor<DTYPE>::GetColSize() {
-    return (*m_aShape)[4];
-}
-
 template<typename DTYPE> int Tensor<DTYPE>::GetCapacity() {
     return m_aData->GetCapacity();
+}
+
+template<typename DTYPE> int Tensor<DTYPE>::GetElement(unsigned int index) {
+    return m_aData->GetElement(index);
+}
+
+template<typename DTYPE> DTYPE& Tensor<DTYPE>::operator[](unsigned int index) {
+    #if __CUDNN__
+    # if __DEBUG__
+
+    if (m_Device == GPU) {
+        printf("Warning! Tensor is allocated in Device(GPU) latest time\n");
+        printf("Change mode GPU to CPU\n");
+        this->SetDeviceCPU();
+    }
+
+    # else // if __DEBUG__
+
+    if (m_Device == GPU) {
+        this->SetDeviceCPU();
+    }
+
+    # endif // __DEBUG__
+    #endif  // __CUDNN__
+
+    return (*m_aData)[index];
 }
 
 template<typename DTYPE> Device Tensor<DTYPE>::GetDevice() {
@@ -214,58 +228,96 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetCPUData(unsigned int pTime) {
     return m_aData->GetCPUData(pTime);
 }
 
-#ifdef __CUDNN__
-
-template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetGPUData(unsigned int pTime) {
-    # if __DEBUG__
-
-    if (m_Device == CPU) {
-        printf("Warning! Tensor is allocated in Host(CPU) latest time\n");
-        printf("Change mode CPU toGPU\n");
-        this->SetDeviceGPU();
-    }
-
-    # else // if __DEBUG__
-
-    if (m_Device == CPU) {
-        this->SetDeviceGPU();
-    }
-
-    # endif // __DEBUG__
-
-    return m_aData->GetGPUData(pTime);
+template<typename DTYPE> int Tensor<DTYPE>::GetTimeSize() {
+    if ((m_aShape->GetRank() == 5) && (m_IsUseTime == UseTime)) return (*m_aShape)[0];
+    else return 0;
 }
 
-template<typename DTYPE> void Tensor<DTYPE>::SetDeviceCPU() {
-    m_Device = CPU;
-    m_aData->SetDeviceCPU();
-    m_aShape->SetDeviceCPU();
+template<typename DTYPE> int Tensor<DTYPE>::GetBatchSize() {
+    if ((m_aShape->GetRank() == 5) && (m_IsUseTime == UseTime)) return (*m_aShape)[1];
+    else return 0;
 }
 
-template<typename DTYPE> void Tensor<DTYPE>::SetDeviceGPU() {
-    m_Device = GPU;
-    m_aData->SetDeviceGPU();
-    m_aShape->SetDeviceGPU();
+template<typename DTYPE> int Tensor<DTYPE>::GetChannelSize() {
+    if ((m_aShape->GetRank() == 5) && (m_IsUseTime == UseTime)) return (*m_aShape)[2];
+    else return 0;
 }
 
-template<typename DTYPE> cudnnTensorDescriptor_t& Tensor<DTYPE>::GetDescriptor() {
-    return m_aShape->GetDescriptor();
+template<typename DTYPE> int Tensor<DTYPE>::GetRowSize() {
+    if ((m_aShape->GetRank() == 5) && (m_IsUseTime == UseTime)) return (*m_aShape)[3];
+    else return 0;
 }
 
-#endif  // if __CUDNN__
+template<typename DTYPE> int Tensor<DTYPE>::GetColSize() {
+    if ((m_aShape->GetRank() == 5) && (m_IsUseTime == UseTime)) return (*m_aShape)[4];
+    else return 0;
+}
 
-
-//////////////////////////////////////////////////////////////////
-
-template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
+template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
     int cur_capacity = GetCapacity();
-    int new_capacity = pTimeSize * pBatchSize * pChannelSize * pRowSize * pColSize;
+    int new_capacity = pSize0 * pSize1 * pSize2 * pSize3 * pSize4;
 
     if (cur_capacity != new_capacity) {
         printf("Receive invalid shape value in %s (%s %d), cannot Reshape\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
     } else {
-        m_aShape->ReShape(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
+        m_aShape->ReShape(5, pSize0, pSize1, pSize2, pSize3, pSize4);
+    }
+
+    return TRUE;
+}
+
+template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2, int pSize3) {
+    int cur_capacity = GetCapacity();
+    int new_capacity = pSize0 * pSize1 * pSize2 * pSize3;
+
+    if (cur_capacity != new_capacity) {
+        printf("Receive invalid shape value in %s (%s %d), cannot Reshape\n", __FUNCTION__, __FILE__, __LINE__);
+        return FALSE;
+    } else {
+        m_aShape->ReShape(4, pSize0, pSize1, pSize2, pSize3);
+    }
+
+    return TRUE;
+}
+
+template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2) {
+    int cur_capacity = GetCapacity();
+    int new_capacity = pSize0 * pSize1 * pSize2;
+
+    if (cur_capacity != new_capacity) {
+        printf("Receive invalid shape value in %s (%s %d), cannot Reshape\n", __FUNCTION__, __FILE__, __LINE__);
+        return FALSE;
+    } else {
+        m_aShape->ReShape(3, pSize0, pSize1, pSize2);
+    }
+
+    return TRUE;
+}
+
+template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1) {
+    int cur_capacity = GetCapacity();
+    int new_capacity = pSize0 * pSize1;
+
+    if (cur_capacity != new_capacity) {
+        printf("Receive invalid shape value in %s (%s %d), cannot Reshape\n", __FUNCTION__, __FILE__, __LINE__);
+        return FALSE;
+    } else {
+        m_aShape->ReShape(2, pSize0, pSize1);
+    }
+
+    return TRUE;
+}
+
+template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0) {
+    int cur_capacity = GetCapacity();
+    int new_capacity = pSize0;
+
+    if (cur_capacity != new_capacity) {
+        printf("Receive invalid shape value in %s (%s %d), cannot Reshape\n", __FUNCTION__, __FILE__, __LINE__);
+        return FALSE;
+    } else {
+        m_aShape->ReShape(1, pSize0);
     }
 
     return TRUE;
@@ -297,6 +349,49 @@ template<typename DTYPE> void Tensor<DTYPE>::Reset() {
     }
 }
 
+#ifdef __CUDNN__
+template<typename DTYPE> void Tensor<DTYPE>::SetDeviceCPU() {
+    m_Device = CPU;
+    m_aData->SetDeviceCPU();
+    m_aShape->SetDeviceCPU();
+}
+
+template<typename DTYPE> void Tensor<DTYPE>::SetDeviceGPU() {
+    m_Device = GPU;
+    m_aData->SetDeviceGPU();
+    m_aShape->SetDeviceGPU();
+}
+
+template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetGPUData(unsigned int pTime) {
+    # if __DEBUG__
+
+    if (m_Device == CPU) {
+        printf("Warning! Tensor is allocated in Host(CPU) latest time\n");
+        printf("Change mode CPU toGPU\n");
+        this->SetDeviceGPU();
+    }
+
+    # else // if __DEBUG__
+
+    if (m_Device == CPU) {
+        this->SetDeviceGPU();
+    }
+
+    # endif // __DEBUG__
+
+    return m_aData->GetGPUData(pTime);
+}
+
+template<typename DTYPE> cudnnTensorDescriptor_t& Tensor<DTYPE>::GetDescriptor() {
+    return m_aShape->GetDescriptor();
+}
+
+#endif  // if __CUDNN__
+
+
+//////////////////////////////////////////////////////////////////
+
+
 #if __CUDNN__
 
 template<typename DTYPE> void Tensor<DTYPE>::Reset(cudnnHandle_t& pCudnnHandle) {
@@ -315,32 +410,7 @@ template<typename DTYPE> void Tensor<DTYPE>::Reset(cudnnHandle_t& pCudnnHandle) 
 
 #endif  // if __CUDNN__
 
-
-///////////////////////////////////////////////////////////////////
-
-template<typename DTYPE> DTYPE& Tensor<DTYPE>::operator[](unsigned int index) {
-    #if __CUDNN__
-    # if __DEBUG__
-
-    if (m_Device == GPU) {
-        printf("Warning! Tensor is allocated in Device(GPU) latest time\n");
-        printf("Change mode GPU to CPU\n");
-        this->SetDeviceCPU();
-    }
-
-    # else // if __DEBUG__
-
-    if (m_Device == GPU) {
-        this->SetDeviceCPU();
-    }
-
-    # endif // __DEBUG__
-    #endif  // __CUDNN__
-
-    return (*m_aData)[index];
-}
-
-//////////////////////////////////////////////////////////////////static method
+////////////////////////////////////////////////////////////////////////////////static method
 
 template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, float mean, float stddev) {
     #if __DEBUG__

@@ -37,23 +37,32 @@ public:
 
     virtual ~Tensor();
 
-    Shape                  * GetShape();
-    Data<DTYPE>            * GetData();
-    int                      GetCapacity();
-    int                      GetTimeSize(); // 삭제 예정
-    int                      GetBatchSize(); // 삭제 예정
-    int                      GetChannelSize(); // 삭제 예정
-    int                      GetRowSize(); // 삭제 예정
-    int                      GetColSize(); // 삭제 예정
-    DTYPE                  * GetCPUData(unsigned int pTime = 0);
-    Device                   GetDevice();
-    IsUseTime                GetIsUseTime();
+    Shape      * GetShape();
+    int          GetRank();
+    int          GetDim(int pRanknum);
+    Data<DTYPE>* GetData();
+    int          GetCapacity();
+    int          GetElement(unsigned int index);
+    DTYPE   & operator[](unsigned int index);
+    Device    GetDevice();
+    IsUseTime GetIsUseTime();
+    DTYPE   * GetCPUData(unsigned int pTime = 0);
 
-    int                      Reshape(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
+    int       GetTimeSize();    // 추후 Data의 Timesize 반환
+    int       GetBatchSize();   // 삭제 예정
+    int       GetChannelSize(); // 삭제 예정
+    int       GetRowSize();     // 삭제 예정
+    int       GetColSize();     // 삭제 예정
 
-    void                     Reset();
 
-    DTYPE                  & operator[](unsigned int index);
+    int       Reshape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4);
+    int       Reshape(int pSize0, int pSize1, int pSize2, int pSize3);
+    int       Reshape(int pSize0, int pSize1, int pSize2);
+    int       Reshape(int pSize0, int pSize1);
+    int       Reshape(int pSize0);
+
+    void      Reset();
+
 
 #ifdef __CUDNN__
     void                     SetDeviceCPU();
@@ -77,15 +86,15 @@ inline unsigned int Index5D(Shape *pShape, int ti, int ba, int ch, int ro, int c
 }
 
 inline unsigned int Index4D(Shape *pShape, int ba, int ch, int ro, int co) {
-    return ((ba * (*pShape)[2] + ch) * (*pShape)[3] + ro) * (*pShape)[4] + co;
+    return ((ba * (*pShape)[1] + ch) * (*pShape)[2] + ro) * (*pShape)[3] + co;
 }
 
 inline unsigned int Index3D(Shape *pShape, int ch, int ro, int co) {
-    return (ch * (*pShape)[3] + ro) * (*pShape)[4] + co;
+    return (ch * (*pShape)[1] + ro) * (*pShape)[2] + co;
 }
 
 inline unsigned int Index2D(Shape *pShape, int ro, int co) {
-    return ro * (*pShape)[4] + co;
+    return ro * (*pShape)[1] + co;
 }
 
 #endif  // TENSOR_H_
