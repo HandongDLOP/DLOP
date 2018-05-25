@@ -200,8 +200,8 @@ public:
         cudnnTensorDescriptor_t pInputDesc   = input->GetDescriptor();
         cudnnTensorDescriptor_t pSoftMaxDesc = softmaxresult->GetDescriptor();
 
-        DTYPE *pDevInput   = input->GetDeviceData(pTime);
-        DTYPE *pDevSoftMax = softmaxresult->GetDeviceData(pTime);
+        DTYPE *pDevInput   = input->GetGPUData(pTime);
+        DTYPE *pDevSoftMax = softmaxresult->GetGPUData(pTime);
 
         checkCUDNN(cudnnSoftmaxForward(this->GetCudnnHandle(), CUDNN_SOFTMAX_ACCURATE, CUDNN_SOFTMAX_MODE_INSTANCE,
                                        &alpha, pInputDesc, pDevInput,

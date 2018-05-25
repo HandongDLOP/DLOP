@@ -119,13 +119,13 @@ template<typename DTYPE> DTYPE& Data<DTYPE>::operator[](unsigned int index) {
     return m_aHostData[index / m_capacityPerTime][index % m_capacityPerTime];
 }
 
-template<typename DTYPE> DTYPE *Data<DTYPE>::GetHostData(unsigned int pTime) {
+template<typename DTYPE> DTYPE *Data<DTYPE>::GetCPUData(unsigned int pTime) {
     return m_aHostData[pTime];
 }
 
 #ifdef __CUDNN__
 
-template<typename DTYPE> DTYPE *Data<DTYPE>::GetDeviceData(unsigned int pTime) {
+template<typename DTYPE> DTYPE *Data<DTYPE>::GetGPUData(unsigned int pTime) {
     return m_aDevData[pTime];
 }
 

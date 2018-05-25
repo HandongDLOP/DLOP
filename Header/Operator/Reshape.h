@@ -132,8 +132,8 @@ public:
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
-        DTYPE *pDevInput  = input->GetDeviceData();
-        DTYPE *pDevResult = result->GetDeviceData();
+        DTYPE *pDevInput  = input->GetGPUData();
+        DTYPE *pDevResult = result->GetGPUData();
 
         cudnnTensorDescriptor_t pDesc = input->GetDescriptor();
 
@@ -152,8 +152,8 @@ public:
         Tensor<DTYPE> *this_delta  = this->GetDelta();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
 
-        DTYPE *pDevDelta  = this_delta->GetDeviceData();
-        DTYPE *pDevInputDelta = input_delta->GetDeviceData();
+        DTYPE *pDevDelta  = this_delta->GetGPUData();
+        DTYPE *pDevInputDelta = input_delta->GetGPUData();
 
         cudnnTensorDescriptor_t pDesc = this_delta->GetDescriptor();
 

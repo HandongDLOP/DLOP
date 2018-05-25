@@ -136,7 +136,7 @@ template<typename DTYPE> int Tensor<DTYPE>::GetCapacity() {
     return m_aData->GetCapacity();
 }
 
-template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetHostData(unsigned int pTime) {
+template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetCPUData(unsigned int pTime) {
     #if __CUDNN__
     # if __DEBUG__
 
@@ -155,12 +155,12 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetHostData(unsigned int pTime) {
     # endif // __DEBUG__
     #endif  // __CUDNN__
 
-    return m_aData->GetHostData(pTime);
+    return m_aData->GetCPUData(pTime);
 }
 
 #ifdef __CUDNN__
 
-template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetDeviceData(unsigned int pTime) {
+template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetGPUData(unsigned int pTime) {
     # if __DEBUG__
 
     if (m_Device == CPU) {
@@ -177,7 +177,7 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetDeviceData(unsigned int pTime)
 
     # endif // __DEBUG__
 
-    return m_aData->GetDeviceData(pTime);
+    return m_aData->GetGPUData(pTime);
 }
 
 template<typename DTYPE> void Tensor<DTYPE>::SetDeviceCPU() {
@@ -248,7 +248,7 @@ template<typename DTYPE> void Tensor<DTYPE>::Reset(cudnnHandle_t& pCudnnHandle) 
     float zero = 0.f;
 
     for(int i = 0; i < pTime; i++){
-        pDevData = this->GetDeviceData(i);
+        pDevData = this->GetGPUData(i);
         checkCUDNN(cudnnAddTensor(pCudnnHandle,
                                   &zero, pDesc, pDevData,
                                   &zero, pDesc, pDevData));

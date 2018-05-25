@@ -340,9 +340,9 @@ public:
         Tensor<DTYPE> *weight = this->GetInput()[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
-        m_pDevInput  = input->GetDeviceData(pTime);
-        m_pDevFilter = weight->GetDeviceData(0);
-        m_pDevOutput = result->GetDeviceData(pTime);
+        m_pDevInput  = input->GetGPUData(pTime);
+        m_pDevFilter = weight->GetGPUData(0);
+        m_pDevOutput = result->GetGPUData(pTime);
 
         checkCUDNN(cudnnConvolutionForward(this->GetCudnnHandle(), &m_alpha, inputTensorDesc, m_pDevInput, filterDesc, m_pDevFilter, convDesc,
                                            m_algo, m_devWorkSpace, m_sizeInBytes, &m_beta, outputTensorDesc, m_pDevOutput));
@@ -360,11 +360,11 @@ public:
         Tensor<DTYPE> *weight_gradient = this->GetInput()[1]->GetGradient();
         Tensor<DTYPE> *this_delta      = this->GetDelta();
 
-        m_pDevInput       = input->GetDeviceData(pTime);
-        m_pDevFilter      = weight->GetDeviceData(0);
-        m_pDevDelta       = this_delta->GetDeviceData(pTime);
-        m_pDevInputDelta  = input_delta->GetDeviceData(pTime);
-        m_pDevFilterDelta = weight_gradient->GetDeviceData(0);
+        m_pDevInput       = input->GetGPUData(pTime);
+        m_pDevFilter      = weight->GetGPUData(0);
+        m_pDevDelta       = this_delta->GetGPUData(pTime);
+        m_pDevInputDelta  = input_delta->GetGPUData(pTime);
+        m_pDevFilterDelta = weight_gradient->GetGPUData(0);
 
         checkCUDNN(cudnnConvolutionBackwardData(this->GetCudnnHandle(), &m_alpha, filterDesc, m_pDevFilter, deltaDesc, m_pDevDelta, convDesc,
                                                 m_dataAlgo, m_dataDevWorkSpace, m_dataSizeInBytes, &m_beta, inputDeltaDesc, m_pDevInputDelta));

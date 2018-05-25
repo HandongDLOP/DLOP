@@ -139,8 +139,8 @@ public:
         cudnnTensorDescriptor_t dataDesc = trainable_data->GetDescriptor();
         cudnnTensorDescriptor_t gradDesc = gradient->GetDescriptor();
 
-        DTYPE *m_pDevData = trainable_data->GetDeviceData();
-        DTYPE *m_pDevGrad = gradient->GetDeviceData();
+        DTYPE *m_pDevData = trainable_data->GetGPUData();
+        DTYPE *m_pDevGrad = gradient->GetGPUData();
 
         float learning_rate = this->GetOptimizeDirection() * this->GetLearningRate();
 
@@ -162,9 +162,9 @@ public:
         cudnnTensorDescriptor_t gradDesc = gradient->GetDescriptor();
         cudnnTensorDescriptor_t veloDesc = pVelocity->GetDescriptor();
 
-        DTYPE *m_pDevData = trainable_data->GetDeviceData();
-        DTYPE *m_pDevGrad = gradient->GetDeviceData();
-        DTYPE *m_pDevVelo = pVelocity->GetDeviceData();
+        DTYPE *m_pDevData = trainable_data->GetGPUData();
+        DTYPE *m_pDevGrad = gradient->GetGPUData();
+        DTYPE *m_pDevVelo = pVelocity->GetGPUData();
 
         float learning_rate = this->GetOptimizeDirection() * this->GetLearningRate();
 

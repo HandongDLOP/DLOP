@@ -193,8 +193,8 @@ public:
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
-        m_pDevInput  = input->GetDeviceData(pTime);
-        m_pDevOutput = result->GetDeviceData(pTime);
+        m_pDevInput  = input->GetGPUData(pTime);
+        m_pDevOutput = result->GetGPUData(pTime);
 
         checkCUDNN(cudnnActivationForward(this->GetCudnnHandle(), actDesc, &m_alpha,
                                           m_aInputTensorDesc, m_pDevInput, &m_beta,
@@ -210,10 +210,10 @@ public:
         Tensor<DTYPE> *input       = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *input_delta = this->GetInput()[0]->GetDelta();
 
-        m_pDevInput      = input->GetDeviceData(pTime);
-        m_pDevOutput     = result->GetDeviceData(pTime);
-        m_pDevDelta      = this_delta->GetDeviceData(pTime);
-        m_pDevInputDelta = input_delta->GetDeviceData(pTime);
+        m_pDevInput      = input->GetGPUData(pTime);
+        m_pDevOutput     = result->GetGPUData(pTime);
+        m_pDevDelta      = this_delta->GetGPUData(pTime);
+        m_pDevInputDelta = input_delta->GetGPUData(pTime);
 
         checkCUDNN(cudnnActivationBackward(this->GetCudnnHandle(), actDesc, &m_alpha,
                                            m_aOutputTensorDesc, m_pDevOutput,

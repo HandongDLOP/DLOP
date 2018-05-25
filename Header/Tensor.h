@@ -39,10 +39,10 @@ public:
 
     int                      GetCapacity();
 
-    DTYPE                  * GetHostData(unsigned int pTime = 0);
+    DTYPE                  * GetCPUData(unsigned int pTime = 0);
 
 #ifdef __CUDNN__
-    DTYPE                  * GetDeviceData(unsigned int pTime = 0);
+    DTYPE                  * GetGPUData(unsigned int pTime = 0);
     void                     SetDeviceCPU();
     void                     SetDeviceGPU();
 

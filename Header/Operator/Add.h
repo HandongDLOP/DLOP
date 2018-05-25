@@ -178,9 +178,9 @@ public:
         Tensor<DTYPE> *right  = (*input_contatiner)[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
-        m_pDevLeft   = left->GetDeviceData(pTime);
-        m_pDevRight  = right->GetDeviceData(pTime);
-        m_pDevOutput = result->GetDeviceData(pTime);
+        m_pDevLeft   = left->GetGPUData(pTime);
+        m_pDevRight  = right->GetGPUData(pTime);
+        m_pDevOutput = result->GetGPUData(pTime);
 
         checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
                                   &m_alpha, leftTensorDesc, m_pDevLeft,
@@ -200,9 +200,9 @@ public:
         Tensor<DTYPE> *right_grad = (*input_contatiner)[1]->GetGradient();
         Tensor<DTYPE> *this_grad  = this->GetGradient();
 
-        m_pDevLeftDelta  = left_grad->GetDeviceData(pTime);
-        m_pDevRightDelta = right_grad->GetDeviceData(pTime);
-        m_pDevDelta      = this_grad->GetDeviceData(pTime);
+        m_pDevLeftDelta  = left_grad->GetGPUData(pTime);
+        m_pDevRightDelta = right_grad->GetGPUData(pTime);
+        m_pDevDelta      = this_grad->GetGPUData(pTime);
 
         checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
                                   &m_alpha, deltaDesc, m_pDevDelta,
@@ -408,9 +408,9 @@ public:
         Tensor<DTYPE> *bias   = (*input_contatiner)[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
-        m_pDevInput  = input->GetDeviceData(pTime);
-        m_pDevBias   = bias->GetDeviceData(0);
-        m_pDevOutput = result->GetDeviceData(pTime);
+        m_pDevInput  = input->GetGPUData(pTime);
+        m_pDevBias   = bias->GetGPUData(0);
+        m_pDevOutput = result->GetGPUData(pTime);
 
         checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
                                   &m_alpha, inputTensorDesc, m_pDevInput,
@@ -430,9 +430,9 @@ public:
         Tensor<DTYPE> *bias_grad  = (*input_contatiner)[1]->GetGradient();
         Tensor<DTYPE> *this_grad  = this->GetGradient();
 
-        m_pDevInputDelta = input_grad->GetDeviceData(pTime);
-        m_pDevBiasDelta  = bias_grad->GetDeviceData(0);
-        m_pDevDelta      = this_grad->GetDeviceData(pTime);
+        m_pDevInputDelta = input_grad->GetGPUData(pTime);
+        m_pDevBiasDelta  = bias_grad->GetGPUData(0);
+        m_pDevDelta      = this_grad->GetGPUData(pTime);
 
         checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
                                   &m_alpha, deltaDesc, m_pDevDelta,
@@ -636,9 +636,9 @@ public:
         Tensor<DTYPE> *bias   = (*input_contatiner)[1]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();
 
-        m_pDevInput  = input->GetDeviceData(pTime);
-        m_pDevBias   = bias->GetDeviceData(0);
-        m_pDevOutput = result->GetDeviceData(pTime);
+        m_pDevInput  = input->GetGPUData(pTime);
+        m_pDevBias   = bias->GetGPUData(0);
+        m_pDevOutput = result->GetGPUData(pTime);
 
         checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
                                   &m_alpha, inputTensorDesc, m_pDevInput,
@@ -659,9 +659,9 @@ public:
         Tensor<DTYPE> *bias_grad  = (*input_contatiner)[1]->GetGradient();
         Tensor<DTYPE> *this_grad  = this->GetGradient();
 
-        m_pDevInputDelta = input_grad->GetDeviceData(pTime);
-        m_pDevBiasDelta  = bias_grad->GetDeviceData(0);
-        m_pDevDelta      = this_grad->GetDeviceData(pTime);
+        m_pDevInputDelta = input_grad->GetGPUData(pTime);
+        m_pDevBiasDelta  = bias_grad->GetGPUData(0);
+        m_pDevDelta      = this_grad->GetGPUData(pTime);
 
         checkCUDNN(cudnnAddTensor(this->GetCudnnHandle(),
                                   &m_alpha, deltaDesc, m_pDevDelta,
