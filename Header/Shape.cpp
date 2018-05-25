@@ -33,6 +33,8 @@ int Shape::Alloc(int pRank, ...) {
     }
     va_end(ap);
 
+    m_Device = CPU;
+
 #if __CUDNN__
     AllocOnGPU();
 #endif  // if __CUDNN__
@@ -57,8 +59,11 @@ int Shape::Alloc(Shape *pShape) {
         return FALSE;
     }
 
+    m_Device = pShape->GetDevice();
+
 #if __CUDNN__
-    AllocOnGPU();
+
+    if (pShape->GetDescriptor()) AllocOnGPU();
 #endif  // if __CUDNN__
 
     return TRUE;
@@ -252,6 +257,14 @@ int Shape::GetDim(int pRanknum) {
     }
 }
 
+Device Shape::GetDevice() {
+    #if __DEBUG__
+    std::cout << "Shape::GetDevice()" << '\n';
+    #endif  // __DEBUG__
+
+    return m_Device;
+}
+
 int& Shape::operator[](int pRanknum) {
     #if __DEBUG__
     std::cout << "Shape::operator[](int pRanknum)" << '\n';
@@ -310,13 +323,36 @@ int Shape::ReShape(int pRank, ...) {
     va_end(ap);
 
 #if __CUDNN__
-    ReShapeOnGPU();
+
+    if (m_Device == GPU) ReShapeOnGPU();
 #endif  // if __CUDNN__
 
     return TRUE;
 }
 
 #if __CUDNN__
+
+int Shape::SetDeviceCPU() {
+    # if __DEBUG__
+    std::cout << "Shape::SetDeviceCPU()" << '\n';
+    # endif // __DEBUG__
+
+    m_Device = CPU;
+
+    return TRUE;
+}
+
+int Shape::SetDeviceGPU() {
+    # if __DEBUG__
+    std::cout << "Shape::SetDeviceGPU()" << '\n';
+    # endif // __DEBUG__
+
+    m_Device = CPU;
+
+    if (m_desc == NULL) AllocOnGPU();
+
+    return TRUE;
+}
 
 cudnnTensorDescriptor_t& Shape::GetDescriptor() {
     # if __DEBUG__
