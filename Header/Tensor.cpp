@@ -7,6 +7,10 @@ template class Tensor<double>;
 //////////////////////////////////////////////////////////////////////////////// for private method
 
 template<typename DTYPE> int Tensor<DTYPE>::Alloc(Shape *pShape, IsUseTime pAnswer) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Alloc(Shape *pShape, IsUseTime pAnswer)" << '\n';
+    #endif  // __DEBUG__
+
     if (pShape == NULL) {
         printf("Receive NULL pointer of Shape class in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
@@ -40,6 +44,10 @@ template<typename DTYPE> int Tensor<DTYPE>::Alloc(Shape *pShape, IsUseTime pAnsw
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::Alloc(Tensor<DTYPE> *pTensor) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Alloc(Tensor<DTYPE> *pTensor)" << '\n';
+    #endif  // __DEBUG__
+
     if (pTensor == NULL) {
         printf("Receive NULL pointer of Tensor<DTYPE> class in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
         return FALSE;
@@ -54,6 +62,10 @@ template<typename DTYPE> int Tensor<DTYPE>::Alloc(Tensor<DTYPE> *pTensor) {
 }
 
 template<typename DTYPE> void Tensor<DTYPE>::Delete() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Delete()" << '\n';
+    #endif  // __DEBUG__
+
     if (m_aShape) {
         delete m_aShape;
         m_aShape = NULL;
@@ -153,32 +165,57 @@ template<typename DTYPE> Tensor<DTYPE>::~Tensor() {
 }
 
 template<typename DTYPE> Shape *Tensor<DTYPE>::GetShape() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetShape()" << '\n';
+    #endif  // __DEBUG__
+
     return m_aShape;
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::GetRank() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetRank()" << '\n';
+    #endif  // __DEBUG__
+
     return m_aShape->GetRank();
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::GetDim(int pRanknum) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetDim(int pRanknum)" << '\n';
+    #endif  // __DEBUG__
+
     return m_aShape->GetDim(pRanknum);
 }
 
 template<typename DTYPE> Data<DTYPE> *Tensor<DTYPE>::GetData() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetData()" << '\n';
+    #endif  // __DEBUG__
+
     return m_aData;
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::GetCapacity() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetCapacity()" << '\n';
+    #endif  // __DEBUG__
+
     return m_aData->GetCapacity();
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::GetElement(unsigned int index) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetElement(unsigned int index)" << '\n';
+    #endif  // __DEBUG__
+
     return m_aData->GetElement(index);
 }
 
 template<typename DTYPE> DTYPE& Tensor<DTYPE>::operator[](unsigned int index) {
     #if __CUDNN__
     # if __DEBUG__
+    std::cout << "Tensor<DTYPE>::operator[](unsigned int index)" << '\n';
 
     if (m_Device == GPU) {
         printf("Warning! Tensor is allocated in Device(GPU) latest time\n");
@@ -199,16 +236,25 @@ template<typename DTYPE> DTYPE& Tensor<DTYPE>::operator[](unsigned int index) {
 }
 
 template<typename DTYPE> Device Tensor<DTYPE>::GetDevice() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetDevice()" << '\n';
+    #endif  // __DEBUG__
+
     return m_Device;
 }
 
 template<typename DTYPE> IsUseTime Tensor<DTYPE>::GetIsUseTime() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetIsUseTime()" << '\n';
+    #endif  // __DEBUG__
+
     return m_IsUseTime;
 }
 
 template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetCPUData(unsigned int pTime) {
     #if __CUDNN__
     # if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetCPUData(unsigned int pTime)" << '\n';
 
     if (m_Device == GPU) {
         printf("Warning! Tensor is allocated in Device(GPU) latest time\n");
@@ -229,31 +275,55 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetCPUData(unsigned int pTime) {
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::GetTimeSize() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetTimeSize()" << '\n';
+    #endif  // __DEBUG__
+
     if ((m_aShape->GetRank() == 5) && (m_IsUseTime == UseTime)) return (*m_aShape)[0];
     else return 0;
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::GetBatchSize() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetBatchSize()" << '\n';
+    #endif  // __DEBUG__
+
     if ((m_aShape->GetRank() == 5) && (m_IsUseTime == UseTime)) return (*m_aShape)[1];
     else return 0;
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::GetChannelSize() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetChannelSize()" << '\n';
+    #endif  // __DEBUG__
+
     if ((m_aShape->GetRank() == 5) && (m_IsUseTime == UseTime)) return (*m_aShape)[2];
     else return 0;
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::GetRowSize() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetRowSize()" << '\n';
+    #endif  // __DEBUG__
+
     if ((m_aShape->GetRank() == 5) && (m_IsUseTime == UseTime)) return (*m_aShape)[3];
     else return 0;
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::GetColSize() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetColSize()" << '\n';
+    #endif  // __DEBUG__
+
     if ((m_aShape->GetRank() == 5) && (m_IsUseTime == UseTime)) return (*m_aShape)[4];
     else return 0;
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4)" << '\n';
+    #endif  // __DEBUG__
+
     int cur_capacity = GetCapacity();
     int new_capacity = pSize0 * pSize1 * pSize2 * pSize3 * pSize4;
 
@@ -268,6 +338,10 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int 
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2, int pSize3) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2, int pSize3)" << '\n';
+    #endif  // __DEBUG__
+
     int cur_capacity = GetCapacity();
     int new_capacity = pSize0 * pSize1 * pSize2 * pSize3;
 
@@ -282,6 +356,10 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int 
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int pSize2)" << '\n';
+    #endif  // __DEBUG__
+
     int cur_capacity = GetCapacity();
     int new_capacity = pSize0 * pSize1 * pSize2;
 
@@ -296,6 +374,10 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1, int 
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Reshape(int pSize0, int pSize1)" << '\n';
+    #endif  // __DEBUG__
+
     int cur_capacity = GetCapacity();
     int new_capacity = pSize0 * pSize1;
 
@@ -310,6 +392,10 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0, int pSize1) {
 }
 
 template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0) {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Reshape(int pSize0)" << '\n';
+    #endif  // __DEBUG__
+
     int cur_capacity = GetCapacity();
     int new_capacity = pSize0;
 
@@ -324,6 +410,10 @@ template<typename DTYPE> int Tensor<DTYPE>::Reshape(int pSize0) {
 }
 
 template<typename DTYPE> void Tensor<DTYPE>::Reset() {
+    #if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Reset()" << '\n';
+    #endif  // __DEBUG__
+
     int capacity = GetCapacity();
 
     #if __CUDNN__
@@ -351,12 +441,20 @@ template<typename DTYPE> void Tensor<DTYPE>::Reset() {
 
 #ifdef __CUDNN__
 template<typename DTYPE> void Tensor<DTYPE>::SetDeviceCPU() {
+    # if __DEBUG__
+    std::cout << "Tensor<DTYPE>::SetDeviceCPU()" << '\n';
+    # endif // __DEBUG__
+
     m_Device = CPU;
     m_aData->SetDeviceCPU();
     m_aShape->SetDeviceCPU();
 }
 
 template<typename DTYPE> void Tensor<DTYPE>::SetDeviceGPU() {
+    # if __DEBUG__
+    std::cout << "Tensor<DTYPE>::SetDeviceGPU()" << '\n';
+    # endif // __DEBUG__
+
     m_Device = GPU;
     m_aData->SetDeviceGPU();
     m_aShape->SetDeviceGPU();
@@ -364,6 +462,7 @@ template<typename DTYPE> void Tensor<DTYPE>::SetDeviceGPU() {
 
 template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetGPUData(unsigned int pTime) {
     # if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetGPUData(unsigned int pTime)" << '\n';
 
     if (m_Device == CPU) {
         printf("Warning! Tensor is allocated in Host(CPU) latest time\n");
@@ -383,18 +482,18 @@ template<typename DTYPE> DTYPE *Tensor<DTYPE>::GetGPUData(unsigned int pTime) {
 }
 
 template<typename DTYPE> cudnnTensorDescriptor_t& Tensor<DTYPE>::GetDescriptor() {
+    # if __DEBUG__
+    std::cout << "Tensor<DTYPE>::GetDescriptor()" << '\n';
+    # endif // __DEBUG__
+
     return m_aShape->GetDescriptor();
 }
 
-#endif  // if __CUDNN__
-
-
-//////////////////////////////////////////////////////////////////
-
-
-#if __CUDNN__
-
 template<typename DTYPE> void Tensor<DTYPE>::Reset(cudnnHandle_t& pCudnnHandle) {
+    # if __DEBUG__
+    std::cout << "Tensor<DTYPE>::Reset(cudnnHandle_t& pCudnnHandle)" << '\n';
+    # endif // __DEBUG__
+
     int pTime                     = this->GetTimeSize();
     cudnnTensorDescriptor_t pDesc = this->GetDescriptor();
     DTYPE *pDevData               = NULL;
@@ -412,7 +511,7 @@ template<typename DTYPE> void Tensor<DTYPE>::Reset(cudnnHandle_t& pCudnnHandle) 
 
 ////////////////////////////////////////////////////////////////////////////////static method
 
-template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, float mean, float stddev) {
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, float mean, float stddev) {
     #if __DEBUG__
     std::cout << "Tensor<DTYPE>::Truncated_normal()" << '\n';
     #endif  // __DEBUG__
@@ -421,7 +520,7 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTim
     std::mt19937 gen(rd());
     std::normal_distribution<float> rand(mean, stddev);
 
-    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
+    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pSize0, pSize1, pSize2, pSize3, pSize4);
 
     int capacity = temp->GetCapacity();
 
@@ -432,20 +531,20 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pTim
     return temp;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Zeros(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Zeros(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
     #if __DEBUG__
     std::cout << "Tensor<DTYPE>::Zero()" << '\n';
     #endif  // __DEBUG__
 
-    return new Tensor<DTYPE>(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
+    return new Tensor<DTYPE>(pSize0, pSize1, pSize2, pSize3, pSize4);
 }
 
-template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, DTYPE constant) {
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, DTYPE constant) {
     #if __DEBUG__
     std::cout << "Tensor<DTYPE>::Constant()" << '\n';
     #endif  // __DEBUG__
 
-    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
+    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pSize0, pSize1, pSize2, pSize3, pSize4);
 
     int capacity = temp->GetCapacity();
 

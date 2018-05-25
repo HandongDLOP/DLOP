@@ -69,15 +69,15 @@ public:
     void                     SetDeviceGPU();
 
     DTYPE                  * GetGPUData(unsigned int pTime = 0);
-
     cudnnTensorDescriptor_t& GetDescriptor();
+
     void                     Reset(cudnnHandle_t& pCudnnHandle);
 #endif  // if __CUDNN__
 
 
-    static Tensor<DTYPE>* Truncated_normal(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, float mean, float stddev);
-    static Tensor<DTYPE>* Zeros(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize);
-    static Tensor<DTYPE>* Constants(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, DTYPE constant);
+    static Tensor<DTYPE>* Truncated_normal(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, float mean, float stddev);
+    static Tensor<DTYPE>* Zeros(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4);
+    static Tensor<DTYPE>* Constants(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, DTYPE constant);
 };
 
 

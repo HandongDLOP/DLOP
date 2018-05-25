@@ -6,7 +6,7 @@ template class Data<double>;
 
 template<typename DTYPE> int Data<DTYPE>::Alloc(unsigned int pTimeSize, unsigned int pCapacityPerTime) {
     #if __DEBUG__
-    std::cout << "Data<DTYPE>::Alloc()" << '\n';
+    std::cout << "Data<DTYPE>::Alloc(unsigned int pTimeSize, unsigned int pCapacityPerTime)" << '\n';
     #endif  // __DEBUG__
 
     m_TimeSize        = pTimeSize;
