@@ -50,16 +50,14 @@ public:
     int                               ForwardPropagate(int pTime = 0, int pThreadNum = 0);
     int                               BackPropagate(int pTime = 0, int pThreadNum = 0);
 
-#if __CUDNN__
-    int                               ForwardPropagateOnGPU(int pTime = 0);
-    int                               BackPropagateOnGPU(int pTime = 0);
-#endif  // __CUDNN__
 
     Operator<DTYPE>                 * GetLastOperator();
 
     void                              SetDeviceCPU();
     void                              SetDeviceCPU(int pnumOfThread);
 #if __CUDNN__
+    int                               ForwardPropagateOnGPU(int pTime = 0);
+    int                               BackPropagateOnGPU(int pTime = 0);
     void                              SetDeviceGPU();
     void                              SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
 #endif  // if __CUDNN__

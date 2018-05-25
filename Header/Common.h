@@ -34,5 +34,4 @@ enum Device {
     GPU,
 };
 
-
 #endif  // COMMON_H_
