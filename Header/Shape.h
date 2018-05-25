@@ -26,15 +26,14 @@ public:
     void SetRank(int pRank);
     int  GetRank();
 
+    int  ReShape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4);
+
+    int& operator[](int pRanknum);
+
 
 #if __CUDNN__
     cudnnTensorDescriptor_t& GetDescriptor();
 #endif  // __CUDNN__
-
-
-    int  ReShape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4);
-
-    int& operator[](int pRanknum);
 };
 /////////////////////////////////////////////////////////////
 

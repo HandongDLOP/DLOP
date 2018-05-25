@@ -119,18 +119,13 @@ public:
     virtual int    ForwardPropagateOnGPU(int pTime = 0);
     virtual int    BackPropagateOnGPU(int pTime = 0);
 
-    // Setting Supporter
     virtual int    SetResultOnCPU();
     virtual int    SetGradientOnCPU();
 
     virtual void   SetDeviceGPU();
 
-    // Setting Supporter
     virtual int    SetResultOnGPU();
     virtual int    SetGradientOnGPU();
-
-    // virtual int  ResetResultOnGPU();
-    // virtual int  ResetGradientOnGPU();
 
 #endif  // if __CUDNN__
 };

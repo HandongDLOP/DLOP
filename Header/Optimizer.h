@@ -24,35 +24,20 @@ public:
     Optimizer(Operator<DTYPE> **pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection);
     Optimizer(Container<Tensorholder<DTYPE> *> *pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection);
 
-
     virtual ~Optimizer();
 
-    // ===============
+    int                               Alloc(Container<Tensorholder<DTYPE> *> *pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection);
+    int                               Delete();
 
-    int Alloc(Container<Tensorholder<DTYPE> *> *pTrainableTensors, float pLearningRate, OptimizeDirection pOptimizeDirection);
-
-    int Delete();
-
-    // int AddTrainableTensor(Operator<DTYPE> **pTrainableTensors);
-    // int AddTrainableTensor(Operator<DTYPE> *pTrainableTensor);
-
-    // ===============
-    virtual int UpdateVariable();
-
-    virtual int UpdateVariable(Tensorholder<DTYPE> *pTrainableTensor) = 0;
-
-    // ===============
+    virtual int                       UpdateVariable();
+    virtual int                       UpdateVariable(Tensorholder<DTYPE> *pTrainableTensor) = 0;
 
     void                              SetLearningRate(float pLearningRate);
-
     void                              SetTrainableTensorDegree(int pTrainableTensorDegree);
 
     float                             GetLearningRate() const;
-
     int                               GetOptimizeDirection() const;
-
     Container<Tensorholder<DTYPE> *>* GetTrainableTensor();
-
     int                               GetTrainableTensorDegree() const;
 
     int                               ResetParameterGradient();
@@ -60,11 +45,8 @@ public:
 #if __CUDNN__
 
     virtual void   SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
-
     cudnnHandle_t& GetCudnnHandle();
-
     virtual int    UpdateVariableOnGPU();
-
     virtual int    UpdateVariableOnGPU(Tensorholder<DTYPE> *pTrainableTensor) = 0;
 
 #endif  // if __CUDNN__
