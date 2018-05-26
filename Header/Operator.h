@@ -22,7 +22,7 @@ private:
     Mode m_Mode;
     int m_numOfThread;
     int m_numOfParameter;
-    int m_isParameterr;
+    int m_isParameter;
     int m_isTrainable;
 
 #ifdef __CUDNN__
@@ -60,8 +60,8 @@ public:
     int                                   SetDevice(Device pDevice);
     int                                   SetNumOfThread(int pNumOfThread);
 
-    int                                   SetIsTensorholder();
-    int                                   SetIsTrainable();
+    int                                   SetIsTensorholder(int pIsParameter);
+    int                                   SetIsTrainable(int pIsTrainable);
 
     virtual int                           SetModeTraining();
     virtual int                           SetModeAccumulating();

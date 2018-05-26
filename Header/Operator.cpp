@@ -145,7 +145,7 @@ template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
     m_Device         = CPU;
     m_Mode           = TRAINING;
     m_numOfParameter = 0;
-    m_isParameterr   = FALSE;
+    m_isParameter   = FALSE;
     m_isTrainable    = FALSE;
     m_numOfThread    = -1;
     Alloc();
@@ -164,7 +164,7 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std:
     m_Device         = CPU;
     m_Mode           = TRAINING;
     m_numOfParameter = 0;
-    m_isParameterr   = FALSE;
+    m_isParameter   = FALSE;
     m_isTrainable    = FALSE;
     m_numOfThread    = -1;
     Alloc();
@@ -184,7 +184,7 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Ope
     m_Device         = CPU;
     m_Mode           = TRAINING;
     m_numOfParameter = 0;
-    m_isParameterr   = FALSE;
+    m_isParameter   = FALSE;
     m_isTrainable    = FALSE;
     m_numOfThread    = -1;
     Alloc();
@@ -293,13 +293,13 @@ template<typename DTYPE> int Operator<DTYPE>::SetNumOfThread(int pNumOfThread) {
     return TRUE;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::SetIsTensorholder() {
-    m_isParameterr = TRUE;
+template<typename DTYPE> int Operator<DTYPE>::SetIsTensorholder(int pIsParameter) {
+    m_isParameter = pIsParameter;
     return TRUE;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::SetIsTrainable() {
-    m_isTrainable = TRUE;
+template<typename DTYPE> int Operator<DTYPE>::SetIsTrainable(int pIsTrainable) {
+    m_isTrainable = pIsTrainable;
     return TRUE;
 }
 
@@ -373,7 +373,7 @@ template<typename DTYPE> int Operator<DTYPE>::GetNumOfThread() {
 }
 
 template<typename DTYPE> int Operator<DTYPE>::GetIsTensorholder() {
-    return m_isParameterr;
+    return m_isParameter;
 }
 
 template<typename DTYPE> int Operator<DTYPE>::GetIsTrainable() {
