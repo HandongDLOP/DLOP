@@ -122,6 +122,7 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::SetInput(Operato
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AnalyseGraph(Operator<DTYPE> *pResultOperator) {
+    //BFS
     Container<Operator<DTYPE> *> queue;
     queue.Push(pResultOperator);
     Operator<DTYPE> *out                 = NULL;
@@ -149,16 +150,7 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AnalyseGraph(Ope
     m_aaParameter->Reverse();
 
     m_OperatorDegree = m_aaOperator->GetSize();
-
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        std::cout << (*m_aaOperator)[i]->GetName() << '\n';
-    }
-
     m_ParameterDegree = m_aaParameter->GetSize();
-
-    for (int i = 0; i < m_ParameterDegree; i++) {
-        std::cout << (*m_aaParameter)[i]->GetName() << '\n';
-    }
 
     return pResultOperator;
 }
