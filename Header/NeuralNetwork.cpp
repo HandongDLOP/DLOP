@@ -10,11 +10,11 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     #endif  // __DEBUG__
 
     m_aaOperator     = NULL;
-    m_aaTensorholder = NULL;
+    m_aaParameter = NULL;
     m_aaLayer        = NULL;
 
     m_OperatorDegree     = 0;
-    m_TensorholderDegree = 0;
+    m_ParameterDegree = 0;
 
     m_aLossFunction = NULL;
     m_aOptimizer    = NULL;
@@ -35,7 +35,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
     m_aaOperator     = new Container<Operator<DTYPE> *>();
-    m_aaTensorholder = new Container<Operator<DTYPE> *>();
+    m_aaParameter = new Container<Operator<DTYPE> *>();
     m_aaLayer        = new Container<Layer<DTYPE> *>();
 
 #ifdef __CUDNN__
@@ -66,18 +66,18 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         m_aaOperator = NULL;
     }
 
-    if (m_aaTensorholder) {
-        size = m_aaTensorholder->GetSize();
-        Operator<DTYPE> **TensorholderContainer = m_aaTensorholder->GetRawData();
+    if (m_aaParameter) {
+        size = m_aaParameter->GetSize();
+        Operator<DTYPE> **ParameterContainer = m_aaParameter->GetRawData();
 
         for (int i = 0; i < size; i++) {
-            if ((*m_aaTensorholder)[i]) {
-                delete TensorholderContainer[i];
-                TensorholderContainer[i] = NULL;
+            if ((*m_aaParameter)[i]) {
+                delete ParameterContainer[i];
+                ParameterContainer[i] = NULL;
             }
         }
-        delete m_aaTensorholder;
-        m_aaTensorholder = NULL;
+        delete m_aaParameter;
+        m_aaParameter = NULL;
     }
 
     if (m_aaLayer) {
@@ -118,24 +118,24 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Oper
     m_OperatorDegree++;
 
     for (int i = 0; i < pNumOfParameter; i++) {
-        m_aaTensorholder->Push(pOperator->PopParameter());
-        m_TensorholderDegree++;
+        m_aaParameter->Push(pOperator->PopParameter());
+        m_ParameterDegree++;
     }
 
     return pOperator;
 }
 
-template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddTensorholder(Operator<DTYPE> *pTensorholder) {
-    m_aaTensorholder->Push(pTensorholder);
-    m_TensorholderDegree++;
-    return pTensorholder;
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddParameter(Operator<DTYPE> *pParameter) {
+    m_aaParameter->Push(pParameter);
+    m_ParameterDegree++;
+    return pParameter;
 }
 
-template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddParameter(Operator<DTYPE> *pTensorholder) {
-    m_aaTensorholder->Push(pTensorholder);
-    m_TensorholderDegree++;
-    return pTensorholder;
-}
+// template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddParameter(Operator<DTYPE> *pParameter) {
+//     m_aaParameter->Push(pParameter);
+//     m_ParameterDegree++;
+//     return pParameter;
+// }
 
 template<typename DTYPE> LossFunction<DTYPE> *NeuralNetwork<DTYPE>::SetLossFunction(LossFunction<DTYPE> *pLossFunction) {
     m_aLossFunction = pLossFunction;
@@ -159,13 +159,13 @@ template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::Get
     return m_aaOperator;
 }
 
-template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::GetTensorholder() {
-    return m_aaTensorholder;
+template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::GetParameter() {
+    return m_aaParameter;
 }
 
-template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::GetParameter() {
-    return m_aaTensorholder;
-}
+// template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::GetParameter() {
+//     return m_aaParameter;
+// }
 
 template<typename DTYPE> LossFunction<DTYPE> *NeuralNetwork<DTYPE>::GetLossFunction() {
     return m_aLossFunction;

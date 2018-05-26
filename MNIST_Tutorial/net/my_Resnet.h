@@ -138,8 +138,8 @@ public:
         // SetLossFunction(new MSE<float>(out, label, "MSE"));
 
         // ======================= Select Optimizer ===================
-        this->SetOptimizer(new GradientDescentOptimizer<float>(this->GetTensorholder(), 0.0002, 0.9, MINIMIZE));
-        // this->SetOptimizer(new GradientDescentOptimizer<float>(this->GetTensorholder(), 0.001, MINIMIZE));
+        this->SetOptimizer(new GradientDescentOptimizer<float>(this->GetParameter(), 0.0002, 0.9, MINIMIZE));
+        // this->SetOptimizer(new GradientDescentOptimizer<float>(this->GetParameter(), 0.001, MINIMIZE));
 
         return TRUE;
     }

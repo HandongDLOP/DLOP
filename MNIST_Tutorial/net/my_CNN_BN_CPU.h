@@ -38,8 +38,8 @@ public:
         // SetLossFunction(new MSE<float>(out, label, "MSE"));
 
         // ======================= Select Optimizer ===================
-        SetOptimizer(new GradientDescentOptimizer<float>(GetTensorholder(), 0.08, MINIMIZE));
-        // SetOptimizer(new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE));
+        SetOptimizer(new GradientDescentOptimizer<float>(GetParameter(), 0.08, MINIMIZE));
+        // SetOptimizer(new GradientDescentOptimizer<float>(GetParameter(), 0.001, MINIMIZE));
     }
 
     virtual ~my_CNN() {}

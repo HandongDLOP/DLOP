@@ -14,12 +14,12 @@ private:
     cudnnHandle_t m_cudnnHandle;
 #endif  // if __CUDNN__
     Container<Operator<DTYPE> *> *m_aaOperator;
-    Container<Operator<DTYPE> *> *m_aaTensorholder;
+    Container<Operator<DTYPE> *> *m_aaParameter;
     Container<Layer<DTYPE> *> *m_aaLayer;
     // Parameter
 
     int m_OperatorDegree;
-    int m_TensorholderDegree;
+    int m_ParameterDegree;
 
     // 중간에 Loss Function이나 Optimizer가 바뀌는 상황 생각해두기
     LossFunction<DTYPE> *m_aLossFunction;
@@ -36,8 +36,8 @@ public:
     void                 Delete();
 
     Operator<DTYPE>    * AddOperator(Operator<DTYPE> *pOperator);
-    Operator<DTYPE>    * AddTensorholder(Operator<DTYPE> *pTensorholder);
-    Operator<DTYPE>    * AddParameter(Operator<DTYPE> *pTensorholder);
+    Operator<DTYPE>    * AddParameter(Operator<DTYPE> *pParameter);
+    // Operator<DTYPE>    * AddParameter(Operator<DTYPE> *pParameter);
 
     LossFunction<DTYPE>* SetLossFunction(LossFunction<DTYPE> *pLossFunction);
     Optimizer<DTYPE>   * SetOptimizer(Optimizer<DTYPE> *pOptimizer);
@@ -47,8 +47,8 @@ public:
     Operator<DTYPE>             * GetResultOperator();
     Operator<DTYPE>             * GetResult();
     Container<Operator<DTYPE> *>* GetOperatorContainer();
-    Container<Operator<DTYPE> *>* GetTensorholder();
     Container<Operator<DTYPE> *>* GetParameter();
+    // Container<Operator<DTYPE> *>* GetParameter();
     LossFunction<DTYPE>         * GetLossFunction();
     Optimizer<DTYPE>            * GetOptimizer();
     float                         GetAccuracy();

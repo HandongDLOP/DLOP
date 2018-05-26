@@ -13,13 +13,17 @@ public:
 
         // ======================= layer 1=======================
         out = AddOperator(new ConvolutionLayer2D<float>(out, 1, 10, 3, 3, 1, 1, 0, TRUE, "1"));
+#ifdef __CUDNN__
         out = AddOperator(new CUDNNBatchNormalizeLayer2D<float>(out, 10, "1"));
+#endif // ifdef __CUDNN__
         out = AddOperator(new Relu<float>(out, "Relu_1"));
         out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, "MaxPool_1"));
 
         // ======================= layer 2=======================
         out = AddOperator(new ConvolutionLayer2D<float>(out, 10, 20, 3, 3, 1, 1, 0, TRUE, "2"));
+#ifdef __CUDNN__
         out = AddOperator(new CUDNNBatchNormalizeLayer2D<float>(out, 20, "1"));
+#endif // ifdef __CUDNN__
         out = AddOperator(new Relu<float>(out, "Relu_2"));
         out = AddOperator(new Maxpooling2D<float>(out, 2, 2, 2, 2, "MaxPool_2"));
 
@@ -30,7 +34,7 @@ public:
 
         // out = AddOperator(new Relu<float>(out, "Relu_3"));
         //
-        // // ======================= layer 4=======================
+        //// ======================= layer 4=======================
         // out = AddOperator(new Linear<float>(out, 1024, 10, TRUE, "4"));
 
         // ======================= Select LossFunction Function ===================
@@ -38,8 +42,8 @@ public:
         // SetLossFunction(new MSE<float>(out, label, "MSE"));
 
         // ======================= Select Optimizer ===================
-        SetOptimizer(new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE));
-        // SetOptimizer(new GradientDescentOptimizer<float>(GetTensorholder(), 0.001, MINIMIZE));
+        SetOptimizer(new GradientDescentOptimizer<float>(GetParameter(), 0.001, MINIMIZE));
+        // SetOptimizer(new GradientDescentOptimizer<float>(GetParameter(), 0.001, MINIMIZE));
     }
 
     virtual ~my_CNN() {}
