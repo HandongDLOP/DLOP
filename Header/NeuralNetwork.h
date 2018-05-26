@@ -10,7 +10,7 @@ typedef struct {
 
 template<typename DTYPE> class NeuralNetwork {
 private:
-#if __CUDNN__
+#ifdef __CUDNN__
     cudnnHandle_t m_cudnnHandle;
 #endif  // if __CUDNN__
     Container<Operator<DTYPE> *> *m_aaOperator;
@@ -60,7 +60,7 @@ public:
     static void                     * ForwardPropagateForThread(void *param);
     static void                     * BackPropagateForThread(void *param);
 
-#if __CUDNN__
+#ifdef __CUDNN__
     int                               ForwardPropagateOnGPU(int pTime = 0);
     int                               BackPropagateOnGPU(int pTime = 0);
 

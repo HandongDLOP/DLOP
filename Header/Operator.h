@@ -77,8 +77,6 @@ public:
     virtual int                               ResetResult();
     virtual int                               ResetGradient();
 
-    virtual void                              SetDeviceCPU();
-    virtual void                              SetDeviceCPU(int pNumOfThread);
 
     virtual Container<Tensorholder<DTYPE> *>* GetParameterContainer();
     virtual int                               GetNumOfParameter();
@@ -86,6 +84,8 @@ public:
 
     virtual void                              PrintInformation();
 
+    virtual void                              SetDeviceCPU();
+    virtual void                              SetDeviceCPU(int pNumOfThread);
 #ifdef __CUDNN__
 
     cudnnHandle_t m_pCudnnHandle;

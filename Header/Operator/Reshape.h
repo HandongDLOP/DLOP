@@ -8,35 +8,35 @@ class ReShape : public Operator<DTYPE>{
 private:
 public:
     ReShape(Operator<DTYPE> *pInput, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "ReShape::ReShape(Operator *)" << '\n';
         #endif  // __DEBUG__
         this->Alloc(pInput, 0, 0, 0, pRowSize, pColSize);
     }
 
     ReShape(Operator<DTYPE> *pInput, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "ReShape::ReShape(Operator *)" << '\n';
         #endif  // __DEBUG__
         this->Alloc(pInput, 0, 0, pChannelSize, pRowSize, pColSize);
     }
 
     ReShape(Operator<DTYPE> *pInput, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "ReShape::ReShape(Operator *)" << '\n';
         #endif  // __DEBUG__
         this->Alloc(pInput, 0, pBatchSize, pChannelSize, pRowSize, pColSize);
     }
 
     ReShape(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pInput, pName) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "ReShape::ReShape(Operator *)" << '\n';
         #endif  // __DEBUG__
         this->Alloc(pInput, pTimeSize, pBatchSize, pChannelSize, pRowSize, pColSize);
     }
 
     ~ReShape() {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "ReShape::~ReShape()" << '\n';
         #endif  // __DEBUG__
 
@@ -44,7 +44,7 @@ public:
     }
 
     int Alloc(Operator<DTYPE> *pInput, int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "ReShape::Alloc(Operator *, Operator *)" << '\n';
         #endif  // __DEBUG__
 
@@ -127,7 +127,7 @@ public:
         return TRUE;
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
     int ForwardPropagateOnGPU(int pTime) {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *result = this->GetResult();

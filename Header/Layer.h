@@ -55,7 +55,7 @@ public:
 
     void                              SetDeviceCPU();
     void                              SetDeviceCPU(int pnumOfThread);
-#if __CUDNN__
+#ifdef __CUDNN__
     int                               ForwardPropagateOnGPU(int pTime = 0);
     int                               BackPropagateOnGPU(int pTime = 0);
     void                              SetDeviceGPU();

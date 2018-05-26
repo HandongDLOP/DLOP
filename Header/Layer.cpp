@@ -5,7 +5,7 @@ template class Layer<float>;
 template class Layer<double>;
 
 template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) : Operator<DTYPE>(pName) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Layer<DTYPE>::Layer()" << '\n';
     #endif  // __DEBUG__
     m_aaOperator  = NULL;
@@ -20,7 +20,7 @@ template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) : Operator<DTYPE
 }
 
 template<typename DTYPE> Layer<DTYPE>::~Layer() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Layer<DTYPE>::~Layer()" << '\n';
     #endif  // __DEBUG__
 
@@ -34,7 +34,7 @@ template<typename DTYPE> int Layer<DTYPE>::Alloc() {
 }
 
 template<typename DTYPE> void Layer<DTYPE>::Delete() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Layer<DTYPE>::Delete()" << '\n';
     #endif  // __DEBUG__
 
@@ -146,7 +146,7 @@ template<typename DTYPE> int Layer<DTYPE>::BackPropagate(int pTime, int pThreadN
     return TRUE;
 }
 
-#if __CUDNN__
+#ifdef __CUDNN__
 template<typename DTYPE> int Layer<DTYPE>::ForwardPropagateOnGPU(int pTime) {
     for (int i = 0; i < m_numOfOperator; i++) {
         (*m_aaOperator)[i]->ForwardPropagateOnGPU(pTime);

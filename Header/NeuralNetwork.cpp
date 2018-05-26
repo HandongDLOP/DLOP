@@ -5,7 +5,7 @@ template class NeuralNetwork<float>;
 template class NeuralNetwork<double>;
 
 template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "NeuralNetwork<DTYPE>::NeuralNetwork()" << '\n';
     #endif  // __DEBUG__
 
@@ -26,7 +26,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
 }
 
 template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "NeuralNetwork<DTYPE>::~NeuralNetwork()" << '\n';
     #endif  // __DEBUG__
 
@@ -38,7 +38,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
     m_aaTensorholder = new Container<Tensorholder<DTYPE> *>();
     m_aaLayer        = new Container<Layer<DTYPE> *>();
 
-#if __CUDNN__
+#ifdef __CUDNN__
     checkCudaErrors(cudaSetDevice(2));
     checkCUDNN(cudnnCreate(&m_cudnnHandle));
 #endif  // if __CUDNN__
@@ -47,7 +47,7 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
 }
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "NeuralNetwork<DTYPE>::Delete()" << '\n';
     #endif  // __DEBUG__
     int size = 0;
@@ -104,7 +104,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         m_aOptimizer = NULL;
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
     checkCudaErrors(cudaThreadSynchronize());
     checkCudaErrors(cudaDeviceSynchronize());
     checkCUDNN(cudnnDestroy(m_cudnnHandle));
@@ -288,7 +288,7 @@ template<typename DTYPE> void *NeuralNetwork<DTYPE>::BackPropagateForThread(void
     return NULL;
 }
 
-#if __CUDNN__
+#ifdef __CUDNN__
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagateOnGPU(int pTime) {
     for (int i = 0; i < m_OperatorDegree; i++) {
         (*m_aaOperator)[i]->ForwardPropagateOnGPU(pTime);
@@ -469,7 +469,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeInferencing() {
     }
 }
 
-#if __CUDNN__
+#ifdef __CUDNN__
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
     // std::cout << "NeuralNetwork<DTYPE>::SetModeGPU()" << '\n';

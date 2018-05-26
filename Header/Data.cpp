@@ -5,7 +5,7 @@ template class Data<float>;
 template class Data<double>;
 
 template<typename DTYPE> int Data<DTYPE>::Alloc(unsigned int pTimeSize, unsigned int pCapacityPerTime) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Data<DTYPE>::Alloc(unsigned int pTimeSize, unsigned int pCapacityPerTime)" << '\n';
     #endif  // __DEBUG__
 
@@ -29,7 +29,7 @@ template<typename DTYPE> int Data<DTYPE>::Alloc(unsigned int pTimeSize, unsigned
 }
 
 template<typename DTYPE> int Data<DTYPE>::Alloc(Data *pData) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Data<DTYPE>::Alloc(Data *pData)" << '\n';
     #endif  // __DEBUG__
 
@@ -58,7 +58,7 @@ template<typename DTYPE> int Data<DTYPE>::Alloc(Data *pData) {
 }
 
 template<typename DTYPE> void Data<DTYPE>::Delete() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Data<DTYPE>::Delete()" << '\n';
     #endif  // __DEBUG__
 
@@ -73,7 +73,7 @@ template<typename DTYPE> void Data<DTYPE>::Delete() {
         m_aaHostData = NULL;
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
 
     this->DeleteOnGPU();
 #endif  // __CUDNN__
@@ -142,35 +142,35 @@ template<typename DTYPE> int Data<DTYPE>::MemcpyGPU2CPU() {
 #endif  // if __CUDNN__
 
 template<typename DTYPE> Data<DTYPE>::Data(unsigned int pTimeSize, unsigned int pCapacity) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Data<DTYPE>::Data(unsigned int pTimeSize, unsigned int pCapacity)" << '\n';
     #endif  // __DEBUG__
     m_TimeSize        = 0;
     m_CapacityPerTime = 0;
     m_aaHostData      = NULL;
     m_Device          = CPU;
-#if __CUDNN__
+#ifdef __CUDNN__
     m_aaDevData = NULL;
 #endif  // __CUDNN
     Alloc(pTimeSize, pCapacity);
 }
 
 template<typename DTYPE> Data<DTYPE>::Data(Data *pData) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Data<DTYPE>::Data(Data *pData)" << '\n';
     #endif  // __DEBUG__
     m_TimeSize        = 0;
     m_CapacityPerTime = 0;
     m_aaHostData      = NULL;
     m_Device          = CPU;
-#if __CUDNN__
+#ifdef __CUDNN__
     m_aaDevData = NULL;
 #endif  // __CUDNN
     Alloc(pData);
 }
 
 template<typename DTYPE> Data<DTYPE>::~Data() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Data<DTYPE>::~Data()" << '\n';
     #endif  // __DEBUG__
     Delete();
@@ -189,7 +189,7 @@ template<typename DTYPE> int Data<DTYPE>::GetCapacityPerTime() {
 }
 
 template<typename DTYPE> DTYPE Data<DTYPE>::GetElement(unsigned int index) {
-    #if __CUDNN__
+    #ifdef __CUDNN__
     # if __DEBUG__
 
     if (m_Device == GPU) {
@@ -211,7 +211,7 @@ template<typename DTYPE> DTYPE Data<DTYPE>::GetElement(unsigned int index) {
 }
 
 template<typename DTYPE> DTYPE& Data<DTYPE>::operator[](unsigned int index) {
-    #if __CUDNN__
+    #ifdef __CUDNN__
     # if __DEBUG__
 
     if (m_Device == GPU) {
@@ -237,7 +237,7 @@ template<typename DTYPE> Device Data<DTYPE>::GetDevice() {
 }
 
 template<typename DTYPE> DTYPE *Data<DTYPE>::GetCPUData(unsigned int pTime) {
-    #if __CUDNN__
+    #ifdef __CUDNN__
     # if __DEBUG__
 
     if (m_Device == GPU) {
@@ -259,18 +259,18 @@ template<typename DTYPE> DTYPE *Data<DTYPE>::GetCPUData(unsigned int pTime) {
 }
 
 template<typename DTYPE> int Data<DTYPE>::SetDeviceCPU() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Data<DTYPE>::SetDeviceCPU()" << '\n';
     #endif  // __DEBUG__
 
     m_Device = CPU;
-#if __CUDNN__
+#ifdef __CUDNN__
     this->MemcpyGPU2CPU();
 #endif  // __CUDNN__
     return TRUE;
 }
 
-#if __CUDNN__
+#ifdef __CUDNN__
 template<typename DTYPE> int Data<DTYPE>::SetDeviceGPU() {
     # if __DEBUG__
     std::cout << "Data<DTYPE>::SetDeviceGPU()" << '\n';

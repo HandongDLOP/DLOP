@@ -16,7 +16,7 @@ template<typename DTYPE> int Operator<DTYPE>::Alloc() {
 }
 
 template<typename DTYPE> int Operator<DTYPE>::Alloc(int numInput, ...) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Operator<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
     #endif  // __DEBUG__
     Operator<DTYPE> *temp = NULL;
@@ -47,7 +47,7 @@ template<typename DTYPE> int Operator<DTYPE>::Alloc(int numInput, ...) {
 }
 
 template<typename DTYPE> void Operator<DTYPE>::Delete() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Operator<DTYPE>::Delete()" << '\n';
     #endif  // __DEBUG__
     int size = 0;
@@ -117,7 +117,7 @@ template<typename DTYPE> int Operator<DTYPE>::_AddOutputEdge(Operator<DTYPE> *pO
 //////////////////////////////////////////////////////////////////////////////// for public method
 
 template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
     #endif  // __DEBUG__
     m_aaResult       = NULL;
@@ -133,7 +133,7 @@ template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
 }
 
 template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std::string pName) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
     #endif  // __DEBUG__
     m_aaResult       = NULL;
@@ -150,7 +150,7 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std:
 }
 
 template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
     #endif  // __DEBUG__
     m_aaResult       = NULL;
@@ -167,7 +167,7 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Ope
 }
 
 template<typename DTYPE> Operator<DTYPE>::~Operator() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Operator<DTYPE>::~Operator()" << '\n';
     #endif  // __DEBUG__
     this->Delete();
@@ -180,7 +180,7 @@ template<typename DTYPE> int Operator<DTYPE>::AddEdgebetweenOperators(Operator<D
 }
 
 template<typename DTYPE> int Operator<DTYPE>::AddEdgebetweenOperators(int numInput, ...) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Operator<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
     #endif  // __DEBUG__
     Operator<DTYPE> *temp = NULL;
@@ -325,7 +325,7 @@ template<typename DTYPE> Tensorholder<DTYPE> *Operator<DTYPE>::PopParameter() {
 }
 
 template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "thread number : " << pThreadNum << '\n';
     std::cout << "number of thread : " << this->GetNumOfThread() << '\n';
     #endif  // __DEBUG__
@@ -333,14 +333,14 @@ template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate(int pTime, int pT
 }
 
 template<typename DTYPE> int Operator<DTYPE>::BackPropagate(int pTime, int pThreadNum) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "thread number : " << pThreadNum << '\n';
     std::cout << "number of thread : " << this->GetNumOfThread() << '\n';
     #endif  // __DEBUG__
     return TRUE;
 }
 
-#if __CUDNN__
+#ifdef __CUDNN__
 template<typename DTYPE> int Operator<DTYPE>::ForwardPropagateOnGPU(int pTime) {
     # if __DEBUG__
     std::cout << "Operator<DTYPE>::ForwardPropagateOnGPU(int)" << '\n';
@@ -358,7 +358,7 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU(int pTime) {
 }
 
 #endif  // __CUDNN__
-#if __CUDNN__
+#ifdef __CUDNN__
 template<typename DTYPE> void Operator<DTYPE>::InitializeAttributeForGPU() {}
 
 template<typename DTYPE> void Operator<DTYPE>::SetCudnnHandle(cudnnHandle_t& pCudnnHandle) {
@@ -375,7 +375,7 @@ void cudnnResize(int size, float *data) {
 
 #endif  // if __CUDNN__
 
-#if __CUDNN__
+#ifdef __CUDNN__
 template<typename DTYPE> cudnnHandle_t& Operator<DTYPE>::GetCudnnHandle() {
     return m_pCudnnHandle;
 }
@@ -396,7 +396,7 @@ template<typename DTYPE> void Operator<DTYPE>::SetModeInferencing() {
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
     m_Device = CPU;
 
-#if __CUDNN__
+#ifdef __CUDNN__
     this->SetResultOnCPU();
     this->SetGradientOnCPU();
 #endif  // __CUDNN__
@@ -406,13 +406,13 @@ template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU(int pNumOfThread) {
     m_Device      = CPU;
     m_numOfThread = pNumOfThread;
 
-#if __CUDNN__
+#ifdef __CUDNN__
     this->SetResultOnCPU();
     this->SetGradientOnCPU();
 #endif  // __CUDNN__
 }
 
-#if __CUDNN__
+#ifdef __CUDNN__
 template<typename DTYPE> int Operator<DTYPE>::SetResultOnCPU() {
     // Tensorholder의 경우는 하면 안된다.
     int size = m_aaResult->GetSize();
@@ -473,7 +473,7 @@ template<typename DTYPE> int Operator<DTYPE>::ResetResult() {
         }
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
     else if (m_Device == GPU) {
         for (int i = 0; i < size; i++) {
             (*m_aaResult)[i]->Reset(this->GetCudnnHandle());
@@ -495,7 +495,7 @@ template<typename DTYPE> int Operator<DTYPE>::ResetGradient() {
         }
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
     else if (m_Device == GPU) {
         for (int i = 0; i < size; i++) {
             (*m_aaGradient)[i]->Reset(this->GetCudnnHandle());

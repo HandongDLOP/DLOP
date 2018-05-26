@@ -19,7 +19,7 @@ private:
 
     int m_numOfThread;
 
-#if __CUDNN__
+#ifdef __CUDNN__
     cudnnHandle_t m_pCudnnHandle;
 #endif  // if __CUDNN__
 

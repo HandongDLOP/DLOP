@@ -4,7 +4,7 @@
 //////////////////////////////////////////////////////////////////////////////// for private method
 
 int Shape::Alloc(int pRank, ...) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::Alloc(int pRank, ...)" << '\n';
     #endif  // __DEBUG__
 
@@ -39,7 +39,7 @@ int Shape::Alloc(int pRank, ...) {
 }
 
 int Shape::Alloc(Shape *pShape) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::Alloc(Shape *pShape)" << '\n';
     #endif  // __DEBUG__
 
@@ -57,7 +57,7 @@ int Shape::Alloc(Shape *pShape) {
 
     m_Device = pShape->GetDevice();
 
-#if __CUDNN__
+#ifdef __CUDNN__
 
     if (m_Device == GPU) SetDeviceGPU();
 #endif  // if __CUDNN__
@@ -66,7 +66,7 @@ int Shape::Alloc(Shape *pShape) {
 }
 
 void Shape::Delete() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::Delete()" << '\n';
     #endif  // __DEBUG__
 
@@ -75,12 +75,12 @@ void Shape::Delete() {
         m_aDim = NULL;
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
     DeleteOnGPU();
 #endif  // if __CUDNN__
 }
 
-#if __CUDNN__
+#ifdef __CUDNN__
 int Shape::AllocOnGPU() {
     # if __DEBUG__
     std::cout << "Shape::AllocOnGPU()" << '\n';
@@ -129,13 +129,13 @@ int Shape::ReShapeOnGPU() {
 //////////////////////////////////////////////////////////////////////////////// for public method
 
 Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4)" << '\n';
     #endif  // __DEBUG__
 
     m_Rank = 0;
     m_aDim = NULL;
-#if __CUDNN__
+#ifdef __CUDNN__
     m_desc = NULL;
 #endif  // if __CUDNN__
 
@@ -143,13 +143,13 @@ Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
 }
 
 Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3)" << '\n';
     #endif  // __DEBUG__
 
     m_Rank = 0;
     m_aDim = NULL;
-#if __CUDNN__
+#ifdef __CUDNN__
     m_desc = NULL;
 #endif  // if __CUDNN__
 
@@ -157,13 +157,13 @@ Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3) {
 }
 
 Shape::Shape(int pSize0, int pSize1, int pSize2) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::Shape(int pSize0, int pSize1, int pSize2, int pSize3)" << '\n';
     #endif  // __DEBUG__
 
     m_Rank = 0;
     m_aDim = NULL;
-#if __CUDNN__
+#ifdef __CUDNN__
     m_desc = NULL;
 #endif  // if __CUDNN__
 
@@ -171,13 +171,13 @@ Shape::Shape(int pSize0, int pSize1, int pSize2) {
 }
 
 Shape::Shape(int pSize0, int pSize1) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::Shape(int pSize0, int pSize1)" << '\n';
     #endif  // __DEBUG__
 
     m_Rank = 0;
     m_aDim = NULL;
-#if __CUDNN__
+#ifdef __CUDNN__
     m_desc = NULL;
 #endif  // if __CUDNN__
 
@@ -185,13 +185,13 @@ Shape::Shape(int pSize0, int pSize1) {
 }
 
 Shape::Shape(int pSize0) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::Shape(int pSize0)" << '\n';
     #endif  // __DEBUG__
 
     m_Rank = 0;
     m_aDim = NULL;
-#if __CUDNN__
+#ifdef __CUDNN__
     m_desc = NULL;
 #endif  // if __CUDNN__
 
@@ -199,13 +199,13 @@ Shape::Shape(int pSize0) {
 }
 
 Shape::Shape(Shape *pShape) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::Shape(Shape *pShape)" << '\n';
     #endif  // __DEBUG__
 
     m_Rank = 0;
     m_aDim = NULL;
-#if __CUDNN__
+#ifdef __CUDNN__
     m_desc = NULL;
 #endif  // if __CUDNN__
 
@@ -213,7 +213,7 @@ Shape::Shape(Shape *pShape) {
 }
 
 Shape::~Shape() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::~Shape()" << '\n';
     #endif  // __DEBUG__
 
@@ -221,7 +221,7 @@ Shape::~Shape() {
 }
 
 int Shape::GetRank() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::GetRank()" << '\n';
     #endif  // __DEBUG__
 
@@ -229,7 +229,7 @@ int Shape::GetRank() {
 }
 
 int Shape::GetDim(int pRanknum) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::GetDim(int pRanknum)" << '\n';
     #endif  // __DEBUG__
 
@@ -245,7 +245,7 @@ int Shape::GetDim(int pRanknum) {
 }
 
 Device Shape::GetDevice() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::GetDevice()" << '\n';
     #endif  // __DEBUG__
 
@@ -253,7 +253,7 @@ Device Shape::GetDevice() {
 }
 
 int& Shape::operator[](int pRanknum) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::operator[](int pRanknum)" << '\n';
     #endif  // __DEBUG__
 
@@ -269,7 +269,7 @@ int& Shape::operator[](int pRanknum) {
 }
 
 int Shape::ReShape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::ReShape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4)" << '\n';
     #endif  // __DEBUG__
 
@@ -277,7 +277,7 @@ int Shape::ReShape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4) {
 }
 
 int Shape::ReShape(int pRank, ...) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::ReShape(int pRank, ...)" << '\n';
     #endif  // __DEBUG__
 
@@ -309,7 +309,7 @@ int Shape::ReShape(int pRank, ...) {
 
     va_end(ap);
 
-#if __CUDNN__
+#ifdef __CUDNN__
 
     if (m_desc == NULL) ReShapeOnGPU();
 #endif  // if __CUDNN__
@@ -318,7 +318,7 @@ int Shape::ReShape(int pRank, ...) {
 }
 
 int Shape::SetDeviceCPU() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "Shape::SetDeviceCPU()" << '\n';
     #endif  // __DEBUG__
 
@@ -327,7 +327,7 @@ int Shape::SetDeviceCPU() {
     return TRUE;
 }
 
-#if __CUDNN__
+#ifdef __CUDNN__
 
 int Shape::SetDeviceGPU() {
     # if __DEBUG__
@@ -366,7 +366,7 @@ cudnnTensorDescriptor_t& Shape::GetDescriptor() {
 
 
 std::ostream& operator<<(std::ostream& pOS, Shape *pShape) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "std::ostream& operator<<(std::ostream& pOS, Shape *pShape)" << '\n';
     #endif  // __DEBUG__
 

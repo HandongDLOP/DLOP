@@ -13,7 +13,7 @@ private:
 
 public:
     GradientDescentOptimizer(Container<Tensorholder<DTYPE> *> *pParameterContainer, float pLearningRate, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pParameterContainer, pLearningRate, pOptimizeDirection) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(LossFunction<DTYPE> *, float, OptimizeDirection)" << '\n';
         #endif  // __DEBUG__
         m_ppParameter    = NULL;
@@ -25,7 +25,7 @@ public:
     }
 
     GradientDescentOptimizer(Container<Tensorholder<DTYPE> *> *pParameterContainer, float pLearningRate, float momentum, OptimizeDirection pOptimizeDirection) : Optimizer<DTYPE>(pParameterContainer, pLearningRate, pOptimizeDirection) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "GradientDescentOptimizer::GradientDescentOptimizer(LossFunction<DTYPE> *, float, OptimizeDirection)" << '\n';
         #endif  // __DEBUG__
         m_ppParameter    = NULL;
@@ -37,7 +37,7 @@ public:
     }
 
     ~GradientDescentOptimizer() {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "GradientDescentOptimizer::~GradientDescentOptimizer()" << '\n';
         #endif  // __DEBUG__
     }
@@ -115,7 +115,7 @@ public:
         return TRUE;
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
 
 
     virtual int UpdateVariableOnGPU() {

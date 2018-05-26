@@ -9,14 +9,14 @@ private:
 
 public:
     Tensorholder(Tensor<DTYPE> *pTensor, std::string pName, int pTrainable = 1) : Operator<DTYPE>(pName) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "Tensorholder<DTYPE>::Tensorholder(Tensor<DTYPE> *, std::string)" << '\n';
         #endif  // __DEBUG__
         this->Alloc(pTensor, pTrainable);
     }
 
     Tensorholder(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize, std::string pName) : Operator<DTYPE>(pName) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "Placeholder<DTYPE>::Placeholder(int, int, int, int, int, std::string)" << '\n';
         #endif  // __DEBUG__
 
@@ -24,13 +24,13 @@ public:
     }
 
     ~Tensorholder() {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "Tensorholder<DTYPE>::~Tensorholder()" << '\n';
         #endif  // __DEBUG__
     }
 
     int Alloc(Tensor<DTYPE> *pTensor, int pTrainable) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "Tensorholder<DTYPE>::Alloc(Tensor<DTYPE> *, std::string)" << '\n';
         #endif  // __DEBUG__
 
@@ -47,7 +47,7 @@ public:
     }
 
     int Alloc(int pTimeSize, int pBatchSize, int pChannelSize, int pRowSize, int pColSize) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "Placeholder<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
         #endif  // __DEBUG__
 

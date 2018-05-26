@@ -16,7 +16,7 @@ private:
     Container<Tensorholder<DTYPE> *> *m_ppTrainableTensors;
     int m_TrainableTensorDegree;
 
-#if __CUDNN__
+#ifdef __CUDNN__
     cudnnHandle_t m_pCudnnHandle;
 #endif  // if __CUDNN__
 
@@ -42,7 +42,7 @@ public:
 
     int                               ResetParameterGradient();
 
-#if __CUDNN__
+#ifdef __CUDNN__
 
     virtual void   SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
     cudnnHandle_t& GetCudnnHandle();

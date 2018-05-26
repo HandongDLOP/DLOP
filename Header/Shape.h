@@ -3,7 +3,7 @@
 
 #include "Common.h"
 
-// #if __CUDNN__
+// #ifdef __CUDNN__
 // typedef cudnnTensorDescriptor_t ShapeOnGPU;
 // #endif  // if __CUDNN__
 
@@ -13,7 +13,7 @@ private:
     int *m_aDim;
     Device m_Device;
 
-#if __CUDNN__
+#ifdef __CUDNN__
     cudnnTensorDescriptor_t m_desc;
 #endif  // if __CUDNN__
 
@@ -22,7 +22,7 @@ private:
     int  Alloc(Shape *pShape);
     void Delete();
 
-#if __CUDNN__
+#ifdef __CUDNN__
     int  AllocOnGPU();
     void DeleteOnGPU();
     int  ReShapeOnGPU();
@@ -47,7 +47,7 @@ public:
 
 
     int                      SetDeviceCPU();
-#if __CUDNN__
+#ifdef __CUDNN__
     int                      SetDeviceGPU();
     cudnnTensorDescriptor_t& GetDescriptor();
 #endif  // __CUDNN__

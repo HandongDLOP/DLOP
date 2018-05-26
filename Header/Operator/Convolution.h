@@ -9,7 +9,7 @@ private:
     int m_stride[2];
     int m_padding[2];
 
-#if __CUDNN__
+#ifdef __CUDNN__
     cudnnTensorDescriptor_t inputTensorDesc, outputTensorDesc, deltaDesc, inputDeltaDesc;
     cudnnConvolutionDescriptor_t convDesc;
     cudnnFilterDescriptor_t filterDesc, filterDeltaDesc;
@@ -45,7 +45,7 @@ public:
     }
 
     virtual ~Convolution2D() {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "Convolution2D::~Convolution2D()" << '\n';
         #endif  // __DEBUG__
         Delete();
@@ -78,7 +78,7 @@ public:
         return TRUE;
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
     void InitializeAttributeForGPU() {
         Operator<DTYPE> *pInput  = this->GetInput()[0];
         Operator<DTYPE> *pWeight = this->GetInput()[1];
@@ -191,7 +191,7 @@ public:
 #endif  // if __CUDNN__
 
     void Delete() {
-#if __CUDNN__
+#ifdef __CUDNN__
 
         if (inputTensorDesc) checkCUDNN(cudnnDestroyTensorDescriptor(inputTensorDesc));
         inputTensorDesc = NULL;
@@ -334,7 +334,7 @@ public:
         return TRUE;
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
     int ForwardPropagateOnGPU(int pTime = 0) {
         Tensor<DTYPE> *input  = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *weight = this->GetInput()[1]->GetResult();

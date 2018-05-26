@@ -5,7 +5,7 @@ template class LossFunction<float>;
 template class LossFunction<double>;
 
 template<typename DTYPE> LossFunction<DTYPE>::LossFunction(std::string pName) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "LossFunction<DTYPE>::LossFunction()" << '\n';
     #endif  // __DEBUG__
     m_aResult        = NULL;
@@ -19,7 +19,7 @@ template<typename DTYPE> LossFunction<DTYPE>::LossFunction(std::string pName) {
 }
 
 template<typename DTYPE> LossFunction<DTYPE>::LossFunction(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel, std::string pName) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "LossFunction<DTYPE>::LossFunction()" << '\n';
     #endif  // __DEBUG__
     m_aResult        = NULL;
@@ -34,14 +34,14 @@ template<typename DTYPE> LossFunction<DTYPE>::LossFunction(Operator<DTYPE> *pOpe
 }
 
 template<typename DTYPE> LossFunction<DTYPE>::~LossFunction() {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "LossFunction<DTYPE>::~LossFunction()" << '\n';
     #endif  // __DEBUG__
     this->Delete();
 }
 
 template<typename DTYPE> int LossFunction<DTYPE>::Alloc(Operator<DTYPE> *pOperator, Operator<DTYPE> *pLabel) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "LossFunction<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
     #endif  // __DEBUG__
 
@@ -97,7 +97,7 @@ template<typename DTYPE> std::string LossFunction<DTYPE>::GetName() const {
 }
 
 template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "LossFunction<DTYPE>::ForwardPropagate(int pTime, int pThreadNum)" << '\n';
     std::cout << this->GetName() << '\n';
     #endif  // __DEBUG__
@@ -105,14 +105,14 @@ template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagate(in
 }
 
 template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::BackPropagate(int pTime, int pThreadNum) {
-    #if __DEBUG__
+    #ifdef __DEBUG__
     std::cout << "LossFunction<DTYPE>::BackPropagate(int pTime, int pThreadNum)" << '\n';
     std::cout << this->GetName() << '\n';
     #endif  // __DEBUG__
     return NULL;
 }
 
-#if __CUDNN__
+#ifdef __CUDNN__
 
 template<typename DTYPE> Tensor<DTYPE> *LossFunction<DTYPE>::ForwardPropagateOnGPU(int pTime) {
     # if __DEBUG__
@@ -138,7 +138,7 @@ template<typename DTYPE> DTYPE& LossFunction<DTYPE>::operator[](unsigned int ind
 template<typename DTYPE> void LossFunction<DTYPE>::SetDeviceCPU() {
     m_Device = CPU;
 
-#if __CUDNN__
+#ifdef __CUDNN__
     this->SetResultOnCPU();
     this->SetGradientOnCPU();
 #endif  // __CUDNN__
@@ -148,13 +148,13 @@ template<typename DTYPE> void LossFunction<DTYPE>::SetDeviceCPU(int pNumOfThread
     m_Device      = CPU;
     m_numOfThread = pNumOfThread;
 
-#if __CUDNN__
+#ifdef __CUDNN__
     this->SetResultOnCPU();
     this->SetGradientOnCPU();
 #endif  // __CUDNN__
 }
 
-#if __CUDNN__
+#ifdef __CUDNN__
 template<typename DTYPE> int LossFunction<DTYPE>::SetResultOnCPU() {
     if (m_aResult) m_aResult->SetDeviceCPU();
 
@@ -201,7 +201,7 @@ template<typename DTYPE> int LossFunction<DTYPE>::ResetResult() {
         if (m_aResult) m_aResult->Reset();
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
     else if (m_Device == GPU) {
         if (m_aResult) m_aResult->Reset(this->GetCudnnHandle());
     }
@@ -217,7 +217,7 @@ template<typename DTYPE> int LossFunction<DTYPE>::ResetGradient() {
         if (m_aGradient) m_aGradient->Reset();
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
     else if (m_Device == GPU) {
         if (m_aGradient) m_aGradient->Reset(this->GetCudnnHandle());
     }

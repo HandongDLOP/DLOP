@@ -6,7 +6,7 @@
 
 template<typename DTYPE> class MatMul : public Operator<DTYPE>{
 private:
-#if __CUDNN__
+#ifdef __CUDNN__
     cudnnTensorDescriptor_t inputTensorDesc, outputTensorDesc, deltaDesc, inputDeltaDesc;
     cudnnConvolutionDescriptor_t convDesc;
     cudnnFilterDescriptor_t filterDesc, filterDeltaDesc;
@@ -32,21 +32,21 @@ private:
 
 public:
     MatMul(Operator<DTYPE> *pWeight, Operator<DTYPE> *pInput, std::string pName) : Operator<DTYPE>(pWeight, pInput, pName) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "MatMul::MatMul(Operator<DTYPE> *, Operator<DTYPE> *, std::string)" << '\n';
         #endif  // __DEBUG__
         this->Alloc(pWeight, pInput);
     }
 
     virtual ~MatMul() {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "Convolution2D::~Convolution2D()" << '\n';
         #endif  // __DEBUG__
         Delete();
     }
 
     int Alloc(Operator<DTYPE> *pWeight, Operator<DTYPE> *pInput) {
-        #if __DEBUG__
+        #ifdef __DEBUG__
         std::cout << "MatMul::Alloc(Operator<DTYPE> *, Operator<DTYPE> *)" << '\n';
         #endif  // __DEBUG__
 
@@ -63,7 +63,7 @@ public:
         return TRUE;
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
     void InitializeAttributeForGPU() {
         Operator<DTYPE> *pWeight = this->GetInput()[0];
         Operator<DTYPE> *pInput  = this->GetInput()[1];
@@ -178,7 +178,7 @@ public:
 
 
     void Delete() {
-#if __CUDNN__
+#ifdef __CUDNN__
 
         if (inputTensorDesc) checkCUDNN(cudnnDestroyTensorDescriptor(inputTensorDesc));
         inputTensorDesc = NULL;
@@ -307,7 +307,7 @@ public:
         return TRUE;
     }
 
-#if __CUDNN__
+#ifdef __CUDNN__
     int ForwardPropagateOnGPU(int pTime = 0) {
         Tensor<DTYPE> *weight = this->GetInput()[0]->GetResult();
         Tensor<DTYPE> *input  = this->GetInput()[1]->GetResult();

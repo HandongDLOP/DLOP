@@ -13,7 +13,7 @@ private:
 
     Device m_Device;
 
-#if __CUDNN__
+#ifdef __CUDNN__
     DTYPE **m_aaDevData;
 #endif  // __CUDNN
 
@@ -22,7 +22,7 @@ private:
     int  Alloc(Data *pData);
     void Delete();
 
-#if __CUDNN__
+#ifdef __CUDNN__
     int  AllocOnGPU();
     void DeleteOnGPU();
     int  MemcpyCPU2GPU();
@@ -44,7 +44,7 @@ public:
     DTYPE* GetCPUData(unsigned int pTime = 0);
 
     int    SetDeviceCPU();
-#if __CUDNN__
+#ifdef __CUDNN__
     int    SetDeviceGPU();
 
     DTYPE* GetGPUData(unsigned int pTime = 0);

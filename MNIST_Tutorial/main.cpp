@@ -30,7 +30,7 @@ int main(int argc, char const *argv[]) {
     // ======================= Prepare Data ===================
     MNISTDataSet<float> *dataset = CreateMNISTDataSet<float>();
 
-#if __CUDNN__
+#ifdef __CUDNN__
     x->SetDeviceGPU();
     label->SetDeviceGPU();
     net->SetDeviceGPU();
@@ -55,7 +55,7 @@ int main(int argc, char const *argv[]) {
             Tensor<float> * x_t = dataset->GetTrainFeedImage();
             Tensor<float> * l_t = dataset->GetTrainFeedLabel();
 
-#if __CUDNN__
+#ifdef __CUDNN__
             x_t->SetDeviceGPU();
             l_t->SetDeviceGPU();
 #endif  // __CUDNN__s
@@ -121,7 +121,7 @@ int main(int argc, char const *argv[]) {
             Tensor<float> * x_t = dataset->GetTestFeedImage();
             Tensor<float> * l_t = dataset->GetTestFeedLabel();
 
-#if __CUDNN__
+#ifdef __CUDNN__
             x_t->SetDeviceGPU();
             l_t->SetDeviceGPU();
 #endif  // __CUDNN__
