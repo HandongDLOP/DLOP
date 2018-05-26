@@ -439,17 +439,17 @@ template<typename DTYPE> void Tensor<DTYPE>::Reset() {
     }
 }
 
-#ifdef __CUDNN__
 template<typename DTYPE> void Tensor<DTYPE>::SetDeviceCPU() {
-    # if __DEBUG__
+    #if __DEBUG__
     std::cout << "Tensor<DTYPE>::SetDeviceCPU()" << '\n';
-    # endif // __DEBUG__
+    #endif  // __DEBUG__
 
     m_Device = CPU;
     m_aData->SetDeviceCPU();
     m_aShape->SetDeviceCPU();
 }
 
+#ifdef __CUDNN__
 template<typename DTYPE> void Tensor<DTYPE>::SetDeviceGPU() {
     # if __DEBUG__
     std::cout << "Tensor<DTYPE>::SetDeviceGPU()" << '\n';

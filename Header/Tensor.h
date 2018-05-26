@@ -35,35 +35,35 @@ public:
 
     virtual ~Tensor();
 
-    Shape      * GetShape();
-    int          GetRank();
-    int          GetDim(int pRanknum);
-    Data<DTYPE>* GetData();
-    int          GetCapacity();
-    int          GetElement(unsigned int index);
-    DTYPE   & operator[](unsigned int index);
-    Device    GetDevice();
-    IsUseTime GetIsUseTime();
-    DTYPE   * GetCPUData(unsigned int pTime = 0);
+    Shape                  * GetShape();
+    int                      GetRank();
+    int                      GetDim(int pRanknum);
+    Data<DTYPE>            * GetData();
+    int                      GetCapacity();
+    int                      GetElement(unsigned int index);
+    DTYPE                  & operator[](unsigned int index);
+    Device                   GetDevice();
+    IsUseTime                GetIsUseTime();
+    DTYPE                  * GetCPUData(unsigned int pTime = 0);
 
-    int       GetTimeSize();    // 추후 Data의 Timesize 반환
-    int       GetBatchSize();   // 삭제 예정
-    int       GetChannelSize(); // 삭제 예정
-    int       GetRowSize();     // 삭제 예정
-    int       GetColSize();     // 삭제 예정
-
-
-    int       ReShape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4);
-    int       ReShape(int pSize0, int pSize1, int pSize2, int pSize3);
-    int       ReShape(int pSize0, int pSize1, int pSize2);
-    int       ReShape(int pSize0, int pSize1);
-    int       ReShape(int pSize0);
-
-    void      Reset();
+    int                      GetTimeSize(); // 추후 Data의 Timesize 반환
+    int                      GetBatchSize(); // 삭제 예정
+    int                      GetChannelSize(); // 삭제 예정
+    int                      GetRowSize(); // 삭제 예정
+    int                      GetColSize(); // 삭제 예정
 
 
-#ifdef __CUDNN__
+    int                      ReShape(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4);
+    int                      ReShape(int pSize0, int pSize1, int pSize2, int pSize3);
+    int                      ReShape(int pSize0, int pSize1, int pSize2);
+    int                      ReShape(int pSize0, int pSize1);
+    int                      ReShape(int pSize0);
+
+    void                     Reset();
+
+
     void                     SetDeviceCPU();
+#ifdef __CUDNN__
     void                     SetDeviceGPU();
 
     DTYPE                  * GetGPUData(unsigned int pTime = 0);

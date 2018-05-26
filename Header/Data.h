@@ -43,8 +43,8 @@ public:
     Device GetDevice();
     DTYPE* GetCPUData(unsigned int pTime = 0);
 
-#ifdef __CUDNN__
     int    SetDeviceCPU();
+#if __CUDNN__
     int    SetDeviceGPU();
 
     DTYPE* GetGPUData(unsigned int pTime = 0);

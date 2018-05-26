@@ -46,8 +46,8 @@ public:
     int    ReShape(int pRank, ...);
 
 
-#if __CUDNN__
     int                      SetDeviceCPU();
+#if __CUDNN__
     int                      SetDeviceGPU();
     cudnnTensorDescriptor_t& GetDescriptor();
 #endif  // __CUDNN__

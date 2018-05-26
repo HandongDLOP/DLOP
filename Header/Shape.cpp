@@ -317,17 +317,17 @@ int Shape::ReShape(int pRank, ...) {
     return TRUE;
 }
 
-#if __CUDNN__
-
 int Shape::SetDeviceCPU() {
-    # if __DEBUG__
+    #if __DEBUG__
     std::cout << "Shape::SetDeviceCPU()" << '\n';
-    # endif // __DEBUG__
+    #endif  // __DEBUG__
 
     m_Device = CPU;
 
     return TRUE;
 }
+
+#if __CUDNN__
 
 int Shape::SetDeviceGPU() {
     # if __DEBUG__
@@ -336,7 +336,7 @@ int Shape::SetDeviceGPU() {
 
     m_Device = GPU;
 
-    if(m_desc == NULL) AllocOnGPU();
+    if (m_desc == NULL) AllocOnGPU();
 
     return TRUE;
 }

@@ -4,72 +4,7 @@ template class Operator<int>;
 template class Operator<float>;
 template class Operator<double>;
 
-template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
-    #if __DEBUG__
-    std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    #endif  // __DEBUG__
-    m_aaResult            = NULL;
-    m_aaGradient          = NULL;
-    m_apOutput            = NULL;
-    m_apInput             = NULL;
-    m_OutputDegree        = 0;
-    m_InputDegree         = 0;
-    m_currentOutputDegree = 0;
-    m_currentInputDegree  = 0;
-    m_name                = pName;
-    m_Device              = CPU;
-    m_isTensorholder      = 0;
-    m_isTrainable         = 0;
-    m_numOfThread         = 1;
-    Alloc();
-}
-
-template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std::string pName) {
-    #if __DEBUG__
-    std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    #endif  // __DEBUG__
-    m_aaResult            = NULL;
-    m_aaGradient          = NULL;
-    m_apOutput            = NULL;
-    m_apInput             = NULL;
-    m_OutputDegree        = 0;
-    m_InputDegree         = 0;
-    m_currentOutputDegree = 0;
-    m_currentInputDegree  = 0;
-    m_name                = pName;
-    m_Device              = CPU;
-    m_isTensorholder      = 0;
-    m_isTrainable         = 0;
-    m_numOfThread         = 1;
-    Alloc(1, pInput);
-}
-
-template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) {
-    #if __DEBUG__
-    std::cout << "Operator<DTYPE>::Operator()" << '\n';
-    #endif  // __DEBUG__
-    m_aaResult            = NULL;
-    m_aaGradient          = NULL;
-    m_apOutput            = NULL;
-    m_apInput             = NULL;
-    m_OutputDegree        = 0;
-    m_InputDegree         = 0;
-    m_currentOutputDegree = 0;
-    m_currentInputDegree  = 0;
-    m_name                = pName;
-    m_Device              = CPU;
-    m_isTensorholder      = 0;
-    m_isTrainable         = 0;
-    m_numOfThread         = 1;
-    Alloc(2, pInput0, pInput1);
-}
-
-template<typename DTYPE> Operator<DTYPE>::~Operator() {
-    #if __DEBUG__
-    std::cout << "Operator<DTYPE>::~Operator()" << '\n';
-    #endif  // __DEBUG__
-    this->Delete();
-}
+//////////////////////////////////////////////////////////////////////////////// for private method
 
 template<typename DTYPE> int Operator<DTYPE>::Alloc() {
     m_aaResult   = new Container<Tensor<DTYPE> *>();
@@ -85,11 +20,6 @@ template<typename DTYPE> int Operator<DTYPE>::Alloc(int numInput, ...) {
     std::cout << "Operator<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
     #endif  // __DEBUG__
     Operator<DTYPE> *temp = NULL;
-
-    m_aaResult   = new Container<Tensor<DTYPE> *>();
-    m_aaGradient = new Container<Tensor<DTYPE> *>();
-    m_apOutput   = new Container<Operator<DTYPE> *>();
-    m_apInput    = new Container<Operator<DTYPE> *>();
 
     va_list ap;
     va_start(ap, numInput);
@@ -161,24 +91,126 @@ template<typename DTYPE> void Operator<DTYPE>::Delete() {
     }
 }
 
-#if __CUDNN__
-template<typename DTYPE> void Operator<DTYPE>::InitializeAttributeForGPU() {}
-
-template<typename DTYPE> void Operator<DTYPE>::SetCudnnHandle(cudnnHandle_t& pCudnnHandle) {
-    m_pCudnnHandle = pCudnnHandle;
-    this->InitializeAttributeForGPU();
-}
-
-void cudnnResize(int size, float *data) {
-    if (data == NULL) {
-        checkCudaErrors(cudaFree(data));
+// Add Graph Edge
+template<typename DTYPE> int Operator<DTYPE>::_AddInputEdge(Operator<DTYPE> *pInput) {
+    try {
+        m_apInput->Push(pInput);
+    } catch (...) {
+        printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
+        return FALSE;
     }
-    checkCudaErrors(cudaMalloc(&data, size * sizeof(float)));
+
+    return TRUE;
 }
 
-#endif  // if __CUDNN__
+template<typename DTYPE> int Operator<DTYPE>::_AddOutputEdge(Operator<DTYPE> *pOutput) {
+    try {
+        m_apOutput->Push(pOutput);
+    } catch (...) {
+        printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
+        return FALSE;
+    }
 
-template<typename DTYPE> void Operator<DTYPE>::SetResult(Tensor<DTYPE> *pTensor) {
+    return TRUE;
+}
+
+//////////////////////////////////////////////////////////////////////////////// for public method
+
+template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
+    #if __DEBUG__
+    std::cout << "Operator<DTYPE>::Operator()" << '\n';
+    #endif  // __DEBUG__
+    m_aaResult       = NULL;
+    m_aaGradient     = NULL;
+    m_apOutput       = NULL;
+    m_apInput        = NULL;
+    m_name           = pName;
+    m_Device         = CPU;
+    m_isTensorholder = FALSE;
+    m_isTrainable    = FALSE;
+    m_numOfThread    = -1;
+    Alloc();
+}
+
+template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std::string pName) {
+    #if __DEBUG__
+    std::cout << "Operator<DTYPE>::Operator()" << '\n';
+    #endif  // __DEBUG__
+    m_aaResult       = NULL;
+    m_aaGradient     = NULL;
+    m_apOutput       = NULL;
+    m_apInput        = NULL;
+    m_name           = pName;
+    m_Device         = CPU;
+    m_isTensorholder = FALSE;
+    m_isTrainable    = FALSE;
+    m_numOfThread    = -1;
+    Alloc();
+    AddEdgebetweenOperators(1, pInput);
+}
+
+template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName) {
+    #if __DEBUG__
+    std::cout << "Operator<DTYPE>::Operator()" << '\n';
+    #endif  // __DEBUG__
+    m_aaResult       = NULL;
+    m_aaGradient     = NULL;
+    m_apOutput       = NULL;
+    m_apInput        = NULL;
+    m_name           = pName;
+    m_Device         = CPU;
+    m_isTensorholder = FALSE;
+    m_isTrainable    = FALSE;
+    m_numOfThread    = -1;
+    Alloc();
+    AddEdgebetweenOperators(2, pInput0, pInput1);
+}
+
+template<typename DTYPE> Operator<DTYPE>::~Operator() {
+    #if __DEBUG__
+    std::cout << "Operator<DTYPE>::~Operator()" << '\n';
+    #endif  // __DEBUG__
+    this->Delete();
+}
+
+template<typename DTYPE> int Operator<DTYPE>::AddEdgebetweenOperators(Operator<DTYPE> *pInput) {
+    this->_AddInputEdge(pInput);
+    pInput->_AddOutputEdge(this);
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::AddEdgebetweenOperators(int numInput, ...) {
+    #if __DEBUG__
+    std::cout << "Operator<DTYPE>::Alloc(Tensor<DTYPE> *)" << '\n';
+    #endif  // __DEBUG__
+    Operator<DTYPE> *temp = NULL;
+
+    va_list ap;
+    va_start(ap, numInput);
+
+    for (int i = 0; i < numInput; i++) {
+        temp = va_arg(ap, Operator<DTYPE> *);
+
+        if (temp) {
+            this->AddEdgebetweenOperators(temp);
+        } else {
+            for (int j = i - 1; j > -1; j--) {
+                delete (*m_apInput)[j];
+            }
+            delete m_apInput;
+            m_apInput = NULL;
+
+            printf("Receive NULL pointer of Operator<DTYPE> class in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
+            return FALSE;
+        }
+    }
+
+    va_end(ap);
+
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetResult(Tensor<DTYPE> *pTensor) {
     if (m_aaResult->GetSize()) {
         Tensor<DTYPE> *temp = m_aaResult->Pop();
         delete temp;
@@ -186,13 +218,15 @@ template<typename DTYPE> void Operator<DTYPE>::SetResult(Tensor<DTYPE> *pTensor)
     }
 
     m_aaResult->Push(pTensor);
+    return TRUE;
 }
 
-template<typename DTYPE> void Operator<DTYPE>::AddResult(Tensor<DTYPE> *pTensor) {
+template<typename DTYPE> int Operator<DTYPE>::AddResult(Tensor<DTYPE> *pTensor) {
     m_aaResult->Push(pTensor);
+    return TRUE;
 }
 
-template<typename DTYPE> void Operator<DTYPE>::SetGradient(Tensor<DTYPE> *pTensor) {
+template<typename DTYPE> int Operator<DTYPE>::SetGradient(Tensor<DTYPE> *pTensor) {
     if (m_aaGradient->GetSize()) {
         Tensor<DTYPE> *temp = m_aaGradient->Pop();
         delete temp;
@@ -200,13 +234,15 @@ template<typename DTYPE> void Operator<DTYPE>::SetGradient(Tensor<DTYPE> *pTenso
     }
 
     m_aaGradient->Push(pTensor);
+    return TRUE;
 }
 
-template<typename DTYPE> void Operator<DTYPE>::AddGradient(Tensor<DTYPE> *pTensor) {
+template<typename DTYPE> int Operator<DTYPE>::AddGradient(Tensor<DTYPE> *pTensor) {
     m_aaGradient->Push(pTensor);
+    return TRUE;
 }
 
-template<typename DTYPE> void Operator<DTYPE>::SetDelta(Tensor<DTYPE> *pTensor) {
+template<typename DTYPE> int Operator<DTYPE>::SetDelta(Tensor<DTYPE> *pTensor) {
     if (m_aaGradient->GetSize()) {
         Tensor<DTYPE> *temp = m_aaGradient->Pop();
         delete temp;
@@ -214,26 +250,13 @@ template<typename DTYPE> void Operator<DTYPE>::SetDelta(Tensor<DTYPE> *pTensor) 
     }
 
     m_aaGradient->Push(pTensor);
+    return TRUE;
 }
 
-template<typename DTYPE> void Operator<DTYPE>::AddDelta(Tensor<DTYPE> *pTensor) {
+template<typename DTYPE> int Operator<DTYPE>::AddDelta(Tensor<DTYPE> *pTensor) {
     m_aaGradient->Push(pTensor);
+    return TRUE;
 }
-
-template<typename DTYPE> void Operator<DTYPE>::IncreaseCurrentOutputDegree() {
-    m_currentOutputDegree++;
-}
-
-template<typename DTYPE> void Operator<DTYPE>::IncreaseCurrentInputDegree() {
-    m_currentInputDegree++;
-}
-
-#if __CUDNN__
-template<typename DTYPE> cudnnHandle_t& Operator<DTYPE>::GetCudnnHandle() {
-    return m_pCudnnHandle;
-}
-
-#endif  // if __CUDNN__
 
 template<typename DTYPE> Tensor<DTYPE> *Operator<DTYPE>::GetResult() const {
     return (*m_aaResult)[0];
@@ -277,22 +300,6 @@ template<typename DTYPE> Container<Operator<DTYPE> *> *Operator<DTYPE>::GetInput
     return m_apInput;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::GetOutputDegree() const {
-    return m_OutputDegree;
-}
-
-template<typename DTYPE> int Operator<DTYPE>::GetInputDegree() const {
-    return m_InputDegree;
-}
-
-template<typename DTYPE> int Operator<DTYPE>::GetCurrentOutputDegree() const {
-    return m_currentOutputDegree;
-}
-
-template<typename DTYPE> int Operator<DTYPE>::GetCurrentInputDegree() const {
-    return m_currentInputDegree;
-}
-
 template<typename DTYPE> std::string Operator<DTYPE>::GetName() const {
     return m_name;
 }
@@ -315,36 +322,6 @@ template<typename DTYPE> Container<Tensorholder<DTYPE> *> *Operator<DTYPE>::GetP
 
 template<typename DTYPE> Tensorholder<DTYPE> *Operator<DTYPE>::PopParameter() {
     return NULL;
-}
-
-// Add Graph Edge
-template<typename DTYPE> int Operator<DTYPE>::_AddInputEdge(Operator<DTYPE> *pInput) {
-    try {
-        m_apInput->Push(pInput);
-    } catch (...) {
-        printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
-        return FALSE;
-    }
-    m_InputDegree++;
-
-    return TRUE;
-}
-
-template<typename DTYPE> int Operator<DTYPE>::_AddOutputEdge(Operator<DTYPE> *pOutput) {
-    try {
-        m_apOutput->Push(pOutput);
-    } catch (...) {
-        printf("Failed to allcate memory in %s (%s %d)\n", __FUNCTION__, __FILE__, __LINE__);
-        return FALSE;
-    }
-    m_OutputDegree++;
-
-    return TRUE;
-}
-
-template<typename DTYPE> void Operator<DTYPE>::AddEdgebetweenOperators(Operator<DTYPE> *pInput) {
-    this->_AddInputEdge(pInput);
-    pInput->_AddOutputEdge(this);
 }
 
 template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
@@ -381,7 +358,29 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU(int pTime) {
 }
 
 #endif  // __CUDNN__
+#if __CUDNN__
+template<typename DTYPE> void Operator<DTYPE>::InitializeAttributeForGPU() {}
 
+template<typename DTYPE> void Operator<DTYPE>::SetCudnnHandle(cudnnHandle_t& pCudnnHandle) {
+    m_pCudnnHandle = pCudnnHandle;
+    this->InitializeAttributeForGPU();
+}
+
+void cudnnResize(int size, float *data) {
+    if (data == NULL) {
+        checkCudaErrors(cudaFree(data));
+    }
+    checkCudaErrors(cudaMalloc(&data, size * sizeof(float)));
+}
+
+#endif  // if __CUDNN__
+
+#if __CUDNN__
+template<typename DTYPE> cudnnHandle_t& Operator<DTYPE>::GetCudnnHandle() {
+    return m_pCudnnHandle;
+}
+
+#endif  // if __CUDNN__
 template<typename DTYPE> void Operator<DTYPE>::SetModeTraining() {
     // std::cout << "Operator<DTYPE>::SetModeTraining()" << '\n';
 }

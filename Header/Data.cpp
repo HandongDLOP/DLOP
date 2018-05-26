@@ -258,19 +258,19 @@ template<typename DTYPE> DTYPE *Data<DTYPE>::GetCPUData(unsigned int pTime) {
     return m_aaHostData[pTime];
 }
 
-#ifdef __CUDNN__
-
 template<typename DTYPE> int Data<DTYPE>::SetDeviceCPU() {
-    # if __DEBUG__
+    #if __DEBUG__
     std::cout << "Data<DTYPE>::SetDeviceCPU()" << '\n';
-    # endif // __DEBUG__
+    #endif  // __DEBUG__
 
     m_Device = CPU;
-
+#if __CUDNN__
     this->MemcpyGPU2CPU();
+#endif  // __CUDNN__
     return TRUE;
 }
 
+#if __CUDNN__
 template<typename DTYPE> int Data<DTYPE>::SetDeviceGPU() {
     # if __DEBUG__
     std::cout << "Data<DTYPE>::SetDeviceGPU()" << '\n';
