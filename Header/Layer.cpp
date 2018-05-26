@@ -7,7 +7,8 @@ template class Layer<double>;
 //////////////////////////////////////////////////////////////////////////////// for private method
 
 template<typename DTYPE> int Layer<DTYPE>::Alloc() {
-    m_aaOperator = new Container<Operator<DTYPE> *>();
+    m_aaOperator     = new Container<Operator<DTYPE> *>();
+    m_apVirtualInput = new Container<Operator<DTYPE> *>();
     return TRUE;
 }
 
@@ -26,6 +27,30 @@ template<typename DTYPE> void Layer<DTYPE>::Delete() {
         delete m_aaOperator;
         m_aaOperator = NULL;
     }
+
+    if (m_apVirtualInput) {
+        delete m_apVirtualInput;
+        m_apVirtualInput = NULL;
+    }
+}
+
+template<typename DTYPE> int Layer<DTYPE>::CreateVirtualInput() {
+    if (m_apVirtualInput->GetSize() == 0) {
+        Container<Operator<DTYPE> *> *FirstInput      = (*m_aaOperator)[0]->GetInputContainer();
+        int numOfFirstInput                           = FirstInput->GetSize();
+        Container<Operator<DTYPE> *> *SecondParameter = this->GetParameterContainer();
+        int numOfSecondParameter                      = SecondParameter->GetSize();
+
+        for (int i = 0; i < numOfFirstInput; i++) {
+            m_apVirtualInput->Push((*FirstInput)[i]);
+        }
+
+        for (int i = 0; i < numOfSecondParameter; i++) {
+            m_apVirtualInput->Push((*SecondParameter)[i]);
+        }
+    }
+
+    return TRUE;
 }
 
 //////////////////////////////////////////////////////////////////////////////// for public method
@@ -34,9 +59,10 @@ template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) : Operator<DTYPE
     #ifdef __DEBUG__
     std::cout << "Layer<DTYPE>::Layer()" << '\n';
     #endif  // __DEBUG__
-    m_aaOperator = NULL;
-
-    m_numOfOperator = 0;
+    m_aaOperator        = NULL;
+    m_apVirtualInput    = NULL;
+    m_numOfOperator     = 0;
+    m_numOfVirtualInput = 0;
 
     Alloc();
 }
@@ -79,11 +105,13 @@ template<typename DTYPE> Container<Operator<DTYPE> *> *Layer<DTYPE>::GetOutputCo
 }
 
 template<typename DTYPE> Operator<DTYPE> **Layer<DTYPE>::GetInput() {
-    return (*m_aaOperator)[0]->GetInput();
+    CreateVirtualInput();
+    return m_apVirtualInput->GetRawData();
 }
 
 template<typename DTYPE> Container<Operator<DTYPE> *> *Layer<DTYPE>::GetInputContainer() {
-    return (*m_aaOperator)[0]->GetInputContainer();
+    CreateVirtualInput();
+    return m_apVirtualInput;
 }
 
 template<typename DTYPE> Tensor<DTYPE> *Layer<DTYPE>::GetResult() const {

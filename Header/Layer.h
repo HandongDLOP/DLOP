@@ -6,11 +6,14 @@
 template<typename DTYPE> class Layer : public Operator<DTYPE>{
 private:
     Container<Operator<DTYPE> *> *m_aaOperator;
+    Container<Operator<DTYPE> *> *m_apVirtualInput;
     int m_numOfOperator;
+    int m_numOfVirtualInput;
 
 private:
     int  Alloc();
     void Delete();
+    int  CreateVirtualInput();
 
 public:
     Layer(std::string pName = "No Name");
