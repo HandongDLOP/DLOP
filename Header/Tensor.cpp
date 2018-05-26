@@ -492,6 +492,19 @@ template<typename DTYPE> cudnnTensorDescriptor_t& Tensor<DTYPE>::GetDescriptor()
 template<typename DTYPE> void Tensor<DTYPE>::Reset(cudnnHandle_t& pCudnnHandle) {
     # if __DEBUG__
     std::cout << "Tensor<DTYPE>::Reset(cudnnHandle_t& pCudnnHandle)" << '\n';
+
+    if (m_Device == CPU) {
+        printf("Warning! Tensor is allocated in Host(CPU) latest time\n");
+        printf("Change mode CPU toGPU\n");
+        this->SetDeviceGPU();
+    }
+
+    # else // if __DEBUG__
+
+    if (m_Device == CPU) {
+        this->SetDeviceGPU();
+    }
+
     # endif // __DEBUG__
 
     int pTime                     = this->GetTimeSize();
