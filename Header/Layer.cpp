@@ -110,6 +110,10 @@ template<typename DTYPE> Container<Tensor<DTYPE> *> *Layer<DTYPE>::GetDeltaConta
     return m_aaOperator->GetLast()->GetDeltaContainer();
 }
 
+template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::GetLastOperator() {
+    return m_aaOperator->GetLast();
+}
+
 template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::PopOperator() {
     m_numOfOperator--;
     return m_aaOperator->Pop();
@@ -128,64 +132,6 @@ template<typename DTYPE> int Layer<DTYPE>::BackPropagate(int pTime, int pThreadN
     }
     return TRUE;
 }
-
-#ifdef __CUDNN__
-template<typename DTYPE> int Layer<DTYPE>::ForwardPropagateOnGPU(int pTime) {
-    for (int i = 0; i < m_numOfOperator; i++) {
-        (*m_aaOperator)[i]->ForwardPropagateOnGPU(pTime);
-    }
-    return TRUE;
-}
-
-template<typename DTYPE> int Layer<DTYPE>::BackPropagateOnGPU(int pTime) {
-    for (int i = m_numOfOperator - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->BackPropagateOnGPU(pTime);
-    }
-    return TRUE;
-}
-
-#endif  // __CUDNN__
-
-template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::GetLastOperator() {
-    return m_aaOperator->GetLast();
-}
-
-template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU() {
-    this->SetDevice(CPU);
-
-    for (int i = 0; i < m_numOfOperator; i++) {
-        (*m_aaOperator)[i]->SetDeviceCPU();
-    }
-}
-
-template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU(int pNumOfThread) {
-    this->SetDevice(CPU);
-    this->SetNumOfThread(pNumOfThread);
-
-    for (int i = 0; i < m_numOfOperator; i++) {
-        (*m_aaOperator)[i]->SetDeviceCPU(pNumOfThread);
-    }
-}
-
-#ifdef __CUDNN__
-template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU() {
-    this->SetDevice(GPU);
-
-    for (int i = 0; i < m_numOfOperator; i++) {
-        (*m_aaOperator)[i]->SetDeviceGPU();
-    }
-}
-
-template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU(cudnnHandle_t& pCudnnHandle) {
-    this->SetDevice(GPU);
-    this->SetCudnnHandle(pCudnnHandle);
-
-    for (int i = 0; i < m_numOfOperator; i++) {
-        (*m_aaOperator)[i]->SetDeviceGPU(pCudnnHandle);
-    }
-}
-
-#endif  // if __CUDNN__
 
 template<typename DTYPE> int Layer<DTYPE>::ResetResult() {
     for (int i = m_numOfOperator - 1; i >= 0; i--) {
@@ -210,3 +156,55 @@ template<typename DTYPE> void Layer<DTYPE>::PrintInformation() {
         (*m_aaOperator)[i]->PrintInformation();
     }
 }
+
+template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU() {
+    this->SetDevice(CPU);
+
+    for (int i = 0; i < m_numOfOperator; i++) {
+        (*m_aaOperator)[i]->SetDeviceCPU();
+    }
+}
+
+template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU(int pNumOfThread) {
+    this->SetDevice(CPU);
+    this->SetNumOfThread(pNumOfThread);
+
+    for (int i = 0; i < m_numOfOperator; i++) {
+        (*m_aaOperator)[i]->SetDeviceCPU(pNumOfThread);
+    }
+}
+
+#ifdef __CUDNN__
+
+template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU() {
+    this->SetDevice(GPU);
+
+    for (int i = 0; i < m_numOfOperator; i++) {
+        (*m_aaOperator)[i]->SetDeviceGPU();
+    }
+}
+
+template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU(cudnnHandle_t& pCudnnHandle) {
+    this->SetDevice(GPU);
+    this->SetCudnnHandle(pCudnnHandle);
+
+    for (int i = 0; i < m_numOfOperator; i++) {
+        (*m_aaOperator)[i]->SetDeviceGPU(pCudnnHandle);
+    }
+}
+
+template<typename DTYPE> int Layer<DTYPE>::ForwardPropagateOnGPU(int pTime) {
+    for (int i = 0; i < m_numOfOperator; i++) {
+        (*m_aaOperator)[i]->ForwardPropagateOnGPU(pTime);
+    }
+    return TRUE;
+}
+
+template<typename DTYPE> int Layer<DTYPE>::BackPropagateOnGPU(int pTime) {
+    for (int i = m_numOfOperator - 1; i >= 0; i--) {
+        (*m_aaOperator)[i]->BackPropagateOnGPU(pTime);
+    }
+    return TRUE;
+}
+
+#endif  // if __CUDNN__

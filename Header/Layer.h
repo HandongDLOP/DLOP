@@ -36,26 +36,27 @@ public:
     Tensor<DTYPE>               * GetDelta() const;
     Container<Tensor<DTYPE> *>  * GetDeltaContainer();
 
+    Operator<DTYPE>             * GetLastOperator();
+
     Operator<DTYPE>             * PopOperator();
 
     int                           ForwardPropagate(int pTime = 0, int pThreadNum = 0);
     int                           BackPropagate(int pTime = 0, int pThreadNum = 0);
 
-    Operator<DTYPE>             * GetLastOperator();
-
-    void                          SetDeviceCPU();
-    void                          SetDeviceCPU(int pnumOfThread);
-#ifdef __CUDNN__
-    int                           ForwardPropagateOnGPU(int pTime = 0);
-    int                           BackPropagateOnGPU(int pTime = 0);
-    void                          SetDeviceGPU();
-    void                          SetDeviceGPU(cudnnHandle_t& pCudnnHandle);
-#endif  // if __CUDNN__
-
     int                           ResetResult();
     int                           ResetGradient();
 
     void                          PrintInformation();
+
+    void                          SetDeviceCPU();
+    void                          SetDeviceCPU(int pnumOfThread);
+#ifdef __CUDNN__
+    void                          SetDeviceGPU();
+    void                          SetDeviceGPU(cudnnHandle_t& pCudnnHandle);
+
+    int                           ForwardPropagateOnGPU(int pTime = 0);
+    int                           BackPropagateOnGPU(int pTime = 0);
+#endif  // if __CUDNN__
 };
 
 #endif  // ifndef __LAYER__
