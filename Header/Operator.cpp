@@ -108,7 +108,7 @@ template<typename DTYPE> void Operator<DTYPE>::Delete() {
 }
 
 // Add Graph Edge
-template<typename DTYPE> int Operator<DTYPE>::_AddInputEdge(Operator<DTYPE> *pInput) {
+template<typename DTYPE> int Operator<DTYPE>::AddInputEdge(Operator<DTYPE> *pInput) {
     try {
         m_apInput->Push(pInput);
     } catch (...) {
@@ -119,7 +119,7 @@ template<typename DTYPE> int Operator<DTYPE>::_AddInputEdge(Operator<DTYPE> *pIn
     return TRUE;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::_AddOutputEdge(Operator<DTYPE> *pOutput) {
+template<typename DTYPE> int Operator<DTYPE>::AddOutputEdge(Operator<DTYPE> *pOutput) {
     try {
         m_apOutput->Push(pOutput);
     } catch (...) {
@@ -199,8 +199,8 @@ template<typename DTYPE> Operator<DTYPE>::~Operator() {
 }
 
 template<typename DTYPE> int Operator<DTYPE>::AddEdgebetweenOperators(Operator<DTYPE> *pInput) {
-    this->_AddInputEdge(pInput);
-    pInput->_AddOutputEdge(this);
+    this->AddInputEdge(pInput);
+    pInput->AddOutputEdge(this);
     return TRUE;
 }
 
@@ -283,6 +283,26 @@ template<typename DTYPE> int Operator<DTYPE>::AddDelta(Tensor<DTYPE> *pTensor) {
     return TRUE;
 }
 
+template<typename DTYPE> int Operator<DTYPE>::SetDevice(Device pDevice) {
+    m_Device = pDevice;
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetNumberOfThread(int pNumOfThread) {
+    m_numOfThread = pNumOfThread;
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetIsTensorholder() {
+    m_isParameterr = TRUE;
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetIsTrainable() {
+    m_isTrainable = TRUE;
+    return TRUE;
+}
+
 template<typename DTYPE> int Operator<DTYPE>::SetModeTraining() {
     m_Mode = TRAINING;
     return TRUE;
@@ -295,16 +315,6 @@ template<typename DTYPE> int Operator<DTYPE>::SetModeAccumulating() {
 
 template<typename DTYPE> int Operator<DTYPE>::SetModeInferencing() {
     m_Mode = INFERENCING;
-    return TRUE;
-}
-
-template<typename DTYPE> int Operator<DTYPE>::SetIsTensorholder() {
-    m_isParameterr = TRUE;
-    return TRUE;
-}
-
-template<typename DTYPE> int Operator<DTYPE>::SetIsTrainable() {
-    m_isTrainable = TRUE;
     return TRUE;
 }
 
@@ -456,22 +466,18 @@ template<typename DTYPE> void Operator<DTYPE>::PrintInformation() {
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
-    m_Device = CPU;
+    this->SetDevice(CPU);
 
-#ifdef __CUDNN__
     this->SetResultOnCPU();
     this->SetGradientOnCPU();
-#endif  // __CUDNN__
 }
 
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU(int pNumOfThread) {
-    m_Device      = CPU;
-    m_numOfThread = pNumOfThread;
+    this->SetDevice(CPU);
+    this->SetNumberOfThread(pNumOfThread);
 
-#ifdef __CUDNN__
     this->SetResultOnCPU();
     this->SetGradientOnCPU();
-#endif  // __CUDNN__
 }
 
 template<typename DTYPE> int Operator<DTYPE>::SetResultOnCPU() {
@@ -496,47 +502,10 @@ template<typename DTYPE> int Operator<DTYPE>::SetGradientOnCPU() {
 }
 
 #ifdef __CUDNN__
-template<typename DTYPE> int Operator<DTYPE>::ForwardPropagateOnGPU(int pTime) {
-    # if __DEBUG__
-    std::cout << "Operator<DTYPE>::ForwardPropagateOnGPU(int)" << '\n';
-    std::cout << this->GetName() << '\n';
-    # endif // __DEBUG__
-    return TRUE;
-}
 
-template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU(int pTime) {
-    # if __DEBUG__
-    std::cout << "Operator<DTYPE>::BackPropagateOnGPU(int)" << '\n';
-    std::cout << this->GetName() << '\n';
-    # endif // __DEBUG__
-    return TRUE;
-}
-
-template<typename DTYPE> void Operator<DTYPE>::InitializeAttributeForGPU() {}
-
-void cudnnResize(int size, float *data) {
-    if (data == NULL) {
-        checkCudaErrors(cudaFree(data));
-    }
-    checkCudaErrors(cudaMalloc(&data, size * sizeof(float)));
-}
-
-template<typename DTYPE> cudnnHandle_t& Operator<DTYPE>::GetCudnnHandle() {
-    return m_pCudnnHandle;
-}
-
-template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
-    m_Device = GPU;
-    this->SetResultOnGPU();
-    this->SetGradientOnGPU();
-}
-
-template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU(cudnnHandle_t& pCudnnHandle) {
-    m_Device = GPU;
+template<typename DTYPE> int Operator<DTYPE>::SetCudnnHandle(cudnnHandle_t& pCudnnHandle) {
     m_pCudnnHandle = pCudnnHandle;
-    this->InitializeAttributeForGPU();
-    this->SetResultOnGPU();
-    this->SetGradientOnGPU();
+    return TRUE;
 }
 
 template<typename DTYPE> int Operator<DTYPE>::SetResultOnGPU() {
@@ -559,6 +528,43 @@ template<typename DTYPE> int Operator<DTYPE>::SetGradientOnGPU() {
 
     return TRUE;
 }
+
+template<typename DTYPE> void Operator<DTYPE>::InitializeAttributeForGPU() {}
+
+template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
+    this->SetDevice(GPU);
+    this->SetResultOnGPU();
+    this->SetGradientOnGPU();
+}
+
+template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU(cudnnHandle_t& pCudnnHandle) {
+    this->SetCudnnHandle(pCudnnHandle);
+    this->SetDevice(GPU);
+    this->InitializeAttributeForGPU();
+    this->SetResultOnGPU();
+    this->SetGradientOnGPU();
+}
+
+template<typename DTYPE> cudnnHandle_t& Operator<DTYPE>::GetCudnnHandle() {
+    return m_pCudnnHandle;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::ForwardPropagateOnGPU(int pTime) {
+    # if __DEBUG__
+    std::cout << "Operator<DTYPE>::ForwardPropagateOnGPU(int)" << '\n';
+    std::cout << this->GetName() << '\n';
+    # endif // __DEBUG__
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU(int pTime) {
+    # if __DEBUG__
+    std::cout << "Operator<DTYPE>::BackPropagateOnGPU(int)" << '\n';
+    std::cout << this->GetName() << '\n';
+    # endif // __DEBUG__
+    return TRUE;
+}
+
 
 #endif  // __CUDNN__
 

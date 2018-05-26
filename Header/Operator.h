@@ -34,11 +34,11 @@ private:
     int  Alloc(int numInput, ...);
     void Delete();
 
-    int  _AddInputEdge(Operator<DTYPE> *pInput);
-    int  _AddOutputEdge(Operator<DTYPE> *pOutput);
+    int  AddInputEdge(Operator<DTYPE> *pInput);
+    int  AddOutputEdge(Operator<DTYPE> *pOutput);
+
 
 #ifdef __CUDNN__
-
 
 #endif  // __CUDNN__
 
@@ -57,12 +57,15 @@ public:
     int                                       SetGradient(Tensor<DTYPE> *pTensor);
     int                                       SetDelta(Tensor<DTYPE> *pTensor);
 
-    virtual int                               SetModeTraining();
-    virtual int                               SetModeAccumulating();
-    virtual int                               SetModeInferencing();
+    int                                       SetDevice(Device pDevice);
+    int                                       SetNumberOfThread(int pNumOfThread);
 
     int                                       SetIsTensorholder();
     int                                       SetIsTrainable();
+
+    virtual int                               SetModeTraining();
+    virtual int                               SetModeAccumulating();
+    virtual int                               SetModeInferencing();
 
     Operator<DTYPE>                        ** GetOutput();
     Container<Operator<DTYPE> *>            * GetOutputContainer();
@@ -81,6 +84,7 @@ public:
     int                                       GetIsTensorholder();
     int                                       GetIsTrainable();
 
+    // for Layer
     virtual int                               AddParameter(Operator<DTYPE> *pParameter);
     virtual Container<Tensorholder<DTYPE> *>* GetParameterContainer();
     virtual int                               GetNumOfParameter();
@@ -101,20 +105,19 @@ public:
     virtual int                               SetResultOnCPU();
     virtual int                               SetGradientOnCPU();
 #ifdef __CUDNN__
-
-    cudnnHandle_t                           & GetCudnnHandle();
-    virtual void                              InitializeAttributeForGPU();
-    // virtual void                              SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
-    void                                      cudnnResize(int size, float *data);
-
-    virtual int                               ForwardPropagateOnGPU(int pTime = 0);
-    virtual int                               BackPropagateOnGPU(int pTime = 0);
+    int                                       SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
+    virtual int                               SetResultOnGPU();
+    virtual int                               SetGradientOnGPU();
 
     virtual void                              SetDeviceGPU();
     virtual void                              SetDeviceGPU(cudnnHandle_t& pCudnnHandle);
+    virtual void                              InitializeAttributeForGPU();
 
-    virtual int                               SetResultOnGPU();
-    virtual int                               SetGradientOnGPU();
+    cudnnHandle_t& GetCudnnHandle();
+
+    virtual int    ForwardPropagateOnGPU(int pTime = 0);
+    virtual int    BackPropagateOnGPU(int pTime = 0);
+
 
 #endif  // if __CUDNN__
 };
