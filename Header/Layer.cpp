@@ -98,14 +98,20 @@ template<typename DTYPE> int Layer<DTYPE>::GetNumOfParameter() {
     return m_numOfParameter;
 }
 
-template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::PopOperator() {
-    m_numOfOperator--;
-    return m_aaOperator->Pop();
+template<typename DTYPE> Operator<DTYPE> **Layer<DTYPE>::GetOutput() {
+    return m_aaOperator->GetLast()->GetOutput();
 }
 
-template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::PopParameter() {
-    m_numOfParameter--;
-    return m_aaParameter->Pop();
+template<typename DTYPE> Container<Operator<DTYPE> *> *Layer<DTYPE>::GetOutputContainer() {
+    return m_aaOperator->GetLast()->GetOutputContainer();
+}
+
+template<typename DTYPE> Operator<DTYPE> **Layer<DTYPE>::GetInput() {
+    return m_aaOperator->GetLast()->GetInput();
+}
+
+template<typename DTYPE> Container<Operator<DTYPE> *> *Layer<DTYPE>::GetInputContainer() {
+    return m_aaOperator->GetLast()->GetInputContainer();
 }
 
 template<typename DTYPE> Tensor<DTYPE> *Layer<DTYPE>::GetResult() const {
@@ -130,6 +136,16 @@ template<typename DTYPE> Tensor<DTYPE> *Layer<DTYPE>::GetDelta() const {
 
 template<typename DTYPE> Container<Tensor<DTYPE> *> *Layer<DTYPE>::GetDeltaContainer() {
     return m_aaOperator->GetLast()->GetDeltaContainer();
+}
+
+template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::PopOperator() {
+    m_numOfOperator--;
+    return m_aaOperator->Pop();
+}
+
+template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::PopParameter() {
+    m_numOfParameter--;
+    return m_aaParameter->Pop();
 }
 
 template<typename DTYPE> int Layer<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {
@@ -195,6 +211,7 @@ template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU() {
 
 template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU(cudnnHandle_t& pCudnnHandle) {
     this->SetDevice(GPU);
+    this->SetCudnnHandle(pCudnnHandle);
 
     for (int i = 0; i < m_numOfOperator; i++) {
         (*m_aaOperator)[i]->SetDeviceGPU(pCudnnHandle);

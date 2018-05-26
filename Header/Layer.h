@@ -28,8 +28,10 @@ public:
     int                           GetNumOfOperator();
     int                           GetNumOfParameter();
 
-    Operator<DTYPE>             * PopOperator();
-    Operator<DTYPE>             * PopParameter();
+    Operator<DTYPE>            ** GetOutput();
+    Container<Operator<DTYPE> *>* GetOutputContainer();
+    Operator<DTYPE>            ** GetInput();
+    Container<Operator<DTYPE> *>* GetInputContainer();
 
     Tensor<DTYPE>               * GetResult() const;
     Container<Tensor<DTYPE> *>  * GetResultContainer();
@@ -39,6 +41,9 @@ public:
 
     Tensor<DTYPE>               * GetDelta() const;
     Container<Tensor<DTYPE> *>  * GetDeltaContainer();
+
+    Operator<DTYPE>             * PopOperator();
+    Operator<DTYPE>             * PopParameter();
 
     int                           ForwardPropagate(int pTime = 0, int pThreadNum = 0);
     int                           BackPropagate(int pTime = 0, int pThreadNum = 0);
@@ -54,11 +59,10 @@ public:
     void                          SetDeviceGPU(cudnnHandle_t& pCudnnHandle);
 #endif  // if __CUDNN__
 
+    int                           ResetResult();
+    int                           ResetGradient();
 
-    int  ResetResult();
-    int  ResetGradient();
-
-    void PrintInformation();
+    void                          PrintInformation();
 };
 
 #endif  // ifndef __LAYER__
