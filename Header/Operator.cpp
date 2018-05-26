@@ -7,10 +7,11 @@ template class Operator<double>;
 //////////////////////////////////////////////////////////////////////////////// for private method
 
 template<typename DTYPE> int Operator<DTYPE>::Alloc() {
-    m_aaResult   = new Container<Tensor<DTYPE> *>();
-    m_aaGradient = new Container<Tensor<DTYPE> *>();
-    m_apOutput   = new Container<Operator<DTYPE> *>();
-    m_apInput    = new Container<Operator<DTYPE> *>();
+    m_apOutput    = new Container<Operator<DTYPE> *>();
+    m_apInput     = new Container<Operator<DTYPE> *>();
+    m_aaResult    = new Container<Tensor<DTYPE> *>();
+    m_aaGradient  = new Container<Tensor<DTYPE> *>();
+    m_aaParameter = new Container<Operator<DTYPE> *>();
 
     return TRUE;
 }
@@ -80,6 +81,21 @@ template<typename DTYPE> void Operator<DTYPE>::Delete() {
         m_aaGradient = NULL;
     }
 
+    if (m_aaParameter) {
+        size = m_aaParameter->GetSize();
+        Operator<DTYPE> **ParameterContainer = m_aaParameter->GetRawData();
+
+        for (int i = 0; i < size; i++) {
+            if ((*m_aaParameter)[i]) {
+                delete ParameterContainer[i];
+                ParameterContainer[i] = NULL;
+            }
+        }
+
+        delete m_aaParameter;
+        m_aaParameter = NULL;
+    }
+
     if (m_apOutput) {
         delete m_apOutput;
         m_apOutput = NULL;
@@ -120,12 +136,15 @@ template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
     #ifdef __DEBUG__
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
     #endif  // __DEBUG__
-    m_aaResult       = NULL;
-    m_aaGradient     = NULL;
     m_apOutput       = NULL;
     m_apInput        = NULL;
+    m_aaResult       = NULL;
+    m_aaGradient     = NULL;
+    m_aaParameter    = NULL;
     m_name           = pName;
     m_Device         = CPU;
+    m_Mode           = TRAINING;
+    m_numOfParameter = 0;
     m_isTensorholder = FALSE;
     m_isTrainable    = FALSE;
     m_numOfThread    = -1;
@@ -136,12 +155,15 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std:
     #ifdef __DEBUG__
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
     #endif  // __DEBUG__
-    m_aaResult       = NULL;
-    m_aaGradient     = NULL;
     m_apOutput       = NULL;
     m_apInput        = NULL;
+    m_aaResult       = NULL;
+    m_aaGradient     = NULL;
+    m_aaParameter    = NULL;
     m_name           = pName;
     m_Device         = CPU;
+    m_Mode           = TRAINING;
+    m_numOfParameter = 0;
     m_isTensorholder = FALSE;
     m_isTrainable    = FALSE;
     m_numOfThread    = -1;
@@ -153,12 +175,15 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Ope
     #ifdef __DEBUG__
     std::cout << "Operator<DTYPE>::Operator()" << '\n';
     #endif  // __DEBUG__
-    m_aaResult       = NULL;
-    m_aaGradient     = NULL;
     m_apOutput       = NULL;
     m_apInput        = NULL;
+    m_aaResult       = NULL;
+    m_aaGradient     = NULL;
+    m_aaParameter    = NULL;
     m_name           = pName;
     m_Device         = CPU;
+    m_Mode           = TRAINING;
+    m_numOfParameter = 0;
     m_isTensorholder = FALSE;
     m_isTrainable    = FALSE;
     m_numOfThread    = -1;
@@ -258,6 +283,47 @@ template<typename DTYPE> int Operator<DTYPE>::AddDelta(Tensor<DTYPE> *pTensor) {
     return TRUE;
 }
 
+template<typename DTYPE> int Operator<DTYPE>::SetModeTraining() {
+    m_Mode = TRAINING;
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetModeAccumulating() {
+    m_Mode = ACCUMULATING;
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetModeInferencing() {
+    m_Mode = INFERENCING;
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetIsTensorholder() {
+    m_isTensorholder = TRUE;
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetIsTrainable() {
+    m_isTrainable = TRUE;
+    return TRUE;
+}
+
+template<typename DTYPE> Operator<DTYPE> **Operator<DTYPE>::GetOutput() {
+    return m_apOutput->GetRawData();
+}
+
+template<typename DTYPE> Container<Operator<DTYPE> *> *Operator<DTYPE>::GetOutputContainer() {
+    return m_apOutput;
+}
+
+template<typename DTYPE> Operator<DTYPE> **Operator<DTYPE>::GetInput() {
+    return m_apInput->GetRawData();
+}
+
+template<typename DTYPE> Container<Operator<DTYPE> *> *Operator<DTYPE>::GetInputContainer() {
+    return m_apInput;
+}
+
 template<typename DTYPE> Tensor<DTYPE> *Operator<DTYPE>::GetResult() const {
     return (*m_aaResult)[0];
 }
@@ -284,22 +350,6 @@ template<typename DTYPE> Container<Tensor<DTYPE> *> *Operator<DTYPE>::GetDeltaCo
     // return m_aaDelta;
 }
 
-template<typename DTYPE> Operator<DTYPE> **Operator<DTYPE>::GetOutput() {
-    return m_apOutput->GetRawData();
-}
-
-template<typename DTYPE> Container<Operator<DTYPE> *> *Operator<DTYPE>::GetOutputContainer() {
-    return m_apOutput;
-}
-
-template<typename DTYPE> Operator<DTYPE> **Operator<DTYPE>::GetInput() {
-    return m_apInput->GetRawData();
-}
-
-template<typename DTYPE> Container<Operator<DTYPE> *> *Operator<DTYPE>::GetInputContainer() {
-    return m_apInput;
-}
-
 template<typename DTYPE> std::string Operator<DTYPE>::GetName() const {
     return m_name;
 }
@@ -312,12 +362,27 @@ template<typename DTYPE> int Operator<DTYPE>::GetNumOfThread() {
     return m_numOfThread;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::GetNumOfParameter() {
-    return 0;
+template<typename DTYPE> int Operator<DTYPE>::GetIsTensorholder() {
+    return m_isTensorholder;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::GetIsTrainable() {
+    return m_isTrainable;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::AddParameter(Operator<DTYPE> *pParameter) {
+    m_aaParameter->Push(pParameter);
+    m_numOfParameter++;
+
+    return TRUE;
 }
 
 template<typename DTYPE> Container<Tensorholder<DTYPE> *> *Operator<DTYPE>::GetParameterContainer() {
     return NULL;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::GetNumOfParameter() {
+    return m_numOfParameter;
 }
 
 template<typename DTYPE> Tensorholder<DTYPE> *Operator<DTYPE>::PopParameter() {
@@ -357,8 +422,6 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU(int pTime) {
     return TRUE;
 }
 
-#endif  // __CUDNN__
-#ifdef __CUDNN__
 template<typename DTYPE> void Operator<DTYPE>::InitializeAttributeForGPU() {}
 
 template<typename DTYPE> void Operator<DTYPE>::SetCudnnHandle(cudnnHandle_t& pCudnnHandle) {
@@ -373,25 +436,12 @@ void cudnnResize(int size, float *data) {
     checkCudaErrors(cudaMalloc(&data, size * sizeof(float)));
 }
 
-#endif  // if __CUDNN__
-
-#ifdef __CUDNN__
 template<typename DTYPE> cudnnHandle_t& Operator<DTYPE>::GetCudnnHandle() {
     return m_pCudnnHandle;
 }
 
 #endif  // if __CUDNN__
-template<typename DTYPE> void Operator<DTYPE>::SetModeTraining() {
-    // std::cout << "Operator<DTYPE>::SetModeTraining()" << '\n';
-}
 
-template<typename DTYPE> void Operator<DTYPE>::SetModeAccumulating() {
-    // std::cout << "Operator<DTYPE>::SetModeAccumulating()" << '\n';
-}
-
-template<typename DTYPE> void Operator<DTYPE>::SetModeInferencing() {
-    // std::cout << "Operator<DTYPE>::SetModeInferencing()" << '\n';
-}
 
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
     m_Device = CPU;

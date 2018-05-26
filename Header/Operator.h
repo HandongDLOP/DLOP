@@ -16,8 +16,10 @@ private:
     Container<Operator<DTYPE> *> *m_apInput;
     Container<Tensor<DTYPE> *> *m_aaResult;
     Container<Tensor<DTYPE> *> *m_aaGradient;
+    Container<Operator<DTYPE> *> *m_aaParameter;
     std::string m_name;
     Device m_Device;
+    Mode m_Mode;
     int m_numOfThread;
     int m_numOfParameter;
     int m_isTensorholder;
@@ -51,10 +53,12 @@ public:
     int                                       SetGradient(Tensor<DTYPE> *pTensor);
     int                                       SetDelta(Tensor<DTYPE> *pTensor);
 
-    virtual void                              SetModeTraining();
-    virtual void                              SetModeAccumulating();
-    virtual void                              SetModeInferencing();
+    virtual int                               SetModeTraining();
+    virtual int                               SetModeAccumulating();
+    virtual int                               SetModeInferencing();
 
+    int                                       SetIsTensorholder();
+    int                                       SetIsTrainable();
 
     Operator<DTYPE>                        ** GetOutput();
     Container<Operator<DTYPE> *>            * GetOutputContainer();
@@ -70,17 +74,19 @@ public:
     std::string                               GetName() const;
     virtual Device                            GetDevice();
     int                                       GetNumOfThread();
+    int                                       GetIsTensorholder();
+    int                                       GetIsTrainable();
+
+    virtual int                               AddParameter(Operator<DTYPE> *pParameter);
+    virtual Container<Tensorholder<DTYPE> *>* GetParameterContainer();
+    virtual int                               GetNumOfParameter();
+    virtual Tensorholder<DTYPE>             * PopParameter();
 
     virtual int                               ForwardPropagate(int pTime = 0, int pThreadNum = 0);
     virtual int                               BackPropagate(int pTime = 0, int pThreadNum = 0);
     // reset value
     virtual int                               ResetResult();
     virtual int                               ResetGradient();
-
-
-    virtual Container<Tensorholder<DTYPE> *>* GetParameterContainer();
-    virtual int                               GetNumOfParameter();
-    virtual Tensorholder<DTYPE>             * PopParameter();
 
     virtual void                              PrintInformation();
 
