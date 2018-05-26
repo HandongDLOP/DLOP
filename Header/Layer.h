@@ -6,9 +6,9 @@
 template<typename DTYPE> class Layer : public Operator<DTYPE>{
 private:
     Container<Operator<DTYPE> *> *m_aaOperator;
-
     int m_numOfOperator;
 
+private:
     int  Alloc();
     void Delete();
 
