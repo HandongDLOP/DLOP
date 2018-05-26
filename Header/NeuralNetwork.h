@@ -10,13 +10,9 @@ typedef struct {
 
 template<typename DTYPE> class NeuralNetwork {
 private:
-#ifdef __CUDNN__
-    cudnnHandle_t m_cudnnHandle;
-#endif  // if __CUDNN__
     Container<Operator<DTYPE> *> *m_aaOperator;
+    Container<Operator<DTYPE> *> *m_aaInput;
     Container<Operator<DTYPE> *> *m_aaParameter;
-    Container<Layer<DTYPE> *> *m_aaLayer;
-    // Parameter
 
     int m_OperatorDegree;
     int m_ParameterDegree;
@@ -28,16 +24,29 @@ private:
     Device m_Device;
     int m_numOfThread;
 
+#ifdef __CUDNN__
+    cudnnHandle_t m_cudnnHandle;
+#endif  // if __CUDNN__
+
+private:
+    int  Alloc();
+    void Delete();
+
+#ifdef __CUDNN__
+    int  AllocOnGPU();
+    void DeleteOnGPU();
+#endif  // if __CUDNN__
+
 public:
     NeuralNetwork();
     virtual ~NeuralNetwork();
 
-    int                  Alloc();
-    void                 Delete();
+
+    Operator<DTYPE>    * SetInput(Operator<DTYPE> *pInput);
+    Operator<DTYPE>    * AnalyseGraph(Operator<DTYPE> *pResultOperator);
 
     Operator<DTYPE>    * AddOperator(Operator<DTYPE> *pOperator);
     Operator<DTYPE>    * AddParameter(Operator<DTYPE> *pParameter);
-    // Operator<DTYPE>    * AddParameter(Operator<DTYPE> *pParameter);
 
     LossFunction<DTYPE>* SetLossFunction(LossFunction<DTYPE> *pLossFunction);
     Optimizer<DTYPE>   * SetOptimizer(Optimizer<DTYPE> *pOptimizer);
@@ -48,7 +57,6 @@ public:
     Operator<DTYPE>             * GetResult();
     Container<Operator<DTYPE> *>* GetOperatorContainer();
     Container<Operator<DTYPE> *>* GetParameter();
-    // Container<Operator<DTYPE> *>* GetParameter();
     LossFunction<DTYPE>         * GetLossFunction();
     Optimizer<DTYPE>            * GetOptimizer();
     float                         GetAccuracy();

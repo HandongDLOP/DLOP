@@ -4,45 +4,12 @@ template class NeuralNetwork<int>;
 template class NeuralNetwork<float>;
 template class NeuralNetwork<double>;
 
-template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
-    #ifdef __DEBUG__
-    std::cout << "NeuralNetwork<DTYPE>::NeuralNetwork()" << '\n';
-    #endif  // __DEBUG__
-
-    m_aaOperator     = NULL;
-    m_aaParameter = NULL;
-    m_aaLayer        = NULL;
-
-    m_OperatorDegree     = 0;
-    m_ParameterDegree = 0;
-
-    m_aLossFunction = NULL;
-    m_aOptimizer    = NULL;
-
-    m_Device      = CPU;
-    m_numOfThread = 1;
-
-    Alloc();
-}
-
-template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
-    #ifdef __DEBUG__
-    std::cout << "NeuralNetwork<DTYPE>::~NeuralNetwork()" << '\n';
-    #endif  // __DEBUG__
-
-    this->Delete();
-}
+//////////////////////////////////////////////////////////////////////////////// for private method
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
-    m_aaOperator     = new Container<Operator<DTYPE> *>();
+    m_aaOperator  = new Container<Operator<DTYPE> *>();
+    m_aaInput = new Container<Operator<DTYPE> *>();
     m_aaParameter = new Container<Operator<DTYPE> *>();
-    m_aaLayer        = new Container<Layer<DTYPE> *>();
-
-#ifdef __CUDNN__
-    checkCudaErrors(cudaSetDevice(2));
-    checkCUDNN(cudnnCreate(&m_cudnnHandle));
-#endif  // if __CUDNN__
-
     return TRUE;
 }
 
@@ -66,6 +33,20 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         m_aaOperator = NULL;
     }
 
+    if (m_aaInput) {
+        size = m_aaInput->GetSize();
+        Operator<DTYPE> **InputContainer = m_aaInput->GetRawData();
+
+        for (int i = 0; i < size; i++) {
+            if ((*m_aaInput)[i]) {
+                delete InputContainer[i];
+                InputContainer[i] = NULL;
+            }
+        }
+        delete m_aaInput;
+        m_aaInput = NULL;
+    }
+
     if (m_aaParameter) {
         size = m_aaParameter->GetSize();
         Operator<DTYPE> **ParameterContainer = m_aaParameter->GetRawData();
@@ -80,20 +61,6 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         m_aaParameter = NULL;
     }
 
-    if (m_aaLayer) {
-        size = m_aaLayer->GetSize();
-        Layer<DTYPE> **LayerContainer = m_aaLayer->GetRawData();
-
-        for (int i = 0; i < size; i++) {
-            if ((*m_aaLayer)[i]) {
-                delete LayerContainer[i];
-                LayerContainer[i] = NULL;
-            }
-        }
-        delete m_aaLayer;
-        m_aaLayer = NULL;
-    }
-
     if (m_aLossFunction) {
         delete m_aLossFunction;
         m_aLossFunction = NULL;
@@ -105,10 +72,58 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
     }
 
 #ifdef __CUDNN__
+    this->DeleteOnGPU();
+#endif  // if __CUDNN__
+}
+
+#ifdef __CUDNN__
+template<typename DTYPE> int NeuralNetwork<DTYPE>::AllocOnGPU() {
+    // checkCudaErrors(cudaSetDevice(2));
+    checkCUDNN(cudnnCreate(&m_cudnnHandle));
+}
+
+template<typename DTYPE> void NeuralNetwork<DTYPE>::DeleteOnGPU() {
     checkCudaErrors(cudaThreadSynchronize());
     checkCudaErrors(cudaDeviceSynchronize());
     checkCUDNN(cudnnDestroy(m_cudnnHandle));
+}
+
 #endif  // if __CUDNN__
+
+//////////////////////////////////////////////////////////////////////////////// for public method
+
+
+template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
+    #ifdef __DEBUG__
+    std::cout << "NeuralNetwork<DTYPE>::NeuralNetwork()" << '\n';
+    #endif  // __DEBUG__
+
+    m_aaOperator  = NULL;
+    m_aaInput = NULL;
+    m_aaParameter = NULL;
+
+    m_OperatorDegree  = 0;
+    m_ParameterDegree = 0;
+
+    m_aLossFunction = NULL;
+    m_aOptimizer    = NULL;
+
+    m_Device      = CPU;
+    m_numOfThread = 1;
+
+#ifdef __CUDNN__
+    m_cudnnHandle = NULL;
+#endif  // if __CUDNN__
+
+    Alloc();
+}
+
+template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
+    #ifdef __DEBUG__
+    std::cout << "NeuralNetwork<DTYPE>::~NeuralNetwork()" << '\n';
+    #endif  // __DEBUG__
+
+    this->Delete();
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Operator<DTYPE> *pOperator) {
@@ -130,12 +145,6 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddParameter(Ope
     m_ParameterDegree++;
     return pParameter;
 }
-
-// template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddParameter(Operator<DTYPE> *pParameter) {
-//     m_aaParameter->Push(pParameter);
-//     m_ParameterDegree++;
-//     return pParameter;
-// }
 
 template<typename DTYPE> LossFunction<DTYPE> *NeuralNetwork<DTYPE>::SetLossFunction(LossFunction<DTYPE> *pLossFunction) {
     m_aLossFunction = pLossFunction;
@@ -163,10 +172,6 @@ template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::Get
     return m_aaParameter;
 }
 
-// template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::GetParameter() {
-//     return m_aaParameter;
-// }
-
 template<typename DTYPE> LossFunction<DTYPE> *NeuralNetwork<DTYPE>::GetLossFunction() {
     return m_aLossFunction;
 }
@@ -183,8 +188,6 @@ template<typename DTYPE> float NeuralNetwork<DTYPE>::GetAccuracy() {
 
     Tensor<DTYPE> *pred = result->GetResult();
     Tensor<DTYPE> *ans  = label->GetResult();
-
-    // std::cout << pred << '\n';
 
     float accuracy = 0.f;
 
@@ -474,6 +477,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeInferencing() {
 template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
     // std::cout << "NeuralNetwork<DTYPE>::SetModeGPU()" << '\n';
     m_Device = GPU;
+    this->AllocOnGPU();
 
     for (int i = 0; i < m_OperatorDegree; i++) {
         // important order
