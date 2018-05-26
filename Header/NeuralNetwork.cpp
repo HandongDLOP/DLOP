@@ -477,11 +477,9 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
 
     for (int i = 0; i < m_OperatorDegree; i++) {
         // important order
-        (*m_aaOperator)[i]->SetDeviceGPU();
-        (*m_aaOperator)[i]->SetCudnnHandle(m_cudnnHandle);
+        (*m_aaOperator)[i]->SetDeviceGPU(m_cudnnHandle);
     }
-    m_aLossFunction->SetDeviceGPU();
-    m_aLossFunction->SetCudnnHandle(m_cudnnHandle);
+    m_aLossFunction->SetDeviceGPU(m_cudnnHandle);
 
     m_aOptimizer->SetCudnnHandle(m_cudnnHandle);
 }

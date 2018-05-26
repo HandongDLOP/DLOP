@@ -22,8 +22,12 @@ private:
     Mode m_Mode;
     int m_numOfThread;
     int m_numOfParameter;
-    int m_isTensorholder;
+    int m_isParameterr;
     int m_isTrainable;
+
+#ifdef __CUDNN__
+    cudnnHandle_t m_pCudnnHandle;
+#endif  // __CUDNN__
 
 private:
     int  Alloc();
@@ -84,6 +88,7 @@ public:
 
     virtual int                               ForwardPropagate(int pTime = 0, int pThreadNum = 0);
     virtual int                               BackPropagate(int pTime = 0, int pThreadNum = 0);
+
     // reset value
     virtual int                               ResetResult();
     virtual int                               ResetGradient();
@@ -92,24 +97,24 @@ public:
 
     virtual void                              SetDeviceCPU();
     virtual void                              SetDeviceCPU(int pNumOfThread);
+
+    virtual int                               SetResultOnCPU();
+    virtual int                               SetGradientOnCPU();
 #ifdef __CUDNN__
 
-    cudnnHandle_t m_pCudnnHandle;
-    cudnnHandle_t& GetCudnnHandle();
-    virtual void   InitializeAttributeForGPU();
-    virtual void   SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
-    void           cudnnResize(int size, float *data);
+    cudnnHandle_t                           & GetCudnnHandle();
+    virtual void                              InitializeAttributeForGPU();
+    // virtual void                              SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
+    void                                      cudnnResize(int size, float *data);
 
-    virtual int    ForwardPropagateOnGPU(int pTime = 0);
-    virtual int    BackPropagateOnGPU(int pTime = 0);
+    virtual int                               ForwardPropagateOnGPU(int pTime = 0);
+    virtual int                               BackPropagateOnGPU(int pTime = 0);
 
-    virtual int    SetResultOnCPU();
-    virtual int    SetGradientOnCPU();
+    virtual void                              SetDeviceGPU();
+    virtual void                              SetDeviceGPU(cudnnHandle_t& pCudnnHandle);
 
-    virtual void   SetDeviceGPU();
-
-    virtual int    SetResultOnGPU();
-    virtual int    SetGradientOnGPU();
+    virtual int                               SetResultOnGPU();
+    virtual int                               SetGradientOnGPU();
 
 #endif  // if __CUDNN__
 };

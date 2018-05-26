@@ -59,7 +59,7 @@ public:
     int                               ForwardPropagateOnGPU(int pTime = 0);
     int                               BackPropagateOnGPU(int pTime = 0);
     void                              SetDeviceGPU();
-    void                              SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
+    void                              SetDeviceGPU(cudnnHandle_t& pCudnnHandle);
 #endif  // if __CUDNN__
 
     Device                            GetDevice() {

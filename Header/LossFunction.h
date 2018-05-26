@@ -62,8 +62,9 @@ public:
     virtual int    SetGradientOnCPU();
 
     virtual void   SetDeviceGPU();
+    virtual void   SetDeviceGPU(cudnnHandle_t& pCudnnHandle);
+    virtual void   InitializeAttributeForGPU();
 
-    virtual void   SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
     cudnnHandle_t& GetCudnnHandle();
 
     // Setting Supporter

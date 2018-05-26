@@ -145,7 +145,7 @@ template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
     m_Device         = CPU;
     m_Mode           = TRAINING;
     m_numOfParameter = 0;
-    m_isTensorholder = FALSE;
+    m_isParameterr   = FALSE;
     m_isTrainable    = FALSE;
     m_numOfThread    = -1;
     Alloc();
@@ -164,7 +164,7 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std:
     m_Device         = CPU;
     m_Mode           = TRAINING;
     m_numOfParameter = 0;
-    m_isTensorholder = FALSE;
+    m_isParameterr   = FALSE;
     m_isTrainable    = FALSE;
     m_numOfThread    = -1;
     Alloc();
@@ -184,7 +184,7 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Ope
     m_Device         = CPU;
     m_Mode           = TRAINING;
     m_numOfParameter = 0;
-    m_isTensorholder = FALSE;
+    m_isParameterr   = FALSE;
     m_isTrainable    = FALSE;
     m_numOfThread    = -1;
     Alloc();
@@ -299,7 +299,7 @@ template<typename DTYPE> int Operator<DTYPE>::SetModeInferencing() {
 }
 
 template<typename DTYPE> int Operator<DTYPE>::SetIsTensorholder() {
-    m_isTensorholder = TRUE;
+    m_isParameterr = TRUE;
     return TRUE;
 }
 
@@ -363,7 +363,7 @@ template<typename DTYPE> int Operator<DTYPE>::GetNumOfThread() {
 }
 
 template<typename DTYPE> int Operator<DTYPE>::GetIsTensorholder() {
-    return m_isTensorholder;
+    return m_isParameterr;
 }
 
 template<typename DTYPE> int Operator<DTYPE>::GetIsTrainable() {
@@ -404,114 +404,6 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagate(int pTime, int pThre
     #endif  // __DEBUG__
     return TRUE;
 }
-
-#ifdef __CUDNN__
-template<typename DTYPE> int Operator<DTYPE>::ForwardPropagateOnGPU(int pTime) {
-    # if __DEBUG__
-    std::cout << "Operator<DTYPE>::ForwardPropagateOnGPU(int)" << '\n';
-    std::cout << this->GetName() << '\n';
-    # endif // __DEBUG__
-    return TRUE;
-}
-
-template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU(int pTime) {
-    # if __DEBUG__
-    std::cout << "Operator<DTYPE>::BackPropagateOnGPU(int)" << '\n';
-    std::cout << this->GetName() << '\n';
-    # endif // __DEBUG__
-    return TRUE;
-}
-
-template<typename DTYPE> void Operator<DTYPE>::InitializeAttributeForGPU() {}
-
-template<typename DTYPE> void Operator<DTYPE>::SetCudnnHandle(cudnnHandle_t& pCudnnHandle) {
-    m_pCudnnHandle = pCudnnHandle;
-    this->InitializeAttributeForGPU();
-}
-
-void cudnnResize(int size, float *data) {
-    if (data == NULL) {
-        checkCudaErrors(cudaFree(data));
-    }
-    checkCudaErrors(cudaMalloc(&data, size * sizeof(float)));
-}
-
-template<typename DTYPE> cudnnHandle_t& Operator<DTYPE>::GetCudnnHandle() {
-    return m_pCudnnHandle;
-}
-
-#endif  // if __CUDNN__
-
-
-template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
-    m_Device = CPU;
-
-#ifdef __CUDNN__
-    this->SetResultOnCPU();
-    this->SetGradientOnCPU();
-#endif  // __CUDNN__
-}
-
-template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU(int pNumOfThread) {
-    m_Device      = CPU;
-    m_numOfThread = pNumOfThread;
-
-#ifdef __CUDNN__
-    this->SetResultOnCPU();
-    this->SetGradientOnCPU();
-#endif  // __CUDNN__
-}
-
-#ifdef __CUDNN__
-template<typename DTYPE> int Operator<DTYPE>::SetResultOnCPU() {
-    // Tensorholder의 경우는 하면 안된다.
-    int size = m_aaResult->GetSize();
-
-    for (int i = 0; i < size; i++) {
-        (*m_aaResult)[i]->SetDeviceCPU();
-    }
-
-    return TRUE;
-}
-
-template<typename DTYPE> int Operator<DTYPE>::SetGradientOnCPU() {
-    int size = m_aaGradient->GetSize();
-
-    for (int i = 0; i < size; i++) {
-        (*m_aaGradient)[i]->SetDeviceCPU();
-    }
-
-    return TRUE;
-}
-
-template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
-    m_Device = GPU;
-    this->SetResultOnGPU();
-    this->SetGradientOnGPU();
-}
-
-template<typename DTYPE> int Operator<DTYPE>::SetResultOnGPU() {
-    // Tensorholder의 경우는 하면 안된다.
-    int size = m_aaResult->GetSize();
-
-    for (int i = 0; i < size; i++) {
-        (*m_aaResult)[i]->SetDeviceGPU();
-    }
-
-    return TRUE;
-}
-
-template<typename DTYPE> int Operator<DTYPE>::SetGradientOnGPU() {
-    int size = m_aaGradient->GetSize();
-
-    for (int i = 0; i < size; i++) {
-        (*m_aaGradient)[i]->SetDeviceGPU();
-    }
-
-    return TRUE;
-}
-
-#endif  // __CUDNN__
 
 template<typename DTYPE> int Operator<DTYPE>::ResetResult() {
     // Tensorholder의 경우는 하면 안된다.
@@ -562,6 +454,114 @@ template<typename DTYPE> void Operator<DTYPE>::PrintInformation() {
     std::cout << this->GetName() << " : ";
     std::cout << this->GetResult()->GetShape() << '\n';
 }
+
+template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
+    m_Device = CPU;
+
+#ifdef __CUDNN__
+    this->SetResultOnCPU();
+    this->SetGradientOnCPU();
+#endif  // __CUDNN__
+}
+
+template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU(int pNumOfThread) {
+    m_Device      = CPU;
+    m_numOfThread = pNumOfThread;
+
+#ifdef __CUDNN__
+    this->SetResultOnCPU();
+    this->SetGradientOnCPU();
+#endif  // __CUDNN__
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetResultOnCPU() {
+    // Tensorholder의 경우는 하면 안된다.
+    int size = m_aaResult->GetSize();
+
+    for (int i = 0; i < size; i++) {
+        (*m_aaResult)[i]->SetDeviceCPU();
+    }
+
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetGradientOnCPU() {
+    int size = m_aaGradient->GetSize();
+
+    for (int i = 0; i < size; i++) {
+        (*m_aaGradient)[i]->SetDeviceCPU();
+    }
+
+    return TRUE;
+}
+
+#ifdef __CUDNN__
+template<typename DTYPE> int Operator<DTYPE>::ForwardPropagateOnGPU(int pTime) {
+    # if __DEBUG__
+    std::cout << "Operator<DTYPE>::ForwardPropagateOnGPU(int)" << '\n';
+    std::cout << this->GetName() << '\n';
+    # endif // __DEBUG__
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU(int pTime) {
+    # if __DEBUG__
+    std::cout << "Operator<DTYPE>::BackPropagateOnGPU(int)" << '\n';
+    std::cout << this->GetName() << '\n';
+    # endif // __DEBUG__
+    return TRUE;
+}
+
+template<typename DTYPE> void Operator<DTYPE>::InitializeAttributeForGPU() {}
+
+void cudnnResize(int size, float *data) {
+    if (data == NULL) {
+        checkCudaErrors(cudaFree(data));
+    }
+    checkCudaErrors(cudaMalloc(&data, size * sizeof(float)));
+}
+
+template<typename DTYPE> cudnnHandle_t& Operator<DTYPE>::GetCudnnHandle() {
+    return m_pCudnnHandle;
+}
+
+template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU() {
+    m_Device = GPU;
+    this->SetResultOnGPU();
+    this->SetGradientOnGPU();
+}
+
+template<typename DTYPE> void Operator<DTYPE>::SetDeviceGPU(cudnnHandle_t& pCudnnHandle) {
+    m_Device = GPU;
+    m_pCudnnHandle = pCudnnHandle;
+    this->InitializeAttributeForGPU();
+    this->SetResultOnGPU();
+    this->SetGradientOnGPU();
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetResultOnGPU() {
+    // Tensorholder의 경우는 하면 안된다.
+    int size = m_aaResult->GetSize();
+
+    for (int i = 0; i < size; i++) {
+        (*m_aaResult)[i]->SetDeviceGPU();
+    }
+
+    return TRUE;
+}
+
+template<typename DTYPE> int Operator<DTYPE>::SetGradientOnGPU() {
+    int size = m_aaGradient->GetSize();
+
+    for (int i = 0; i < size; i++) {
+        (*m_aaGradient)[i]->SetDeviceGPU();
+    }
+
+    return TRUE;
+}
+
+#endif  // __CUDNN__
+
 
 // int main(int argc, char const *argv[]) {
 // Operator<int> *temp1 = new Operator<int>("temp1");

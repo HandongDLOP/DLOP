@@ -193,9 +193,11 @@ template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU() {
     }
 }
 
-template<typename DTYPE> void Layer<DTYPE>::SetCudnnHandle(cudnnHandle_t& pCudnnHandle) {
+template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU(cudnnHandle_t& pCudnnHandle) {
+    m_Device = GPU;
+
     for (int i = 0; i < m_numOfOperator; i++) {
-        (*m_aaOperator)[i]->SetCudnnHandle(pCudnnHandle);
+        (*m_aaOperator)[i]->SetDeviceGPU(pCudnnHandle);
     }
 }
 
