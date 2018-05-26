@@ -67,10 +67,10 @@ public:
     virtual int                           SetModeAccumulating();
     virtual int                           SetModeInferencing();
 
-    Operator<DTYPE>                    ** GetOutput();
-    Container<Operator<DTYPE> *>        * GetOutputContainer();
-    Operator<DTYPE>                    ** GetInput();
-    Container<Operator<DTYPE> *>        * GetInputContainer();
+    virtual Operator<DTYPE>            ** GetOutput();
+    virtual Container<Operator<DTYPE> *>* GetOutputContainer();
+    virtual Operator<DTYPE>            ** GetInput();
+    virtual Container<Operator<DTYPE> *>* GetInputContainer();
     virtual Tensor<DTYPE>               * GetResult() const;
     virtual Container<Tensor<DTYPE> *>  * GetResultContainer();
     virtual Tensor<DTYPE>               * GetGradient() const;
