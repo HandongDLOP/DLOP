@@ -58,7 +58,7 @@ public:
     int                                   SetDelta(Tensor<DTYPE> *pTensor);
 
     int                                   SetDevice(Device pDevice);
-    int                                   SetNumberOfThread(int pNumOfThread);
+    int                                   SetNumOfThread(int pNumOfThread);
 
     int                                   SetIsTensorholder();
     int                                   SetIsTrainable();

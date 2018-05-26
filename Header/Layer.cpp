@@ -4,28 +4,7 @@ template class Layer<int>;
 template class Layer<float>;
 template class Layer<double>;
 
-template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) : Operator<DTYPE>(pName) {
-    #ifdef __DEBUG__
-    std::cout << "Layer<DTYPE>::Layer()" << '\n';
-    #endif  // __DEBUG__
-    m_aaOperator  = NULL;
-    m_aaParameter = NULL;
-
-    m_numOfOperator  = 0;
-    m_numOfParameter = 0;
-
-    m_Device      = CPU;
-    m_numOfThread = 1;
-    Alloc();
-}
-
-template<typename DTYPE> Layer<DTYPE>::~Layer() {
-    #ifdef __DEBUG__
-    std::cout << "Layer<DTYPE>::~Layer()" << '\n';
-    #endif  // __DEBUG__
-
-    this->Delete();
-}
+//////////////////////////////////////////////////////////////////////////////// for private method
 
 template<typename DTYPE> int Layer<DTYPE>::Alloc() {
     m_aaOperator  = new Container<Operator<DTYPE> *>();
@@ -59,6 +38,27 @@ template<typename DTYPE> void Layer<DTYPE>::Delete() {
         delete m_aaParameter;
         m_aaParameter = NULL;
     }
+}
+
+template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) : Operator<DTYPE>(pName) {
+    #ifdef __DEBUG__
+    std::cout << "Layer<DTYPE>::Layer()" << '\n';
+    #endif  // __DEBUG__
+    m_aaOperator  = NULL;
+    m_aaParameter = NULL;
+
+    m_numOfOperator  = 0;
+    m_numOfParameter = 0;
+
+    Alloc();
+}
+
+template<typename DTYPE> Layer<DTYPE>::~Layer() {
+    #ifdef __DEBUG__
+    std::cout << "Layer<DTYPE>::~Layer()" << '\n';
+    #endif  // __DEBUG__
+
+    this->Delete();
 }
 
 template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::AddOperator(Operator<DTYPE> *pOperator) {
@@ -168,7 +168,7 @@ template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::GetLastOperator() {
 }
 
 template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU() {
-    m_Device = CPU;
+    this->SetDevice(CPU);
 
     for (int i = 0; i < m_numOfOperator; i++) {
         (*m_aaOperator)[i]->SetDeviceCPU();
@@ -176,8 +176,8 @@ template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU() {
 }
 
 template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU(int pNumOfThread) {
-    m_Device      = CPU;
-    m_numOfThread = pNumOfThread;
+    this->SetDevice(CPU);
+    this->SetNumOfThread(pNumOfThread);
 
     for (int i = 0; i < m_numOfOperator; i++) {
         (*m_aaOperator)[i]->SetDeviceCPU(pNumOfThread);
@@ -186,7 +186,7 @@ template<typename DTYPE> void Layer<DTYPE>::SetDeviceCPU(int pNumOfThread) {
 
 #ifdef __CUDNN__
 template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU() {
-    m_Device = GPU;
+    this->SetDevice(GPU);
 
     for (int i = 0; i < m_numOfOperator; i++) {
         (*m_aaOperator)[i]->SetDeviceGPU();
@@ -194,7 +194,7 @@ template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU() {
 }
 
 template<typename DTYPE> void Layer<DTYPE>::SetDeviceGPU(cudnnHandle_t& pCudnnHandle) {
-    m_Device = GPU;
+    this->SetDevice(GPU);
 
     for (int i = 0; i < m_numOfOperator; i++) {
         (*m_aaOperator)[i]->SetDeviceGPU(pCudnnHandle);

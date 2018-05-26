@@ -288,7 +288,7 @@ template<typename DTYPE> int Operator<DTYPE>::SetDevice(Device pDevice) {
     return TRUE;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::SetNumberOfThread(int pNumOfThread) {
+template<typename DTYPE> int Operator<DTYPE>::SetNumOfThread(int pNumOfThread) {
     m_numOfThread = pNumOfThread;
     return TRUE;
 }
@@ -474,7 +474,7 @@ template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU() {
 
 template<typename DTYPE> void Operator<DTYPE>::SetDeviceCPU(int pNumOfThread) {
     this->SetDevice(CPU);
-    this->SetNumberOfThread(pNumOfThread);
+    this->SetNumOfThread(pNumOfThread);
 
     this->SetResultOnCPU();
     this->SetGradientOnCPU();

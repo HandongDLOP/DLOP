@@ -11,27 +11,20 @@ private:
     int m_numOfOperator;
     int m_numOfParameter;
 
-    Device m_Device;
-
-    int m_numOfThread;
+    int  Alloc();
+    void Delete();
 
 public:
     Layer(std::string pName = "No Name");
     virtual ~Layer();
 
-    int  Alloc();
-    void Delete();
+    Operator<DTYPE>             * AddOperator(Operator<DTYPE> *pOperator);
+    Operator<DTYPE>             * AddParameter(Operator<DTYPE> *pParameter);
 
-    // =======
-
-    // Operator<DTYPE>    * AddLayer(Layer<DTYPE> *pLayer);
-    Operator<DTYPE>* AddOperator(Operator<DTYPE> *pOperator);
-    Operator<DTYPE>* AddParameter(Operator<DTYPE> *pParameter);
-
-    // =======
 
     Container<Operator<DTYPE> *>* GetOperatorContainer();
     Container<Operator<DTYPE> *>* GetParameterContainer();
+
     int                           GetNumOfOperator();
     int                           GetNumOfParameter();
 
@@ -50,7 +43,6 @@ public:
     int                           ForwardPropagate(int pTime = 0, int pThreadNum = 0);
     int                           BackPropagate(int pTime = 0, int pThreadNum = 0);
 
-
     Operator<DTYPE>             * GetLastOperator();
 
     void                          SetDeviceCPU();
@@ -62,13 +54,6 @@ public:
     void                          SetDeviceGPU(cudnnHandle_t& pCudnnHandle);
 #endif  // if __CUDNN__
 
-    Device                        GetDevice() {
-        return m_Device;
-    }
-
-    int GetNumOfThread() {
-        return m_numOfThread;
-    }
 
     int  ResetResult();
     int  ResetGradient();
