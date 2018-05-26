@@ -11,7 +11,7 @@ typedef struct {
 template<typename DTYPE> class NeuralNetwork {
 private:
     Container<Operator<DTYPE> *> *m_aaOperator;
-    Container<Operator<DTYPE> *> *m_aaInput;
+    Container<Operator<DTYPE> *> *m_apInput;
     Container<Operator<DTYPE> *> *m_aaParameter;
 
     int m_OperatorDegree;
@@ -42,8 +42,8 @@ public:
     virtual ~NeuralNetwork();
 
 
-    Operator<DTYPE>    * SetInput(Operator<DTYPE> *pInput);
-    Operator<DTYPE>    * AnalyseGraph(Operator<DTYPE> *pResultOperator);
+    Operator<DTYPE>    * SetInput(Operator<DTYPE> *pInput); //
+    Operator<DTYPE>    * AnalyseGraph(Operator<DTYPE> *pResultOperator); //
 
     Operator<DTYPE>    * AddOperator(Operator<DTYPE> *pOperator);
     Operator<DTYPE>    * AddParameter(Operator<DTYPE> *pParameter);

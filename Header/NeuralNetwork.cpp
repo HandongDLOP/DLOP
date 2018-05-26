@@ -8,7 +8,7 @@ template class NeuralNetwork<double>;
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
     m_aaOperator  = new Container<Operator<DTYPE> *>();
-    m_aaInput = new Container<Operator<DTYPE> *>();
+    m_apInput     = new Container<Operator<DTYPE> *>();
     m_aaParameter = new Container<Operator<DTYPE> *>();
     return TRUE;
 }
@@ -33,18 +33,9 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
         m_aaOperator = NULL;
     }
 
-    if (m_aaInput) {
-        size = m_aaInput->GetSize();
-        Operator<DTYPE> **InputContainer = m_aaInput->GetRawData();
-
-        for (int i = 0; i < size; i++) {
-            if ((*m_aaInput)[i]) {
-                delete InputContainer[i];
-                InputContainer[i] = NULL;
-            }
-        }
-        delete m_aaInput;
-        m_aaInput = NULL;
+    if (m_apInput) {
+        delete m_apInput;
+        m_apInput = NULL;
     }
 
     if (m_aaParameter) {
@@ -99,7 +90,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     #endif  // __DEBUG__
 
     m_aaOperator  = NULL;
-    m_aaInput = NULL;
+    m_apInput     = NULL;
     m_aaParameter = NULL;
 
     m_OperatorDegree  = 0;
@@ -124,6 +115,52 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
     #endif  // __DEBUG__
 
     this->Delete();
+}
+
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::SetInput(Operator<DTYPE> *pInput) {
+    return pInput;
+}
+
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AnalyseGraph(Operator<DTYPE> *pResultOperator) {
+    Container<Operator<DTYPE> *> queue;
+    queue.Push(pResultOperator);
+    Operator<DTYPE> *out                 = NULL;
+    Container<Operator<DTYPE> *> *nextOp = NULL;
+    int numOfEdge                        = 0;
+
+    while (queue.GetSize() > 0) {
+        out = queue.Pop();
+
+        nextOp    = out->GetInputContainer();
+        numOfEdge = nextOp->GetSize();
+
+        for (int i = 0; i < numOfEdge; i++) {
+            queue.Push((*nextOp)[i]);
+        }
+
+        if (out->GetIsTensorholder()) {
+            if(out->GetIsTrainable()) m_aaParameter->Push(out);
+        } else {
+            m_aaOperator->Push(out);
+        }
+    }
+
+    m_aaOperator->Reverse();
+    m_aaParameter->Reverse();
+
+    m_OperatorDegree = m_aaOperator->GetSize();
+
+    for (int i = 0; i < m_OperatorDegree; i++) {
+        std::cout << (*m_aaOperator)[i]->GetName() << '\n';
+    }
+
+    m_ParameterDegree = m_aaParameter->GetSize();
+
+    for (int i = 0; i < m_ParameterDegree; i++) {
+        std::cout << (*m_aaParameter)[i]->GetName() << '\n';
+    }
+
+    return pResultOperator;
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Operator<DTYPE> *pOperator) {

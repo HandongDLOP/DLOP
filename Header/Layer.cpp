@@ -79,11 +79,11 @@ template<typename DTYPE> Container<Operator<DTYPE> *> *Layer<DTYPE>::GetOutputCo
 }
 
 template<typename DTYPE> Operator<DTYPE> **Layer<DTYPE>::GetInput() {
-    return m_aaOperator->GetLast()->GetInput();
+    return (*m_aaOperator)[0]->GetInput();
 }
 
 template<typename DTYPE> Container<Operator<DTYPE> *> *Layer<DTYPE>::GetInputContainer() {
-    return m_aaOperator->GetLast()->GetInputContainer();
+    return (*m_aaOperator)[0]->GetInputContainer();
 }
 
 template<typename DTYPE> Tensor<DTYPE> *Layer<DTYPE>::GetResult() const {
