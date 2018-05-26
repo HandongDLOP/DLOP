@@ -29,7 +29,7 @@ template<typename DTYPE> Layer<DTYPE>::~Layer() {
 
 template<typename DTYPE> int Layer<DTYPE>::Alloc() {
     m_aaOperator  = new Container<Operator<DTYPE> *>();
-    m_aaParameter = new Container<Tensorholder<DTYPE> *>();
+    m_aaParameter = new Container<Operator<DTYPE> *>();
     return TRUE;
 }
 
@@ -50,7 +50,7 @@ template<typename DTYPE> void Layer<DTYPE>::Delete() {
     }
 
     if (m_aaParameter) {
-        Tensorholder<DTYPE> **ParameterContainer = m_aaParameter->GetRawData();
+        Operator<DTYPE> **ParameterContainer = m_aaParameter->GetRawData();
 
         for (int i = 0; i < m_numOfParameter; i++) {
             delete ParameterContainer[i];
@@ -75,7 +75,7 @@ template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::AddOperator(Operator<DTY
     return pOperator;
 }
 
-template<typename DTYPE> Tensorholder<DTYPE> *Layer<DTYPE>::AddParameter(Tensorholder<DTYPE> *pParameter) {
+template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::AddParameter(Operator<DTYPE> *pParameter) {
     m_aaParameter->Push(pParameter);
     m_numOfParameter++;
 
@@ -86,7 +86,7 @@ template<typename DTYPE> Container<Operator<DTYPE> *> *Layer<DTYPE>::GetOperator
     return m_aaOperator;
 }
 
-template<typename DTYPE> Container<Tensorholder<DTYPE> *> *Layer<DTYPE>::GetParameterContainer() {
+template<typename DTYPE> Container<Operator<DTYPE> *> *Layer<DTYPE>::GetParameterContainer() {
     return m_aaParameter;
 }
 
@@ -103,7 +103,7 @@ template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::PopOperator() {
     return m_aaOperator->Pop();
 }
 
-template<typename DTYPE> Tensorholder<DTYPE> *Layer<DTYPE>::PopParameter() {
+template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::PopParameter() {
     m_numOfParameter--;
     return m_aaParameter->Pop();
 }

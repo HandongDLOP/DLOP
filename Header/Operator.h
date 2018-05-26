@@ -48,70 +48,70 @@ public:
     Operator(Operator<DTYPE> *pInput0, Operator<DTYPE> *pInput1, std::string pName = "NO NAME");
     virtual ~Operator();
 
-    int                                       AddEdgebetweenOperators(Operator<DTYPE> *pInput);
-    int                                       AddEdgebetweenOperators(int numInput, ...);
-    int                                       AddResult(Tensor<DTYPE> *pTensor);
-    int                                       AddGradient(Tensor<DTYPE> *pTensor);
-    int                                       AddDelta(Tensor<DTYPE> *pTensor);
-    int                                       SetResult(Tensor<DTYPE> *pTensor); // 0 or 1 일 때만 진행 가능
-    int                                       SetGradient(Tensor<DTYPE> *pTensor);
-    int                                       SetDelta(Tensor<DTYPE> *pTensor);
+    int                                   AddEdgebetweenOperators(Operator<DTYPE> *pInput);
+    int                                   AddEdgebetweenOperators(int numInput, ...);
+    int                                   AddResult(Tensor<DTYPE> *pTensor);
+    int                                   AddGradient(Tensor<DTYPE> *pTensor);
+    int                                   AddDelta(Tensor<DTYPE> *pTensor);
+    int                                   SetResult(Tensor<DTYPE> *pTensor);     // 0 or 1 일 때만 진행 가능
+    int                                   SetGradient(Tensor<DTYPE> *pTensor);
+    int                                   SetDelta(Tensor<DTYPE> *pTensor);
 
-    int                                       SetDevice(Device pDevice);
-    int                                       SetNumberOfThread(int pNumOfThread);
+    int                                   SetDevice(Device pDevice);
+    int                                   SetNumberOfThread(int pNumOfThread);
 
-    int                                       SetIsTensorholder();
-    int                                       SetIsTrainable();
+    int                                   SetIsTensorholder();
+    int                                   SetIsTrainable();
 
-    virtual int                               SetModeTraining();
-    virtual int                               SetModeAccumulating();
-    virtual int                               SetModeInferencing();
+    virtual int                           SetModeTraining();
+    virtual int                           SetModeAccumulating();
+    virtual int                           SetModeInferencing();
 
-    Operator<DTYPE>                        ** GetOutput();
-    Container<Operator<DTYPE> *>            * GetOutputContainer();
-    Operator<DTYPE>                        ** GetInput();
-    Container<Operator<DTYPE> *>            * GetInputContainer();
-    virtual Tensor<DTYPE>                   * GetResult() const;
-    virtual Container<Tensor<DTYPE> *>      * GetResultContainer();
-    virtual Tensor<DTYPE>                   * GetGradient() const;
-    virtual Container<Tensor<DTYPE> *>      * GetGradientContainer();
-    virtual Tensor<DTYPE>                   * GetDelta() const;
-    virtual Container<Tensor<DTYPE> *>      * GetDeltaContainer();
+    Operator<DTYPE>                    ** GetOutput();
+    Container<Operator<DTYPE> *>        * GetOutputContainer();
+    Operator<DTYPE>                    ** GetInput();
+    Container<Operator<DTYPE> *>        * GetInputContainer();
+    virtual Tensor<DTYPE>               * GetResult() const;
+    virtual Container<Tensor<DTYPE> *>  * GetResultContainer();
+    virtual Tensor<DTYPE>               * GetGradient() const;
+    virtual Container<Tensor<DTYPE> *>  * GetGradientContainer();
+    virtual Tensor<DTYPE>               * GetDelta() const;
+    virtual Container<Tensor<DTYPE> *>  * GetDeltaContainer();
 
-    std::string                               GetName() const;
-    virtual Device                            GetDevice();
-    int                                       GetNumOfThread();
-    int                                       GetIsTensorholder();
-    int                                       GetIsTrainable();
+    std::string                           GetName() const;
+    virtual Device                        GetDevice();
+    int                                   GetNumOfThread();
+    int                                   GetIsTensorholder();
+    int                                   GetIsTrainable();
 
     // for Layer
-    virtual int                               AddParameter(Operator<DTYPE> *pParameter);
-    virtual Container<Tensorholder<DTYPE> *>* GetParameterContainer();
-    virtual int                               GetNumOfParameter();
-    virtual Tensorholder<DTYPE>             * PopParameter();
+    virtual Operator<DTYPE>             * AddParameter(Operator<DTYPE> *pParameter);
+    virtual Container<Operator<DTYPE> *>* GetParameterContainer();
+    virtual int                           GetNumOfParameter();
+    virtual Operator<DTYPE>             * PopParameter();
 
-    virtual int                               ForwardPropagate(int pTime = 0, int pThreadNum = 0);
-    virtual int                               BackPropagate(int pTime = 0, int pThreadNum = 0);
+    virtual int                           ForwardPropagate(int pTime = 0, int pThreadNum = 0);
+    virtual int                           BackPropagate(int pTime = 0, int pThreadNum = 0);
 
     // reset value
-    virtual int                               ResetResult();
-    virtual int                               ResetGradient();
+    virtual int                           ResetResult();
+    virtual int                           ResetGradient();
 
-    virtual void                              PrintInformation();
+    virtual void                          PrintInformation();
 
-    virtual void                              SetDeviceCPU();
-    virtual void                              SetDeviceCPU(int pNumOfThread);
+    virtual void                          SetDeviceCPU();
+    virtual void                          SetDeviceCPU(int pNumOfThread);
 
-    virtual int                               SetResultOnCPU();
-    virtual int                               SetGradientOnCPU();
+    virtual int                           SetResultOnCPU();
+    virtual int                           SetGradientOnCPU();
 #ifdef __CUDNN__
-    int                                       SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
-    virtual int                               SetResultOnGPU();
-    virtual int                               SetGradientOnGPU();
+    int                                   SetCudnnHandle(cudnnHandle_t& pCudnnHandle);
+    virtual int                           SetResultOnGPU();
+    virtual int                           SetGradientOnGPU();
 
-    virtual void                              SetDeviceGPU();
-    virtual void                              SetDeviceGPU(cudnnHandle_t& pCudnnHandle);
-    virtual void                              InitializeAttributeForGPU();
+    virtual void                          SetDeviceGPU();
+    virtual void                          SetDeviceGPU(cudnnHandle_t& pCudnnHandle);
+    virtual void                          InitializeAttributeForGPU();
 
     cudnnHandle_t& GetCudnnHandle();
 

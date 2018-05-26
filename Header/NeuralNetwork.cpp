@@ -35,7 +35,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
     m_aaOperator     = new Container<Operator<DTYPE> *>();
-    m_aaTensorholder = new Container<Tensorholder<DTYPE> *>();
+    m_aaTensorholder = new Container<Operator<DTYPE> *>();
     m_aaLayer        = new Container<Layer<DTYPE> *>();
 
 #ifdef __CUDNN__
@@ -68,7 +68,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
 
     if (m_aaTensorholder) {
         size = m_aaTensorholder->GetSize();
-        Tensorholder<DTYPE> **TensorholderContainer = m_aaTensorholder->GetRawData();
+        Operator<DTYPE> **TensorholderContainer = m_aaTensorholder->GetRawData();
 
         for (int i = 0; i < size; i++) {
             if ((*m_aaTensorholder)[i]) {
@@ -125,13 +125,13 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Oper
     return pOperator;
 }
 
-template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddTensorholder(Tensorholder<DTYPE> *pTensorholder) {
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddTensorholder(Operator<DTYPE> *pTensorholder) {
     m_aaTensorholder->Push(pTensorholder);
     m_TensorholderDegree++;
     return pTensorholder;
 }
 
-template<typename DTYPE> Tensorholder<DTYPE> *NeuralNetwork<DTYPE>::AddParameter(Tensorholder<DTYPE> *pTensorholder) {
+template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddParameter(Operator<DTYPE> *pTensorholder) {
     m_aaTensorholder->Push(pTensorholder);
     m_TensorholderDegree++;
     return pTensorholder;
@@ -159,11 +159,11 @@ template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::Get
     return m_aaOperator;
 }
 
-template<typename DTYPE> Container<Tensorholder<DTYPE> *> *NeuralNetwork<DTYPE>::GetTensorholder() {
+template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::GetTensorholder() {
     return m_aaTensorholder;
 }
 
-template<typename DTYPE> Container<Tensorholder<DTYPE> *> *NeuralNetwork<DTYPE>::GetParameter() {
+template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::GetParameter() {
     return m_aaTensorholder;
 }
 

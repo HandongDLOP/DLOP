@@ -380,14 +380,14 @@ template<typename DTYPE> int Operator<DTYPE>::GetIsTrainable() {
     return m_isTrainable;
 }
 
-template<typename DTYPE> int Operator<DTYPE>::AddParameter(Operator<DTYPE> *pParameter) {
+template<typename DTYPE> Operator<DTYPE> *Operator<DTYPE>::AddParameter(Operator<DTYPE> *pParameter) {
     m_aaParameter->Push(pParameter);
     m_numOfParameter++;
 
-    return TRUE;
+    return pParameter;
 }
 
-template<typename DTYPE> Container<Tensorholder<DTYPE> *> *Operator<DTYPE>::GetParameterContainer() {
+template<typename DTYPE> Container<Operator<DTYPE> *> *Operator<DTYPE>::GetParameterContainer() {
     return NULL;
 }
 
@@ -395,7 +395,7 @@ template<typename DTYPE> int Operator<DTYPE>::GetNumOfParameter() {
     return m_numOfParameter;
 }
 
-template<typename DTYPE> Tensorholder<DTYPE> *Operator<DTYPE>::PopParameter() {
+template<typename DTYPE> Operator<DTYPE> *Operator<DTYPE>::PopParameter() {
     return NULL;
 }
 
@@ -564,7 +564,6 @@ template<typename DTYPE> int Operator<DTYPE>::BackPropagateOnGPU(int pTime) {
     # endif // __DEBUG__
     return TRUE;
 }
-
 
 #endif  // __CUDNN__
 
