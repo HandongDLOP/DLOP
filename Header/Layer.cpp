@@ -7,8 +7,7 @@ template class Layer<double>;
 //////////////////////////////////////////////////////////////////////////////// for private method
 
 template<typename DTYPE> int Layer<DTYPE>::Alloc() {
-    m_aaOperator  = new Container<Operator<DTYPE> *>();
-    m_aaParameter = new Container<Operator<DTYPE> *>();
+    m_aaOperator = new Container<Operator<DTYPE> *>();
     return TRUE;
 }
 
@@ -27,28 +26,17 @@ template<typename DTYPE> void Layer<DTYPE>::Delete() {
         delete m_aaOperator;
         m_aaOperator = NULL;
     }
-
-    if (m_aaParameter) {
-        Operator<DTYPE> **ParameterContainer = m_aaParameter->GetRawData();
-
-        for (int i = 0; i < m_numOfParameter; i++) {
-            delete ParameterContainer[i];
-            ParameterContainer[i] = NULL;
-        }
-        delete m_aaParameter;
-        m_aaParameter = NULL;
-    }
 }
+
+//////////////////////////////////////////////////////////////////////////////// for public method
 
 template<typename DTYPE> Layer<DTYPE>::Layer(std::string pName) : Operator<DTYPE>(pName) {
     #ifdef __DEBUG__
     std::cout << "Layer<DTYPE>::Layer()" << '\n';
     #endif  // __DEBUG__
-    m_aaOperator  = NULL;
-    m_aaParameter = NULL;
+    m_aaOperator = NULL;
 
-    m_numOfOperator  = 0;
-    m_numOfParameter = 0;
+    m_numOfOperator = 0;
 
     Alloc();
 }
@@ -68,34 +56,18 @@ template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::AddOperator(Operator<DTY
     m_numOfOperator++;
 
     for (int i = 0; i < pNumOfParameter; i++) {
-        m_aaParameter->Push(pOperator->PopParameter());
-        m_numOfParameter++;
+        this->AddParameter(pOperator->PopParameter());
     }
 
     return pOperator;
-}
-
-template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::AddParameter(Operator<DTYPE> *pParameter) {
-    m_aaParameter->Push(pParameter);
-    m_numOfParameter++;
-
-    return pParameter;
 }
 
 template<typename DTYPE> Container<Operator<DTYPE> *> *Layer<DTYPE>::GetOperatorContainer() {
     return m_aaOperator;
 }
 
-template<typename DTYPE> Container<Operator<DTYPE> *> *Layer<DTYPE>::GetParameterContainer() {
-    return m_aaParameter;
-}
-
 template<typename DTYPE> int Layer<DTYPE>::GetNumOfOperator() {
     return m_numOfOperator;
-}
-
-template<typename DTYPE> int Layer<DTYPE>::GetNumOfParameter() {
-    return m_numOfParameter;
 }
 
 template<typename DTYPE> Operator<DTYPE> **Layer<DTYPE>::GetOutput() {
@@ -141,11 +113,6 @@ template<typename DTYPE> Container<Tensor<DTYPE> *> *Layer<DTYPE>::GetDeltaConta
 template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::PopOperator() {
     m_numOfOperator--;
     return m_aaOperator->Pop();
-}
-
-template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::PopParameter() {
-    m_numOfParameter--;
-    return m_aaParameter->Pop();
 }
 
 template<typename DTYPE> int Layer<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {

@@ -388,7 +388,7 @@ template<typename DTYPE> Operator<DTYPE> *Operator<DTYPE>::AddParameter(Operator
 }
 
 template<typename DTYPE> Container<Operator<DTYPE> *> *Operator<DTYPE>::GetParameterContainer() {
-    return NULL;
+    return m_aaParameter;
 }
 
 template<typename DTYPE> int Operator<DTYPE>::GetNumOfParameter() {
@@ -396,7 +396,8 @@ template<typename DTYPE> int Operator<DTYPE>::GetNumOfParameter() {
 }
 
 template<typename DTYPE> Operator<DTYPE> *Operator<DTYPE>::PopParameter() {
-    return NULL;
+    m_numOfParameter--;
+    return m_aaParameter->Pop();
 }
 
 template<typename DTYPE> int Operator<DTYPE>::ForwardPropagate(int pTime, int pThreadNum) {

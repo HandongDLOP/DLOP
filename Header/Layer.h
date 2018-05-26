@@ -6,10 +6,8 @@
 template<typename DTYPE> class Layer : public Operator<DTYPE>{
 private:
     Container<Operator<DTYPE> *> *m_aaOperator;
-    Container<Operator<DTYPE> *> *m_aaParameter;
 
     int m_numOfOperator;
-    int m_numOfParameter;
 
     int  Alloc();
     void Delete();
@@ -19,14 +17,10 @@ public:
     virtual ~Layer();
 
     Operator<DTYPE>             * AddOperator(Operator<DTYPE> *pOperator);
-    Operator<DTYPE>             * AddParameter(Operator<DTYPE> *pParameter);
-
 
     Container<Operator<DTYPE> *>* GetOperatorContainer();
-    Container<Operator<DTYPE> *>* GetParameterContainer();
 
     int                           GetNumOfOperator();
-    int                           GetNumOfParameter();
 
     Operator<DTYPE>            ** GetOutput();
     Container<Operator<DTYPE> *>* GetOutputContainer();
@@ -43,7 +37,6 @@ public:
     Container<Tensor<DTYPE> *>  * GetDeltaContainer();
 
     Operator<DTYPE>             * PopOperator();
-    Operator<DTYPE>             * PopParameter();
 
     int                           ForwardPropagate(int pTime = 0, int pThreadNum = 0);
     int                           BackPropagate(int pTime = 0, int pThreadNum = 0);
