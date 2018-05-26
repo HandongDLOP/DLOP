@@ -15,6 +15,7 @@ private:
     Container<Operator<DTYPE> *> *m_aaParameter;
 
     int m_OperatorDegree;
+    int m_InputDegree;
     int m_ParameterDegree;
 
     // 중간에 Loss Function이나 Optimizer가 바뀌는 상황 생각해두기
@@ -42,16 +43,19 @@ public:
     virtual ~NeuralNetwork();
 
 
-    Operator<DTYPE>    * SetInput(Operator<DTYPE> *pInput); //
-    Operator<DTYPE>    * AnalyseGraph(Operator<DTYPE> *pResultOperator); //
+    Operator<DTYPE>             * SetInput(Operator<DTYPE> *pInput);
+    Operator<DTYPE>             * AnalyseGraph(Operator<DTYPE> *pResultOperator);
 
-    Operator<DTYPE>    * AddOperator(Operator<DTYPE> *pOperator);
-    Operator<DTYPE>    * AddParameter(Operator<DTYPE> *pParameter);
+    Operator<DTYPE>             * AddOperator(Operator<DTYPE> *pOperator);
+    Operator<DTYPE>             * AddParameter(Operator<DTYPE> *pParameter);
 
-    LossFunction<DTYPE>* SetLossFunction(LossFunction<DTYPE> *pLossFunction);
-    Optimizer<DTYPE>   * SetOptimizer(Optimizer<DTYPE> *pOptimizer);
+    LossFunction<DTYPE>         * SetLossFunction(LossFunction<DTYPE> *pLossFunction);
+    Optimizer<DTYPE>            * SetOptimizer(Optimizer<DTYPE> *pOptimizer);
 
+    int                           FeedInputTensor(int pNumOfInput, ...); // 곧 구현 필요
     // =======
+
+    Container<Operator<DTYPE> *>* GetInputContainer();
 
     Operator<DTYPE>             * GetResultOperator();
     Operator<DTYPE>             * GetResult();

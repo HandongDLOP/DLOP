@@ -94,6 +94,7 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     m_aaParameter = NULL;
 
     m_OperatorDegree  = 0;
+    m_InputDegree     = 0;
     m_ParameterDegree = 0;
 
     m_aLossFunction = NULL;
@@ -118,11 +119,13 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::~NeuralNetwork() {
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::SetInput(Operator<DTYPE> *pInput) {
+    m_apInput->Push(pInput);
+    m_InputDegree++;
     return pInput;
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AnalyseGraph(Operator<DTYPE> *pResultOperator) {
-    //BFS
+    // BFS
     Container<Operator<DTYPE> *> queue;
     queue.Push(pResultOperator);
     Operator<DTYPE> *out                 = NULL;
@@ -140,7 +143,7 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AnalyseGraph(Ope
         }
 
         if (out->GetIsTensorholder()) {
-            if(out->GetIsTrainable()) m_aaParameter->Push(out);
+            if (out->GetIsTrainable()) m_aaParameter->Push(out);
         } else {
             m_aaOperator->Push(out);
         }
@@ -149,7 +152,7 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AnalyseGraph(Ope
     m_aaOperator->Reverse();
     m_aaParameter->Reverse();
 
-    m_OperatorDegree = m_aaOperator->GetSize();
+    m_OperatorDegree  = m_aaOperator->GetSize();
     m_ParameterDegree = m_aaParameter->GetSize();
 
     return pResultOperator;
@@ -183,6 +186,26 @@ template<typename DTYPE> LossFunction<DTYPE> *NeuralNetwork<DTYPE>::SetLossFunct
 template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::SetOptimizer(Optimizer<DTYPE> *pOptimizer) {
     m_aOptimizer = pOptimizer;
     return pOptimizer;
+}
+
+template<typename DTYPE> int NeuralNetwork<DTYPE>::FeedInputTensor(int pNumOfInput, ...) {
+
+    Tensor<DTYPE> *temp = NULL;
+
+    va_list ap;
+    va_start(ap, pNumOfInput);
+
+    for (int i = 0; i < pNumOfInput; i++) {
+        temp = va_arg(ap, Tensor<DTYPE> *);
+        (*m_apInput)[i]->SetResult(temp);
+    }
+
+    va_end(ap);
+    return TRUE;
+}
+
+template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::GetInputContainer() {
+    return m_apInput;
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::GetResultOperator() {
@@ -512,6 +535,7 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
         // important order
         (*m_aaOperator)[i]->SetDeviceGPU(m_cudnnHandle);
     }
+
     for (int i = 0; i < m_ParameterDegree; i++) {
         // important order
         (*m_aaParameter)[i]->SetDeviceGPU(m_cudnnHandle);

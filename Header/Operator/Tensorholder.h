@@ -70,6 +70,10 @@ public:
     void SetTensor(Tensor<DTYPE> *pTensor) {
         this->SetResult(pTensor);
     }
+
+    void FeedTensor(Tensor<DTYPE> *pTensor) {
+        this->SetResult(pTensor);
+    }
 };
 
 #endif  // TENSORHOLDER_H_
