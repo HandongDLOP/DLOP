@@ -66,6 +66,21 @@ public:
         return element;
     }
 
+    int Reverse() {
+        DTYPE *temp = new DTYPE[m_size];
+
+        for (int i = 0; i < m_size; i++) temp[m_size - i - 1] = m_aElement[i];
+
+        if (m_aElement) {
+            delete[] m_aElement;
+            m_aElement = NULL;
+        }
+
+        m_aElement = temp;
+
+        return TRUE;
+    }
+
     int SetElement(DTYPE pElement, unsigned int index) {
         m_aElement[index] = pElement;
         return TRUE;
