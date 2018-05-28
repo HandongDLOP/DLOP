@@ -155,6 +155,11 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AnalyseGraph(Ope
     m_OperatorDegree  = m_aaOperator->GetSize();
     m_ParameterDegree = m_aaParameter->GetSize();
 
+    // for (int i = 0; i < m_ParameterDegree; i++) {
+    //     std::cout << (*m_aaParameter)[i]->GetName() << '\n';
+    //
+    // }
+
     return pResultOperator;
 }
 
@@ -189,7 +194,6 @@ template<typename DTYPE> Optimizer<DTYPE> *NeuralNetwork<DTYPE>::SetOptimizer(Op
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::FeedInputTensor(int pNumOfInput, ...) {
-
     Tensor<DTYPE> *temp = NULL;
 
     va_list ap;
