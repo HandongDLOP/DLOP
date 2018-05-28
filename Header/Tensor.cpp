@@ -529,36 +529,31 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Random_normal(int pSize0,
     std::cout << "Tensor<DTYPE>::Random_normal()" << '\n';
     #endif  // __DEBUG__
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::normal_distribution<float> rand(mean, stddev);
-
-    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pSize0, pSize1, pSize2, pSize3, pSize4, pAnswer);
-
-    int capacity = temp->GetCapacity();
-
-    for (int i = 0; i < capacity; i++) {
-        (*temp)[i] = rand(gen);
-    }
-
-    return temp;
+    return Tensor<DTYPE>::Random_normal(new Shape(pSize0, pSize1, pSize2, pSize3, pSize4), mean, stddev, pAnswer);
 }
 
 template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Random_normal(Shape *pShape, float mean, float stddev, IsUseTime pAnswer) {
     #ifdef __DEBUG__
     std::cout << "Tensor<DTYPE>::Random_normal()" << '\n';
     #endif  // __DEBUG__
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::normal_distribution<float> rand(mean, stddev);
+    srand((unsigned)time(NULL));
 
     Tensor<DTYPE> *temp = new Tensor<DTYPE>(pShape, pAnswer);
 
-    int capacity = temp->GetCapacity();
+    int   capacity = temp->GetCapacity();
+    DTYPE v1 = 0.f, v2 = 0.f, mid_result = 0.f, result = 0.f;
 
+    // Random number generator on normal distribution
     for (int i = 0; i < capacity; i++) {
-        (*temp)[i] = rand(gen);
+        do {
+            v1         = 2 * ((float)rand() / RAND_MAX) - 1; // -1.0 ~ 1.0 까지의 값
+            v2         = 2 * ((float)rand() / RAND_MAX) - 1; // -1.0 ~ 1.0 까지의 값
+            mid_result = v1 * v1 + v2 * v2;
+        } while (mid_result >= 1 || mid_result == 0);
+
+        mid_result = sqrt((-2 * log(mid_result)) / mid_result);
+        mid_result = v1 * mid_result;
+        (*temp)[i] = (stddev * mid_result) + mean;
     }
 
     return temp;
@@ -569,7 +564,7 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Zeros(int pSize0, int pSi
     std::cout << "Tensor<DTYPE>::Zero()" << '\n';
     #endif  // __DEBUG__
 
-    return new Tensor<DTYPE>(pSize0, pSize1, pSize2, pSize3, pSize4, pAnswer);
+    return Tensor<DTYPE>::Zeros(new Shape(pSize0, pSize1, pSize2, pSize3, pSize4), pAnswer);
 }
 
 template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Zeros(Shape *pShape, IsUseTime pAnswer) {
@@ -585,15 +580,7 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(int pSize0, int
     std::cout << "Tensor<DTYPE>::Constant()" << '\n';
     #endif  // __DEBUG__
 
-    Tensor<DTYPE> *temp = new Tensor<DTYPE>(pSize0, pSize1, pSize2, pSize3, pSize4, pAnswer);
-
-    int capacity = temp->GetCapacity();
-
-    for (int i = 0; i < capacity; i++) {
-        (*temp)[i] = constant;
-    }
-
-    return temp;
+    return Tensor<DTYPE>::Constants(new Shape(pSize0, pSize1, pSize2, pSize3, pSize4), constant, pAnswer);
 }
 
 template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(Shape *pShape, DTYPE constant, IsUseTime pAnswer) {
