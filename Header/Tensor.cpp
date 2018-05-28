@@ -524,9 +524,9 @@ template<typename DTYPE> void Tensor<DTYPE>::Reset(cudnnHandle_t& pCudnnHandle) 
 
 ////////////////////////////////////////////////////////////////////////////////static method
 
-template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, float mean, float stddev, IsUseTime pAnswer) {
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Random_normal(int pSize0, int pSize1, int pSize2, int pSize3, int pSize4, float mean, float stddev, IsUseTime pAnswer) {
     #ifdef __DEBUG__
-    std::cout << "Tensor<DTYPE>::Truncated_normal()" << '\n';
+    std::cout << "Tensor<DTYPE>::Random_normal()" << '\n';
     #endif  // __DEBUG__
 
     std::random_device rd;
@@ -544,9 +544,9 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(int pSiz
     return temp;
 }
 
-template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Truncated_normal(Shape *pShape, float mean, float stddev, IsUseTime pAnswer) {
+template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Random_normal(Shape *pShape, float mean, float stddev, IsUseTime pAnswer) {
     #ifdef __DEBUG__
-    std::cout << "Tensor<DTYPE>::Truncated_normal()" << '\n';
+    std::cout << "Tensor<DTYPE>::Random_normal()" << '\n';
     #endif  // __DEBUG__
 
     std::random_device rd;
@@ -615,7 +615,7 @@ template<typename DTYPE> Tensor<DTYPE> *Tensor<DTYPE>::Constants(Shape *pShape, 
 // example code
 // int main(int argc, char const *argv[]) {
 // Tensor<float> *left  = Tensor<float>::Constants(1, 2, 3, 3, 3, 2);
-// Tensor<float> *right = Tensor<float>::Truncated_normal(1, 1, 3, 1, 1, 0.0, 0.1);
+// Tensor<float> *right = Tensor<float>::Random_normal(1, 1, 3, 1, 1, 0.0, 0.1);
 // Tensor<float> *dst   = Tensor<float>::Zeros(1, 2, 3, 3, 3);
 //
 // std::cout << left << '\n';

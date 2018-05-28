@@ -15,7 +15,7 @@ public:
     int Alloc(Operator<float> *pInput, int pNumInputCol, int pNumOutputCol, int use_bias, std::string pName) {
         Operator<float> *out = pInput;
 
-        Tensorholder<DTYPE> *pWeight = (Tensorholder<DTYPE> *)this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Truncated_normal(1, 1, 1, pNumOutputCol, pNumInputCol, 0.0, 0.1), "Layer_Weight_" + pName));
+        Tensorholder<DTYPE> *pWeight = (Tensorholder<DTYPE> *)this->AddParameter(new Tensorholder<DTYPE>(Tensor<DTYPE>::Random_normal(1, 1, 1, pNumOutputCol, pNumInputCol, 0.0, 0.1), "Layer_Weight_" + pName));
         out = this->AddOperator(new MatMul<DTYPE>(pWeight, out, "Layer_MatMul_" + pName));
 
         if (use_bias) {
