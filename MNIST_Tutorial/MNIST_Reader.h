@@ -1,3 +1,4 @@
+#include <iostream>
 #include <fstream>
 #include <algorithm>
 #include <vector>
@@ -239,7 +240,11 @@ int ReverseInt(int i) {
 template<typename DTYPE> void IMAGE_Reader(string DATAPATH, DTYPE **pImage) {
     ifstream fin;
 
-    fin.open(DATAPATH, ios::binary);
+    if (DATAPATH == TEST_IMAGE_FILE){
+        fin.open(TEST_IMAGE_FILE, ios_base::binary);
+    } else if(DATAPATH == TRAIN_IMAGE_FILE){
+        fin.open(TRAIN_IMAGE_FILE, ios_base::binary);
+    }
 
     if (fin.is_open()) {
         int magicNumber = 0;
@@ -278,7 +283,11 @@ template<typename DTYPE>
 void LABEL_Reader(string DATAPATH, DTYPE **pLabel) {
     ifstream fin;
 
-    fin.open(DATAPATH, ios::binary);
+    if (DATAPATH == TEST_LABEL_FILE){
+        fin.open(TEST_LABEL_FILE, ios_base::binary);
+    } else if(DATAPATH == TRAIN_LABEL_FILE){
+        fin.open(TRAIN_LABEL_FILE, ios_base::binary);
+    }
 
     if (fin.is_open()) {
         int magicNumber = 0;
