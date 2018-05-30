@@ -6,7 +6,7 @@
 #include "MNIST_Reader.h"
 #include <time.h>
 
-#define BATCH             100
+#define BATCH             50
 #define EPOCH             1000
 #define LOOP_FOR_TRAIN    (60000 / BATCH)
 // 10,000 is number of Test data
@@ -49,6 +49,8 @@ int main(int argc, char const *argv[]) {
 
         net->SetModeTraining();
 
+        startTime = clock();
+
         for (int j = 0; j < LOOP_FOR_TRAIN; j++) {
             dataset->CreateTrainDataPair(BATCH);
 
@@ -63,26 +65,30 @@ int main(int argc, char const *argv[]) {
             x->SetTensor(x_t);
             label->SetTensor(l_t);
 
-            startTime = clock();
 
             net->ResetParameterGradient();
             net->Training();
 
-            endTime = clock();
 
             train_accuracy    += net->GetAccuracy();
-            train_avg_loss    += net->GetLoss();
+            // train_avg_loss    += net->GetLoss();
             nProcessExcuteTime = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
 
-            printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f (ExcuteTime : %f)",
+            printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f" /*(ExcuteTime : %f)*/,
                    j + 1, LOOP_FOR_TRAIN,
                    train_avg_loss / (j + 1),
-                   train_accuracy / (j + 1),
-                   nProcessExcuteTime);
+                   train_accuracy / (j + 1)
+                 /*nProcessExcuteTime*/);
             fflush(stdout);
 
             if (j % 100 == 99) std::cout << '\n';
         }
+        endTime = clock();
+
+        nProcessExcuteTime = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
+
+        printf("\n(excution time per epoch : %f)\n", nProcessExcuteTime);
+
         std::cout << '\n';
 
         // float accum_accuracy = 0.f;

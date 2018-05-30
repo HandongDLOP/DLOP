@@ -32,12 +32,12 @@ public:
         out = AddOperator(new ReShape<float>(out, 1, 1, 5 * 5 * 20, "Flat"));
 
         // ======================= layer 3=======================
-        out = AddOperator(new Linear<float>(out, 5 * 5 * 20, 10, TRUE, "3"));
+        out = AddOperator(new Linear<float>(out, 5 * 5 * 20, 1024, TRUE, "3"));
 
-        // out = AddOperator(new Relu<float>(out, "Relu_3"));
+        out = AddOperator(new Relu<float>(out, "Relu_3"));
         //
         // // ======================= layer 4=======================
-        // out = AddOperator(new Linear<float>(out, 1024, 10, TRUE, "4"));
+        out = AddOperator(new Linear<float>(out, 1024, 10, TRUE, "4"));
 
         // ======================= Select LossFunction Function ===================
         SetLossFunction(new SoftmaxCrossEntropy<float>(out, label, "SCE"));
