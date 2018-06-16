@@ -145,9 +145,9 @@ template<typename DTYPE> Operator<DTYPE>::Operator(std::string pName) {
     m_Device         = CPU;
     m_Mode           = TRAINING;
     m_numOfParameter = 0;
-    m_isParameter   = FALSE;
+    m_isParameter    = FALSE;
     m_isTrainable    = FALSE;
-    m_numOfThread    = -1;
+    m_numOfThread    = 1;
     Alloc();
 }
 
@@ -164,9 +164,9 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput, std:
     m_Device         = CPU;
     m_Mode           = TRAINING;
     m_numOfParameter = 0;
-    m_isParameter   = FALSE;
+    m_isParameter    = FALSE;
     m_isTrainable    = FALSE;
-    m_numOfThread    = -1;
+    m_numOfThread    = 1;
     Alloc();
     AddEdgebetweenOperators(1, pInput);
 }
@@ -184,7 +184,7 @@ template<typename DTYPE> Operator<DTYPE>::Operator(Operator<DTYPE> *pInput0, Ope
     m_Device         = CPU;
     m_Mode           = TRAINING;
     m_numOfParameter = 0;
-    m_isParameter   = FALSE;
+    m_isParameter    = FALSE;
     m_isTrainable    = FALSE;
     m_numOfThread    = -1;
     Alloc();
