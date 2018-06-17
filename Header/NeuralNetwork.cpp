@@ -527,11 +527,12 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::TestingOnGPU() {
     return TRUE;
 }
 
-template<typename DTYPE> float NeuralNetwork<DTYPE>::GetAccuracy() {
+template<typename DTYPE> float NeuralNetwork<DTYPE>::GetAccuracy(int numOfClass) {
     Operator<DTYPE> *result = GetResultOperator();
     Operator<DTYPE> *label  = m_aLossFunction->GetLabel();
 
-    int batch = label->GetResult()->GetBatchSize();
+    int batchsize = label->GetResult()->GetBatchSize();
+    int timesize  = label->GetResult()->GetTimeSize();
 
     Tensor<DTYPE> *pred = result->GetResult();
     Tensor<DTYPE> *ans  = label->GetResult();
@@ -541,41 +542,49 @@ template<typename DTYPE> float NeuralNetwork<DTYPE>::GetAccuracy() {
     int pred_index = 0;
     int ans_index  = 0;
 
-    for (int ba = 0; ba < batch; ba++) {
-        pred_index = GetMaxIndex(pred, ba, 10);
-        ans_index  = GetMaxIndex(ans, ba, 10);
+    for (int ba = 0; ba < batchsize; ba++) {
+        for (int ti = 0; ti < timesize; ti++) {
+            pred_index = GetMaxIndex(pred, ba, ti, numOfClass);
+            ans_index  = GetMaxIndex(ans, ba, ti, numOfClass);
 
-        if (pred_index == ans_index) {
-            accuracy += 1.f;
+            if (pred_index == ans_index) {
+                accuracy += 1.f;
+            }
         }
     }
 
-    return (float)(accuracy / batch);
+    return (float)((accuracy / timesize) / batchsize);
 }
 
-template<typename DTYPE> int NeuralNetwork<DTYPE>::GetMaxIndex(Tensor<DTYPE> *data, int ba, int numOfClass) {
-    int   index = 0;
-    DTYPE max   = (*data)[ba * numOfClass];
-    int   start = ba * numOfClass;
-    int   end   = ba * numOfClass + numOfClass;
+template<typename DTYPE> int NeuralNetwork<DTYPE>::GetMaxIndex(Tensor<DTYPE> *data, int ba, int ti, int numOfClass) {
+    Shape *pShape    = data->GetShape();
+    int    start     = Index5D(pShape, ti, ba, 0, 0, 0);
+    int    end       = start + numOfClass;
+
+    // Initial max value is first element
+    DTYPE  max       = (*data)[start];
+    int    max_index = 0;
 
     for (int dim = start + 1; dim < end; dim++) {
         if ((*data)[dim] > max) {
             max   = (*data)[dim];
-            index = dim - start;
+            max_index = dim - start;
         }
     }
 
-    return index;
+    return max_index;
 }
 
 template<typename DTYPE> float NeuralNetwork<DTYPE>::GetLoss() {
     float avg_loss = 0.f;
 
-    int batch = m_aLossFunction->GetResult()->GetBatchSize();
+    int batchsize = m_aLossFunction->GetResult()->GetBatchSize();
+    int timesize  = m_aLossFunction->GetResult()->GetTimeSize();
 
-    for (int k = 0; k < batch; k++) {
-        avg_loss += (*m_aLossFunction)[k] / batch;
+    for (int ba = 0; ba < batchsize; ba++) {
+        for(int ti = 0; ti < timesize; ti++ ){
+            avg_loss += (*m_aLossFunction)[ba] / batchsize / timesize;
+        }
     }
 
     return avg_loss;

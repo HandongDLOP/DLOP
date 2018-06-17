@@ -93,8 +93,8 @@ public:
     int                           TrainingOnGPU();
     int                           TestingOnGPU();
 
-    float                         GetAccuracy();
-    int                           GetMaxIndex(Tensor<DTYPE> *data, int ba, int numOfClass);
+    float                         GetAccuracy(int numOfClass = 10);
+    int                           GetMaxIndex(Tensor<DTYPE> *data, int ba, int ti, int numOfClass);
     float                         GetLoss();
 
     void                          PrintGraphInformation();
