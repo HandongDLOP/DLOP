@@ -111,7 +111,6 @@ template<typename DTYPE> Operator<DTYPE> *Layer<DTYPE>::AnalyseGraph(Operator<DT
     Container<Operator<DTYPE> *> *nextOp = NULL;
     Container<Operator<DTYPE> *> *prevOp = NULL;
     int numOfInputEdge                   = 0;
-    int numOfOutputEdge                  = 0;
 
     Operator<DTYPE> *out = NULL;
 

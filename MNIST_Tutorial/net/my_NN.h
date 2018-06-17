@@ -21,7 +21,7 @@ public:
         Operator<float> *out = x;
 
         // ======================= layer 1======================
-        out = Linear(out, 784, 10, TRUE, "1");
+        out = new Linear<float>(out, 784, 10, TRUE, "1");
 
         AnalyseGraph(out);
 
@@ -38,12 +38,12 @@ public:
         Operator<float> *out = x;
 
         // ======================= layer 1======================
-        out = Linear(out, 784, 15, TRUE, "1");
+        out = new Linear<float>(out, 784, 15, TRUE, "1");
 
         out = new Sigmoid<float>(out, "Sigmoid");
 
         // ======================= layer 2=======================
-        out = Linear(out, 15, 10, TRUE, "2");
+        out = new Linear<float>(out, 15, 10, TRUE, "2");
 
         AnalyseGraph(out);
 
@@ -58,17 +58,17 @@ public:
 
     virtual ~my_NN() {}
 
-    Operator<float>* Linear(Operator<float> *pInput, int pNumInputCol, int pNumOutputCol, int use_bias = FALSE, std::string pName = NULL) {
-        Operator<float> *out = pInput;
-
-        Tensorholder<float> *pWeight = new Tensorholder<float>(Tensor<float>::Random_normal(1, 1, 1, pNumOutputCol, pNumInputCol, 0.0, 0.1), "Layer_Weight_" + pName);
-        out = new MatMul<float>(pWeight, out, "Layer_MatMul_" + pName);
-
-        if (use_bias) {
-            Tensorholder<float> *pBias = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, pNumOutputCol, 0.f), "Add_Bias_" + pName);
-            out = new AddColWise<float>(out, pBias, "Layer_Add_" + pName);
-        }
-
-        return out;
-    }
+    // Operator<float>* Linear(Operator<float> *pInput, int pNumInputCol, int pNumOutputCol, int use_bias = FALSE, std::string pName = NULL) {
+    //     Operator<float> *out = pInput;
+    //
+    //     Tensorholder<float> *pWeight = new Tensorholder<float>(Tensor<float>::Random_normal(1, 1, 1, pNumOutputCol, pNumInputCol, 0.0, 0.1), "Layer_Weight_" + pName);
+    //     out = new MatMul<float>(pWeight, out, "Layer_MatMul_" + pName);
+    //
+    //     if (use_bias) {
+    //         Tensorholder<float> *pBias = new Tensorholder<float>(Tensor<float>::Constants(1, 1, 1, 1, pNumOutputCol, 0.f), "Add_Bias_" + pName);
+    //         out = new AddColWise<float>(out, pBias, "Layer_Add_" + pName);
+    //     }
+    //
+    //     return out;
+    // }
 };
