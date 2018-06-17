@@ -10,17 +10,16 @@ typedef struct {
 
 template<typename DTYPE> class NeuralNetwork {
 private:
-    // Container<Operator<DTYPE> *> *m_aaOperator;
+    Container<Operator<DTYPE> *> *m_aaOperator;
     Container<Operator<DTYPE> *> *m_apExcutableOperator;
     Container<Operator<DTYPE> *> *m_apInput;
-    Container<Operator<DTYPE> *> *m_aaParameter;
+    Container<Operator<DTYPE> *> *m_apParameter;
 
-    // int m_Alldegree;
+    int m_Operatordegree;
     int m_ExcutableOperatorDegree;
     int m_InputDegree;
     int m_ParameterDegree;
 
-    // 중간에 Loss Function이나 Optimizer가 바뀌는 상황 생각해두기
     LossFunction<DTYPE> *m_aLossFunction;
     Optimizer<DTYPE> *m_aOptimizer;
 
@@ -45,7 +44,10 @@ public:
     virtual ~NeuralNetwork();
 
     Operator<DTYPE>             * SetInput(Operator<DTYPE> *pInput);
-    int SetInput(int pNumOfInput, ...);
+    int                           SetInput(int pNumOfInput, ...);
+    int                           IsInput(Operator<DTYPE> *pOperator);
+    int                           IsValid(Operator<DTYPE> *pOperator); // Graph 분석 시 node에 추가할 것인지 확인한다.
+
     Operator<DTYPE>             * AnalyseGraph(Operator<DTYPE> *pResultOperator);
     LossFunction<DTYPE>         * SetLossFunction(LossFunction<DTYPE> *pLossFunction);
     Optimizer<DTYPE>            * SetOptimizer(Optimizer<DTYPE> *pOptimizer);
@@ -57,25 +59,27 @@ public:
     Operator<DTYPE>             * GetResultOperator();
     Operator<DTYPE>             * GetResult();
 
-    Container<Operator<DTYPE> *>* GetOperatorContainer();
+    Container<Operator<DTYPE> *>* GetExcutableOperatorContainer();
+
+    Container<Operator<DTYPE> *>* GetParameterContainer();
     Container<Operator<DTYPE> *>* GetParameter();
+
     LossFunction<DTYPE>         * GetLossFunction();
+
     Optimizer<DTYPE>            * GetOptimizer();
-    float                         GetAccuracy();
-    int                           GetMaxIndex(Tensor<DTYPE> *data, int ba, int numOfClass);
-    float                         GetLoss();
 
     int                           ForwardPropagate(int pTime = 0);
     int                           BackPropagate(int pTime = 0);
+
     static void                 * ForwardPropagateForThread(void *param);
     static void                 * BackPropagateForThread(void *param);
 
-#ifdef __CUDNN__
-    int                           ForwardPropagateOnGPU(int pTime = 0);
-    int                           BackPropagateOnGPU(int pTime = 0);
+    void                          SetDeviceCPU();
+    void                          SetDeviceCPU(int pNumOfThread);
 
-    void                          SetDeviceGPU();
-#endif  // __CUDNN__
+    void                          SetModeTraining();
+    void                          SetModeAccumulating();
+    void                          SetModeInferencing();
 
     int                           Training();
     int                           Testing();
@@ -89,16 +93,10 @@ public:
     int                           TrainingOnGPU();
     int                           TestingOnGPU();
 
+    float                         GetAccuracy();
+    int                           GetMaxIndex(Tensor<DTYPE> *data, int ba, int numOfClass);
+    float                         GetLoss();
 
-    void                          SetModeTraining();
-    void                          SetModeAccumulating();
-    void                          SetModeInferencing();
-
-    void                          SetDeviceCPU();
-    void                          SetDeviceCPU(int pNumOfThread);
-
-    // =======
-    int                           CreateGraph();
     void                          PrintGraphInformation();
 
     int                           ResetOperatorResult();
@@ -110,6 +108,13 @@ public:
     int                           ResetParameterGradient();
 
     Operator<DTYPE>             * SerchOperator(std::string pName);
+
+#ifdef __CUDNN__
+    int                           ForwardPropagateOnGPU(int pTime = 0);
+    int                           BackPropagateOnGPU(int pTime = 0);
+
+    void                          SetDeviceGPU();
+#endif  // __CUDNN__
 };
 
 #endif  // NEURALNETWORK_H_
