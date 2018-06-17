@@ -1,64 +1,66 @@
 #ifndef __LAYER__
 #define __LAYER__    value
 
-#include "Optimizer_utils.h"
+#include "Operator_utils.h"
 
 template<typename DTYPE> class Layer : public Operator<DTYPE>{
 private:
-    Container<Operator<DTYPE> *> *m_aaOperator;
-    Container<Operator<DTYPE> *> *m_apVirtualInput;
-    int m_numOfOperator;
-    int m_numOfVirtualInput;
+    Container<Operator<DTYPE> *> *m_aaExcutableOperator;
+    int m_numOfExcutableOperator;
+
+    Operator<DTYPE> *m_pLastOperator;
 
 private:
     int  Alloc();
     void Delete();
-    int  CreateVirtualInput();
 
 public:
     Layer(std::string pName = "No Name");
     virtual ~Layer();
 
-    Operator<DTYPE>             * AddOperator(Operator<DTYPE> *pOperator);
+    Operator<DTYPE>                   * SetInput(Operator<DTYPE> *pInput);
+    int                                 SetInput(int pNumOfInput, ...);
+    int                                 IsInput(Operator<DTYPE> *pOperator);
 
-    Container<Operator<DTYPE> *>* GetOperatorContainer();
+    int                                 IsValid(Operator<DTYPE> *pOperator); // Graph 분석 시 node에 추가할 것인지 확인한다.
 
-    int                           GetNumOfOperator();
+    Operator<DTYPE>                   * AnalyseGraph(Operator<DTYPE> *pResultOperator);
 
-    Operator<DTYPE>            ** GetOutput();
-    Container<Operator<DTYPE> *>* GetOutputContainer();
-    Operator<DTYPE>            ** GetInput();
-    Container<Operator<DTYPE> *>* GetInputContainer();
+    Container<Operator<DTYPE> *>      * GetExcutableOperatorContainer();
+    int                                 GetNumOfExcutableOperator();
 
-    Tensor<DTYPE>               * GetResult() const;
-    Container<Tensor<DTYPE> *>  * GetResultContainer();
+    virtual Tensor<DTYPE>             * GetResult() const;
+    virtual Container<Tensor<DTYPE> *>* GetResultContainer();
 
-    Tensor<DTYPE>               * GetGradient() const;
-    Container<Tensor<DTYPE> *>  * GetGradientContainer();
+    virtual Tensor<DTYPE>             * GetGradient() const;
+    virtual Container<Tensor<DTYPE> *>* GetGradientContainer();
 
-    Tensor<DTYPE>               * GetDelta() const;
-    Container<Tensor<DTYPE> *>  * GetDeltaContainer();
+    virtual Tensor<DTYPE>             * GetDelta() const;
+    virtual Container<Tensor<DTYPE> *>* GetDeltaContainer();
 
-    Operator<DTYPE>             * GetLastOperator();
+    int                                 ForwardPropagate(int pTime = 0, int pThreadNum = 0);
+    int                                 BackPropagate(int pTime = 0, int pThreadNum = 0);
 
-    Operator<DTYPE>             * PopOperator();
+    int                                 ResetResult();
+    int                                 ResetGradient();
 
-    int                           ForwardPropagate(int pTime = 0, int pThreadNum = 0);
-    int                           BackPropagate(int pTime = 0, int pThreadNum = 0);
+    void                                PrintInformation();
 
-    int                           ResetResult();
-    int                           ResetGradient();
+    void                                SetDeviceCPU();
+    void                                SetDeviceCPU(int pnumOfThread);
 
-    void                          PrintInformation();
-
-    void                          SetDeviceCPU();
-    void                          SetDeviceCPU(int pnumOfThread);
+    // int                                 SetResultOnCPU();
+    // int                                 SetGradientOnCPU();
 #ifdef __CUDNN__
-    void                          SetDeviceGPU();
-    void                          SetDeviceGPU(cudnnHandle_t& pCudnnHandle);
+    // int                                 SetResultOnGPU();
+    // int                                 SetGradientOnGPU();
 
-    int                           ForwardPropagateOnGPU(int pTime = 0);
-    int                           BackPropagateOnGPU(int pTime = 0);
+    void SetDeviceGPU();
+    void SetDeviceGPU(cudnnHandle_t& pCudnnHandle);
+    void InitializeAttributeForGPU();
+
+    int  ForwardPropagateOnGPU(int pTime = 0);
+    int  BackPropagateOnGPU(int pTime = 0);
 #endif  // if __CUDNN__
 };
 

@@ -182,7 +182,7 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AnalyseGraph(Ope
 
         if (!(this->IsInput(out))) {
             if (this->IsValid(out)) {
-                // std::cout << out->GetName() << '\n';
+                std::cout << out->GetName() << '\n';
 
                 m_aaOperator->Push(out);
                 m_Operatordegree++;
@@ -197,6 +197,8 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AnalyseGraph(Ope
 
                 nextOp         = out->GetInputContainer();
                 numOfInputEdge = nextOp->GetSize();
+
+                // std::cout << numOfInputEdge << '\n';
 
                 for (int i = 0; i < numOfInputEdge; i++) {
                     queue.Push((*nextOp)[i]);

@@ -46,6 +46,7 @@ public:
     Operator<DTYPE>             * SetInput(Operator<DTYPE> *pInput);
     int                           SetInput(int pNumOfInput, ...);
     int                           IsInput(Operator<DTYPE> *pOperator);
+
     int                           IsValid(Operator<DTYPE> *pOperator); // Graph 분석 시 node에 추가할 것인지 확인한다.
 
     Operator<DTYPE>             * AnalyseGraph(Operator<DTYPE> *pResultOperator);
