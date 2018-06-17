@@ -16,12 +16,10 @@ private:
     Container<Operator<DTYPE> *> *m_apInput;
     Container<Tensor<DTYPE> *> *m_aaResult;
     Container<Tensor<DTYPE> *> *m_aaGradient;
-    Container<Operator<DTYPE> *> *m_aaParameter;
     std::string m_name;
     Device m_Device;
     Mode m_Mode;
     int m_numOfThread;
-    int m_numOfParameter;
     int m_isParameter;
     int m_isTrainable;
 
@@ -83,12 +81,6 @@ public:
     int                                   GetNumOfThread();
     int                                   GetIsTensorholder();
     int                                   GetIsTrainable();
-
-    // for Layer
-    virtual Operator<DTYPE>             * AddParameter(Operator<DTYPE> *pParameter);
-    virtual Container<Operator<DTYPE> *>* GetParameterContainer();
-    virtual int                           GetNumOfParameter();
-    virtual Operator<DTYPE>             * PopParameter();
 
     virtual int                           ForwardPropagate(int pTime = 0, int pThreadNum = 0);
     virtual int                           BackPropagate(int pTime = 0, int pThreadNum = 0);

@@ -7,7 +7,7 @@ template class NeuralNetwork<double>;
 //////////////////////////////////////////////////////////////////////////////// for private method
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::Alloc() {
-    m_aaOperator  = new Container<Operator<DTYPE> *>();
+    m_apExcutableOperator  = new Container<Operator<DTYPE> *>();
     m_apInput     = new Container<Operator<DTYPE> *>();
     m_aaParameter = new Container<Operator<DTYPE> *>();
     return TRUE;
@@ -19,18 +19,18 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::Delete() {
     #endif  // __DEBUG__
     int size = 0;
 
-    if (m_aaOperator) {
-        size = m_aaOperator->GetSize();
-        Operator<DTYPE> **OperatorContainer = m_aaOperator->GetRawData();
+    if (m_apExcutableOperator) {
+        size = m_apExcutableOperator->GetSize();
+        Operator<DTYPE> **OperatorContainer = m_apExcutableOperator->GetRawData();
 
         for (int i = 0; i < size; i++) {
-            if ((*m_aaOperator)[i]) {
+            if ((*m_apExcutableOperator)[i]) {
                 delete OperatorContainer[i];
                 OperatorContainer[i] = NULL;
             }
         }
-        delete m_aaOperator;
-        m_aaOperator = NULL;
+        delete m_apExcutableOperator;
+        m_apExcutableOperator = NULL;
     }
 
     if (m_apInput) {
@@ -89,11 +89,11 @@ template<typename DTYPE> NeuralNetwork<DTYPE>::NeuralNetwork() {
     std::cout << "NeuralNetwork<DTYPE>::NeuralNetwork()" << '\n';
     #endif  // __DEBUG__
 
-    m_aaOperator  = NULL;
+    m_apExcutableOperator  = NULL;
     m_apInput     = NULL;
     m_aaParameter = NULL;
 
-    m_OperatorDegree  = 0;
+    m_ExcutableOperatorDegree  = 0;
     m_InputDegree     = 0;
     m_ParameterDegree = 0;
 
@@ -124,6 +124,21 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::SetInput(Operato
     return pInput;
 }
 
+template<typename DTYPE> int NeuralNetwork<DTYPE>::SetInput(int pNumOfInput, ...) {
+    Operator<DTYPE> *temp = NULL;
+
+    va_list ap;
+    va_start(ap, pNumOfInput);
+
+    for (int i = 0; i < pNumOfInput; i++) {
+        temp = va_arg(ap, Operator<DTYPE> *);
+        this->SetInput(temp);
+    }
+
+    va_end(ap);
+    return TRUE;
+}
+
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AnalyseGraph(Operator<DTYPE> *pResultOperator) {
     // BFS
     Container<Operator<DTYPE> *> queue;
@@ -145,14 +160,14 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AnalyseGraph(Ope
         if (out->GetIsTensorholder()) {
             if (out->GetIsTrainable()) m_aaParameter->Push(out);
         } else {
-            m_aaOperator->Push(out);
+            m_apExcutableOperator->Push(out);
         }
     }
 
-    m_aaOperator->Reverse();
+    m_apExcutableOperator->Reverse();
     m_aaParameter->Reverse();
 
-    m_OperatorDegree  = m_aaOperator->GetSize();
+    m_ExcutableOperatorDegree  = m_apExcutableOperator->GetSize();
     m_ParameterDegree = m_aaParameter->GetSize();
 
     // for (int i = 0; i < m_ParameterDegree; i++) {
@@ -161,26 +176,6 @@ template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AnalyseGraph(Ope
     // }
 
     return pResultOperator;
-}
-
-template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddOperator(Operator<DTYPE> *pOperator) {
-    int pNumOfParameter = pOperator->GetNumOfParameter();
-
-    m_aaOperator->Push(pOperator);
-    m_OperatorDegree++;
-
-    for (int i = 0; i < pNumOfParameter; i++) {
-        m_aaParameter->Push(pOperator->PopParameter());
-        m_ParameterDegree++;
-    }
-
-    return pOperator;
-}
-
-template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::AddParameter(Operator<DTYPE> *pParameter) {
-    m_aaParameter->Push(pParameter);
-    m_ParameterDegree++;
-    return pParameter;
 }
 
 template<typename DTYPE> LossFunction<DTYPE> *NeuralNetwork<DTYPE>::SetLossFunction(LossFunction<DTYPE> *pLossFunction) {
@@ -213,15 +208,15 @@ template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::Get
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::GetResultOperator() {
-    return m_aaOperator->GetLast();
+    return this->GetResult();
 }
 
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::GetResult() {
-    return m_aaOperator->GetLast();
+    return m_apExcutableOperator->GetLast();
 }
 
 template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::GetOperatorContainer() {
-    return m_aaOperator;
+    return m_apExcutableOperator;
 }
 
 template<typename DTYPE> Container<Operator<DTYPE> *> *NeuralNetwork<DTYPE>::GetParameter() {
@@ -293,8 +288,8 @@ template<typename DTYPE> float NeuralNetwork<DTYPE>::GetLoss() {
 // ===========================================================================================
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(int pTime) {
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->ForwardPropagate(pTime);
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
+        (*m_apExcutableOperator)[i]->ForwardPropagate(pTime);
     }
     m_aLossFunction->ForwardPropagate(pTime);
 
@@ -304,8 +299,8 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagate(int pTime) {
 template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagate(int pTime) {
     m_aLossFunction->BackPropagate(pTime);
 
-    for (int i = m_OperatorDegree - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->BackPropagate(pTime);
+    for (int i = m_ExcutableOperatorDegree - 1; i >= 0; i--) {
+        (*m_apExcutableOperator)[i]->BackPropagate(pTime);
     }
     return TRUE;
 }
@@ -317,12 +312,12 @@ template<typename DTYPE> void *NeuralNetwork<DTYPE>::ForwardPropagateForThread(v
     int pTime                 = 0;
     int pThreadNum            = pThreadInfo->m_threadNum;
 
-    Container<Operator<DTYPE> *> *m_aaOperator = pNN->GetOperatorContainer();
-    int m_OperatorDegree                       = m_aaOperator->GetSize();
+    Container<Operator<DTYPE> *> *m_apExcutableOperator = pNN->GetOperatorContainer();
+    int m_ExcutableOperatorDegree                       = m_apExcutableOperator->GetSize();
     LossFunction<DTYPE> *m_aLossFunction       = pNN->GetLossFunction();
 
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->ForwardPropagate(pTime, pThreadNum);
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
+        (*m_apExcutableOperator)[i]->ForwardPropagate(pTime, pThreadNum);
     }
     m_aLossFunction->ForwardPropagate(pTime, pThreadNum);
     return NULL;
@@ -335,22 +330,22 @@ template<typename DTYPE> void *NeuralNetwork<DTYPE>::BackPropagateForThread(void
     int pTime                 = 0;
     int pThreadNum            = pThreadInfo->m_threadNum;
 
-    Container<Operator<DTYPE> *> *m_aaOperator = pNN->GetOperatorContainer();
-    int m_OperatorDegree                       = m_aaOperator->GetSize();
+    Container<Operator<DTYPE> *> *m_apExcutableOperator = pNN->GetOperatorContainer();
+    int m_ExcutableOperatorDegree                       = m_apExcutableOperator->GetSize();
     LossFunction<DTYPE> *m_aLossFunction       = pNN->GetLossFunction();
 
     m_aLossFunction->BackPropagate(pTime, pThreadNum);
 
-    for (int i = m_OperatorDegree - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->BackPropagate(pTime, pThreadNum);
+    for (int i = m_ExcutableOperatorDegree - 1; i >= 0; i--) {
+        (*m_apExcutableOperator)[i]->BackPropagate(pTime, pThreadNum);
     }
     return NULL;
 }
 
 #ifdef __CUDNN__
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagateOnGPU(int pTime) {
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->ForwardPropagateOnGPU(pTime);
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
+        (*m_apExcutableOperator)[i]->ForwardPropagateOnGPU(pTime);
     }
     m_aLossFunction->ForwardPropagateOnGPU(pTime);
 
@@ -360,8 +355,8 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::ForwardPropagateOnGPU(int pTi
 template<typename DTYPE> int NeuralNetwork<DTYPE>::BackPropagateOnGPU(int pTime) {
     m_aLossFunction->BackPropagateOnGPU(pTime);
 
-    for (int i = m_OperatorDegree - 1; i >= 0; i--) {
-        (*m_aaOperator)[i]->BackPropagateOnGPU(pTime);
+    for (int i = m_ExcutableOperatorDegree - 1; i >= 0; i--) {
+        (*m_apExcutableOperator)[i]->BackPropagateOnGPU(pTime);
     }
     return TRUE;
 }
@@ -511,20 +506,20 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::TestingOnGPU() {
 // =========
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeTraining() {
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->SetModeTraining();
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
+        (*m_apExcutableOperator)[i]->SetModeTraining();
     }
 }
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeAccumulating() {
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->SetModeAccumulating();
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
+        (*m_apExcutableOperator)[i]->SetModeAccumulating();
     }
 }
 
 template<typename DTYPE> void NeuralNetwork<DTYPE>::SetModeInferencing() {
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->SetModeInferencing();
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
+        (*m_apExcutableOperator)[i]->SetModeInferencing();
     }
 }
 
@@ -535,9 +530,9 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
     m_Device = GPU;
     this->AllocOnGPU();
 
-    for (int i = 0; i < m_OperatorDegree; i++) {
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
         // important order
-        (*m_aaOperator)[i]->SetDeviceGPU(m_cudnnHandle);
+        (*m_apExcutableOperator)[i]->SetDeviceGPU(m_cudnnHandle);
     }
 
     for (int i = 0; i < m_ParameterDegree; i++) {
@@ -554,8 +549,8 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceGPU() {
 template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceCPU() {
     m_Device = CPU;
 
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->SetDeviceCPU();
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
+        (*m_apExcutableOperator)[i]->SetDeviceCPU();
     }
     m_aLossFunction->SetDeviceCPU();
 }
@@ -564,8 +559,8 @@ template<typename DTYPE> void NeuralNetwork<DTYPE>::SetDeviceCPU(int pNumOfThrea
     m_Device      = CPU;
     m_numOfThread = pNumOfThread;
 
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->SetDeviceCPU(pNumOfThread);
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
+        (*m_apExcutableOperator)[i]->SetDeviceCPU(pNumOfThread);
     }
     m_aLossFunction->SetDeviceCPU(pNumOfThread);
 }
@@ -581,22 +576,22 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::CreateGraph() {
 template<typename DTYPE> void NeuralNetwork<DTYPE>::PrintGraphInformation() {
     std::cout << "Graph Structure: " << "\n\n";
 
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->PrintInformation();
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
+        (*m_apExcutableOperator)[i]->PrintInformation();
         std::cout << '\n';
     }
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ResetOperatorResult() {
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->ResetResult();
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
+        (*m_apExcutableOperator)[i]->ResetResult();
     }
     return TRUE;
 }
 
 template<typename DTYPE> int NeuralNetwork<DTYPE>::ResetOperatorGradient() {
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        (*m_aaOperator)[i]->ResetGradient();
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
+        (*m_apExcutableOperator)[i]->ResetGradient();
     }
     return TRUE;
 }
@@ -619,10 +614,10 @@ template<typename DTYPE> int NeuralNetwork<DTYPE>::ResetParameterGradient() {
 template<typename DTYPE> Operator<DTYPE> *NeuralNetwork<DTYPE>::SerchOperator(std::string pName) {
     std::string name = "NULL";
 
-    for (int i = 0; i < m_OperatorDegree; i++) {
-        name = (*m_aaOperator)[i]->GetName();
+    for (int i = 0; i < m_ExcutableOperatorDegree; i++) {
+        name = (*m_apExcutableOperator)[i]->GetName();
 
-        if (name == pName) return (*m_aaOperator)[i];
+        if (name == pName) return (*m_apExcutableOperator)[i];
     }
 
     return NULL;

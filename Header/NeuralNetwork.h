@@ -1,7 +1,7 @@
 #ifndef NEURALNETWORK_H_
 #define NEURALNETWORK_H_
 
-#include "Layer_utils.h"
+#include "Optimizer_utils.h"
 
 typedef struct {
     void *m_NN;
@@ -10,11 +10,13 @@ typedef struct {
 
 template<typename DTYPE> class NeuralNetwork {
 private:
-    Container<Operator<DTYPE> *> *m_aaOperator;
+    // Container<Operator<DTYPE> *> *m_aaOperator;
+    Container<Operator<DTYPE> *> *m_apExcutableOperator;
     Container<Operator<DTYPE> *> *m_apInput;
     Container<Operator<DTYPE> *> *m_aaParameter;
 
-    int m_OperatorDegree;
+    // int m_Alldegree;
+    int m_ExcutableOperatorDegree;
     int m_InputDegree;
     int m_ParameterDegree;
 
@@ -42,23 +44,19 @@ public:
     NeuralNetwork();
     virtual ~NeuralNetwork();
 
-
     Operator<DTYPE>             * SetInput(Operator<DTYPE> *pInput);
+    int SetInput(int pNumOfInput, ...);
     Operator<DTYPE>             * AnalyseGraph(Operator<DTYPE> *pResultOperator);
-
-    Operator<DTYPE>             * AddOperator(Operator<DTYPE> *pOperator);
-    Operator<DTYPE>             * AddParameter(Operator<DTYPE> *pParameter);
-
     LossFunction<DTYPE>         * SetLossFunction(LossFunction<DTYPE> *pLossFunction);
     Optimizer<DTYPE>            * SetOptimizer(Optimizer<DTYPE> *pOptimizer);
-
-    int                           FeedInputTensor(int pNumOfInput, ...); // 곧 구현 필요
+    int                           FeedInputTensor(int pNumOfInput, ...);
     // =======
 
     Container<Operator<DTYPE> *>* GetInputContainer();
 
     Operator<DTYPE>             * GetResultOperator();
     Operator<DTYPE>             * GetResult();
+
     Container<Operator<DTYPE> *>* GetOperatorContainer();
     Container<Operator<DTYPE> *>* GetParameter();
     LossFunction<DTYPE>         * GetLossFunction();

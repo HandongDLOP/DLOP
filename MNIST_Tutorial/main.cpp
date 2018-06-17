@@ -2,7 +2,7 @@
 
 #include "net/my_CNN.h"
 #include "net/my_NN.h"
-#include "net/my_Resnet.h"
+// #include "net/my_Resnet.h"
 #include "MNIST_Reader.h"
 #include <time.h>
 
@@ -71,7 +71,7 @@ int main(int argc, char const *argv[]) {
 
 
             train_accuracy    += net->GetAccuracy();
-            // train_avg_loss    += net->GetLoss();
+            train_avg_loss    += net->GetLoss();
             nProcessExcuteTime = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
 
             printf("\rTraining complete percentage is %d / %d -> loss : %f, acc : %f" /*(ExcuteTime : %f)*/,
